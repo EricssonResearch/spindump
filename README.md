@@ -6,7 +6,7 @@ The "Spindump" tool is a Unix command-line ulitity that can be used to trace flo
 
 The software is under development, and subject to research on best algorithms for recognising flows and determining their round-trip times. But the basic idea is that it looks at ICMP echo and echo request packets, TCP packets and acknowledgements, or QUIC spin bit behaviour.
 
-![Tool output](https://gerrit.ericsson.se/gitweb?p=ER-5G-Service-Based-Arch/SpinDump.git;a=blob_plain;f=screenshot1.jpg;hb=HEAD)
+![Tool output](https://github.com/EricssonResearch/spindump/screenshot1.jpg;raw=true)
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
 
@@ -18,7 +18,7 @@ The software is packaged as the "spindump" utility, and simply typing
 
 should show the most active sessions and their current round-trip times (RTTs). The top of the screen shows some status information, while the rest is dedicated to showing connections and their RTTs. You can exit from the tool by pressing Control-C or "Q". In addition, you can use "C" to toggle whether to show closed connections, "U" to whether to show UDP connections, or "A" to show either individual connections or aggregated connections. Pressing "H" shows help information and pressing "S" enables you to set the screen update frequency.
 
-![Tool output](https://gerrit.ericsson.se/gitweb?p=ER-5G-Service-Based-Arch/SpinDump.git;a=blob_plain;f=architecture1.jpg;hb=HEAD)
+![Tool output](https://github.com/EricssonResearch/spindump/architecture1.jpg;raw=true)
 
 The full command syntax is
 
@@ -92,7 +92,7 @@ The --interface option sets the local interface to listen on. The default is wha
 
 The easiest installation method is to retrieve the software from Gerrit, the Ericsson source code repository system. You can do this on a clean Ubuntu or other linux machine. Start with this:
 
-  git clone https://lmfjaar@gerrit.ericsson.se/a/ER-5G-Service-Based-Arch/SpinDump
+  git clone https://github.com/EricssonResearch/spindump
 
 (And remember to replace "lmfjaar" with your userid. You will need access rights for the project in Gerrit, ask Jari Arkko, jari.arkko@ericsson.com, to give you them. Also, if you are using ssh and tunneling, you may need to use command such as "git clone ssh://lmfjaar@localhost:29418/ER-5G-Service-Based-Arch/SpinDump" where 29418 would be locally assigned port that you are forwarding traffic from your own machine to gerrit.)
 
@@ -114,7 +114,7 @@ Then do:
 
 The Spindump software builds on the Spindump Library, a simple but extensibile packet analysis package. The makefile builds a library, libspindump.a that can be linked to a program, used to track connections, or even extended to build more advanced functionality. The Spindump command itself is built using this library.
 
-![Tool output](https://gerrit.ericsson.se/gitweb?p=ER-5G-Service-Based-Arch/SpinDump.git;a=blob_plain;f=architecture2.jpg;hb=HEAD)
+![Tool output](https://github.com/EricssonResearch/spindump/architecture2.jpg;raw=true)
 
 The API definition for this library can be found from spindump_analyze.h. But the main function are analyzer initialization, handing a packet to it, and de-initialization. First, you need to initialize the analyzer, like this:
 
