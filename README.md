@@ -90,11 +90,9 @@ The --interface option sets the local interface to listen on. The default is wha
 
 # Installation
 
-The easiest installation method is to retrieve the software from Gerrit, the Ericsson source code repository system. You can do this on a clean Ubuntu or other linux machine. Start with this:
+The easiest installation method is to retrieve the software from GitHub. Start with this:
 
   git clone https://github.com/EricssonResearch/spindump
-
-(And remember to replace "lmfjaar" with your userid. You will need access rights for the project in Gerrit, ask Jari Arkko, jari.arkko@ericsson.com, to give you them. Also, if you are using ssh and tunneling, you may need to use command such as "git clone ssh://lmfjaar@localhost:29418/ER-5G-Service-Based-Arch/SpinDump" where 29418 would be locally assigned port that you are forwarding traffic from your own machine to gerrit.)
 
 Make sure you have the necessary tools to compile; you'll need the gmake, gcc, and libpcap packages at least. On a Mac OS X, you can install these with the
 
