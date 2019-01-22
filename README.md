@@ -6,7 +6,7 @@ The "Spindump" tool is a Unix command-line ulitity that can be used to trace flo
 
 The software is under development, and subject to research on best algorithms for recognising flows and determining their round-trip times. But the basic idea is that it looks at ICMP echo and echo request packets, TCP packets and acknowledgements, or QUIC spin bit behaviour.
 
-![Tool output](https://github.com/EricssonResearch/spindump/screenshot1.jpg;raw=true)
+![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/screenshot1.jpg)
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
 
