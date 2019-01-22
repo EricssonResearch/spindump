@@ -262,6 +262,8 @@ spindump_connection_report_brief(struct spindump_connection* connection,
 				 unsigned int bufsiz,
 				 int avg,
 				 unsigned int linelen,
+				 int anonymizeLeft,
+				 int anonymizeRight,
 				 struct spindump_reverse_dns* querier);
 const char*
 spindump_connection_sessionstring(struct spindump_connection* connection,
@@ -273,6 +275,8 @@ spindump_connection_statestring(struct spindump_connection* connection);
 const char*
 spindump_connection_addresses(struct spindump_connection* connection,
 			      unsigned int maxlen,
+			      int anonymizeLeft,
+			      int anonymizeRight,
 			      struct spindump_reverse_dns* querier);
 unsigned int
 spindump_connection_report_brief_fixedsize(unsigned int linelen);

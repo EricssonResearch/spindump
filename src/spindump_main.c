@@ -56,6 +56,8 @@ static int showStats = 0;
 static int reverseDns = 1;
 static int reportSpins = 0;
 static int reportSpinFlips = 0;
+static int anonymizeLeft = 0;
+static int anonymizeRight = 0;
 static unsigned long long updateperiod = 0.5 * 1000 * 1000; // 0.5s// 
 static unsigned int nAggregates = 0;
 static struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
@@ -121,7 +123,7 @@ spindump_main_processargs(int argc,char** argv) {
     
     if (strcmp(argv[0],"--version") == 0) {
       
-      printf("version 0.10 January 22, 2019\n");
+      printf("version 0.11 January 22, 2019\n");
       exit(0);
       
     } else if (strcmp(argv[0],"--help") == 0) {
@@ -178,6 +180,32 @@ spindump_main_processargs(int argc,char** argv) {
     } else if (strcmp(argv[0],"--not-report-spin-flips") == 0) {
       
       reportSpinFlips = 0;
+      
+    } else if (strcmp(argv[0],"--anonymize") == 0) {
+      
+      anonymizeLeft = 1;
+      anonymizeRight = 1;
+      
+    } else if (strcmp(argv[0],"--not-anonymize") == 0) {
+      
+      anonymizeLeft = 0;
+      anonymizeRight = 0;
+      
+    } else if (strcmp(argv[0],"--anonymize-left") == 0) {
+      
+      anonymizeLeft = 1;
+      
+    } else if (strcmp(argv[0],"--not-anonymize-left") == 0) {
+      
+      anonymizeLeft = 0;
+      
+    } else if (strcmp(argv[0],"--anonymize-right") == 0) {
+      
+      anonymizeRight = 1;
+      
+    } else if (strcmp(argv[0],"--not-anonymize-right") == 0) {
+      
+      anonymizeRight = 0;
       
     } else if (strcmp(argv[0],"--silent") == 0) {
       
@@ -408,7 +436,7 @@ spindump_main_textualmeasurement(struct spindump_analyze* state,
 
   struct spindump_reverse_dns* querier = (struct spindump_reverse_dns*)handlerData;
   const char* type = spindump_connection_type_to_string(connection->type);
-  const char* addrs = spindump_connection_addresses(connection,70,querier);
+  const char* addrs = spindump_connection_addresses(connection,70,anonymizeLeft,anonymizeRight,querier);
   const char* session = spindump_connection_sessionstring(connection,70);
   
   switch (format) {
@@ -653,7 +681,8 @@ spindump_main_operation() {
   struct spindump_report_state* reporter =
     (toolmode != spindump_toolmode_visual ? spindump_report_initialize_quiet() : spindump_report_initialize_terminal(querier));
   if (reporter == 0) exit(1);
-
+  spindump_report_setanonymization(reporter,anonymizeLeft,anonymizeRight);
+  
   //
   // Initialize the spindump server, if running silent
   // 
@@ -840,6 +869,7 @@ int main(int argc,char** argv) {
   //
   
   signal(SIGINT, spindump_main_interrupt);
+  srand(time(0));
   
   //
   // Process arguments
@@ -885,34 +915,41 @@ help() {
   printf("\n");
   printf("The options are as follows:\n");
   printf("\n");
-  printf("    --help           Outputs information about the command usage and options.\n");
-  printf("  \n");
-  printf("    --version        Outputs the version number\n");
-  printf("  \n");
-  printf("    --debug          Sets the debugging output on/off.\n");
-  printf("    --no-debug\n");
-  printf("  \n");
-  printf("    --deepdebug      Sets the extensive internal debugging output on/off.\n");
-  printf("    --no-deepdebug\n");
+  printf("    --silent              Sets the tool to be either silent, list RTT measurements\n");
+  printf("    --textual             as they occur, or have a continuously updating visual\n");
+  printf("    --visual              interface. The visual interface is the default.\n");
   printf("\n");
-  printf("    --silent         Sets the tool to be either silent, list RTT measurements\n");
-  printf("    --textual        as they occur, or have a continuously updating visual\n");
-  printf("    --visual         interface. The visual interface is the default.\n");
-  printf("\n");
-  printf("    --names          Use DNS names or addresses in the output.\n");
+  printf("    --names               Use DNS names or addresses in the output.\n");
   printf("    --addresses\n");
   printf("\n");
-  printf("    --report-spins   Report individual spin bit changes in --textual mode\n");
+  printf("    --report-spins        Report individual spin bit changes in --textual mode.\n");
   printf("    --not-report-spins\n");
   printf("\n");
-  printf("    --no-stats       Produces statistics at the end of the execution.\n");
+  printf("    --anonymize           Anonymization control.\n");
+  printf("    --not-anonymize\n");
+  printf("    --anonymize-left\n");
+  printf("    --not-anonymize-left\n");
+  printf("    --anonymize-right\n");
+  printf("    --not-anonymize-right\n");
+  printf("\n");
+  printf("    --no-stats            Produces statistics at the end of the execution.\n");
   printf("    --stats\n");
   printf("\n");
-  printf("    --max-receive n  Sets a limit of how many packets the tool accepts.\n");
+  printf("    --max-receive n       Sets a limit of how many packets the tool accepts.\n");
   printf("\n");
-  printf("    --interface i    Set the interface to listen on, or the capture\n");
-  printf("    --input-file f   file to read from.\n");
-  printf("    --remote h       Get connections information from spindump running at host h\n");
+  printf("    --interface i         Set the interface to listen on, or the capture\n");
+  printf("    --input-file f        file to read from.\n");
+  printf("    --remote h            Get connections information from spindump running at host h\n");
+  printf("  \n");
+  printf("    --debug               Sets the debugging output on/off.\n");
+  printf("    --no-debug\n");
+  printf("  \n");
+  printf("    --deepdebug           Sets the extensive internal debugging output on/off.\n");
+  printf("    --no-deepdebug\n");
+  printf("\n");
+  printf("    --help                Outputs information about the command usage and options.\n");
+  printf("  \n");
+  printf("    --version             Outputs the version number\n");
   printf("\n");
 }
 

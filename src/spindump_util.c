@@ -38,6 +38,10 @@
 
 static int
 spindump_address_islocalbroadcast(uint32_t address);
+static void
+spindump_anon_aux(unsigned long seed,
+		  unsigned char* bytes,
+		  unsigned int length);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -509,6 +513,85 @@ spindump_address_tostring(spindump_address* address) {
     spindump_fatalf("invalid address family");
   }
   return(buf);
+}
+
+//
+// Map a set of bytes to an anonymized set of bytes
+//
+
+static void
+spindump_anon_aux(unsigned long seed,
+		  unsigned char* bytes,
+		  unsigned int length) {
+  while (length > 0) {
+
+    *bytes = (*bytes ^ (unsigned char)seed);
+    seed <<= 1;
+    seed ^= (unsigned long)*bytes;
+    bytes++;
+    length--;
+    
+  }
+}
+
+//
+// Anonymize an address and return it as a string
+//
+
+const char*
+spindump_address_tostring_anon(int anonymize,
+			       spindump_address* address) {
+
+  //
+  // Some checks
+  //
+  
+  spindump_assert(spindump_isbool(anonymize));
+  spindump_assert(address != 0);
+  spindump_assert(address->ss_family != 0);
+
+  //
+  // Do we need to anynymize? If not, just skip to regular processing.
+  //
+
+  if (!anonymize) return(spindump_address_tostring(address));
+  
+  //
+  // Hold an internal (undisclosed) variable that is initialized to a
+  // random number.  Then use that random number to calculate a
+  // mapping from real addresses to sha1 of the real address.
+  //
+
+  static unsigned long seed = 0;
+  if (seed == 0) seed = rand();
+  
+  //
+  // Map the input address to another address
+  //
+  
+  spindump_address mapped = *address;
+  switch (address->ss_family) {
+  case AF_INET:
+    {
+      struct sockaddr_in* actual = (struct sockaddr_in*)&mapped;
+      spindump_anon_aux(seed,(unsigned char*)&actual->sin_addr,4);
+    }
+    break;
+  case AF_INET6:
+    {
+      struct sockaddr_in6* actual = (struct sockaddr_in6*)&mapped;
+      spindump_anon_aux(seed,(unsigned char*)&actual->sin6_addr,16);
+    }
+    break;
+  default:
+    spindump_fatalf("invalid address family");
+  }
+
+  //
+  // Convert the mapped address to a string
+  //
+  
+  return(spindump_address_tostring(&mapped));
 }
 
 //

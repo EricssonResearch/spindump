@@ -84,6 +84,9 @@ spindump_address_frombytes(spindump_address* address,
 			   const unsigned char* string);
 const char*
 spindump_address_tostring(spindump_address* address);
+const char*
+spindump_address_tostring_anon(int anonymize,
+			       spindump_address* address);
 int
 spindump_network_fromstring(spindump_network* network,
 			    const char* string);

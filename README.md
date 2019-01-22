@@ -39,6 +39,15 @@ Sets the tool to be quiet as it measures (--silent), listing RTT measurements as
 
 For the textual mode, the output format is selectable as either readable text or JSON. Each event comes out as one JSON record in the latter case.
 
+    --anonymize-left
+    --not-anonymize-left
+    --anonymize-right
+    --not-anonymize-right
+    --anonymize
+	--not-anonymize
+
+These options are used to control the amount of anonymization that spindump does. Anonymization can be turned on or off either for hosts whose traffic is displayed, or for hosts on the "left" or "right" side of the in-network measurement point. "Left" side is defined as the traffic coming in on the designated measurement interface. And the "right" side is defined as the traffic going out.
+
     --names
     --addresses
 

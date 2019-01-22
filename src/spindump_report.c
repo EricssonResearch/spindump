@@ -91,6 +91,8 @@ spindump_report_initialize_quiet() {
   // 
   
   reporter->destination = spindump_report_destination_quiet;
+  reporter->anonymizeLeft = 0;
+  reporter->anonymizeRight = 0;
   reporter->querier = spindump_reverse_dns_initialize_noop();
   
   //
@@ -125,6 +127,8 @@ spindump_report_initialize_terminal(struct spindump_reverse_dns* querier) {
   // 
 
   reporter->destination = spindump_report_destination_terminal;
+  reporter->anonymizeLeft = 0;
+  reporter->anonymizeRight = 0;
   reporter->querier = querier;
   
   //
@@ -139,6 +143,22 @@ spindump_report_initialize_terminal(struct spindump_reverse_dns* querier) {
   // 
   
   return(reporter);
+}
+
+//
+// Specify whether the hosts on either side of the measurement point
+// should be anonymized or not
+//
+
+void
+spindump_report_setanonymization(struct spindump_report_state* reporter,
+				 int anonymizeLeft,
+				 int anonymizeRight) {
+  spindump_assert(reporter != 0);
+  spindump_assert(spindump_isbool(anonymizeLeft));
+  spindump_assert(spindump_isbool(anonymizeRight));
+  reporter->anonymizeLeft = anonymizeLeft;
+  reporter->anonymizeRight = anonymizeRight;
 }
 
 static int
@@ -272,6 +292,8 @@ spindump_report_update(struct spindump_report_state* reporter,
 					 sizeof(connectionbuf),
 					 average,
 					 COLS,
+					 reporter->anonymizeLeft,
+					 reporter->anonymizeRight,
 					 reporter->querier);
 	mvaddstr(y++, 0, connectionbuf);
 	
