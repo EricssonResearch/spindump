@@ -114,7 +114,7 @@ Then do:
 
 The Spindump software builds on the Spindump Library, a simple but extensibile packet analysis package. The makefile builds a library, libspindump.a that can be linked to a program, used to track connections, or even extended to build more advanced functionality. The Spindump command itself is built using this library.
 
-![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/architecture2.jpg)
+![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/architecture2s.jpg)
 
 The API definition for this library can be found from spindump_analyze.h. But the main function are analyzer initialization, handing a packet to it, and de-initialization. First, you need to initialize the analyzer, like this:
 
