@@ -113,7 +113,7 @@ command. And on linux, do:
 
 Then do:
 
-    cd SpinDump
+    cd spindump
     make
     sudo make install
 
