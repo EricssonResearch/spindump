@@ -8,3 +8,5 @@ install:
 clean:
 	(cd src; $(MAKE) clean)
 
+wc:
+	(cd src; $(MAKE) wc)
