@@ -1,0 +1,6 @@
+*.o
+*.a
+spindump.tar.gz
+spindump
+spindump_test
+spindump.debug
