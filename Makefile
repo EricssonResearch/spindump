@@ -1,10 +1,10 @@
 
 all:
-	(cd src; make all)
+	(cd src; $(MAKE) all)
 
 install:
-	(cd src; make install)
+	(cd src; $(MAKE) install)
 
 clean:
-	(cd src; make clean)
+	(cd src; $(MAKE) clean)
 

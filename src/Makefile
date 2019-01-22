@@ -115,6 +115,12 @@ SPINDUMP_TST		=	spindump_test
 SPINDUMP_TAR		=	spindump.tar.gz
 SPINDUMP_OTHER_SOURCES	=	Makefile \
 				../Makefile
+SPINDUMP_OTHER_FILES	=	../README.md \
+				../images/architecture1.jpg \
+				../images/architecture2.jpg \
+				../images/architecture2s.jpg \
+				../images/screenshot1.jpg \
+				../images/screenshot1.png
 SPINDUMP_ALL_SOURCES	=	$(SPINDUMP_LIB_HEADERS) \
 				$(SPINDUMP_LIB_SOURCES) \
 				$(SPINDUMP_CMD_SOURCES) \
@@ -162,9 +168,10 @@ $(SPINDUMP_CMDLIB):	$(SPINDUMP_CMDLIB_OBJECTS)
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
-$(SPINDUMP_TAR):	$(SPINDUMP_ALL_SOURCES)
+$(SPINDUMP_TAR):	$(SPINDUMP_ALL_SOURCES) \
+			$(SPINDUMP_OTHER_FILES)
 	-rm -f $(SPINDUMP_TAR)
-	tar czf $(SPINDUMP_TAR) $(SPINDUMP_ALL_SOURCES)
+	tar czf $(SPINDUMP_TAR) $(SPINDUMP_ALL_SOURCES) $(SPINDUMP_OTHER_FILES)
 
 test:	$(SPINDUMP_TST)
 
