@@ -2,9 +2,9 @@
 
 ## An RTT measurement tool for traffic going through a router
 
-The "Spindump" tool is a Unix command-line ulitity that can be used to trace flows passing through an interface, and monitor their round-trip times. The tool supports ICMP, TCP, and QUIC traffic.
+The "Spindump" tool is a Unix command-line ulitity that can be used to passively monitor round-trip times passing through an interface. It is not a tool to monitor traffic content or metadata of individual connections, and indeed that is not possible in the Internet as most connections are encrypted. But the tool looks at the characteristics of transport protocols, such as the QUIC Spin Bit, and attempts to derive information about round-trip times for individual connections or for the aggregate or average values. The tool supports TCP, QUIC, COAP, DNS, and ICMP traffic. There's also an easy way to anonymize connection information so that the resulting statistics cannot be used to infer anything about specific connections or users.
 
-The software is under development, and subject to research on best algorithms for recognising flows and determining their round-trip times. But the basic idea is that it looks at ICMP echo and echo request packets, TCP packets and acknowledgements, or QUIC spin bit behaviour.
+The software is under development, and subject to research on best algorithms.
 
 ![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/screenshot1.jpg)
 
@@ -27,24 +27,6 @@ The full command syntax is
 If no options or filter is specified, Spindump will look at all packets on the default interface. The filter specification is as specified in other PCAP-based tools such as tcpdump. For instance, the expression "icmp" tracks only ICMP packets, and the expression "tcp and host www.example.com" tracks TCP packets where www.example.com appears either as a source or destination address. See the man page for pcap-filter(7) for more details.
 
 The options are as follows:
-
-    --help
-
-Outputs information about the command usage and options.
-
-    --version
-
-Outputs the version number
-
-    --debug
-    --no-debug
-
-Sets the debugging output on/off.
-
-    --deepdebug
-    --no-deepdebug
-
-Sets the extensive internal debugging output on/off.
 
     --silent
     --textual
@@ -69,6 +51,16 @@ Sets the tool to use always addresses (--addresses) or when possible, DNS names 
 
 Sets the tool to either report or not report individual spin bit values or spin bit value flips for QUIC connections, when using the --textual mode. The default is to not report either the spin values (as there is one per each packet) or spin value flips.
 
+    --debug
+    --no-debug
+
+Sets the debugging output on/off. Note that in the visual or textual output modes, all debugging information goes to the file spindump.debug in the current working directory.
+
+    --deepdebug
+    --no-deepdebug
+
+Sets the extensive internal debugging output on/off.
+
     --no-stats
     --stats
 
@@ -87,6 +79,14 @@ Sets a limit of how many packets the tool accepts before finishing. The default 
     --remote h 
 
 The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. The --input-file option sets the packets to be read from a PCAP-format file. PCAP-format files can be stored, e.g., with the tcpdump option "-w". The --remote option sets software to listen to connection information collected by other spindump instances running elsewhere in silent mode. The machine where the other instance runs in is specified by the address h. Currently, only one instance can run in one machine, using port 5040. However, a given Spindump instance can connect to multiple other instances when multiple -remote options are used.
+
+    --help
+
+Outputs information about the command usage and options.
+
+    --version
+
+Outputs the version number
 
 # Installation
 
@@ -110,7 +110,7 @@ Then do:
 
 # Spindump Library
 
-The Spindump software builds on the Spindump Library, a simple but extensibile packet analysis package. The makefile builds a library, libspindump.a that can be linked to a program, used to track connections, or even extended to build more advanced functionality. The Spindump command itself is built using this library.
+The Spindump software builds on the Spindump Library, a simple but extensibile packet analysis package. The makefile builds a library, libspindump.a that can be linked to a program, used to provide the same statistics as the spindump command does, or even extended to build more advanced functionality. The Spindump command itself is built using this library.
 
 ![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/architecture2s.jpg)
 
@@ -221,4 +221,4 @@ These can be mixed together in one handler by ORing them together. The pseudo-ev
 
 # Things to do
 
-The software is being worked on, and as of yet seems to be working but definitely needs more testing. IP packet fragmentation is not yet supported. Also, the remote connection mode is not yet implemented.
+The software is being worked on, and as of yet seems to be working but definitely needs more testing. IP packet fragmentation is not yet supported. Also, the remote connection mode is not yet implemented. The beginnings of connection data anonymization are in the software, but more work is needed on that front as well.
