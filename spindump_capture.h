@@ -1,0 +1,71 @@
+
+//
+//
+//  ////////////////////////////////////////////////////////////////////////////////////
+//  /////////                                                                ///////////
+//  //////       SSS    PPPP    I   N    N   DDDD    U   U   M   M   PPPP         //////
+//  //          S       P   P   I   NN   N   D   D   U   U   MM MM   P   P            //
+//  /            SSS    PPPP    I   N NN N   D   D   U   U   M M M   PPPP              /
+//  //              S   P       I   N   NN   D   D   U   U   M   M   P                //
+//  ////         SSS    P       I   N    N   DDDD     UUU    M   M   P            //////
+//  /////////                                                                ///////////
+//  ////////////////////////////////////////////////////////////////////////////////////
+//
+//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  AUTHOR: JARI ARKKO
+//
+// 
+
+#ifndef SPINDUMP_CAPTURE_H
+#define SPINDUMP_CAPTURE_H
+
+//
+// Includes -----------------------------------------------------------------------------------
+//
+
+#include <pcap.h>
+#include "spindump_protocols.h"
+#include "spindump_packet.h"
+#include "spindump_stats.h"
+
+//
+// Capture parameters -------------------------------------------------------------------------
+//
+
+#define spindump_capture_snaplen	128  // bytes
+#define spindump_capture_wait    	1    // ms
+
+//
+// Capture data structures --------------------------------------------------------------------
+//
+
+struct spindump_capture_state {
+  pcap_t *handle;
+  uint32_t ourNetmask;
+  uint32_t ourAddress;
+  uint32_t ourLocalBroadcastAddress;
+  struct bpf_program compiledFilter;
+  struct spindump_packet currentPacket;
+};
+
+//
+// Capture module API interface ---------------------------------------------------------------
+//
+
+const char*
+spindump_capture_defaultinterface();
+struct spindump_capture_state*
+spindump_capture_initialize(const char* interface,
+			    const char* filter);
+struct spindump_capture_state*
+spindump_capture_initialize_file(const char* file,
+				 const char* filter);
+void
+spindump_capture_nextpacket(struct spindump_capture_state* state,
+			    struct spindump_packet** p_packet,
+			    int* p_more,
+			    struct spindump_stats* stats);
+void
+spindump_capture_uninitialize(struct spindump_capture_state* state);
+
+#endif // SPINDUMP_CAPTURE_H
