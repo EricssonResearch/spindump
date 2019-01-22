@@ -6,7 +6,7 @@ The "Spindump" tool is a Unix command-line ulitity that can be used to trace flo
 
 The software is under development, and subject to research on best algorithms for recognising flows and determining their round-trip times. But the basic idea is that it looks at ICMP echo and echo request packets, TCP packets and acknowledgements, or QUIC spin bit behaviour.
 
-![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/screenshot1.jpg)
+![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/screenshot1.jpg)
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
 
@@ -18,7 +18,7 @@ The software is packaged as the "spindump" utility, and simply typing
 
 should show the most active sessions and their current round-trip times (RTTs). The top of the screen shows some status information, while the rest is dedicated to showing connections and their RTTs. You can exit from the tool by pressing Control-C or "Q". In addition, you can use "C" to toggle whether to show closed connections, "U" to whether to show UDP connections, or "A" to show either individual connections or aggregated connections. Pressing "H" shows help information and pressing "S" enables you to set the screen update frequency.
 
-![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/architecture1.jpg)
+![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/architecture1.jpg)
 
 The full command syntax is
 
@@ -114,7 +114,7 @@ Then do:
 
 The Spindump software builds on the Spindump Library, a simple but extensibile packet analysis package. The makefile builds a library, libspindump.a that can be linked to a program, used to track connections, or even extended to build more advanced functionality. The Spindump command itself is built using this library.
 
-![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/architecture2s.jpg)
+![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/architecture2s.jpg)
 
 The API definition for this library can be found from spindump_analyze.h. But the main function are analyzer initialization, handing a packet to it, and de-initialization. First, you need to initialize the analyzer, like this:
 
