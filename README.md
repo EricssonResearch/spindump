@@ -1,14 +1,26 @@
 # Spindump
 
-## An RTT measurement tool for traffic going through a router
+## A latency measurement tool
 
-The "Spindump" tool is a Unix command-line ulitity that can be used to passively monitor round-trip times passing through an interface. It is not a tool to monitor traffic content or metadata of individual connections, and indeed that is not possible in the Internet as most connections are encrypted. But the tool looks at the characteristics of transport protocols, such as the QUIC Spin Bit, and attempts to derive information about round-trip times for individual connections or for the aggregate or average values. The tool supports TCP, QUIC, COAP, DNS, and ICMP traffic. There's also an easy way to anonymize connection information so that the resulting statistics cannot be used to infer anything about specific connections or users.
+The "Spindump" tool is a Unix command-line ulitity that can be used for latency monitoring in traffic passing through an interface. The tool performs passive, in-network monitoring. It is not a tool to monitor traffic content or metadata of individual connections, and indeed that is not possible in the Internet as most connections are encrypted.
+
+The tool looks at the characteristics of transport protocols, such as the QUIC Spin Bit, and attempts to derive information about round-trip times for individual connections or for the aggregate or average values. The tool supports TCP, QUIC, COAP, DNS, and ICMP traffic. There's also an easy way to anonymize connection information so that the resulting statistics cannot be used to infer anything about specific connections or users.
 
 The software is under development, and subject to research on best algorithms.
 
 ![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/screenshot1.jpg)
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
+
+# Use Cases
+
+Spindump can be used to observe latency in ongoing connections for debugging purposes, as shown in the below figure:
+
+![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/architecture1.jpg)
+
+But Spindump could also be used to record information from experiments related to Spin Bit. And the Spin Bit being new in the QUIC design, hopefully it will also help in debugging this new feature.
+
+Spindump can also be used to measure latencies on a more ongoing basis. It can feed information to management and other systems, and could for instance enable alarms to be raised when the circumstances demand that, configurations to be optimized, and so on. 
 
 # Spindump Command Usage
 
@@ -17,8 +29,6 @@ The software is packaged as the "spindump" utility, and simply typing
     # spindump
 
 should show the most active sessions and their current round-trip times (RTTs). The top of the screen shows some status information, while the rest is dedicated to showing connections and their RTTs. You can exit from the tool by pressing Control-C or "Q". In addition, you can use "C" to toggle whether to show closed connections, "U" to whether to show UDP connections, or "A" to show either individual connections or aggregated connections. Pressing "H" shows help information and pressing "S" enables you to set the screen update frequency.
-
-![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/architecture1.jpg)
 
 The full command syntax is
 
