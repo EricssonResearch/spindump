@@ -373,8 +373,8 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     
     if (connection != 0) {
 
-      if (connection->u.tcp.state == spindump_connection_state_establishing) {
-	connection->u.tcp.state = spindump_connection_state_established;
+      if (connection->state == spindump_connection_state_establishing) {
+	connection->state = spindump_connection_state_established;
       }
       
       spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength);
@@ -421,10 +421,10 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     
     if (connection != 0) {
       
-      if (connection->u.tcp.state == spindump_connection_state_establishing ||
-	  connection->u.tcp.state == spindump_connection_state_established ||
-	  connection->u.tcp.state == spindump_connection_state_closing) {
-	connection->u.tcp.state = spindump_connection_state_closing;
+      if (connection->state == spindump_connection_state_establishing ||
+	  connection->state == spindump_connection_state_established ||
+	  connection->state == spindump_connection_state_closing) {
+	connection->state = spindump_connection_state_closing;
       }
       
       if (fromResponder)
@@ -457,8 +457,8 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 			  connection->u.tcp.finFromSide2);
       
       if (connection->u.tcp.finFromSide1 && connection->u.tcp.finFromSide2) {
-	if (connection->u.tcp.state == spindump_connection_state_closing) {
-	  connection->u.tcp.state = spindump_connection_state_closed;
+	if (connection->state == spindump_connection_state_closing) {
+	  connection->state = spindump_connection_state_closed;
 	  spindump_connections_markconnectiondeleted(connection);
 	  deleted = 1;
 	}
@@ -500,7 +500,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
       
       spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
       spindump_analyze_process_tcp_markackreceived(state,packet,connection,fromResponder,ack,&packet->timestamp,&ackedfin);
-      connection->u.tcp.state = spindump_connection_state_closed;
+      connection->state = spindump_connection_state_closed;
       spindump_connections_markconnectiondeleted(connection);
       deleted = 1;
       
@@ -562,8 +562,8 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 			    connection->u.tcp.finFromSide2);
 	
 	if (connection->u.tcp.finFromSide1 && connection->u.tcp.finFromSide2) {
-	  if (connection->u.tcp.state == spindump_connection_state_closing) {
-	    connection->u.tcp.state = spindump_connection_state_closed;
+	  if (connection->state == spindump_connection_state_closing) {
+	    connection->state = spindump_connection_state_closed;
 	    spindump_connections_markconnectiondeleted(connection);
 	    deleted = 1;
 	  }

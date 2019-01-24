@@ -61,7 +61,8 @@ enum spindump_connection_state {
   spindump_connection_state_establishing,
   spindump_connection_state_established,
   spindump_connection_state_closing,
-  spindump_connection_state_closed
+  spindump_connection_state_closed,
+  spindump_connection_state_static
 };
 
 #define spindump_connection_deleted_timeout      30 // s
@@ -83,6 +84,7 @@ struct spindump_connection {
 
   unsigned int id;                                  // sequentially allocated descriptive id for the connection
   enum spindump_connection_type type;               // the type of the connection (tcp, icmp, aggregate, etc)
+  enum spindump_connection_state state;             // current state (establishing/established/etc)
   int manuallyCreated;                              // was this entry created by management action or dynamically?
   int deleted;                                      // is the connection closed/deleted (but not yet removed)?
   struct timeval creationTime;                      // when did we see the first packet?
@@ -101,7 +103,6 @@ struct spindump_connection {
   union {
     
     struct {
-      enum spindump_connection_state state;         // current state (establishing/established)
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
@@ -113,7 +114,6 @@ struct spindump_connection {
     } tcp;
     
     struct {
-      enum spindump_connection_state state;         // current state (establishing/established)
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
@@ -121,7 +121,6 @@ struct spindump_connection {
     } udp;
     
     struct {
-      enum spindump_connection_state state;         // current state (establishing/established)
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
@@ -132,7 +131,6 @@ struct spindump_connection {
     } dns;
     
     struct {
-      enum spindump_connection_state state;         // current state (establishing/established)
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
@@ -144,7 +142,6 @@ struct spindump_connection {
     } coap;
     
     struct {
-      enum spindump_connection_state state;         // current state (establishing/established)
       uint32_t version;                             // QUIC version
       struct
       spindump_quic_connectionid peer1ConnectionID; // source connection id of the initial packet
@@ -162,7 +159,6 @@ struct spindump_connection {
     } quic;
     
     struct {
-      enum spindump_connection_state state;         // current state (establishing/established)
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
       u_int8_t side1peerType;                       // the ICMP type used in a request from side 1

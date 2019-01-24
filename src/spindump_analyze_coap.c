@@ -536,9 +536,9 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   // established and then closed, as the response is complete.
   // 
   
-  if (fromResponder && foundmid && connection->u.coap.state == spindump_connection_state_establishing) {
-    connection->u.coap.state = spindump_connection_state_established;
-    connection->u.coap.state = spindump_connection_state_closed;
+  if (fromResponder && foundmid && connection->state == spindump_connection_state_establishing) {
+    connection->state = spindump_connection_state_established;
+    connection->state = spindump_connection_state_closed;
   }
   
   //
@@ -701,9 +701,9 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
   // 
   
   if (fromResponder && isHandshake && isInitialHandshake && isResponse &&
-      connection->u.coap.state == spindump_connection_state_establishing) {
+      connection->state == spindump_connection_state_establishing) {
     
-    connection->u.coap.state = spindump_connection_state_established;
+    connection->state = spindump_connection_state_established;
     
   }
   

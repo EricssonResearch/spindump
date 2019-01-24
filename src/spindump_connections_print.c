@@ -377,6 +377,7 @@ spindump_connection_statestring_aux(enum spindump_connection_state state) {
   case spindump_connection_state_established: return("Up");
   case spindump_connection_state_closing: return("Closing");
   case spindump_connection_state_closed: return("Closed");
+  case spindump_connection_state_static: return("Static");
   default:
     spindump_fatalf("invalid connection state");
     return("invalid");
@@ -386,32 +387,7 @@ spindump_connection_statestring_aux(enum spindump_connection_state state) {
 const char*
 spindump_connection_statestring(struct spindump_connection* connection) {
   spindump_assert(connection != 0);
-  
-  switch (connection->type) {
-  case spindump_connection_transport_tcp:
-    return(spindump_connection_statestring_aux(connection->u.tcp.state));
-  case spindump_connection_transport_udp:
-    return(spindump_connection_statestring_aux(connection->u.udp.state));
-  case spindump_connection_transport_dns:
-    return(spindump_connection_statestring_aux(connection->u.dns.state));
-  case spindump_connection_transport_coap:
-    return(spindump_connection_statestring_aux(connection->u.coap.state));
-  case spindump_connection_transport_quic:
-    return(spindump_connection_statestring_aux(connection->u.quic.state));
-  case spindump_connection_transport_icmp:
-    return(spindump_connection_statestring_aux(connection->u.icmp.state));
-  case spindump_connection_aggregate_hostpair:
-    return("Hosts");
-  case spindump_connection_aggregate_hostnetwork:
-    return("H2Net");
-  case spindump_connection_aggregate_networknetwork:
-    return("Net^2");
-  case spindump_connection_aggregate_multicastgroup:
-    return("Mcast");
-  default:
-    spindump_fatalf("invalid connection type");
-    return("invalid");
-  }
+  return(spindump_connection_statestring_aux(connection->state));
 }
 
 const char*

@@ -292,34 +292,23 @@ spindump_connections_setisclosed(struct spindump_connection_set* set) {
 
 int
 spindump_connections_isclosed(struct spindump_connection* connection) {
+
+  //
+  // Sanity checks
+  //
   
   spindump_assert(connection != 0);
-  
-  switch (connection->type) {
-  case spindump_connection_transport_tcp:
-    return(connection->u.tcp.state == spindump_connection_state_closed);
-  case spindump_connection_transport_udp:
-    return(connection->u.udp.state == spindump_connection_state_closed);
-  case spindump_connection_transport_dns:
-    return(connection->u.dns.state == spindump_connection_state_closed);
-  case spindump_connection_transport_coap:
-    return(connection->u.coap.state == spindump_connection_state_closed);
-  case spindump_connection_transport_quic:
-    return(connection->u.quic.state == spindump_connection_state_closed);
-  case spindump_connection_transport_icmp:
-    return(connection->u.icmp.state == spindump_connection_state_closed);
-  case spindump_connection_aggregate_hostpair:
-    return(spindump_connections_setisclosed(&connection->u.aggregatehostpair.connections));
-  case spindump_connection_aggregate_hostnetwork:
-    return(spindump_connections_setisclosed(&connection->u.aggregatehostnetwork.connections));
-  case spindump_connection_aggregate_networknetwork:
-    return(spindump_connections_setisclosed(&connection->u.aggregatenetworknetwork.connections));
-  case spindump_connection_aggregate_multicastgroup:
-    return(spindump_connections_setisclosed(&connection->u.aggregatemulticastgroup.connections));
-  default:
-    spindump_fatalf("unrecognised connection type");
-    return(0);
-  }
+
+  //
+  // Just look at the state. Note that static/manually created
+  // aggregates cannot be closed, so for them we need to check if all
+  // connections within the aggregate are closed.
+  //
+
+  if (spindump_connections_isaggregate(connection))
+    return(spindump_connections_setisclosed(spindump_connections_aggregateset(connection)));
+  else
+    return(connection->state == spindump_connection_state_closed);
 }
 
 static int
@@ -339,34 +328,23 @@ spindump_connections_setisestablishing(struct spindump_connection_set* set) {
 
 int
 spindump_connections_isestablishing(struct spindump_connection* connection) {
+
+  //
+  // Sanity checks
+  //
   
   spindump_assert(connection != 0);
-  
-  switch (connection->type) {
-  case spindump_connection_transport_tcp:
-    return(connection->u.tcp.state == spindump_connection_state_establishing);
-  case spindump_connection_transport_udp:
-    return(connection->u.udp.state == spindump_connection_state_establishing);
-  case spindump_connection_transport_dns:
-    return(connection->u.dns.state == spindump_connection_state_establishing);
-  case spindump_connection_transport_coap:
-    return(connection->u.coap.state == spindump_connection_state_establishing);
-  case spindump_connection_transport_quic:
-    return(connection->u.quic.state == spindump_connection_state_establishing);
-  case spindump_connection_transport_icmp:
-    return(connection->u.icmp.state == spindump_connection_state_establishing);
-  case spindump_connection_aggregate_hostpair:
-    return(spindump_connections_setisestablishing(&connection->u.aggregatehostpair.connections));
-  case spindump_connection_aggregate_hostnetwork:
-    return(spindump_connections_setisestablishing(&connection->u.aggregatehostnetwork.connections));
-  case spindump_connection_aggregate_networknetwork:
-    return(spindump_connections_setisestablishing(&connection->u.aggregatenetworknetwork.connections));
-  case spindump_connection_aggregate_multicastgroup:
-    return(spindump_connections_setisestablishing(&connection->u.aggregatemulticastgroup.connections));
-  default:
-    spindump_fatalf("unrecognised connection type");
-    return(0);
-  }
+
+  //
+  // Just look at the state Note that static/manually created
+  // aggregates cannot be establishing, so for them we need to check if all
+  // connections within the aggregate are establishing.
+  //
+
+  if (spindump_connections_isaggregate(connection))
+    return(spindump_connections_setisestablishing(spindump_connections_aggregateset(connection)));
+  else
+    return(connection->state == spindump_connection_state_establishing);
 }
 
 int
@@ -378,6 +356,45 @@ spindump_connections_isaggregate(struct spindump_connection* connection) {
   case spindump_connection_aggregate_networknetwork: return(1);
   case spindump_connection_aggregate_multicastgroup: return(1);
   default: return(0);
+  }
+}
+
+struct spindump_connection_set*
+spindump_connections_aggregateset(struct spindump_connection* connection) {
+
+  //
+  // Sanity checks
+  //
+  
+  spindump_assert(connection != 0);
+
+  //
+  // In some cases we need to return an empty set. For that we have a
+  // static variable that we can return.
+  //
+  
+  static struct spindump_connection_set empty;
+  static int emptyInitialized = 0;
+  if (!emptyInitialized) {
+    spindump_connections_set_initialize(&empty);
+    emptyInitialized = 1;
+  }
+
+  //
+  // Based on type, return the relevant set.
+  //
+  
+  switch (connection->type) {
+  case spindump_connection_aggregate_hostpair:
+    return(&connection->u.aggregatehostpair.connections);
+  case spindump_connection_aggregate_hostnetwork: 
+    return(&connection->u.aggregatehostnetwork.connections);
+  case spindump_connection_aggregate_networknetwork: 
+    return(&connection->u.aggregatenetworknetwork.connections);
+  case spindump_connection_aggregate_multicastgroup: 
+    return(&connection->u.aggregatemulticastgroup.connections);
+  default:
+    return(&empty);
   }
 }
 

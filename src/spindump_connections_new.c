@@ -314,7 +314,7 @@ spindump_connections_newconnection_icmp(spindump_address* side1address,
     spindump_connections_newconnection(table,spindump_connection_transport_icmp,when,0);
   if (connection == 0) return(0);
   
-  connection->u.icmp.state = spindump_connection_state_establishing;
+  connection->state = spindump_connection_state_establishing;
   connection->u.icmp.side1peerAddress = *side1address;
   connection->u.icmp.side2peerAddress = *side2address;
   connection->u.icmp.side1peerType = side1peerType;
@@ -347,7 +347,7 @@ spindump_connections_newconnection_tcp(spindump_address* side1address,
     spindump_connections_newconnection(table,spindump_connection_transport_tcp,when,0);
   if (connection == 0) return(0);
   
-  connection->u.tcp.state = spindump_connection_state_establishing;
+  connection->state = spindump_connection_state_establishing;
   connection->u.tcp.side1peerAddress = *side1address;
   connection->u.tcp.side2peerAddress = *side2address;
   connection->u.tcp.side1peerPort = side1port;
@@ -379,7 +379,7 @@ spindump_connections_newconnection_udp(spindump_address* side1address,
     spindump_connections_newconnection(table,spindump_connection_transport_udp,when,0);
   if (connection == 0) return(0);
   
-  connection->u.udp.state = spindump_connection_state_establishing;
+  connection->state = spindump_connection_state_establishing;
   connection->u.udp.side1peerAddress = *side1address;
   connection->u.udp.side2peerAddress = *side2address;
   connection->u.udp.side1peerPort = side1port;
@@ -411,7 +411,7 @@ spindump_connections_newconnection_dns(spindump_address* side1address,
     spindump_connections_newconnection(table,spindump_connection_transport_dns,when,0);
   if (connection == 0) return(0);
   
-  connection->u.dns.state = spindump_connection_state_establishing;
+  connection->state = spindump_connection_state_establishing;
   connection->u.dns.side1peerAddress = *side1address;
   connection->u.dns.side2peerAddress = *side2address;
   connection->u.dns.side1peerPort = side1port;
@@ -443,7 +443,7 @@ spindump_connections_newconnection_coap(spindump_address* side1address,
     spindump_connections_newconnection(table,spindump_connection_transport_coap,when,0);
   if (connection == 0) return(0);
   
-  connection->u.coap.state = spindump_connection_state_establishing;
+  connection->state = spindump_connection_state_establishing;
   connection->u.coap.side1peerAddress = *side1address;
   connection->u.coap.side2peerAddress = *side2address;
   connection->u.coap.side1peerPort = side1port;
@@ -476,7 +476,7 @@ spindump_connections_newconnection_quic_5tuple(spindump_address* side1address,
     spindump_connections_newconnection(table,spindump_connection_transport_quic,when,0);
   if (connection == 0) return(0);
   
-  connection->u.quic.state = spindump_connection_state_establishing;
+  connection->state = spindump_connection_state_establishing;
   connection->u.quic.side1peerAddress = *side1address;
   connection->u.quic.side2peerAddress = *side2address;
   connection->u.quic.side1peerPort = side1port;
@@ -515,7 +515,7 @@ spindump_connections_newconnection_quic_5tupleandcids(spindump_address* side1add
     spindump_connections_newconnection(table,spindump_connection_transport_quic,when,0);
   if (connection == 0) return(0);
   
-  connection->u.quic.state = spindump_connection_state_establishing;
+  connection->state = spindump_connection_state_establishing;
   connection->u.quic.side1peerAddress = *side1address;
   connection->u.quic.side2peerAddress = *side2address;
   connection->u.quic.side1peerPort = side1port;
@@ -547,7 +547,8 @@ spindump_connections_newconnection_aggregate_hostpair(spindump_address* side1add
   struct spindump_connection* connection =
     spindump_connections_newconnection(table,spindump_connection_aggregate_hostpair,when,manuallyCreated);
   if (connection == 0) return(0);
-  
+
+  connection->state = spindump_connection_state_static;
   connection->u.aggregatehostpair.side1peerAddress = *side1address;
   connection->u.aggregatehostpair.side2peerAddress = *side2address;
   
@@ -575,6 +576,7 @@ spindump_connections_newconnection_aggregate_hostnetwork(spindump_address* side1
     spindump_connections_newconnection(table,spindump_connection_aggregate_hostnetwork,when,manuallyCreated);
   if (connection == 0) return(0);
   
+  connection->state = spindump_connection_state_static;
   connection->u.aggregatehostnetwork.side1peerAddress = *side1address;
   connection->u.aggregatehostnetwork.side2Network = *side2network;
   
@@ -601,6 +603,7 @@ spindump_connections_newconnection_aggregate_networknetwork(spindump_network* si
     spindump_connections_newconnection(table,spindump_connection_aggregate_networknetwork,when,manuallyCreated);
   if (connection == 0) return(0);
   
+  connection->state = spindump_connection_state_static;
   connection->u.aggregatenetworknetwork.side1Network = *side1network;
   connection->u.aggregatenetworknetwork.side2Network = *side2network;
   
@@ -626,6 +629,7 @@ spindump_connections_newconnection_aggregate_multicastgroup(spindump_address* gr
     spindump_connections_newconnection(table,spindump_connection_aggregate_multicastgroup,when,manuallyCreated);
   if (connection == 0) return(0);
   
+  connection->state = spindump_connection_state_static;
   connection->u.aggregatemulticastgroup.group = *group;
   
   spindump_debugf("created a new multicast group aggregate onnection %u", connection->id);

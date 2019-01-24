@@ -38,6 +38,12 @@
 #include "spindump_analyze.h"
 
 //
+// Forward declarations of types --------------------------------------------------------------
+//
+
+struct spindump_connection_set;
+
+//
 // External API interface to this module ------------------------------------------------------
 //
 
@@ -241,6 +247,8 @@ const char*
 spindump_connection_type_to_string(enum spindump_connection_type type);
 int
 spindump_connections_isaggregate(struct spindump_connection* connection);
+struct spindump_connection_set*
+spindump_connections_aggregateset(struct spindump_connection* connection);
 int
 spindump_connections_isclosed(struct spindump_connection* connection);
 int

@@ -255,8 +255,8 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   // actual application, as this is UDP).
   // 
   
-  if (fromResponder && connection->u.udp.state == spindump_connection_state_establishing) {
-    connection->u.udp.state = spindump_connection_state_established;
+  if (fromResponder && connection->state == spindump_connection_state_establishing) {
+    connection->state = spindump_connection_state_established;
   }
   
   //

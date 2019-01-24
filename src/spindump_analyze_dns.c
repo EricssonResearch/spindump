@@ -377,9 +377,9 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   // established and then closed, as the response is complete.
   //
   
-  if (fromResponder && foundmid && connection->u.dns.state == spindump_connection_state_establishing) {
-    connection->u.dns.state = spindump_connection_state_established;
-    connection->u.dns.state = spindump_connection_state_closed;
+  if (fromResponder && foundmid && connection->state == spindump_connection_state_establishing) {
+    connection->state = spindump_connection_state_established;
+    connection->state = spindump_connection_state_closed;
   }
   
   //
