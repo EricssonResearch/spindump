@@ -59,6 +59,14 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				 unsigned char proto,
 				 unsigned int payloadPosition,
 				 struct spindump_connection** p_connection);
+static void
+spindump_analyze_otherippayload(struct spindump_analyze* state,
+				struct spindump_packet* packet,
+				unsigned int ipHeaderPosition,
+				unsigned int ipHeaderSize,
+				uint8_t ipVersion,
+				unsigned int ipPacketLength,
+				struct spindump_connection** p_connection);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -127,12 +135,27 @@ spindump_analyze_initialize(struct spindump_connectionstable* table) {
 
 void
 spindump_analyze_uninitialize(struct spindump_analyze* state) {
+
+  //
+  // Checks
+  //
+  
   spindump_assert(state != 0);
   spindump_assert(state->table != 0);
   spindump_assert(state->stats != 0);
   spindump_connectionstable_uninitialize(state->table);
   spindump_stats_uninitialize(state->stats);
+
+  //
+  // Reset contents, just in case
+  //
+  
   memset(state,0,sizeof(*state));
+
+  //
+  // Actually free up the space
+  //
+  
   free(state);
 }
 
@@ -273,9 +296,8 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
 //
 // It is assumed that prior modules, e.g., the capture module have
 // filled in the relevant header pointers in the packet structure
-// "packet" correctly. For instance, the packet->ip or packet->ip6
-// pointer needs to have already been set, the packet->tcp or
-// packet->udp needs to have been set for TCP and UDP packets, etc.
+// "packet" correctly. The etherlen, caplen, timestamp, and the actual
+// packet (the contents field) needs to have been set.
 // 
 
 void
@@ -334,13 +356,28 @@ spindump_analyze_process(struct spindump_analyze* state,
   
 }
 
+//
+// This is the primary analysis function for reception of an IPv4
+// packet. It is called from spindump_analyze_process, if the
+// ethertype points to an IPv4 packet.
+//
+
 static void
 spindump_analyze_decodeiphdr(struct spindump_analyze* state,
 			     struct spindump_packet* packet,
 			     unsigned int position,
 			     struct spindump_connection** p_connection) {
+
+  //
+  // Statistics update
+  //
   
   state->stats->receivedIp++;
+
+  //
+  // Parse and verify IP header
+  //
+  
   const struct spindump_ip* ip = (const struct spindump_ip*)(packet->contents + position);
   unsigned int ipHeaderSize = SPINDUMP_IP_HL(ip)*4;
   if (ipHeaderSize < 20) {
@@ -371,6 +408,11 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
+
+  //
+  // Done with the IP header. Now look at what protocol (TCP, ICMP,
+  // UDP, etc) is carried inside!
+  //
   
   spindump_analyze_decodeippayload(state,
 				   packet,
@@ -383,13 +425,28 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
 				   p_connection);
 }
 
+//
+// This is the primary analysis function for reception of an IPv6
+// packet. It is called from spindump_analyze_process, if the
+// ethertype points to an IPv6 packet.
+//
+
 static void
 spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
 			      struct spindump_packet* packet,
 			      unsigned int position,
 			      struct spindump_connection** p_connection) {
+
+  //
+  // Statistics update
+  //
   
   state->stats->receivedIpv6++;
+
+  //
+  // Parse and verify IP header
+  //
+  
   const struct spindump_ip6* ip6 = (const struct spindump_ip6*)(packet->contents + position);
   unsigned int ipHeaderSize = 40;
   uint8_t ipVersion = SPINDUMP_IP6_V(ip6);
@@ -412,7 +469,12 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
 		   packet->etherlen - position);
     *p_connection = 0;
     return;
-  }
+  }  
+
+  //
+  // Done with the IP header. Now look at what protocol (TCP, ICMP,
+  // UDP, etc) is carried inside!
+  //
   
   spindump_analyze_decodeippayload(state,
 				   packet,
@@ -491,6 +553,12 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   
 }
 
+//
+// This is the primary IP payload processing function. An IP payload
+// is, e.g., a TCP, ICMP, or UDP packet. If we get this far, the IP
+// header (IPv4 or IPv6) has been checked and is valid. 
+//
+
 static void
 spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				 struct spindump_packet* packet,
@@ -508,7 +576,10 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
-  spindump_assert(packet != 0);
+  spindump_assert(ipHeaderPosition < payloadPosition);
+  spindump_assert(ipHeaderSize > 0);
+  spindump_assert(ipVersion == 4 || ipVersion == 6);
+  spindump_assert(ipPacketLength > 0);
   spindump_assert(p_connection != 0);
   
   //
@@ -568,7 +639,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				 ipHeaderPosition + ipHeaderSize,
 				 protolen,
 				 p_connection);
-    return;
+    break;
     
   case IPPROTO_UDP:
     spindump_analyze_process_udp(state,
@@ -580,7 +651,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				 ipHeaderPosition + ipHeaderSize,
 				 protolen,
 				 p_connection);
-    return;
+    break;
     
   case IPPROTO_ICMP:
     spindump_analyze_process_icmp(state,
@@ -592,7 +663,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				  ipHeaderPosition + ipHeaderSize,
 				  protolen,
 				  p_connection);
-    return;
+    break;
     
   case IPPROTO_ICMPV6:
     spindump_analyze_process_icmp6(state,
@@ -604,7 +675,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				   ipHeaderPosition + ipHeaderSize,
 				   protolen,
 				   p_connection);
-    return;
+    break;
     
   default:
 
@@ -613,43 +684,113 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
     // 
     
     spindump_debugf("received an unknown protocol %u", proto);
-    
-    //
-    // See if the packet falls under any of the aggregate connections,
-    // and note the reception of an unmatching packet.
-    // 
-    
-    unsigned int i;
-    spindump_address source;
-    spindump_address destination;
-    
-    spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
-    spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
-    
-    for (i = 0; i < state->table->nConnections; i++) {
-      struct spindump_connection* connection = state->table->connections[i];
-      if (connection != 0 &&
-	  spindump_connections_isaggregate(connection) &&
-	  spindump_connections_matches_aggregate_srcdst(&source,&destination,connection)) {
-	spindump_analyze_process_aggregate(connection,packet,state->stats);
-	*p_connection = connection;
-      }
-    }
-    
-    //
-    // Not found or not recognisable. Ignore.
-    // 
 
     //
-    // Debug printouts
-    // 
+    // Statistics update
+    //
     
-    spindump_debugf("non-matching packet...");
     state->stats->protocolNotSupported++;
-    *p_connection = 0;
-    return;
+    break;
     
+  }
+
+  //
+  // If the packet was not a recognized protocol or if the relevant
+  // TCP or other protocol analyzers failed to parse it an place into
+  // an existing or new connection, the packet still needs to be
+  // counted at least in the aggregate connections, e.g., host-to-host
+  // or network-to-network stats.
+  //
+
+  if (*p_connection == 0) {
+    spindump_analyze_otherippayload(state,
+				    packet,
+				    ipHeaderPosition,
+				    ipHeaderSize,
+				    ipVersion,
+				    ipPacketLength,
+				    p_connection);
   }
 }
 
+//
+// This function is called to process an IP packet that carries a
+// protocol that this analyzer does not recognise, or if it
+// recognises, the packet is not correct or at least not parseable by
+// the analyzer. The latter can happen, for instance, if the TCP
+// options, DNS request format, etc. is incorrect. Such packets do
+// still get counted, but not in any of the individual connections (as
+// they cannot be parsed). They get counted in any aggregate counters,
+// e.g., host-to-host aggregate connections between the two IP
+// addresses indicated in the packet.
+//
 
+static void
+spindump_analyze_otherippayload(struct spindump_analyze* state,
+				struct spindump_packet* packet,
+				unsigned int ipHeaderPosition,
+				unsigned int ipHeaderSize,
+				uint8_t ipVersion,
+				unsigned int ipPacketLength,
+				struct spindump_connection** p_connection) {
+  //
+  // Make some sanity checks on the input
+  //
+  
+  spindump_assert(state != 0);
+  spindump_assert(packet != 0);
+  spindump_assert(ipHeaderSize > 0);
+  spindump_assert(ipVersion == 4 || ipVersion == 6);
+  spindump_assert(ipPacketLength > 0);
+  spindump_assert(p_connection != 0);
+  spindump_assert(*p_connection == 0);
+  
+  //
+  // See if the packet falls under any of the aggregate connections,
+  // and note the reception of an unmatching packet.
+  // 
+  
+  unsigned int i;
+  spindump_address source;
+  spindump_address destination;
+  
+  spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
+  spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
+    
+  for (i = 0; i < state->table->nConnections; i++) {
+    
+    struct spindump_connection* connection = state->table->connections[i];
+    if (connection != 0 &&
+	spindump_connections_isaggregate(connection) &&
+	spindump_connections_matches_aggregate_srcdst(&source,&destination,connection)) {
+
+      //
+      // Found a matching connection! Report it there.
+      //
+      
+      spindump_analyze_process_aggregate(connection,packet,state->stats);
+
+      //
+      // Return the first matching connection to the caller; note that
+      // there may be more than one match!
+      //
+
+      if (*p_connection == 0) {
+	*p_connection = connection;
+      }
+      
+    }
+  }
+    
+  //
+  // Not found or not recognisable. Ignore.
+  // 
+  
+  *p_connection = 0;
+  
+  //
+  // Debug printouts
+  // 
+  
+  spindump_debugf("non-matching packet...");
+}

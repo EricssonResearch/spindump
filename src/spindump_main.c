@@ -451,6 +451,11 @@ spindump_main_textualmeasurement(struct spindump_analyze* state,
   }
 }
 
+//
+// Print out one --textual measurement event, when the format is set
+// to --format text
+//
+
 static void
 spindump_main_textualmeasurement_text(spindump_analyze_event event,
 				      struct spindump_connection* connection,
@@ -464,7 +469,16 @@ spindump_main_textualmeasurement_text(spindump_analyze_event event,
   char rttbuf1[20];
   char rttbuf2[20];
   
+  //
+  // Construct the time stamp
+  //
+  
   const char* when = spindump_timetostring(timestamp);
+  
+  //
+  // Get the (variable) data related to the specific event (such as a
+  // spin flip in a QUIC connection).
+  //
   
   switch (event) {
 
@@ -498,13 +512,28 @@ spindump_main_textualmeasurement_text(spindump_analyze_event event,
   default:
     strcpy(what,"unidentified event");
     break;
-  }
+  }  
+
+  //
+  // With all the information collected, put that now in final text
+  // format, hold it in "buf"
+  //
   
   memset(buf,0,sizeof(buf));
   snprintf(buf,sizeof(buf)-1,"%s %s %s at %s %s",
 	   type, addrs, session, when, what);
+  
+  //
+  // Print the buffer out
+  //
+  
   printf("%s\n", buf);
 }
+
+//
+// Print out one --textual measurement event, when the format is set
+// to --format json
+//
 
 static void
 spindump_main_textualmeasurement_json(spindump_analyze_event event,
@@ -518,8 +547,17 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
   char what[100];
   char when[40];
 
+  //
+  // Construct the time stamp
+  //
+  
   snprintf(when,sizeof(when)-1,"%llu",
 	   ((unsigned long long)timestamp->tv_sec) * 1000 * 1000 + (unsigned long long)timestamp->tv_usec);
+
+  //
+  // Get the (variable) data related to the specific event (such as a
+  // spin flip in a QUIC connection).
+  //
   
   switch (event) {
 
@@ -574,6 +612,11 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
     return;
     
   }
+
+  //
+  // With all the information collected, put that now in final text
+  // format, hold it in "buf"
+  //
   
   memset(buf,0,sizeof(buf));
   snprintf(buf,sizeof(buf)-1,"{ \"type\": \"%s\", \"addrs\": \"%s\", \"session\": \"%s\", \"ts\": %s,%s \"packets\": %u }",
@@ -583,6 +626,11 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
 	   when,
 	   what,
 	   connection->packetsFromSide1 + connection->packetsFromSide2);
+
+  //
+  // Print the buffer out
+  //
+  
   printf("%s\n", buf);
   
 }

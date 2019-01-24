@@ -78,6 +78,12 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Look to see if an UDP packet is a likely COAP packet. This check is
+// basef on port numbers and the basics of packet format (length
+// sufficient etc)
+//
+
 int
 spindump_analyze_coap_isprobablecoappacket(const unsigned char* payload,
 					   unsigned int payload_len,
@@ -168,12 +174,24 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
 				      const int fromResponder,
 				      const uint16_t mid,
 				      const struct timeval* t) {
+
+  //
+  // Some sanity checks
+  //
+  
+  spindump_assert(state != 0);
+  spindump_assert(packet != 0);
+  spindump_assert(connection != 0);
+  spindump_assert(spindump_isbool(fromResponder));
+  spindump_assert(t != 0);
+  
+  //
+  // Based on whether this is a response or request, either look for a
+  // matching message id in the COAP header, or store the message id
+  // for a later match
+  //
   
   const struct timeval* ackto;
-  
-  spindump_assert(connection != 0);
-  spindump_assert(fromResponder == 0 || fromResponder == 1);
-  spindump_assert(t != 0);
   
   if (fromResponder) {
     
@@ -229,6 +247,12 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
   }
 }
 
+//
+// When an encrypted COAP connection is established, we can see an
+// initial RTT in the DTLS establishment packets, but thereafter we
+// don't know what's going on. This function marks the initial RTT.
+//
+
 static void
 spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state,
 						  struct spindump_packet* packet,
@@ -236,6 +260,20 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
 						  const int fromResponder,
 						  const struct timeval* t) {
 
+  //
+  // Some sanity checks
+  //
+
+  spindump_assert(state != 0);
+  spindump_assert(packet != 0);
+  spindump_assert(connection != 0);
+  spindump_assert(spindump_isbool(fromResponder));
+  spindump_assert(t != 0);
+  
+  //
+  // Calculate the time for the initial request-response
+  //
+  
   const struct timeval* ackto = &connection->creationTime;
   unsigned long long diff = spindump_timediffinusecs(t,ackto);
   spindump_deepdebugf("the responder COAP TLS initial response refers to initiator COAP message that came %llu ms earlier",
@@ -258,8 +296,8 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
 //
 // It is assumed that prior modules, i.e., the capture and UDP modules
 // have filled in the relevant header pointers in the packet structure
-// "packet" correctly. For instance, the packet->udp and packet->coap
-// pointer needs to have already been set.
+// "packet" correctly. The etherlen, caplen, timestamp, and the actual
+// packet (the contents field) needs to have been set.
 //
 // Note that this function is not called directly by the top-level
 // analyzer, but rather by the UDP module, if the UDP flow looks
@@ -288,6 +326,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
   spindump_assert(packet != 0);
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(udpHeaderPosition > ipHeaderPosition != 0);
+  spindump_assert(spindump_isbool(isDtls));
   spindump_assert(p_connection != 0);
   
   //
@@ -333,6 +372,20 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
   
 }
 
+//
+// This is the main function to process an incoming UDP/COAP packet
+// when that packet is in cleartext. We parse the packet as much as we
+// can and process it appropriately. The function sets the
+// p_connection output parameter to the connection that this packet
+// belongs to (and possibly creates this connection if the packet is
+// the first in a flow).
+//
+// It is assumed that prior modules, i.e., the capture and UDP modules
+// have filled in the relevant header pointers in the packet structure
+// "packet" correctly. The etherlen, caplen, timestamp, and the actual
+// packet (the contents field) needs to have been set.
+// 
+
 static void
 spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 					struct spindump_packet* packet,
@@ -344,6 +397,23 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 					uint16_t side2port,
 					const unsigned char* payload,
 					struct spindump_connection** p_connection) {
+
+  //
+  // Some sanity checks first
+  //
+  
+  spindump_assert(state != 0);
+  spindump_assert(packet != 0);
+  spindump_assert(ipPacketLength > 0);
+  spindump_assert(udpLength > 0);
+  spindump_assert(source != 0);
+  spindump_assert(destination != 0);
+  spindump_assert(payload != 0);
+  spindump_assert(p_connection != 0);
+  
+  //
+  // Initialize our analysis
+  //
   
   const struct spindump_coap* coap = (const struct spindump_coap*)payload;
   struct spindump_connection* connection = 0;
@@ -480,6 +550,20 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   
 }
 
+//
+// This is the main function to process an incoming UDP/COAP packet
+// when that packet is encrypted. We parse the packet as much as we
+// can and process it appropriately. The function sets the
+// p_connection output parameter to the connection that this packet
+// belongs to (and possibly creates this connection if the packet is
+// the first in a flow).
+//
+// It is assumed that prior modules, i.e., the capture and UDP modules
+// have filled in the relevant header pointers in the packet structure
+// "packet" correctly. The etherlen, caplen, timestamp, and the actual
+// packet (the contents field) needs to have been set.
+// 
+
 static void                                                                  
 spindump_analyze_process_coap_dtls(struct spindump_analyze* state,           
                                    struct spindump_packet* packet,           
@@ -491,6 +575,23 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
                                    uint16_t side2port,                       
                                    const unsigned char* payload,             
                                    struct spindump_connection** p_connection) {
+
+  //
+  // Some sanity checks first
+  //
+
+  spindump_assert(state != 0);
+  spindump_assert(packet != 0);
+  spindump_assert(ipPacketLength > 0);
+  spindump_assert(udpLength > 0);
+  spindump_assert(source != 0);
+  spindump_assert(destination != 0);
+  spindump_assert(payload != 0);
+  spindump_assert(p_connection != 0);
+  
+  //
+  // Initialize our analysis
+  //
   
   struct spindump_connection* connection = 0;
   int fromResponder;
