@@ -207,6 +207,7 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
 
   spindump_assert(state != 0);
   spindump_assert((event & spindump_analyze_event_alllegal) == event);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
 
   //
@@ -254,6 +255,8 @@ spindump_analyze_getsource(struct spindump_packet* packet,
 			   uint8_t ipVersion,
 			   unsigned int ipHeaderPosition,
 			   spindump_address *address) {
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(address != 0);
   if (ipVersion == 4) {
     const struct spindump_ip* iphdr = (const struct spindump_ip*)(packet->contents + ipHeaderPosition);
     spindump_address_frombytes(address,AF_INET,(unsigned char*)&iphdr->ip_src);
@@ -275,6 +278,8 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
 				uint8_t ipVersion,
 				unsigned int ipHeaderPosition,
 				spindump_address *address) {
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(address != 0);
   if (ipVersion == 4) {
     const struct spindump_ip* iphdr = (const struct spindump_ip*)(packet->contents + ipHeaderPosition);
     spindump_address_frombytes(address,AF_INET,(unsigned char*)&iphdr->ip_dst);
@@ -311,6 +316,7 @@ spindump_analyze_process(struct spindump_analyze* state,
 
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(p_connection != 0);
   
   //
@@ -368,6 +374,14 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
 			     unsigned int position,
 			     struct spindump_connection** p_connection) {
 
+  //
+  // Some sanity checks
+  //
+
+  spindump_assert(state != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(p_connection != 0);
+    
   //
   // Statistics update
   //
@@ -437,6 +451,14 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
 			      unsigned int position,
 			      struct spindump_connection** p_connection) {
 
+  //
+  // Some sanity checks
+  //
+
+  spindump_assert(state != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(p_connection != 0);
+  
   //
   // Statistics update
   //
@@ -508,8 +530,9 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
 
   spindump_assert(state != 0);
   spindump_assert(connection != 0);
-  spindump_assert(fromResponder == 0 || fromResponder == 1);
+  spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   
   //
   // Update the statistics based on whether the packet was from side1
@@ -576,6 +599,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipHeaderPosition < payloadPosition);
   spindump_assert(ipHeaderSize > 0);
   spindump_assert(ipVersion == 4 || ipVersion == 6);
@@ -739,6 +763,7 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipHeaderSize > 0);
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(ipPacketLength > 0);

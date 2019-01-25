@@ -807,4 +807,11 @@ struct spindump_quic {
   } u;
 };
 
+//
+// External API interface ---------------------------------------------------------------------
+//
+
+const char*
+spindump_protocols_tcp_flagstostring(uint8_t flags);
+
 #endif // SPINDUMP_PROTOCOLS_H

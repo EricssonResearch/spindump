@@ -20,6 +20,7 @@
 // Includes -----------------------------------------------------------------------------------
 //
 
+#include <string.h>
 #include "spindump_util.h"
 #include "spindump_protocols.h"
 
@@ -27,3 +28,31 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// This helper function converts a TCP flags field to a set of
+// printable option names, useful for debugs etc.
+// 
+
+const char*
+spindump_protocols_tcp_flagstostring(uint8_t flags) {
+  
+  static char buf[50];
+  buf[0] = 0;
+  
+# define spindump_checkflag(flag,string,val) \
+  if (((val) & flag) != 0) {                 \
+    if (buf[0] != 0) strcat(buf," ");        \
+    strcat(buf,string);                      \
+   }
+  
+  spindump_checkflag(SPINDUMP_TH_FIN,"FIN",flags);
+  spindump_checkflag(SPINDUMP_TH_SYN,"SYN",flags);
+  spindump_checkflag(SPINDUMP_TH_RST,"RST",flags);
+  spindump_checkflag(SPINDUMP_TH_PUSH,"PUSH",flags);
+  spindump_checkflag(SPINDUMP_TH_ACK,"ACK",flags);
+  spindump_checkflag(SPINDUMP_TH_URG,"URG",flags);
+  spindump_checkflag(SPINDUMP_TH_ECE,"ECE",flags);
+  spindump_checkflag(SPINDUMP_TH_CWR,"CWR",flags);
+  
+  return(buf);
+}

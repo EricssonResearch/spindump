@@ -45,8 +45,6 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 					     tcp_seq seq,
 					     struct timeval* t,
 					     int* finset);
-static const char*
-spindump_analyze_tcp_flagstostring(uint8_t flags);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -103,9 +101,11 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 
   struct timeval* ackto;
   tcp_seq sentSeq;
-  
+
+  spindump_assert(state != 0);
   spindump_assert(connection != 0);
-  spindump_assert(fromResponder == 0 || fromResponder == 1);
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
   spindump_assert(finset != 0);
   
@@ -166,35 +166,6 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 }
 
 //
-// This helper function converts a TCP flags field to a set of
-// printable option names, useful for debugs etc.
-// 
-
-static const char*
-spindump_analyze_tcp_flagstostring(uint8_t flags) {
-  
-  static char buf[50];
-  buf[0] = 0;
-  
-# define spindump_checkflag(flag,string,val) \
-  if (((val) & flag) != 0) {                 \
-    if (buf[0] != 0) strcat(buf," ");        \
-    strcat(buf,string);                      \
-   }
-  
-  spindump_checkflag(SPINDUMP_TH_FIN,"FIN",flags);
-  spindump_checkflag(SPINDUMP_TH_SYN,"SYN",flags);
-  spindump_checkflag(SPINDUMP_TH_RST,"RST",flags);
-  spindump_checkflag(SPINDUMP_TH_PUSH,"PUSH",flags);
-  spindump_checkflag(SPINDUMP_TH_ACK,"ACK",flags);
-  spindump_checkflag(SPINDUMP_TH_URG,"URG",flags);
-  spindump_checkflag(SPINDUMP_TH_ECE,"ECE",flags);
-  spindump_checkflag(SPINDUMP_TH_CWR,"CWR",flags);
-  
-  return(buf);
-}
-
-//
 // This is the main function to process an incoming TCP packet, parse
 // the packet as much as we can and process it appropriately. The
 // function sets the p_connection output parameter to the connection
@@ -225,6 +196,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(tcpHeaderPosition > ipHeaderPosition);
   spindump_assert(p_connection != 0);
@@ -285,7 +257,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   
   spindump_debugf("saw packet from %s (ports %u:%u)",
 		  spindump_address_tostring(&source), side1port, side2port);
-  spindump_deepdebugf("flags = %s", spindump_analyze_tcp_flagstostring(tcp->th_flags));
+  spindump_deepdebugf("flags = %s", spindump_protocols_tcp_flagstostring(tcp->th_flags));
   
   //
   // Check whether this is a SYN, SYN ACK, FIN, FIN ACK, or RST

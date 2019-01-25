@@ -154,7 +154,8 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
   const struct timeval* ackto;
   
   spindump_assert(connection != 0);
-  spindump_assert(fromResponder == 0 || fromResponder == 1);
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
   
   if (fromResponder) {
@@ -247,6 +248,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(udpHeaderPosition > ipHeaderPosition != 0);
   spindump_assert(p_connection != 0);

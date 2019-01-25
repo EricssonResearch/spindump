@@ -42,5 +42,7 @@ struct spindump_packet {
 // Packet module API interface -----------------------------------------
 //
 
+int
+spindump_packet_isvalid(struct spindump_packet* packet);
 
 #endif // SPINDUMP_PACKET_H

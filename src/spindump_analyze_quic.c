@@ -62,6 +62,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(udpHeaderPosition > ipHeaderPosition);
   spindump_assert(p_connection != 0);

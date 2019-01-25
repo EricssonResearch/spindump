@@ -181,6 +181,7 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
@@ -266,6 +267,7 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
 
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
@@ -324,6 +326,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(udpHeaderPosition > ipHeaderPosition != 0);
   spindump_assert(spindump_isbool(isDtls));
@@ -404,6 +407,7 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipPacketLength > 0);
   spindump_assert(udpLength > 0);
   spindump_assert(source != 0);
@@ -582,6 +586,7 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
 
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipPacketLength > 0);
   spindump_assert(udpLength > 0);
   spindump_assert(source != 0);
