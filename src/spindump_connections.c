@@ -485,3 +485,32 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
     
   }
 }
+
+void
+spindump_connections_changestate(struct spindump_analyze* state,
+				 struct spindump_packet* packet,
+				 struct spindump_connection* connection,
+				 enum spindump_connection_state newState) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(connection != 0);
+
+  //
+  // Set the new state
+  //
+
+  connection->state = newState;
+  
+  //
+  // Let all interested handlers know about this change
+  //
+  
+  spindump_analyze_process_handlers(state,
+				    spindump_analyze_event_statechange,
+				    packet,
+				    connection);
+}
+

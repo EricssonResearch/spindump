@@ -174,7 +174,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     if (peerType == ICMP_ECHOREPLY) {
       
       if (connection->state == spindump_connection_state_establishing) {
-	connection->state = spindump_connection_state_established;
+	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
 
       spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength);
@@ -340,7 +340,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
       
       spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength);
       if (connection->state == spindump_connection_state_establishing) {
-	connection->state = spindump_connection_state_established;
+	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
       if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
 	spindump_connections_newrttmeasurement(state,

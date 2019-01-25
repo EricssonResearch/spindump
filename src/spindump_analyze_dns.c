@@ -378,8 +378,8 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   //
   
   if (fromResponder && foundmid && connection->state == spindump_connection_state_establishing) {
-    connection->state = spindump_connection_state_established;
-    connection->state = spindump_connection_state_closed;
+    spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+    spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
   }
   
   //

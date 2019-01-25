@@ -207,7 +207,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
       return;
     }
     
-    connection->state = spindump_connection_state_establishing;
+    spindump_connections_changestate(state,packet,connection,spindump_connection_state_establishing);
     connection->u.quic.version = quicVersion;
     spindump_debugf("initialized QUIC connection %u state to ESTABLISHING, version %08x", connection->id, quicVersion);
     fromResponder = 0;
@@ -236,7 +236,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
       type == spindump_quic_message_type_initial &&
       connection->packetsFromSide2 == 0) {
     
-    connection->state = spindump_connection_state_established;
+    spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
     connection->u.quic.side2initialResponsePacket = packet->timestamp;
     connection->u.quic.initialRightRTT =
       spindump_connections_newrttmeasurement(state,
