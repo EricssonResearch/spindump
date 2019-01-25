@@ -135,7 +135,7 @@ The Spindump software builds on the Spindump Library, a simple but extensibile p
 
 The API definition for this library can be found from spindump_analyze.h. But the main function are analyzer initialization, handing a packet to it, and de-initialization. First, you need to initialize the analyzer, like this:
 
-    struct spindump_analyze* analyzer = spindump_analyzer_initialize();
+    struct spindump_analyze* analyzer = spindump_analyze_initialize();
     if (analyzer == 0) { /* ... handle error */ }
 
 Then, you probably want to feed packets to the analyzer in some kind of loop. The analyzer needs to know the actual Ethernet message frame  received as an octet string, but also a timestamp of when it was received, the length of the frame, and how much of the message was captured if the frame is not stored in its entirety. Here's an example implementation of a packet reception loop that feeds the analyzer:
