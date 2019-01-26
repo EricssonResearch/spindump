@@ -266,7 +266,8 @@ spindump_connection_report(struct spindump_connection* connection,
     spindump_connection_report_multicastgroup(connection,file,querier);
     break;
   default:
-    spindump_fatalf("invalid connection type in spindump_connection_report");
+    spindump_errorf("invalid connection type in spindump_connection_report");
+    break;
   }
   fprintf(file,"  aggregated in:           %38s\n",
 	  spindump_connections_set_listids(&connection->aggregates));
@@ -376,7 +377,8 @@ spindump_connection_addresses(struct spindump_connection* connection,
     strcpy(buf,spindump_address_tostring(&connection->u.aggregatemulticastgroup.group));
     break;
   default:
-    spindump_fatalf("invalid connection type");
+    spindump_errorf("invalid connection type");
+    strcpy(buf,"invalid");
   }
   
   if (strlen(buf) > maxlen) {
@@ -397,7 +399,7 @@ spindump_connection_statestring_aux(enum spindump_connection_state state) {
   case spindump_connection_state_closed: return("Closed");
   case spindump_connection_state_static: return("Static");
   default:
-    spindump_fatalf("invalid connection state");
+    spindump_errorf("invalid connection state");
     return("invalid");
   }
 }
@@ -472,7 +474,7 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
     break;
     
   default:
-    spindump_fatalf("invalid connection type");
+    spindump_errorf("invalid connection type");
     return("");
   }
   

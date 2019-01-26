@@ -71,7 +71,7 @@ spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type) 
   case spindump_quic_message_type_retry: return("retry");
   case spindump_quic_message_type_other: return("other");
   default:
-    spindump_fatalf("invalid QUIC message type %u", type);
+    spindump_errorf("invalid QUIC message type %u", type);
     return("invalid");
   }
 }

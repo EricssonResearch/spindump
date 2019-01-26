@@ -60,7 +60,7 @@ spindump_reverse_dns_initialize_noop() {
   unsigned int size = sizeof(struct spindump_reverse_dns);
   struct spindump_reverse_dns* service = (struct spindump_reverse_dns*)malloc(size);
   if (service == 0) {
-    spindump_fatalf("cannot allocate reverse DNS service object of size %u bytes", size);
+    spindump_errorf("cannot allocate reverse DNS service object of size %u bytes", size);
     return(0);
   }
   
@@ -93,7 +93,7 @@ spindump_reverse_dns_initialize_full() {
   unsigned int size = sizeof(struct spindump_reverse_dns);
   struct spindump_reverse_dns* service = (struct spindump_reverse_dns*)malloc(size);
   if (service == 0) {
-    spindump_fatalf("cannot allocate reverse DNS service object of size %u bytes", size);
+    spindump_errorf("cannot allocate reverse DNS service object of size %u bytes", size);
     return(0);
   }
 
@@ -122,7 +122,7 @@ spindump_reverse_dns_initialize_full() {
   //
   
   if (pthread_create(&service->thread,0,spindump_reverse_dns_backgroundfunction,(void*)service) != 0) {
-    spindump_fatalf("cannot create a thread for reverse DNS process");
+    spindump_errorf("cannot create a thread for reverse DNS process");
     free(service);
     return(0);
   }
@@ -277,7 +277,7 @@ spindump_reverse_dns_resolveinternal(spindump_address* address) {
     sa6.sin6_port = 0;
     sa = (struct sockaddr*)&sa6;
   } else {
-    spindump_fatalf("invalid address family");
+    spindump_errorf("invalid address family");
     return(0);
   }
   spindump_assert(sa != 0);

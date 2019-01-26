@@ -44,6 +44,15 @@ spindump_anon_aux(unsigned long seed,
 		  unsigned int length);
 
 //
+// Variables ----------------------------------------------------------------------------------
+//
+
+static FILE* errordestination = 0;
+int debug = 0;
+int deepdebug = 0;
+static FILE* debugdestination = 0;
+
+//
 // Actual code --------------------------------------------------------------------------------
 //
 
@@ -53,13 +62,33 @@ spindump_anon_aux(unsigned long seed,
 
 void
 spindump_getcurrenttime(struct timeval* result) {
+
+  //
+  // Sanity checks
+  //
+  
   spindump_assert(result != 0);
+
+  //
+  // Get the time, see if we can get it
+  //
+  
   if (gettimeofday(result, 0) < 0) {
-    spindump_fatalp("cannot determine current time via gettimeofday");
+    spindump_errorp("cannot determine current time via gettimeofday");
+    result->tv_sec = result->tv_usec = 0;
+    return;
   }
+
+  //
+  // Sanity check the value gotten
+  //
+  
   if (result->tv_usec >= 1000 * 1000) {
-    spindump_fatalf("cannot have usec value greater than 1 000 000, got %lu", result->tv_usec);
+    spindump_errorf("cannot have usec value greater than 1 000 000, got %lu", result->tv_usec);
+    result->tv_sec = result->tv_usec = 0;
+    return;
   }
+  
 }
 
 //
@@ -76,12 +105,12 @@ spindump_timediffinusecs(const struct timeval* later,
   spindump_assert(earlier->tv_usec < 1000 * 1000);
   
   if (later->tv_sec < earlier->tv_sec) {
-    spindump_fatalf("expected later time to be greater, seconds go back %lus", earlier->tv_sec - later->tv_sec);
+    spindump_errorf("expected later time to be greater, seconds go back %lus", earlier->tv_sec - later->tv_sec);
     return(0);
   }
   if (later->tv_sec == earlier->tv_sec) {
     if (later->tv_usec < earlier->tv_usec) {
-      spindump_fatalf("spindump_timediffinusec: expected later time to be greater, secs both %uls, microsecond go back %ulus (%ul to %ul)",
+      spindump_errorf("spindump_timediffinusec: expected later time to be greater, secs both %uls, microsecond go back %ulus (%ul to %ul)",
 		      earlier->tv_sec,
 		      earlier->tv_usec - later->tv_usec,
 		      earlier->tv_usec, later->tv_usec);
@@ -510,7 +539,8 @@ spindump_address_tostring(spindump_address* address) {
     }
     break;
   default:
-    spindump_fatalf("invalid address family");
+    spindump_errorf("invalid address family");
+    strcpy(buf,"invalid");
   }
   return(buf);
 }
@@ -584,7 +614,8 @@ spindump_address_tostring_anon(int anonymize,
     }
     break;
   default:
-    spindump_fatalf("invalid address family");
+    spindump_errorf("invalid address family");
+    return("invalid");
   }
 
   //
@@ -613,7 +644,7 @@ spindump_network_fromstring(spindump_network* network,
   network->length = atoi(prefix+1);
   char* addressString = strdup(string);
   if (addressString == 0) {
-    spindump_fatalf("cannot allocate memory for string of %u bytes", strlen(string));
+    spindump_errorf("cannot allocate memory for string of %u bytes", strlen(string));
     return(0);
   }
   char* slashPlace = index(addressString,'/');
@@ -696,6 +727,16 @@ spindump_meganumberll_tostring(unsigned long long x) {
 }
 
 //
+// Set the destination stream for all error messages (fatal, error,
+// warn)
+//
+
+void
+spindump_seterrordestination(FILE* file) {
+  errordestination = file;
+}
+
+//
 // Display a fatal error
 //
 
@@ -705,13 +746,15 @@ spindump_fatalf(const char* format, ...) {
   va_list args;
   
   spindump_assert(format != 0);
+
+  if (errordestination == 0) errordestination = stderr;
   
-  spindump_debugf("spindump: error: %s", format);
-  fprintf(stderr,"spindump: error: ");
+  spindump_debugf("spindump: fatal error: %s", format);
+  fprintf(errordestination,"spindump: fatal error: ");
   va_start (args, format);
-  vfprintf(stderr, format, args);
+  vfprintf(errordestination, format, args);
   va_end (args);
-  fprintf(stderr," -- exit\n");
+  fprintf(errordestination," -- exit\n");
   
   exit(1);
 }
@@ -730,6 +773,42 @@ spindump_fatalp(const char* message) {
 }
 
 //
+// Display an error
+//
+
+void
+spindump_errorf(const char* format, ...) {
+  
+  va_list args;
+  
+  spindump_assert(format != 0);
+  
+  if (errordestination == 0) errordestination = stderr;
+  
+  spindump_debugf("spindump: error: %s", format);
+  fprintf(errordestination,"spindump: error: ");
+  va_start (args, format);
+  vfprintf(errordestination, format, args);
+  va_end (args);
+  fprintf(errordestination," -- exit\n");
+  
+  exit(1);
+}
+
+//
+// Display an error a la perror
+//
+
+void
+spindump_errorp(const char* message) {
+  
+  const char* string = strerror(errno);
+  spindump_assert(message != 0);
+  spindump_errorf("system: %s - %s", message, string);
+  
+}
+
+//
 // Display a warning
 //
 
@@ -740,21 +819,19 @@ spindump_warnf(const char* format, ...) {
   
   spindump_assert(format != 0);
 
+  if (errordestination == 0) errordestination = stderr;
+  
   spindump_debugf("spindump: warning %s", format);
-  fprintf(stderr,"spindump: warning: ");
+  fprintf(errordestination,"spindump: warning: ");
   va_start (args, format);
-  vfprintf(stderr, format, args);
+  vfprintf(errordestination, format, args);
   va_end (args);
-  fprintf(stderr,"\n");
+  fprintf(errordestination,"\n");
 }
 
 //
 // Debug helper function
 //
-
-int debug = 0;
-int deepdebug = 0;
-static FILE* debugdestination = 0;
 
 void
 spindump_setdebugdestination(FILE* file) {
@@ -770,7 +847,7 @@ spindump_debugf(const char* format, ...) {
 
     va_list args;
 
-    if (debugdestination == 0) debugdestination = stdout;
+    if (debugdestination == 0) debugdestination = stderr;
   
     fprintf(debugdestination, "spindump: debug: ");
     va_start (args, format);
@@ -796,7 +873,7 @@ spindump_deepdebugf(const char* format, ...) {
 
     va_list args;
 
-    if (debugdestination == 0) debugdestination = stdout;
+    if (debugdestination == 0) debugdestination = stderr;
     
     fprintf(debugdestination, "spindump: debug:   ");
     va_start (args, format);

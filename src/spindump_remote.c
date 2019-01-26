@@ -43,7 +43,7 @@ spindump_remote_server_init() {
   unsigned int size = sizeof(struct spindump_remote_server);
   struct spindump_remote_server* server = (struct spindump_remote_server*)malloc(size);
   if (server == 0) {
-    spindump_fatalf("cannot allocate server of %u bytes", size);
+    spindump_errorf("cannot allocate server of %u bytes", size);
     return(0);
   }
   
@@ -92,13 +92,13 @@ spindump_remote_client_init(const char* name) {
   unsigned int size = sizeof(struct spindump_remote_client);
   struct spindump_remote_client* client = (struct spindump_remote_client*)malloc(size);
   if (client == 0) {
-    spindump_fatalf("cannot allocate client of %u bytes", size);
+    spindump_errorf("cannot allocate client of %u bytes", size);
     return(0);
   }
   memset(client,0,sizeof(*client));
   
   // ...
-  spindump_fatalf("client not implemented yet");
+  spindump_errorf("client not implemented yet");
   return(0);
 }
 

@@ -40,7 +40,7 @@ spindump_stats_initialize() {
   unsigned int size = sizeof(struct spindump_stats);
   struct spindump_stats* stats = (struct spindump_stats*)malloc(size);
   if (stats == 0) {
-    spindump_fatalf("cannot allocate statistics state of %u bytes", size);
+    spindump_errorf("cannot allocate statistics state of %u bytes", size);
     return(0);
   }
   

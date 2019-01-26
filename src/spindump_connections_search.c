@@ -177,7 +177,7 @@ spindump_connections_match(struct spindump_connection* connection,
     break;
     
   default:
-    spindump_fatalf("invalid match addresses criteria");
+    spindump_errorf("invalid match addresses criteria");
     return(0);
     
   }
@@ -232,7 +232,7 @@ spindump_connections_match(struct spindump_connection* connection,
     break;
     
   default:
-    spindump_fatalf("invalid match addresses criteria");
+    spindump_errorf("invalid match addresses criteria");
     return(0);
     
   }
@@ -289,7 +289,7 @@ spindump_connections_match(struct spindump_connection* connection,
     break;
     
   default:
-    spindump_fatalf("invalid match addresses criteria");
+    spindump_errorf("invalid match addresses criteria");
     return(0);
     
   }

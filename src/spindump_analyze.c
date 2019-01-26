@@ -100,7 +100,7 @@ spindump_analyze_initialize(struct spindump_connectionstable* table) {
   unsigned int size = sizeof(struct spindump_analyze);
   struct spindump_analyze* state = (struct spindump_analyze*)malloc(size);
   if (state == 0) {
-    spindump_fatalf("cannot allocate analyzer state of %u bytes", size);
+    spindump_errorf("cannot allocate analyzer state of %u bytes", size);
     return(0);
   }
   
@@ -264,7 +264,8 @@ spindump_analyze_getsource(struct spindump_packet* packet,
     const struct spindump_ip6* ip6hdr = (const struct spindump_ip6*)(packet->contents + ipHeaderPosition);
     spindump_address_frombytes(address,AF_INET6,(unsigned char*)&ip6hdr->source);
   } else {
-    spindump_fatalf("no version set");
+    spindump_errorf("no version set");
+    spindump_address_fromstring(address,"0.0.0.0");
   }
 }
 
@@ -287,7 +288,8 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
     const struct spindump_ip6* ip6hdr = (const struct spindump_ip6*)(packet->contents + ipHeaderPosition);
     spindump_address_frombytes(address,AF_INET6,(unsigned char*)&ip6hdr->destination);
   } else {
-    spindump_fatalf("no version set");
+    spindump_errorf("no version set");
+    spindump_address_fromstring(address,"0.0.0.0");
   }
 }
 
@@ -649,7 +651,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
   } else if (ipVersion == 6) {
     state->stats->receivedIpv6Bytes += (unsigned long long)(iplen);
   } else {
-    spindump_fatalf("should not process a non-IPv4 and non-IPv6 packet here");
+    spindump_errorf("should not process a non-IPv4 and non-IPv6 packet here");
     *p_connection = 0;
     return;
   }

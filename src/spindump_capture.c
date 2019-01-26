@@ -60,7 +60,7 @@ spindump_capture_defaultinterface() {
   char errbuf[PCAP_ERRBUF_SIZE];
   dev = pcap_lookupdev(errbuf);
   if (dev == 0) {
-    spindump_fatalf("couldn't find default device: %s", errbuf);
+    spindump_errorf("couldn't find default device: %s", errbuf);
     return(0);
   }
 
@@ -70,7 +70,7 @@ spindump_capture_defaultinterface() {
   
   char* result = strdup(dev);
   if (result == 0) {
-    spindump_fatalf("cannot allocate memory for string of %u bytes", strlen(dev));
+    spindump_errorf("cannot allocate memory for string of %u bytes", strlen(dev));
     return(0);
   }
 
@@ -98,7 +98,7 @@ spindump_capture_initialize_aux(const char* interface,
   unsigned int size = sizeof(struct spindump_capture_state);
   struct spindump_capture_state* state = (struct spindump_capture_state*)malloc(size);
   if (state == 0) {
-    spindump_fatalf("cannot allocate capture state for %u bytes", size);
+    spindump_errorf("cannot allocate capture state for %u bytes", size);
     return(0);
   }
   
@@ -117,7 +117,7 @@ spindump_capture_initialize_aux(const char* interface,
   if (interface != 0) {
     state->handle = pcap_open_live(interface, spindump_capture_snaplen, promisc, spindump_capture_wait, errbuf);
     if (state->handle == 0) {
-      spindump_fatalf("couldn't open device %s: %s", interface, errbuf);
+      spindump_errorf("couldn't open device %s: %s", interface, errbuf);
       free(state);
       return(0);
     }
@@ -131,7 +131,7 @@ spindump_capture_initialize_aux(const char* interface,
   }
   
   if (pcap_datalink(state->handle) != DLT_EN10MB) {
-    spindump_fatalf("device %s doesn't provide Ethernet headers - not supported", interface);
+    spindump_errorf("device %s doesn't provide Ethernet headers - not supported", interface);
     pcap_close(state->handle);
     free(state);
     return(0);
@@ -144,7 +144,7 @@ spindump_capture_initialize_aux(const char* interface,
   if (interface != 0) {
     
     if (pcap_lookupnet(interface, &state->ourAddress, &state->ourNetmask, errbuf) == -1) {
-      spindump_fatalf("couldn't get netmask for device %s: %s", interface, errbuf);
+      spindump_errorf("couldn't get netmask for device %s: %s", interface, errbuf);
       pcap_close(state->handle);
       free(state);
       return(0);
@@ -168,7 +168,7 @@ spindump_capture_initialize_aux(const char* interface,
     spindump_deepdebugf("compiling filter %...", filter);
     
     if (pcap_compile(state->handle, &state->compiledFilter, filter, 0, state->ourAddress) == -1) {
-      spindump_fatalf("couldn't parse filter %s: %s", filter, pcap_geterr(state->handle));
+      spindump_errorf("couldn't parse filter %s: %s", filter, pcap_geterr(state->handle));
       pcap_close(state->handle);
       free(state);
       return(0);
@@ -177,7 +177,7 @@ spindump_capture_initialize_aux(const char* interface,
     spindump_deepdebugf("installing filter...");
     
     if (pcap_setfilter(state->handle, &state->compiledFilter) == -1) {
-      spindump_fatalf("couldn't install filter %s: %s", filter, pcap_geterr(state->handle));
+      spindump_errorf("couldn't install filter %s: %s", filter, pcap_geterr(state->handle));
       pcap_close(state->handle);
       free(state);
       return(0);

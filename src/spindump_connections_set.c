@@ -218,7 +218,7 @@ spindump_connections_set_remove(struct spindump_connection_set* set,
     }
   }
   
-  spindump_fatalf("attempted to remove connection %u from a set that does not include that connection",
+  spindump_errorf("attempted to remove connection %u from a set that does not include that connection",
 		  connection->id);
 }
 

@@ -82,7 +82,7 @@ spindump_report_initialize_quiet() {
   unsigned int size = sizeof(struct spindump_report_state);
   struct spindump_report_state* reporter = (struct spindump_report_state*)malloc(size);
   if (reporter == 0) {
-    spindump_fatalf("cannot allocate reporter state of %u bytes", size);
+    spindump_errorf("cannot allocate reporter state of %u bytes", size);
     return(0);
   }
 
@@ -118,7 +118,7 @@ spindump_report_initialize_terminal(struct spindump_reverse_dns* querier) {
   unsigned int size = sizeof(struct spindump_report_state);
   struct spindump_report_state* reporter = (struct spindump_report_state*)malloc(size);
   if (reporter == 0) {
-    spindump_fatalf("cannot allocate reporter state of %u bytes", size);
+    spindump_errorf("cannot allocate reporter state of %u bytes", size);
     return(0);
   }
   
@@ -462,7 +462,7 @@ spindump_report_uninitialize(struct spindump_report_state* reporter) {
     spindump_report_cursesfinish();
     break;
   default:
-    spindump_fatalf("invalid reporter destination");
+    spindump_errorf("invalid reporter destination");
     break;
   }
   

@@ -61,7 +61,7 @@ spindump_connectionstable_initialize() {
   
   struct spindump_connectionstable* table = (struct spindump_connectionstable*)malloc(maintabsize);
   if (table == 0) {
-    spindump_fatalf("cannot allocate connection table for %u bytes", maintabsize);
+    spindump_errorf("cannot allocate connection table for %u bytes", maintabsize);
     return(0);
   }
   
@@ -79,7 +79,7 @@ spindump_connectionstable_initialize() {
   
   table->connections = (struct spindump_connection**)malloc(variabletabsize);
   if (table->connections == 0) {
-    spindump_fatalf("cannot allocate the variable-size connection table for %u bytes", variabletabsize);
+    spindump_errorf("cannot allocate the variable-size connection table for %u bytes", variabletabsize);
     spindump_deepdebugf("free table after an error");
     free(table);
     return(0);

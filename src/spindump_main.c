@@ -69,6 +69,7 @@ static struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
 static int interrupt = 0;
 static unsigned int nRemotes = 0;
 static struct spindump_remote_client* remotes[SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS];
+static FILE* debugfile = 0;
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -405,6 +406,7 @@ spindump_main_processargs(int argc,char** argv) {
 	
 	if (filter == 0) {
 	  spindump_fatalf("Cannot allocate %u bytes", n);
+	  exit(1);
 	} else {
 	  strcpy(filter,prevfilter);
 	  strcat(filter," ");
@@ -448,6 +450,7 @@ spindump_main_textualmeasurement(struct spindump_analyze* state,
     break;
   default:
     spindump_fatalf("invalid output format in internal variable");
+    exit(1);
   }
 }
 
@@ -720,6 +723,7 @@ spindump_main_operation() {
   // Initialize the user interface
   // 
   
+  spindump_seterrordestination(debugfile);
   int averageMode = 0;
   int aggregateMode = 0;
   int closedMode = 1;
@@ -880,7 +884,8 @@ spindump_main_operation() {
     case spindump_report_command_none:
       break;
     default:
-      spindump_fatalf("invalid command");
+      spindump_errorf("invalid command");
+      break;
     }
     if (command != spindump_report_command_none) {
       spindump_report_update(reporter,
@@ -919,6 +924,7 @@ int main(int argc,char** argv) {
   
   signal(SIGINT, spindump_main_interrupt);
   srand(time(0));
+  debugfile = stderr;
   
   //
   // Process arguments
@@ -931,14 +937,14 @@ int main(int argc,char** argv) {
   // 
   
   if (toolmode != spindump_toolmode_silent && debug) {
-    FILE* f = fopen("spindump.debug","w");
-    if (f == 0) {
+    debugfile = fopen("spindump.debug","w");
+    if (debugfile == 0) {
       spindump_fatalf("cannot open debug file");
       exit(1);
     }
-    spindump_setdebugdestination(f);
+    spindump_setdebugdestination(debugfile);
   }
-
+  
   //
   // Main operation 
   // 

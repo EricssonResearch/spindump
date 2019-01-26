@@ -143,8 +143,11 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
     *p_side2address = &connection->u.aggregatemulticastgroup.group;
     break;
   default:
-    spindump_fatalf("invalid connection type %u in spindump_connections_getaddresses",
+    spindump_errorf("invalid connection type %u in spindump_connections_getaddresses",
 		    connection->type);
+    *p_side1address = 0;
+    *p_side2address = 0;
+    break;
   }
 }
 
@@ -199,8 +202,11 @@ spindump_connections_getports(struct spindump_connection* connection,
     *p_side2port = 0;
     break;
   default:
-    spindump_fatalf("invalid connection type %u in spindump_connections_getports",
+    spindump_errorf("invalid connection type %u in spindump_connections_getports",
 		    connection->type);
+    *p_side1port = 0;
+    *p_side2port = 0;
+    break;
   }
 }
 
@@ -442,7 +448,7 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
 	   spindump_address_equal(side2address,&aggregate->u.aggregatemulticastgroup.group));
     
   default:
-    spindump_fatalf("invalid connection type %u in spindump_connections_matches_aggregate_connection", aggregate->type);
+    spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_connection", aggregate->type);
     return(0);
     
   }
@@ -480,7 +486,7 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
 	   spindump_address_equal(destination,&aggregate->u.aggregatemulticastgroup.group));
   
   default:
-    spindump_fatalf("invalid connection type %u in spindump_connections_matches_aggregate_srcdst", aggregate->type);
+    spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_srcdst", aggregate->type);
     return(0);
     
   }

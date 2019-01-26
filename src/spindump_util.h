@@ -110,9 +110,15 @@ spindump_meganumber_tostring(unsigned long x);
 const char*
 spindump_meganumberll_tostring(unsigned long long x);
 void
+spindump_seterrordestination(FILE* file);
+void
 spindump_fatalf(const char* format, ...);
 void
 spindump_fatalp(const char* message);
+void
+spindump_errorf(const char* format, ...);
+void
+spindump_errorp(const char* message);
 void
 spindump_warnf(const char* format, ...);
 void

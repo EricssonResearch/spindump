@@ -145,9 +145,10 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
     break;
 
   default:
-    spindump_fatalf("invalid connection type %u in spindump_connections_newconnection_aux",
+    spindump_errorf("invalid connection type %u in spindump_connections_newconnection_aux",
 		    connection->type);
-
+    break;
+    
   }
 }
 
@@ -204,8 +205,9 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
 	  break;
 	  
 	default:
-	  spindump_fatalf("invalid connection type %u in spindump_connections_newconnection_addtoaggregates",
+	  spindump_errorf("invalid connection type %u in spindump_connections_newconnection_addtoaggregates",
 			  aggregate->type);
+	  break;
 	  
 	}
       }
@@ -236,7 +238,7 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
   unsigned int size = sizeof(struct spindump_connection);
   struct spindump_connection* connection = (struct spindump_connection*)malloc(size);
   if (connection == 0) {
-    spindump_fatalf("cannot allocate memory for a connection of size %u", size);
+    spindump_errorf("cannot allocate memory for a connection of size %u", size);
     return(0);
   }
 
@@ -276,7 +278,7 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
   struct spindump_connection** oldtable = table->connections;
   struct spindump_connection** newtable = (struct spindump_connection**)malloc(newtabsize);
   if (newtable == 0) {
-    spindump_fatalf("cannot allocate memory for a connection table of size %u", newtabsize);
+    spindump_errorf("cannot allocate memory for a connection table of size %u", newtabsize);
     spindump_deepdebugf("free connection after an error");
     free(connection);
     return(0);
@@ -690,8 +692,9 @@ spindump_connections_delete(struct spindump_connection* connection) {
     break;
     
   default:
-    spindump_fatalf("invalid connection type %u in spindump_connections_delete",
+    spindump_errorf("invalid connection type %u in spindump_connections_delete",
 		    connection->type);
+    break;
     
   }
   
