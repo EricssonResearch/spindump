@@ -23,15 +23,30 @@
 // Includes -----------------------------------------------------------------------------------
 //
 
+#include <pthread.h>
+#include <stdatomic.h>
+#include <netdb.h>
 #include "spindump_util.h"
 
 //
 // Data structures ----------------------------------------------------------------------------
 //
 
+#define spindump_reverse_dns_maxnentries   128
+
+struct spindump_reverse_dns_entry {
+  atomic_bool requestMade;                     // written by main thread, read by background thread
+  spindump_address address;                    // written by main thread, read by background thread
+  atomic_bool responseGotten;                  // written by background thread, read by main thread
+  char responseName[NI_MAXHOST+1];             // written by background thread, read by main thread
+};
+
 struct spindump_reverse_dns {
   int noop;
-  // ...
+  pthread_t thread;
+  atomic_bool exit;                            // written by main thread, read by background thread
+  atomic_uint nextEntryIndex;                  // written by main thread, read by background thread
+  struct spindump_reverse_dns_entry entries[spindump_reverse_dns_maxnentries];
 };
 
 //

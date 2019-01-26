@@ -99,11 +99,11 @@ SPINDUMP_LIB_OBJECTS	=	spindump_util.o \
 				spindump_mid.o \
 				spindump_seq.o \
 				spindump_spin.o \
-				spindump_stats.o
+				spindump_stats.o \
+				spindump_reversedns.o
 SPINDUMP_CMD_SOURCES	=	spindump_main.c
 SPINDUMP_CMD_OBJECTS	=	spindump_main.o
 SPINDUMP_CMDLIB_OBJECTS	=	spindump_capture.o \
-				spindump_reversedns.o \
 				spindump_remote.o \
 				spindump_report.o
 SPINDUMP_TST_SOURCES	=	spindump_test.c
@@ -129,7 +129,7 @@ SPINDUMP_ALL_SOURCES	=	$(SPINDUMP_LIB_HEADERS) \
 CFLAGS			=	-Wall --pedantic $(OPTFLAGS)
 OPTFLAGS		=	-O3
 #OPTFLAGS		=	-g
-LDFLAGS			=	-lpcap -lncurses -lm
+LDFLAGS			=	-lpthread -lpcap -lncurses -lm
 CC			=	gcc
 LD			=	$(CC)
 AR			=	ar

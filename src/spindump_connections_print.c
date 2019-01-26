@@ -47,6 +47,10 @@
 
 static const char*
 spindump_icmptype_tostring(u_int8_t type);
+static const char*
+spindump_connection_address_tostring(int anonymize,
+				     spindump_address* address,
+				     struct spindump_reverse_dns* querier);
 static void
 spindump_connection_addtobuf(char* buf,
 			     unsigned int bufsize,
@@ -282,6 +286,19 @@ spindump_connection_report(struct spindump_connection* connection,
   fprintf(file,"  moving avg right RTT:    %38s\n", rttbuf2);
 }
 
+static const char*
+spindump_connection_address_tostring(int anonymize,
+				     spindump_address* address,
+				     struct spindump_reverse_dns* querier) {
+  if (anonymize) {
+    return(spindump_address_tostring_anon(1,address));
+  } else {
+    const char* name = spindump_reverse_dns_query(address,querier);
+    if (name != 0) return(name);
+    else return(spindump_address_tostring(address));
+  }
+}
+
 const char*
 spindump_connection_addresses(struct spindump_connection* connection,
 			      unsigned int maxlen,
@@ -297,6 +314,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
   spindump_assert(maxlen > 2);
   spindump_assert(spindump_isbool(anonymizeLeft));
   spindump_assert(spindump_isbool(anonymizeRight));
+  spindump_assert(querier != 0);
   
   //
   // Reserve buffer space
@@ -310,42 +328,42 @@ spindump_connection_addresses(struct spindump_connection* connection,
   
   switch (connection->type) {
   case spindump_connection_transport_tcp:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.tcp.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.tcp.side1peerAddress,querier));
     strcat(buf," <-> ");
-    strcat(buf,spindump_address_tostring_anon(anonymizeRight,&connection->u.tcp.side2peerAddress));
+    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.tcp.side2peerAddress,querier));
     break;
   case spindump_connection_transport_udp:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.udp.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.udp.side1peerAddress,querier));
     strcat(buf," <-> ");
-    strcat(buf,spindump_address_tostring_anon(anonymizeRight,&connection->u.udp.side2peerAddress));
+    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.udp.side2peerAddress,querier));
     break;
   case spindump_connection_transport_dns:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.dns.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.dns.side1peerAddress,querier));
     strcat(buf," <-> ");
-    strcat(buf,spindump_address_tostring_anon(anonymizeRight,&connection->u.dns.side2peerAddress));
+    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.dns.side2peerAddress,querier));
     break;
   case spindump_connection_transport_coap:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.coap.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.coap.side1peerAddress,querier));
     strcat(buf," <-> ");
-    strcat(buf,spindump_address_tostring_anon(anonymizeRight,&connection->u.coap.side2peerAddress));
+    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.coap.side2peerAddress,querier));
     break;
   case spindump_connection_transport_quic:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.quic.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.quic.side1peerAddress,querier));
     strcat(buf," <-> ");
-    strcat(buf,spindump_address_tostring_anon(anonymizeRight,&connection->u.quic.side2peerAddress));
+    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.quic.side2peerAddress,querier));
     break;
   case spindump_connection_transport_icmp:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.icmp.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.icmp.side1peerAddress,querier));
     strcat(buf," <-> ");
-    strcat(buf,spindump_address_tostring_anon(anonymizeRight,&connection->u.icmp.side2peerAddress));
+    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.icmp.side2peerAddress,querier));
     break;
   case spindump_connection_aggregate_hostpair:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.aggregatehostpair.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostpair.side1peerAddress,querier));
     strcat(buf," <-> ");
-    strcat(buf,spindump_address_tostring_anon(anonymizeRight,&connection->u.aggregatehostpair.side2peerAddress));
+    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.aggregatehostpair.side2peerAddress,querier));
     break;
   case spindump_connection_aggregate_hostnetwork:
-    strcpy(buf,spindump_address_tostring_anon(anonymizeLeft,&connection->u.aggregatehostnetwork.side1peerAddress));
+    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostnetwork.side1peerAddress,querier));
     strcat(buf," <-> ");
     strcat(buf,spindump_network_tostring(&connection->u.aggregatehostnetwork.side2Network));
     break;

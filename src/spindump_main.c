@@ -53,7 +53,7 @@ enum spindump_outputformat {
 static enum spindump_outputformat format = spindump_outputformat_text;
 static unsigned int maxReceive = 0;
 static int showStats = 0;
-static int reverseDns = 1;
+static int reverseDns = 0;
 static int reportSpins = 0;
 static int reportSpinFlips = 0;
 static int anonymizeLeft = 0;
@@ -904,6 +904,7 @@ spindump_main_operation() {
   spindump_report_uninitialize(reporter);
   spindump_analyze_uninitialize(analyzer);
   spindump_capture_uninitialize(capturer);
+  spindump_reverse_dns_uninitialize(querier);
 }
 
 //
@@ -967,8 +968,8 @@ help() {
   printf("    --textual             as they occur, or have a continuously updating visual\n");
   printf("    --visual              interface. The visual interface is the default.\n");
   printf("\n");
-  printf("    --names               Use DNS names or addresses in the output.\n");
-  printf("    --addresses\n");
+  printf("    --names               Use DNS names or addresses in the output. (The default is\n");
+  printf("    --addresses           using names.)\n");
   printf("\n");
   printf("    --report-spins        Report individual spin bit changes in --textual mode.\n");
   printf("    --not-report-spins\n");
