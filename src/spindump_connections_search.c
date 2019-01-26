@@ -80,7 +80,10 @@ spindump_connections_match(struct spindump_connection* connection,
   // 
   
   if (criteria->matchType) {
-    if (connection->type != criteria->type) return(0);
+    if (connection->type != criteria->type) {
+      spindump_deepdebugf("match fails due to connection type");
+      return(0);
+    }
   }
 
   //
@@ -89,12 +92,18 @@ spindump_connections_match(struct spindump_connection* connection,
   
   if (criteria->matchIcmpType) {
     spindump_assert(criteria->matchType && criteria->type == spindump_connection_transport_icmp);
-    if (connection->u.icmp.side1peerType != criteria->icmpType) return(0);
+    if (connection->u.icmp.side1peerType != criteria->icmpType) {
+      spindump_deepdebugf("match fails due to icmp type");
+      return(0);
+    }
   }
   
   if (criteria->matchIcmpId) {
     spindump_assert(criteria->matchType && criteria->type == spindump_connection_transport_icmp);
-    if (connection->u.icmp.side1peerId != criteria->icmpId) return(0);
+    if (connection->u.icmp.side1peerId != criteria->icmpId) {
+      spindump_deepdebugf("match fails due to icmp id");
+      return(0);
+    }
   }
   
   //
@@ -111,24 +120,48 @@ spindump_connections_match(struct spindump_connection* connection,
 
   case spindump_connection_searchcriteria_srcdst_destinationonly:
     spindump_connections_getaddresses(connection,&side1address,&side2address);
-    if (side2address == 0) return(0);
-    if (!spindump_address_equal(side2address,&criteria->side2address)) return(0);
+    if (side2address == 0) {
+      spindump_deepdebugf("match fails due to dst address missing");
+      return(0);
+    }
+    if (!spindump_address_equal(side2address,&criteria->side2address)) {
+      spindump_deepdebugf("match fails due to dst address");
+      return(0);
+    }
     *fromResponder = 0;
     fromResponderSet = 1;
     break;
 
   case spindump_connection_searchcriteria_srcdst_both:
     spindump_connections_getaddresses(connection,&side1address,&side2address);
-    if (side1address == 0 || side2address == 0) return(0);
-    if (!spindump_address_equal(side1address,&criteria->side1address)) return(0);
-    if (!spindump_address_equal(side2address,&criteria->side2address)) return(0);
+    if (side1address == 0 || side2address == 0) {
+      spindump_deepdebugf("match fails due to address missing");
+      return(0);
+    }
+    if (!spindump_address_equal(side1address,&criteria->side1address)) {
+      spindump_deepdebugf("match fails due to src address %s",
+			  spindump_address_tostring(side1address));
+      spindump_deepdebugf("vs. %s",
+			  spindump_address_tostring(side2address));
+      return(0);
+    }
+    if (!spindump_address_equal(side2address,&criteria->side2address)) {
+      spindump_deepdebugf("match fails due to dst address %s",
+			  spindump_address_tostring(side1address));
+      spindump_deepdebugf("vs. %s",
+			  spindump_address_tostring(side2address));
+      return(0);
+    }
     *fromResponder = 0;
     fromResponderSet = 1;
     break;
     
   case spindump_connection_searchcriteria_srcdst_both_allowreverse:
     spindump_connections_getaddresses(connection,&side1address,&side2address);
-    if (side1address == 0 || side2address == 0) return(0);
+    if (side1address == 0 || side2address == 0) {
+      spindump_deepdebugf("match fails due to address missing");
+      return(0);
+    }
     if (spindump_address_equal(side1address,&criteria->side1address) &&
 	spindump_address_equal(side2address,&criteria->side2address)) {
       *fromResponder = 0;
@@ -138,6 +171,7 @@ spindump_connections_match(struct spindump_connection* connection,
       *fromResponder = 1;
       fromResponderSet = 1;
     } else {
+      spindump_deepdebugf("match fails due to no address match");
       return(0);
     }
     break;
@@ -282,6 +316,7 @@ spindump_connections_match(struct spindump_connection* connection,
   // All tests have passed, so this connection satisfies the criteria!
   // 
   
+  spindump_deepdebugf("match succeeds");
   return(1);
 }
 
@@ -304,12 +339,19 @@ spindump_connections_search(struct spindump_connection_searchcriteria* criteria,
 
   for (unsigned i = 0; i < table->nConnections; i++) {
     struct spindump_connection* connection = table->connections[i];
-    if (connection != 0 &&
-	spindump_connections_match(connection,criteria,fromResponder)) {
-      spindump_debugf("found an existing %u connection %u",
-		      spindump_connection_type_to_string(connection->type),
-		      connection->id);
-      return(connection);
+    if (connection != 0) {
+
+      spindump_deepdebugf("search compares to connection %u", connection->id);
+
+      if (spindump_connections_match(connection,criteria,fromResponder)) {
+	
+	spindump_debugf("found an existing %u connection %u",
+			spindump_connection_type_to_string(connection->type),
+			connection->id);
+	return(connection);
+
+      }
+      
     }
   }
 

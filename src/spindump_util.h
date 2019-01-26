@@ -33,9 +33,9 @@
 // Some helper macros -------------------------------------------------------------------------
 //
 
-#define spindump_assert(cond)	if (!(cond)) {                             \
+#define spindump_assert(cond)	if (!(cond)) {                                      \
                                   spindump_fatalf("Assertion failed on %s line %u", \
-                                                  __FILE__, __LINE__);		   \
+                                                  __FILE__, __LINE__);		    \
                                 }
 #define spindump_max(a,b)       ((a) > (b) ? (a) : (b))
 #define spindump_min(a,b)       ((a) < (b) ? (a) : (b))

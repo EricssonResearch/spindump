@@ -26,6 +26,7 @@ SPINDUMP_LIB_HEADERS	=	spindump_util.h \
 				spindump_connections_set_iterator.h \
 				spindump_table_structs.h \
 				spindump_table.h \
+				spindump_test.h \
 				spindump_analyze.h \
 				spindump_analyze_icmp.h \
 				spindump_analyze_tcp.h \
