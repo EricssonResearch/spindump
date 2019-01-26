@@ -128,8 +128,8 @@ SPINDUMP_ALL_SOURCES	=	$(SPINDUMP_LIB_HEADERS) \
 				$(SPINDUMP_TST_SOURCES) \
 				$(SPINDUMP_OTHER_SOURCES)
 CFLAGS			=	-Wall --pedantic $(OPTFLAGS)
-OPTFLAGS		=	-O3
-#OPTFLAGS		=	-g
+#OPTFLAGS		=	-O3
+OPTFLAGS		=	-g -DSPINDUMP_DEBUG
 LDFLAGS			=	-lpthread -lpcap -lncurses -lm
 CC			=	gcc
 LD			=	$(CC)
