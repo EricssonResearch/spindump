@@ -552,6 +552,13 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   //
   // Call some handlers, if any, for the new measurements
   // 
+
+  if (fromResponder && connection->packetsFromSide2 == 1) {
+    spindump_analyze_process_handlers(state,
+				      spindump_analyze_event_firstresponsepacket,
+				      packet,
+				      connection);
+  }
   
   spindump_analyze_process_handlers(state,
 				    spindump_analyze_event_newpacket,

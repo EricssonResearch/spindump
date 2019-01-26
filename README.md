@@ -235,7 +235,8 @@ The currently defined events that can be caught are:
     #define spindump_analyze_event_initiatorspinvalue           64
     #define spindump_analyze_event_responderspinvalue          128
     #define spindump_analyze_event_newpacket                   256
-    #define spindump_analyze_event_statechange             512
+    #define spindump_analyze_event_firstresponsepacket     512
+    #define spindump_analyze_event_statechange            1024
 
 These can be mixed together in one handler by ORing them together. The pseudo-event "spindump_analyze_event_alllegal" represents all of the events.
 
