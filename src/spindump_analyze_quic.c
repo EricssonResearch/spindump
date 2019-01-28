@@ -211,7 +211,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
     }
     
     spindump_connections_changestate(state,packet,connection,spindump_connection_state_establishing);
-    connection->u.quic.version = quicVersion;
+    connection->u.quic.version = 
+      connection->u.quic.originalVersion = quicVersion;
     spindump_debugf("initialized QUIC connection %u state to ESTABLISHING, version %08x", connection->id, quicVersion);
     fromResponder = 0;
     
@@ -226,6 +227,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   
   if (longForm && connection->u.quic.version != quicVersion) {
     spindump_debugf("re-setting QUIC connection %u version to %08x", connection->id, quicVersion);
+    connection->u.quic.version = quicVersion;
   }
   
   //

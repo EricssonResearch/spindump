@@ -143,6 +143,7 @@ struct spindump_connection {
     
     struct {
       uint32_t version;                             // QUIC version
+      uint32_t originalVersion;                     // original, offered QUIC version
       struct
       spindump_quic_connectionid peer1ConnectionID; // source connection id of the initial packet
       struct

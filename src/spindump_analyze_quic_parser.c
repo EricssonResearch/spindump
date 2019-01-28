@@ -365,12 +365,12 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
       
     case spindump_quic_version_negotiation:
       spindump_deepdebugf("QUIC version negotiation");
-      version = spindump_quic_version_unknown;
+      version = spindump_quic_version_negotiation;
       break;
       
     case spindump_quic_version_forcenegotiation:
       spindump_deepdebugf("QUIC forcing version negotiation");
-      version = spindump_quic_version_unknown;
+      version = spindump_quic_version_negotiation;
       break;
       
     default:

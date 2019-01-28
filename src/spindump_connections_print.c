@@ -583,10 +583,23 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   
   if (connection->type == spindump_connection_transport_quic) {
     spindump_deepdebugf("report_brief_notefieldval point 4");
-    spindump_connection_addtobuf(buf,sizeof(buf),
-				 spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
-				 "",
-				 1);
+    if (connection->u.quic.version == connection->u.quic.originalVersion) {
+      spindump_connection_addtobuf(buf,sizeof(buf),
+				   spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
+				   "",
+				   1);
+    } else {
+      char vbuf[40];
+      const char* orig = spindump_analyze_quic_parser_versiontostring(connection->u.quic.originalVersion);
+      if (strncmp(orig,"v.",2) == 0) orig += 2;
+      sprintf(vbuf,"%s(%s)",
+	      spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
+	      orig);
+      spindump_connection_addtobuf(buf,sizeof(buf),
+				   vbuf,
+				   "",
+				   1);
+    }
     if (connection->u.quic.spinFromPeer1to2.totalSpins == 0 &&
 	connection->u.quic.spinFromPeer2to1.totalSpins == 0) {
       spindump_deepdebugf("report_brief_notefieldval point 5");
