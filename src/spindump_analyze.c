@@ -396,7 +396,7 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
   
   if (packet->caplen < position) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes IP header (capture length only %u)", packet->caplen);
+    spindump_warnf("not enough bytes for the IP header (capture length only %u)", packet->caplen);
     *p_connection = 0;
     return;
   }
@@ -424,7 +424,7 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
   
   if (packet->caplen < position + ipHeaderSize) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes IP header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
+    spindump_warnf("not enough bytes for the IP header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
     *p_connection = 0;
     return;
   }
@@ -487,7 +487,7 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   
   if (packet->caplen < position) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes IPv6 header (capture length only %u)", packet->caplen);
+    spindump_warnf("not enough bytes for the IPv6 header (capture length only %u)", packet->caplen);
     *p_connection = 0;
     return;
   }
@@ -508,7 +508,7 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   
   if (packet->caplen < position + ipHeaderSize) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes IPv6 header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
+    spindump_warnf("not enough bytes for the IPv6 header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
     *p_connection = 0;
     return;
   }
@@ -651,7 +651,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
   if (iplen < ipHeaderSize ||
       packet->caplen < payloadPosition) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes IPv%u header (only %u bytes remain after Ethernet header)",
+    spindump_warnf("not enough bytes for the IPv%u header (only %u bytes remain after Ethernet header)",
 		   ipVersion,
 		   iplen);
     *p_connection = 0;

@@ -180,9 +180,17 @@ test:	$(SPINDUMP_TST)
 
 install:	$(SPINDUMP_CMD)
 	cp -f $(SPINDUMP_CMD) /usr/local/bin/$(SPINDUMP_CMD)
+	mkdir -p /usr/local/include/spindump
+	chmod a+rx /usr/local/include/spindump
+	chmod og-w /usr/local/include/spindump
+	cp -f $(SPINDUMP_LIB_HEADERS) /usr/local/include/spindump/
+	cp -f $(SPINDUMP_LIB) /usr/local/lib/$(SPINDUMP_LIB)
 
 uninstall:
 	rm -f /usr/local/bin/$(SPINDUMP_CMD)
+	rm -f /usr/local/include/spindump/*.h
+	rmdir /usr/local/include/spindump
+	rm -f /usr/local/lib/$(SPINDUMP_LIB)
 
 wc:
 	wc	$(SPINDUMP_ALL_SOURCES)
