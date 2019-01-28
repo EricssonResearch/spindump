@@ -578,6 +578,35 @@ static void systemtests() {
   spindump_checktest(connection4->rightRTT.lastRTT == 1);
 
   //
+  // Analyzer tests -- capture length being first not the whole packet
+  // and then too small to contain an IP header
+  //
+  
+  struct spindump_packet packet9;
+  struct spindump_connection* connection5 = 0;
+  memset(&packet9,0,sizeof(packet9));
+  
+  spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForIpHdr == 0);
+  
+  packet9.timestamp.tv_usec = 0;
+  packet9.contents = packet1bytes;
+  packet9.etherlen = sizeof(packet1bytes);
+  packet9.caplen = packet1.etherlen - 4; // miss the last bytes of the ICMPv6, should not matter
+  spindump_analyze_process(analyzer,&packet9,&connection5);
+  
+  spindump_checktest(connection5 != 0);
+
+  connection5 = 0;
+  packet9.timestamp.tv_usec = 0;
+  packet9.contents = packet1bytes;
+  packet9.etherlen = sizeof(packet1bytes);
+  packet9.caplen = packet1.etherlen - 20; // miss plenty, including some of the IPv6 header, should be an error
+  spindump_analyze_process(analyzer,&packet9,&connection5);
+  
+  spindump_checktest(connection5 == 0);
+  spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForIpHdr == 1);
+  
+  //
   // Cleanup
   //
   

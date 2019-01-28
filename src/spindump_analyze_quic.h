@@ -38,6 +38,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 			      unsigned int ipPacketLength,
 			      unsigned int udpHeaderPosition,
 			      unsigned int udpLength,
+			      unsigned int remainingCaplen,
 			      struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_QUIC_H

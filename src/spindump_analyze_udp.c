@@ -61,6 +61,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
 			     unsigned int ipPacketLength,
 			     unsigned int udpHeaderPosition,
 			     unsigned int udpLength,
+			     unsigned int remainingCaplen,
 			     struct spindump_connection** p_connection) {
 
   //
@@ -79,7 +80,8 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   // 
   
   state->stats->receivedUdp++;
-  if (udpLength < spindump_udp_header_size) {
+  if (udpLength < spindump_udp_header_size ||
+      remainingCaplen < spindump_udp_header_size) {
     state->stats->notEnoughPacketForUdpHdr++;
     spindump_warnf("not enough payload bytes for an UDP header", udpLength);
     *p_connection = 0;
@@ -146,6 +148,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
 				 ipPacketLength,
 				 ipHeaderPosition + ipHeaderSize,
 				 udpLength,
+				 remainingCaplen,
 				 p_connection);
     return;
   }
@@ -169,6 +172,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
 				  ipPacketLength,
 				  ipHeaderPosition + ipHeaderSize,
 				  udpLength,
+				  remainingCaplen,
 				  dtls,
 				  p_connection);
     return;
@@ -191,6 +195,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
 				  ipPacketLength,
 				  udpHeaderPosition,
 				  udpLength,
+				  remainingCaplen,
 				  p_connection);
     return;
   }
@@ -210,6 +215,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
 				  ipPacketLength,
 				  udpHeaderPosition,
 				  udpLength,
+				  remainingCaplen,
 				  p_connection);
     return;
   }

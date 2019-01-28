@@ -54,6 +54,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 			      unsigned int ipPacketLength,
 			      unsigned int udpHeaderPosition,
 			      unsigned int udpLength,
+			      unsigned int remainingCaplen,
 			      struct spindump_connection** p_connection) {
   
   //
@@ -109,9 +110,10 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   int sourceCidPresent;
   struct spindump_quic_connectionid sourceCid;
   enum spindump_quic_message_type type;
-  
+
   if (!spindump_analyze_quic_parser_parse(udpPayload,
 					  size_udppayload,
+					  remainingCaplen - spindump_udp_header_size,
 					  &longForm,
 					  &quicVersion,
 					  &destinationCidLengthKnown,

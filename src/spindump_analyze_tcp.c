@@ -188,6 +188,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 			     unsigned int ipPacketLength,
 			     unsigned int tcpHeaderPosition,
 			     unsigned int tcpLength,
+			     unsigned int remainingCaplen,
 			     struct spindump_connection** p_connection) {
 
   //
@@ -220,7 +221,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   spindump_deepdebugf("tcp header: ack = %u", htonl(tcp->th_ack));
   spindump_deepdebugf("tcp header: off = %u (raw %02x)", SPINDUMP_TH_OFF(tcp), tcp->th_offx2);
   spindump_deepdebugf("tcp header: flags = %x", tcp->th_flags);
-  if (tcpHeaderSize < 20) {
+  if (tcpHeaderSize < 20 || remainingCaplen < tcpHeaderSize) {
     state->stats->invalidTcpHdrSize++;
     spindump_warnf("TCP header length %u invalid", tcpHeaderSize);
     *p_connection = 0;

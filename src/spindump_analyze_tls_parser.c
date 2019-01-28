@@ -228,6 +228,7 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
 int
 spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
 					unsigned int payload_len,
+					unsigned int remainingCaplen,
 					int isDatagram,
 					int* p_isHandshake,
 					int* p_isInitialHandshake,
@@ -260,7 +261,8 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
     sizeof(struct spindump_dtls_recordlayer) :
     sizeof(struct spindump_tls_recordlayer);
   
-  if (payload_len < recordLayerSize) {
+  if (payload_len < recordLayerSize ||
+      remainingCaplen < recordLayerSize) {
     spindump_deepdebugf("spindump TLS analyzer payload size %u too small", payload_len);
     return(0);
   }

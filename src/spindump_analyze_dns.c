@@ -240,6 +240,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
 			     unsigned int ipPacketLength,
 			     unsigned int udpHeaderPosition,
 			     unsigned int udpLength,
+			     unsigned int remainingCaplen,
 			     struct spindump_connection** p_connection) {
   
   //
@@ -272,7 +273,8 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   //
 
   unsigned int dnsSize = udpLength - spindump_udp_header_size;
-  if (dnsSize < sizeof(struct spindump_dns)) {
+  if (dnsSize < sizeof(struct spindump_dns) ||
+      remainingCaplen < spindump_udp_header_size + sizeof(struct spindump_dns)) {
     spindump_debugf("packet too short for DNS");
     state->stats->notEnoughPacketForDnsHdr++;
     *p_connection = 0;

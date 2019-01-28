@@ -249,6 +249,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
 int
 spindump_analyze_quic_parser_parse(const unsigned char* payload,
 				   unsigned int payload_len,
+				   unsigned int remainingCaplen,
 				   int* p_longform,
 				   uint32_t* p_version,
 				   int* p_destinationCidLengthKnown,
@@ -285,7 +286,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // 
   
   struct spindump_quic* quic = (struct spindump_quic*)payload;
-  if (payload_len < 1) {
+  if (payload_len < 1 || remainingCaplen < 1) {
     stats->notEnoughPacketForQuicHdr++;
     return(0);
   }
@@ -310,7 +311,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // 
   
   if (longForm) {
-    if (payload_len < 6) {
+    if (payload_len < 6 || remainingCaplen < 6) {
       stats->notEnoughPacketForQuicHdr++;
       return(0);
     }
@@ -465,7 +466,8 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
     spindump_analyze_quic_parser_cidlengths(quic->u.longheader.qh_cidLengths,
 					    &destLen,
 					    &sourceLen);
-    if (payload_len < 6 + destLen + sourceLen) {
+    if (payload_len < 6 + destLen + sourceLen ||
+	remainingCaplen < 6 + destLen + sourceLen) {
       spindump_deepdebugf("not enough bytes in packet for dest & source CIDs");
       stats->notEnoughPacketForQuicHdr++;
       return(0);

@@ -394,6 +394,13 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
   // Parse and verify IP header
   //
   
+  if (packet->caplen < position) {
+    state->stats->notEnoughPacketForIpHdr++;
+    spindump_warnf("not enough bytes IP header (capture length only %u)", packet->caplen);
+    *p_connection = 0;
+    return;
+  }
+  
   const struct spindump_ip* ip = (const struct spindump_ip*)(packet->contents + position);
   unsigned int ipHeaderSize = SPINDUMP_IP_HL(ip)*4;
   if (ipHeaderSize < 20) {
@@ -414,6 +421,13 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
   //
   // Verify packet length is appropriate
   // 
+  
+  if (packet->caplen < position + ipHeaderSize) {
+    state->stats->notEnoughPacketForIpHdr++;
+    spindump_warnf("not enough bytes IP header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
+    *p_connection = 0;
+    return;
+  }
   
   unsigned int ipPacketLength = ntohs(ip->ip_len);
   if (ipPacketLength > packet->etherlen - position) {
@@ -471,6 +485,13 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   // Parse and verify IP header
   //
   
+  if (packet->caplen < position) {
+    state->stats->notEnoughPacketForIpHdr++;
+    spindump_warnf("not enough bytes IPv6 header (capture length only %u)", packet->caplen);
+    *p_connection = 0;
+    return;
+  }
+  
   const struct spindump_ip6* ip6 = (const struct spindump_ip6*)(packet->contents + position);
   unsigned int ipHeaderSize = 40;
   uint8_t ipVersion = SPINDUMP_IP6_V(ip6);
@@ -484,6 +505,13 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   //
   // Verify packet length is appropriate
   // 
+  
+  if (packet->caplen < position + ipHeaderSize) {
+    state->stats->notEnoughPacketForIpHdr++;
+    spindump_warnf("not enough bytes IPv6 header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
+    *p_connection = 0;
+    return;
+  }
   
   unsigned int ipPacketLength = ipHeaderSize + (unsigned int)ntohs(ip6->ip6_payloadlen);
   if (ipPacketLength > packet->etherlen - position) {
@@ -641,6 +669,8 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 		      ipHeaderSize,
 		      ipVersion,
 		      protolen);
+  spindump_assert(ipHeaderPosition + ipHeaderSize <= packet->caplen);
+  unsigned int remainingCaplen = packet->caplen - ipHeaderPosition - ipHeaderSize;
   
   //
   // Account for statistics
@@ -671,6 +701,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				 ipPacketLength,
 				 ipHeaderPosition + ipHeaderSize,
 				 protolen,
+				 remainingCaplen,
 				 p_connection);
     break;
     
@@ -683,6 +714,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				 ipPacketLength,
 				 ipHeaderPosition + ipHeaderSize,
 				 protolen,
+				 remainingCaplen,
 				 p_connection);
     break;
     
@@ -695,6 +727,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				  ipPacketLength,
 				  ipHeaderPosition + ipHeaderSize,
 				  protolen,
+				  remainingCaplen,
 				  p_connection);
     break;
     
@@ -707,6 +740,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				   ipPacketLength,
 				   ipHeaderPosition + ipHeaderSize,
 				   protolen,
+				   remainingCaplen,
 				   p_connection);
     break;
     

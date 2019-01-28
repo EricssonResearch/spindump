@@ -38,6 +38,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* table,
 			     unsigned int ipPacketLength,
 			     unsigned int tcpHeaderPosition,
 			     unsigned int tcpLength,
+			     unsigned int remainingCaplen,
 			     struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_TCP_H

@@ -63,6 +63,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
 int
 spindump_analyze_quic_parser_parse(const unsigned char* payload,
 				   unsigned int payload_len,
+				   unsigned int remainingCaplen,
 				   int* p_longform,
 				   uint32_t* p_version,
 				   int* p_destinationCidLengthKnown,

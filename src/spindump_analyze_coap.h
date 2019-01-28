@@ -51,6 +51,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 			      unsigned int ipPacketLength,
 			      unsigned int udpHeaderPosition,
 			      unsigned int udpLength,
+			      unsigned int remainingCaplen,
 			      int isDtls,
 			      struct spindump_connection** p_connection);
 

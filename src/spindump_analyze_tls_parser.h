@@ -35,6 +35,7 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
 int
 spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
 					unsigned int payload_len,
+					unsigned int remainingCaplen,
 					int isDatagram,
 					int* p_isHandshake,
 					int* p_isInitialHandshake,

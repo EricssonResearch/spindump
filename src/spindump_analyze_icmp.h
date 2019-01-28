@@ -38,6 +38,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 			      unsigned int ipPacketLength,
 			      unsigned int icmpHeaderPosition,
 			      unsigned int icmpLength,
+			      unsigned int remainingCaplen,
 			      struct spindump_connection** p_connection);
 void
 spindump_analyze_process_icmp6(struct spindump_analyze* state,
@@ -48,6 +49,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			       unsigned int ipPacketLength,
 			       unsigned int icmpHeaderPosition,
 			       unsigned int icmpLength,
+			       unsigned int remainingCaplen,
 			       struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_ICMP_H

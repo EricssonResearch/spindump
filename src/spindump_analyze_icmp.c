@@ -47,6 +47,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 			      unsigned int ipPacketLength,
 			      unsigned int icmpHeaderPosition,
 			      unsigned int icmpLength,
+			      unsigned int remainingCaplen,
 			      struct spindump_connection** p_connection) {
 
   spindump_assert(state != 0);
@@ -55,11 +56,10 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   spindump_assert(icmpHeaderPosition > ipHeaderPosition);
   spindump_assert(p_connection != 0);
   
-  
   //
   // Parse the ICMP header
   // 
-  
+
   state->stats->receivedIcmp++;
   if (icmpLength <= 4) {
     state->stats->notEnoughPacketForIcmpHdr++;
@@ -231,6 +231,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			       unsigned int ipPacketLength,
 			       unsigned int icmpHeaderPosition,
 			       unsigned int icmpLength,
+			       unsigned int remainingCaplen,
 			       struct spindump_connection** p_connection) {
 
   spindump_assert(state != 0);
