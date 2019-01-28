@@ -13,6 +13,7 @@ uninstall:
 
 clean:
 	(cd src; $(MAKE) clean)
+	-rm -f spindump.tar.gz
 
 spindump.tar.gz:
 	-rm -f spindump.tar.gz
