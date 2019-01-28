@@ -117,6 +117,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   // 
 
   int new = 0;
+  int fromResponder;
   
   if (peerType == ICMP_ECHO ||
       peerType == ICMP_ECHOREPLY) {
@@ -202,9 +203,12 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 					       "ICMP echo reply");
       }
       
+      fromResponder = 1;
+      
     } else {
       
       connection->u.icmp.side1peerLatestSequence = peerSeq;
+      fromResponder = 0;
       
     }
     
@@ -220,7 +224,12 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     // Update statistics
     //
     
-    spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength);
+    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+
+    //
+    // Done. Return connection information to caller.
+    //
+    
     *p_connection = connection;
     
   } else {
@@ -278,6 +287,8 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 		  packet->etherlen);
   
   uint8_t peerType = icmp6->ih6_type;
+  int new = 0;
+  int fromResponder;
   
   switch (peerType) {
   case ICMP6_ECHO_REQUEST:
@@ -360,6 +371,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 	  *p_connection = 0;
 	  return;
 	}
+	new = 1;
 	state->stats->connections++;
 	state->stats->connectionsIcmp++;
       }
@@ -371,7 +383,6 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     
     if (peerType == ICMP6_ECHO_REPLY) {
       
-      spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength);
       if (connection->state == spindump_connection_state_establishing) {
 	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
@@ -384,13 +395,33 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 					       &packet->timestamp,
 					       "ICMPv6 ECHO reply");
       }
+
+      fromResponder = 1;
       
     } else {
       
-      spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength);
       connection->u.icmp.side1peerLatestSequence = peerSeq;
+      fromResponder = 0;
       
     }
+    
+    //
+    // Call some handlers based on what happened here, if needed
+    // 
+    
+    if (new) {
+      spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    }
+    
+    //
+    // Update statistics
+    //
+    
+    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+    
+    //
+    // Done. Return connection information to caller.
+    //
     
     *p_connection = connection;
     
