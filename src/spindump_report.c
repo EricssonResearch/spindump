@@ -229,7 +229,7 @@ spindump_report_update(struct spindump_report_state* reporter,
       mvaddstr(y++, 0, connectionsstatus);
       reporter->inputlineposition = y;
       mvaddstr(y++, 0, "           ");
-      char columnsbuf[200];
+      char columnsbuf[spindump_report_maxlinelen];
       unsigned int addrsiz = spindump_connection_report_brief_variablesize(COLS);
       unsigned int maxsessionlen = spindump_connection_report_brief_sessionsize(COLS);
       snprintf(columnsbuf,sizeof(columnsbuf)-1,
@@ -286,7 +286,7 @@ spindump_report_update(struct spindump_report_state* reporter,
       
       spindump_deepdebugf("report displaying");
       for (i = 0; i < actualConnections; i++) {
-	char connectionbuf[300];
+	char connectionbuf[spindump_report_maxlinelen];
 	spindump_connection_report_brief(actualTable[i],
 					 connectionbuf,
 					 sizeof(connectionbuf),

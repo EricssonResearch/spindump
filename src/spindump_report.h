@@ -28,6 +28,12 @@
 #include "spindump_stats.h"
 
 //
+// Parameter definitions ----------------------------------------------------------------------
+//
+
+#define spindump_report_maxlinelen		400
+
+//
 // Data structures ----------------------------------------------------------------------------
 //
 
