@@ -117,6 +117,8 @@ SPINDUMP_TAR		=	spindump.tar.gz
 SPINDUMP_OTHER_SOURCES	=	Makefile \
 				../Makefile
 SPINDUMP_OTHER_FILES	=	../README.md \
+				../LICENSE.txt \
+				../Makefile \
 				../images/architecture1.jpg \
 				../images/architecture2.jpg \
 				../images/architecture2s.jpg \

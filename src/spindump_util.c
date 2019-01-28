@@ -164,11 +164,11 @@ spindump_timetostring(const struct timeval* result) {
   spindump_assert(result != 0);
   static char buf[100];
   struct tm* t = localtime(&result->tv_sec);
-  snprintf(buf,sizeof(buf)-1,"%02u:%02u:%02u.%06u",
-	   t->tm_hour,
-	   t->tm_min,
-	   t->tm_sec,
-	   result->tv_usec);
+  snprintf(buf,sizeof(buf)-1,"%02lu:%02lu:%02lu.%06lu",
+	   (unsigned long)t->tm_hour,
+	   (unsigned long)t->tm_min,
+	   (unsigned long)t->tm_sec,
+	   (unsigned long)result->tv_usec);
   return(buf);
 }
 

@@ -42,8 +42,8 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
 static int
 spindump_analyze_tls_isvalid_recordlayer_content_type(uint8_t type);
 static void
-spindump_analyze_tls_parse_versionconversion(const spindump_tls_version_inpacket* valueInPacket,
-					     const int isDatagram,
+spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valueInPacket,
+					     int isDatagram,
 					     spindump_tls_version* result);
 static void
 spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct spindump_dtls_handshake* handshake,
@@ -90,8 +90,8 @@ spindump_analyze_tls_parser_versiontostring(const spindump_tls_version version) 
 }
 
 static void
-spindump_analyze_tls_parse_versionconversion(const spindump_tls_version_inpacket* valueInPacket,
-					     const int isDatagram,
+spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valueInPacket,
+					     int isDatagram,
 					     spindump_tls_version* result) {
   
   //
