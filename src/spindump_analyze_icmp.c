@@ -123,7 +123,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     spindump_address destination;
     uint16_t peerId = icmp->ih_u.ih_echo.ih_id;
     uint16_t peerSeq = icmp->ih_u.ih_echo.ih_seq;
-
+    
     if (peerType == ICMP_ECHO) {
       spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
       spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
@@ -135,7 +135,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     //
     // Look for existing connection
     // 
-
+    
     struct spindump_connection* connection =
       spindump_connections_searchconnection_icmp(&source,
 						 &destination,
@@ -148,10 +148,21 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     // 
     
     if (connection == 0) {
+      
       if (peerType == ICMP_ECHOREPLY) {
+	
+	//
+	// We're only seeing a REPLY without corresponding REQUEST, so
+	// we will drop this packet and not deal with the connection;
+	// it packet may of course still be counted within some
+	// aggregate statistics.
+	//
+	
 	*p_connection = 0;
 	return;
+	
       } else {
+	
 	connection = spindump_connections_newconnection_icmp(&source,
 							     &destination,
 							     peerType,
@@ -164,6 +175,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 	}
 	state->stats->connections++;
 	state->stats->connectionsIcmp++;
+	
       }
     }
 
@@ -198,6 +210,12 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     *p_connection = connection;
     
   } else {
+
+    //
+    // This isn't ICMP ECHO or REPLY so we don't support this; the
+    // packet may still be counted among host-to-host or other
+    // aggregate statistics, if the addresses match that aggregate.
+    //
     
     *p_connection = 0;
     

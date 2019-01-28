@@ -56,7 +56,7 @@ For the textual mode, the output format is selectable as either readable text or
     --anonymize
 	--not-anonymize
 
-These options are used to control the amount of anonymization that spindump does. Anonymization can be turned on or off either for hosts whose traffic is displayed, or for hosts on the "left" or "right" side of the in-network measurement point. "Left" side is defined as the traffic coming in on the designated measurement interface. And the "right" side is defined as the traffic going out.
+These options are used to control the amount of anonymization that spindump does. Anonymization can be turned on or off either for hosts whose traffic is displayed, or for hosts on the "left" or "right" side of the in-network measurement point. "Left" side is defined as the traffic initiating the connection. And the "right" side is defined as the traffic from the responder.
 
     --names
     --addresses

@@ -418,7 +418,7 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
   unsigned int ipPacketLength = ntohs(ip->ip_len);
   if (ipPacketLength > packet->etherlen - position) {
     state->stats->invalidIpLength++;
-    spindump_warnf("IP packet length is invalid (%u vs. u%)",
+    spindump_warnf("IP packet length is invalid (%u vs. %u)",
 		   ipPacketLength,
 		   packet->etherlen - position);
     *p_connection = 0;
