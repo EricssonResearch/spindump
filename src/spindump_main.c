@@ -436,6 +436,8 @@ spindump_main_textualmeasurement(struct spindump_analyze* state,
 				 struct spindump_packet* packet,
 				 struct spindump_connection* connection) {
 
+  if (toolmode != spindump_toolmode_textual) return;
+  
   struct spindump_reverse_dns* querier = (struct spindump_reverse_dns*)handlerData;
   const char* type = spindump_connection_type_to_string(connection->type);
   const char* addrs = spindump_connection_addresses(connection,70,anonymizeLeft,anonymizeRight,querier);
@@ -759,20 +761,22 @@ spindump_main_operation() {
   // If we are in the textual output mode, setup handlers to
   // track new RTT measurements.
   // 
-  
-  spindump_analyze_registerhandler(analyzer,
-				   spindump_analyze_event_newrightrttmeasurement |
-				   (reportSpins ?
-				    (spindump_analyze_event_initiatorspinvalue |
-				     spindump_analyze_event_responderspinvalue) :
-				    0) |
-				   (reportSpinFlips ?
-				    (spindump_analyze_event_initiatorspinflip |
-				     spindump_analyze_event_responderspinflip |
-				     spindump_analyze_event_newleftrttmeasurement) :
-				    0),
-				   spindump_main_textualmeasurement,
-				   querier);
+
+  if (toolmode == spindump_toolmode_textual) {
+    spindump_analyze_registerhandler(analyzer,
+				     spindump_analyze_event_newrightrttmeasurement |
+				     (reportSpins ?
+				      (spindump_analyze_event_initiatorspinvalue |
+				       spindump_analyze_event_responderspinvalue) :
+				      0) |
+				     (reportSpinFlips ?
+				      (spindump_analyze_event_initiatorspinflip |
+				       spindump_analyze_event_responderspinflip |
+				       spindump_analyze_event_newleftrttmeasurement) :
+				      0),
+				     spindump_main_textualmeasurement,
+				     querier);
+  }
   
   //
   // Main operation
