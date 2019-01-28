@@ -287,6 +287,8 @@ spindump_report_update(struct spindump_report_state* reporter,
       spindump_deepdebugf("report displaying");
       for (i = 0; i < actualConnections; i++) {
 	char connectionbuf[spindump_report_maxlinelen];
+	spindump_assert(actualTable[i] != 0);
+	spindump_deepdebugf("report displaying connection %u", actualTable[i]->id);
 	spindump_connection_report_brief(actualTable[i],
 					 connectionbuf,
 					 sizeof(connectionbuf),

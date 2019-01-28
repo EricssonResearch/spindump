@@ -662,6 +662,8 @@ enum spindump_quic_message_type {
 #define spindump_quic_version_draft02          0xff000002
 #define spindump_quic_version_draft01          0xff000001
 #define spindump_quic_version_draft00          0xff000000
+#define spindump_quic_version_huitema          0x50435131
+#define spindump_quic_version_mozilla          0xf123f0c5
 #define spindump_quic_version_forcenegotmask   0x0f0f0f0f
 #define spindump_quic_version_forcenegotiation 0x0a0a0a0a
 #define spindump_quic_version_unknown          0xffffffff

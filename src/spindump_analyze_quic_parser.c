@@ -182,6 +182,8 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   case spindump_quic_version_draft02:
   case spindump_quic_version_draft01:
   case spindump_quic_version_draft00:
+  case spindump_quic_version_huitema:
+  case spindump_quic_version_mozilla:
   case spindump_quic_version_negotiation:
   case spindump_quic_version_forcenegotiation:
     break;
@@ -192,12 +194,14 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   //
   // Look at the message type
   // 
-
+  
   uint8_t messageType;
   switch (version) {
     
   case spindump_quic_version_rfc:
   case spindump_quic_version_draft17:
+  case spindump_quic_version_huitema:
+  case spindump_quic_version_mozilla:
     messageType = headerByte & spindump_quic_byte_type;
     spindump_deepdebugf("looking at v17 message type %02x", messageType);
     switch (messageType) {
@@ -332,6 +336,8 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
       
     case spindump_quic_version_draft17:
     case spindump_quic_version_draft16:
+    case spindump_quic_version_huitema:
+    case spindump_quic_version_mozilla:
       // OK// 
       spindump_deepdebugf("QUIC version ok");
       break;
@@ -387,6 +393,8 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
       
     case spindump_quic_version_rfc:
     case spindump_quic_version_draft17:
+    case spindump_quic_version_huitema:
+    case spindump_quic_version_mozilla:
       messageType = headerByte & spindump_quic_byte_type;
       spindump_deepdebugf("QUIC v17 message type %02x", messageType);
       switch (messageType) {
@@ -584,9 +592,13 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version) {
     return("v01");
   case spindump_quic_version_draft00:
     return("v00");
+  case spindump_quic_version_huitema:
+    return("v.huit");
+  case spindump_quic_version_mozilla:
+    return("v.moz");
   case spindump_quic_version_negotiation:
-    return("v tbd");
+    return("v.tbd");
   default:
-    return(0);
+    return("v.unknown");
   }
 }

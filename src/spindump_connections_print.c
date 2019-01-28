@@ -556,7 +556,8 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   //
   // Setup a buffer to hold the note
   // 
-  
+
+  spindump_deepdebugf("report_brief_notefieldval point 1");
   static char buf[spindump_connection_report_brief_notefieldval_length_val+1];
   memset(buf,0,sizeof(buf));
   
@@ -568,8 +569,10 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
     if (connection->type == spindump_connection_transport_quic ||
 	connection->type == spindump_connection_transport_dns ||
 	connection->type == spindump_connection_transport_coap) {
+      spindump_deepdebugf("report_brief_notefieldval point 2");
       spindump_connection_addtobuf(buf,sizeof(buf),"no rsp","",1);
     } else {
+      spindump_deepdebugf("report_brief_notefieldval point 3");
       spindump_connection_addtobuf(buf,sizeof(buf),"no response","",0);
     }
   }
@@ -579,20 +582,25 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   // 
   
   if (connection->type == spindump_connection_transport_quic) {
+    spindump_deepdebugf("report_brief_notefieldval point 4");
     spindump_connection_addtobuf(buf,sizeof(buf),
 				 spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
 				 "",
 				 1);
     if (connection->u.quic.spinFromPeer1to2.totalSpins == 0 &&
 	connection->u.quic.spinFromPeer2to1.totalSpins == 0) {
+      spindump_deepdebugf("report_brief_notefieldval point 5");
       spindump_connection_addtobuf(buf,sizeof(buf),"no spin","",1);
     } else if (connection->u.quic.spinFromPeer1to2.totalSpins != 0 &&
 	       connection->u.quic.spinFromPeer2to1.totalSpins == 0) {
+      spindump_deepdebugf("report_brief_notefieldval point 6");
       spindump_connection_addtobuf(buf,sizeof(buf),"no R-spin","",1);
     } else if (connection->u.quic.spinFromPeer1to2.totalSpins == 0 &&
 	       connection->u.quic.spinFromPeer2to1.totalSpins != 0) {
+      spindump_deepdebugf("report_brief_notefieldval point 7");
       spindump_connection_addtobuf(buf,sizeof(buf),"no I-spin","",1);
     } else {
+      spindump_deepdebugf("report_brief_notefieldval point 8");
       spindump_connection_addtobuf(buf,sizeof(buf),"spinning","",1);
     }
   }
@@ -603,6 +611,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   
   if (connection->type == spindump_connection_transport_dns) {
     if (connection->u.dns.lastQueriedName[0] != 0) {
+      spindump_deepdebugf("report_brief_notefieldval point 9");
       spindump_connection_addtobuf(buf,sizeof(buf),"Q ",connection->u.dns.lastQueriedName,1);
     }
   }
@@ -613,6 +622,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   
   if (connection->type == spindump_connection_transport_coap) {
     if (connection->u.coap.dtls) {
+      spindump_deepdebugf("report_brief_notefieldval point 10");
       const char* versionString = spindump_analyze_tls_parser_versiontostring(connection->u.coap.dtlsVersion);
       spindump_connection_addtobuf(buf,sizeof(buf),"DTLS ",versionString,1);
     }
@@ -622,6 +632,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   // Done. Return the result.
   // 
   
+  spindump_deepdebugf("report_brief_notefieldval point 999");
   return(buf);
 }
 
@@ -643,12 +654,14 @@ spindump_connection_report_brief(struct spindump_connection* connection,
   spindump_assert(spindump_isbool(avg));
   spindump_assert(spindump_isbool(anonymizeLeft));
   spindump_assert(spindump_isbool(anonymizeRight));
-  
+
+  spindump_deepdebugf("report_brief point 1");
   memset(paksbuf,0,sizeof(paksbuf));
   snprintf(paksbuf,sizeof(paksbuf)-1,"%s",
 	   spindump_meganumber_tostring(connection->packetsFromSide1 + connection->packetsFromSide2));
   memset(rttbuf1,0,sizeof(rttbuf1));
   memset(rttbuf2,0,sizeof(rttbuf2));
+  spindump_deepdebugf("report_brief point 2");
   if (avg) {
     strcpy(rttbuf1,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT)));
     strcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT)));
@@ -656,8 +669,10 @@ spindump_connection_report_brief(struct spindump_connection* connection,
     strcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT));
     strcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT));
   }
+  spindump_deepdebugf("report_brief point 3");
   unsigned int addrsiz = spindump_connection_report_brief_variablesize(linelen);
   unsigned int maxsessionlen = spindump_connection_report_brief_sessionsize(linelen);
+  spindump_deepdebugf("report_brief point 4");
   snprintf(buf,bufsiz,"%-7s %-*s %-*s %8s %6s %10s %10s",
 	   spindump_connection_type_to_string(connection->type),
 	   addrsiz,
@@ -668,9 +683,12 @@ spindump_connection_report_brief(struct spindump_connection* connection,
 	   paksbuf,
 	   rttbuf1,
 	   rttbuf2);
+  spindump_deepdebugf("report_brief point 5");
   if (spindump_connection_report_brief_isnotefield(linelen)) {
+    spindump_deepdebugf("report_brief point 5b");
     snprintf(buf + strlen(buf),bufsiz - strlen(buf),"  %-*s",
 	     spindump_connection_report_brief_notefieldval_length_val,
 	     spindump_connection_report_brief_notefieldval(connection));
   }
+  spindump_deepdebugf("report_brief point 6");
 }
