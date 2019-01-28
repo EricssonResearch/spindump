@@ -289,14 +289,15 @@ spindump_reverse_dns_resolveinternal(spindump_address* address) {
 
   static char hbuf[NI_MAXHOST+1];
   memset(hbuf,0,sizeof(hbuf));
-
+  int err;
 #if defined(__linux__)
-  if (getnameinfo(sa, sizeof(sa), hbuf, sizeof(hbuf)-1, NULL, 0,
-		  NI_NAMEREQD)) {
+  if ((err = getnameinfo(sa, sizeof(*sa), hbuf, sizeof(hbuf)-1, NULL, 0,
+		  NI_NAMEREQD))) {
 #else
-  if (getnameinfo(sa, sa->sa_len, hbuf, sizeof(hbuf)-1, NULL, 0,
-		  NI_NAMEREQD)) {
+  if ((err = getnameinfo(sa, sa->sa_len, hbuf, sizeof(hbuf)-1, NULL, 0,
+		  NI_NAMEREQD))) {
 #endif
+    spindump_deepdebugf("spindump_reversedns getnameinfo returned error code %s ", gai_strerror(err));
     return(0);
   } else {
     return(hbuf);
