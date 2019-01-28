@@ -505,13 +505,20 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 								  &fromResponder);
     
     //
+    // Call some handlers based on what happened here, if needed
+    // 
+    
+    if (new) {
+      spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    }
+    
+    //
     // If found, mark reception of an ACK and sent SEQ. If not
     // found, ignore.
     // 
     
     if (connection != 0) {
       
-      spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
       spindump_analyze_process_tcp_markseqsent(connection,
 					       fromResponder,
 					       seq,
@@ -544,12 +551,18 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 	
       }
 
+      //
+      // Update statistics
+      //
+      
+      spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
       *p_connection = connection;
       
     } else {
       
       state->stats->unknownTcpConnection++;
       *p_connection = 0;
+      return;
       
     }
     
@@ -559,8 +572,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   // Call some handlers based on what happened here, if needed
   // 
   
-  if (new)
-    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
-  if (deleted)
+  if (deleted) {
     spindump_analyze_process_handlers(state,spindump_analyze_event_connectiondelete,packet,connection);
+  }
 }

@@ -155,6 +155,7 @@ struct spindump_connection {
       struct timeval side1initialPacket;            // the time of the initial packet from side 1
       struct timeval side2initialResponsePacket;    // the time of the initial response packet from side 2
       unsigned long initialRightRTT;                // initial packet exchange RTT in us
+      unsigned long initialLeftRTT;                 // initial packet exchange RTT in us (only available sometimes)
       struct spindump_spintracker spinFromPeer1to2; // tracking spin bit flips from side 1 to 2
       struct spindump_spintracker spinFromPeer2to1; // tracking spin bit flips from side 2 to 1
     } quic;

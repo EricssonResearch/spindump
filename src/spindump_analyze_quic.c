@@ -83,7 +83,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   uint16_t side1port = ntohs(udp->uh_sport);
   uint16_t side2port = ntohs(udp->uh_dport);
   int fromResponder;
-
+  int new = 0;
+  
   //
   // Increase statistics because the capturer cannot recognise QUIC
   // packets
@@ -210,11 +211,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
       return;
     }
     
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_establishing);
     connection->u.quic.version = 
       connection->u.quic.originalVersion = quicVersion;
     spindump_debugf("initialized QUIC connection %u state to ESTABLISHING, version %08x", connection->id, quicVersion);
     fromResponder = 0;
+    new = 1;
     
     state->stats->connections++;
     state->stats->connectionsQuic++;
@@ -231,27 +232,73 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   }
   
   //
-  // Look at the state. If the connection is establishing, and this is
-  // the first packet from the responder, and that packet is type
-  // initial, then we can move the state to established.
+  // Look at the state. If the connection is establishing, and we have
+  // a packet from the responder, and that packet is type initial,
+  // then we can move the state to established. Plus we also need to record
+  // the latest sent negotiation/initial packet from the initiator, etc.
   // 
   
-  if (connection->state == spindump_connection_state_establishing &&
-      fromResponder &&
-      type == spindump_quic_message_type_initial &&
-      connection->packetsFromSide2 == 0) {
+  if (connection->state == spindump_connection_state_establishing) {
+
+    //
+    // Remember the latest time a packet from the initiator or responder was sent
+    //
     
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
-    connection->u.quic.side2initialResponsePacket = packet->timestamp;
-    connection->u.quic.initialRightRTT =
-      spindump_connections_newrttmeasurement(state,
-					     packet,
-					     connection,
-					     1,
-					     &connection->u.quic.side1initialPacket,
-					     &connection->u.quic.side2initialResponsePacket,
-					     "initial QUIC messages");
-    spindump_debugf("moved QUIC connection %u state to ESTABLISHED", connection->id);
+    if (fromResponder) {
+      connection->u.quic.side2initialResponsePacket = packet->timestamp;
+    } else {
+      connection->u.quic.side1initialPacket = packet->timestamp;
+    }
+    
+    //
+    // Check for a state update
+    //
+    
+    if (fromResponder && type == spindump_quic_message_type_initial) {
+      
+      spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+      spindump_debugf("moved QUIC connection %u state to ESTABLISHED", connection->id);
+      
+    }
+
+    //
+    // See if we can update RTT based on the initial packet
+    // exchange. This can happen both when the responder responds to
+    // an INITIAL message with another INITIAL (or VERSION
+    // NEGOTIATION) message. Or when the initiator responds with an
+    // INITIAL message after having seen a VERSION NEGOTIATION message
+    // from the responder.
+    //
+    
+    if (fromResponder &&
+	(type == spindump_quic_message_type_initial ||
+	 type == spindump_quic_message_type_versionnegotiation)) {
+      
+      connection->u.quic.initialRightRTT =
+	spindump_connections_newrttmeasurement(state,
+					       packet,
+					       connection,
+					       1,
+					       &connection->u.quic.side1initialPacket,
+					       &connection->u.quic.side2initialResponsePacket,
+					       "initial QUIC message from responder");
+      
+    }
+    
+    if (!fromResponder &&
+	!spindump_iszerotime(&connection->u.quic.side2initialResponsePacket) &&
+	type == spindump_quic_message_type_initial) {
+      
+      connection->u.quic.initialLeftRTT =
+	spindump_connections_newrttmeasurement(state,
+					       packet,
+					       connection,
+					       0,
+					       &connection->u.quic.side2initialResponsePacket,
+					       &connection->u.quic.side1initialPacket,
+					       "initial QUIC message re-send from initiator");
+      
+    }
     
   }
   
@@ -327,9 +374,22 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   }
   
   //
-  // Done. Update stats and tell caller which connection we used.
+  // Call some handlers based on what happened here, if needed
+  // 
+  
+  if (new) {
+    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+  }
+  
+  //
+  // Update stats.
   // 
   
   spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+  
+  //
+  // Done. Update stats and tell caller which connection we used.
+  // 
+  
   *p_connection = connection;
 }

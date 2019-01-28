@@ -123,6 +123,8 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
     spindump_spintracker_initialize(&connection->u.quic.spinFromPeer2to1);
     connection->u.quic.side1initialPacket = *when;
     spindump_zerotime(&connection->u.quic.side2initialResponsePacket);
+    connection->u.quic.initialRightRTT = spindump_rtt_infinite;
+    connection->u.quic.initialLeftRTT = spindump_rtt_infinite;
     break;
 
   case spindump_connection_transport_icmp:

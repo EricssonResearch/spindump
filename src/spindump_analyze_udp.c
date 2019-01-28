@@ -121,6 +121,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   uint16_t side1port = ntohs(udp->uh_sport);
   uint16_t side2port = ntohs(udp->uh_dport);
   int fromResponder;
+  int new = 0;
   
   //
   // Debugs
@@ -245,6 +246,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
 							state->table);
 
     fromResponder = 0;
+    new = 1;
     
     if (connection == 0) {
       *p_connection = 0;
@@ -257,6 +259,14 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   }
 
   //
+  // Call some handlers based on what happened here, if needed
+  // 
+  
+  if (new) {
+    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+  }
+  
+  //
   // If we've seen a response from the responder, mark state as
   // established (even if we don't really know what's going on in the
   // actual application, as this is UDP).
@@ -267,10 +277,15 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   }
   
   //
-  // Done. Inform caller of the connection and update stats.
+  // Update stats
+  //
+  
+  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+  
+  //
+  // Done. Inform caller of the connection.
   // 
   
   *p_connection = connection;
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
   
 }

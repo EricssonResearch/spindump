@@ -115,6 +115,8 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   //
   // Check whether this is an ICMP ECHO or ECHO REPLY and if so, proceed
   // 
+
+  int new = 0;
   
   if (peerType == ICMP_ECHO ||
       peerType == ICMP_ECHOREPLY) {
@@ -173,6 +175,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 	  *p_connection = 0;
 	  return;
 	}
+	new = 1;
 	state->stats->connections++;
 	state->stats->connectionsIcmp++;
 	
@@ -188,25 +191,36 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
       if (connection->state == spindump_connection_state_establishing) {
 	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
-
-      spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength);
+      
       if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
 	spindump_connections_newrttmeasurement(state,
 					       packet,
 					       connection,
 					       1,
 					       &connection->latestPacketFromSide1,
-					       &connection->latestPacketFromSide2,
+					       &packet->timestamp,
 					       "ICMP echo reply");
       }
       
     } else {
       
-      spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength);
       connection->u.icmp.side1peerLatestSequence = peerSeq;
       
     }
     
+    //
+    // Call some handlers based on what happened here, if needed
+    // 
+    
+    if (new) {
+      spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    }
+    
+    //
+    // Update statistics
+    //
+    
+    spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength);
     *p_connection = connection;
     
   } else {
@@ -367,7 +381,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 					       connection,
 					       1,
 					       &connection->latestPacketFromSide1,
-					       &connection->latestPacketFromSide2,
+					       &packet->timestamp,
 					       "ICMPv6 ECHO reply");
       }
       

@@ -790,9 +790,7 @@ spindump_errorf(const char* format, ...) {
   va_start (args, format);
   vfprintf(errordestination, format, args);
   va_end (args);
-  fprintf(errordestination," -- exit\n");
   
-  exit(1);
 }
 
 //

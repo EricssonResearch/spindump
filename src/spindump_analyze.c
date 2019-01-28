@@ -209,7 +209,9 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
   spindump_assert((event & spindump_analyze_event_alllegal) == event);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
-
+  spindump_deepdebugf("calling handlers for event %x (%s)",
+		      event, spindump_analyze_eventtostring(event));
+  
   //
   // Scan through the registered handlers and execute them if they
   // match this event
@@ -220,6 +222,7 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
     if ((handler->eventmask & event) != 0) {
       spindump_assert(spindump_analyze_max_handlers == spindump_connection_max_handlers);
       spindump_assert(i < spindump_connection_max_handlers);
+      spindump_deepdebugf("calling handler %x", handler->eventmask);
       (*(handler->function))(state,
 			     handler->handlerData,
 			     &connection->handlerConnectionDatas[i],
@@ -861,4 +864,26 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
   // 
   
   spindump_debugf("non-matching packet...");
+}
+
+//
+// Event flag to string. The returned string points to a static area,
+// and need not be deallocated.
+//
+
+const char*
+spindump_analyze_eventtostring(spindump_analyze_event event) {
+  if (event == 0) return("none");
+  else if (event == spindump_analyze_event_newconnection) return("newconnection");
+  else if (event == spindump_analyze_event_connectiondelete) return("connectiondelete");
+  else if (event == spindump_analyze_event_newleftrttmeasurement) return("newleftrttmeasurement");
+  else if (event == spindump_analyze_event_newrightrttmeasurement) return("newrightrttmeasurement");
+  else if (event == spindump_analyze_event_initiatorspinflip) return("initiatorspinflip");
+  else if (event == spindump_analyze_event_responderspinflip) return("responderspinflip");
+  else if (event == spindump_analyze_event_initiatorspinvalue) return("initiatorspinvalue");
+  else if (event == spindump_analyze_event_responderspinvalue) return("responderspinvalue");
+  else if (event == spindump_analyze_event_newpacket) return("newpacket");
+  else if (event == spindump_analyze_event_firstresponsepacket) return("firstresponsepacket");
+  else if (event == spindump_analyze_event_statechange) return("statechange");
+  else return("multiple");
 }

@@ -428,6 +428,7 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   const struct spindump_coap* coap = (const struct spindump_coap*)payload;
   struct spindump_connection* connection = 0;
   int fromResponder;
+  int new = 0;
   
   //
   // Check that the packet looks sensible
@@ -490,6 +491,7 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 							 state->table);
 
     fromResponder = 0;
+    new = 1;
     
     if (connection == 0) {
       *p_connection = 0;
@@ -543,6 +545,20 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   }
   
   //
+  // Call some handlers based on what happened here, if needed
+  // 
+  
+  if (new) {
+    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+  }
+  
+  //
+  // Update stats.
+  // 
+  
+  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+  
+  //
   // If we've seen a response from the responder, mark state as
   // established and then closed, as the response is complete.
   // 
@@ -553,11 +569,10 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   }
   
   //
-  // Done. Inform caller of the connection and update stats.
+  // Done. Inform caller of the connection.
   // 
   
   *p_connection = connection;
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
   
 }
 

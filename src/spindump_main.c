@@ -484,39 +484,43 @@ spindump_main_textualmeasurement_text(spindump_analyze_event event,
   // Get the (variable) data related to the specific event (such as a
   // spin flip in a QUIC connection).
   //
-  
-  switch (event) {
 
+  memset(what,0,sizeof(what));
+  switch (event) {
+    
+  case spindump_analyze_event_newconnection:
+    strlcpy(what,"new connection",sizeof(what));
+    break;
+    
   case spindump_analyze_event_newleftrttmeasurement:
   case spindump_analyze_event_newrightrttmeasurement:
-    strcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT));
-    strcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT));
+    strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
+    strlcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT),sizeof(rttbuf2));
     memset(what,0,sizeof(what));
     snprintf(what,sizeof(what)-1,"left %s right %s",
 	     rttbuf1, rttbuf2);
     break;
     
   case spindump_analyze_event_initiatorspinflip:
-    strcpy(what,"initiator spin flip");
+    strlcpy(what,"initiator spin flip",sizeof(what));
     break;
     
   case spindump_analyze_event_responderspinflip:
-    strcpy(what,"responder spin flip");
+    strlcpy(what,"responder spin flip",sizeof(what));
     break;
     
   case spindump_analyze_event_initiatorspinvalue:
-    sprintf(what,"initiator spin %u",
-	    connection->u.quic.spinFromPeer1to2.lastSpin);
+    snprintf(what,sizeof(what)-1,"initiator spin %u",
+	     connection->u.quic.spinFromPeer1to2.lastSpin);
     break;
     
   case spindump_analyze_event_responderspinvalue:
-    sprintf(what,"responder spin %u",
-	    connection->u.quic.spinFromPeer2to1.lastSpin);
+    snprintf(what,sizeof(what)-1,"responder spin %u",
+	     connection->u.quic.spinFromPeer2to1.lastSpin);
     break;
     
   default:
-    strcpy(what,"unidentified event");
-    break;
+    return;
   }  
 
   //
@@ -564,11 +568,16 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
   // spin flip in a QUIC connection).
   //
   
+  memset(what,0,sizeof(what));
+  
   switch (event) {
-
+    
+  case spindump_analyze_event_newconnection:
+    strlcpy(what,"\"event\": \"new\",",sizeof(what));
+    break;
+    
   case spindump_analyze_event_newleftrttmeasurement:
   case spindump_analyze_event_newrightrttmeasurement:
-    memset(what,0,sizeof(what));
     if (connection->leftRTT.lastRTT != spindump_rtt_infinite &&
 	connection->rightRTT.lastRTT != spindump_rtt_infinite) {
       unsigned long sumRtt = connection->leftRTT.lastRTT + connection->rightRTT.lastRTT;
@@ -764,16 +773,7 @@ spindump_main_operation() {
 
   if (toolmode == spindump_toolmode_textual) {
     spindump_analyze_registerhandler(analyzer,
-				     spindump_analyze_event_newrightrttmeasurement |
-				     (reportSpins ?
-				      (spindump_analyze_event_initiatorspinvalue |
-				       spindump_analyze_event_responderspinvalue) :
-				      0) |
-				     (reportSpinFlips ?
-				      (spindump_analyze_event_initiatorspinflip |
-				       spindump_analyze_event_responderspinflip |
-				       spindump_analyze_event_newleftrttmeasurement) :
-				      0),
+				     spindump_analyze_event_alllegal,
 				     spindump_main_textualmeasurement,
 				     querier);
   }

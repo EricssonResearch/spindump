@@ -102,6 +102,8 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
 				uint8_t ipVersion,
 				unsigned int ipHeaderPosition,
 				spindump_address *address);
+const char*
+spindump_analyze_eventtostring(spindump_analyze_event event);
 
 //
 // The private, internal function prototypes --------------------------------------------------
