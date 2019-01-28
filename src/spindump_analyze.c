@@ -207,7 +207,8 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
 
   spindump_assert(state != 0);
   spindump_assert((event & spindump_analyze_event_alllegal) == event);
-  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(event == spindump_analyze_event_connectiondelete ||
+		  spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
   spindump_deepdebugf("calling handlers for event %x (%s)",
 		      event, spindump_analyze_eventtostring(event));

@@ -492,6 +492,10 @@ spindump_main_textualmeasurement_text(spindump_analyze_event event,
     strlcpy(what,"new connection",sizeof(what));
     break;
     
+  case spindump_analyze_event_connectiondelete:
+    strlcpy(what,"connection deleted",sizeof(what));
+    break;
+    
   case spindump_analyze_event_newleftrttmeasurement:
   case spindump_analyze_event_newrightrttmeasurement:
     strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
@@ -574,6 +578,10 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
     
   case spindump_analyze_event_newconnection:
     strlcpy(what,"\"event\": \"new\",",sizeof(what));
+    break;
+    
+  case spindump_analyze_event_connectiondelete:
+    strlcpy(what,"\"event\": \"delete\",",sizeof(what));
     break;
     
   case spindump_analyze_event_newleftrttmeasurement:
@@ -833,7 +841,7 @@ spindump_main_operation() {
     
     if (spindump_connectionstable_periodiccheck(analyzer->table,
 						&now,
-						spindump_analyze_getstats(analyzer))) {
+						analyzer)) {
       if (server != 0) spindump_remote_server_update(server,analyzer->table);
       for (unsigned int i = 0; i < nRemotes; i++) spindump_remote_client_update(remotes[i],analyzer->table);
     }

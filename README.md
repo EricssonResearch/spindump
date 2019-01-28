@@ -165,15 +165,12 @@ The analyzer can be integrated to any equipment or other software quite easily.
 But beyond this basic functionality, the analyzer is also extensible. You can register a handler:
 
     spindump_analyze_register(analyzer,
-    
-                             /* what event(s) to trigger on (OR the event bits together): */
-                             spindump_analyze_event_newrightrttmeasurement,
-    
-                             /* function to call for this event: */
-                             myhandler,
-    
-                             /* pass 0 as private data to myhandler later: */
-                             0);
+                              // what event(s) to trigger on (OR the event bits together):
+                              spindump_analyze_event_newrightrttmeasurement,
+                              // function to call for this event:
+                              myhandler,
+                              // pass 0 as private data to myhandler later:
+                              0);
 
 This registration registers the function "myhandler" to be called when there's a new RTT measurement. This function could be implemented, for instance, like this:
 
@@ -193,7 +190,7 @@ This registration registers the function "myhandler" to be called when there's a
        
     }
 
-In the first part of the code above, a handler is registered to be called upon seeing a new RTT measurement being registered. The second part of the code is the implementation of that handler function. In this case, once a measurement has been made, the function "myhandler" is called. The packet that triggered the event (if any) is given by "packet" and the connection it is associated with is "connection".
+In the first part of the code above, a handler is registered to be called upon seeing a new RTT measurement being registered. The second part of the code is the implementation of that handler function. In this case, once a measurement has been made, the function "myhandler" is called. The packet that triggered the event (if any) is given by "packet" and the connection it is associated with is "connection". For the connection delete events (as they can come due to timeouts), the packet structure is otherwise empty except for the timestamp (packet->timestamp) of the deletion.
 
 All RTT measurements and other data that may be useful is stored in the connection object. See spindump_connections_struct.h for more information. For instance, the type of the connection (TCP, UDP, QUIC, DNS, ICMP) can be determined by looking at the connection->type field.
 

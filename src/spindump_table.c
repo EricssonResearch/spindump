@@ -27,6 +27,7 @@
 #include "spindump_table.h"
 #include "spindump_connections.h"
 #include "spindump_stats.h"
+#include "spindump_analyze.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -36,7 +37,7 @@ static void
 spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connection,
 					    const struct timeval* now,
 					    struct spindump_connectionstable* table,
-					    struct spindump_stats* stats);
+					    struct spindump_analyze* analyzer);
 static void
 spindump_connectionstable_compresstable(struct spindump_connectionstable* table);
 
@@ -117,30 +118,62 @@ static void
 spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connection,
 					    const struct timeval* now,
 					    struct spindump_connectionstable* table,
-					    struct spindump_stats* stats) {
+					    struct spindump_analyze* analyzer) {
+
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(connection != 0);
+  spindump_assert(now != 0);
   spindump_assert(now->tv_sec > 0);
   spindump_assert(now->tv_usec < 1000 * 1000);
+  spindump_assert(table != 0);
+  spindump_assert(analyzer != 0);
+  
+  //
+  // Check if we have an automatically created, dynamic
+  // connection. For manually created ones, there's no need for
+  // periodic cleanup.
+  //
+
+  if (connection->manuallyCreated) return;
+  
+  //
+  // See when the last event related to this connection was
+  //
+  
   unsigned long long lastAction = spindump_connections_lastaction(connection,now);
-  if (connection->deleted) {
-    if (lastAction >= (unsigned long long)(spindump_connection_deleted_timeout * 1000 * 1000)) {
-      spindump_connectionstable_deleteconnection(connection,table,"cleanup of closed connection");
-      stats->connectionsDeletedClosed++;
-    }
-  } else if (!connection->manuallyCreated && spindump_connections_isestablishing(connection)) {
-    if (lastAction >= (unsigned long long)(spindump_connection_establishing_timeout * 1000 * 1000)) {
-      spindump_deepdebugf("timeouts last action %llu timeout %lu comparison %llu",
-			  lastAction,
-			  spindump_connection_establishing_timeout,
-			  (unsigned long long)(spindump_connection_establishing_timeout * 1000 * 1000));
-      spindump_connectionstable_deleteconnection(connection,table,"cleanup of establishing connection");
-      stats->connectionsDeletedInactive++;
-    }
-  } else {
-    if (connection->manuallyCreated &&
-	lastAction >= (unsigned long long)(spindump_connection_inactive_timeout * 1000 * 1000)) {
-      spindump_connectionstable_deleteconnection(connection,table,"removing an inactive connection");
-      stats->connectionsDeletedInactive++;
-    }
+
+  //
+  // If the connection has been explictly deleted (e.g., TCP FIN/RST),
+  // we can delete it sooner
+  //
+
+  struct spindump_stats* stats = spindump_analyze_getstats(analyzer);
+  
+  if (connection->deleted &&
+      lastAction >= (unsigned long long)(spindump_connection_deleted_timeout)) {
+    
+    spindump_connectionstable_deleteconnection(connection,table,analyzer,"closed");
+    stats->connectionsDeletedClosed++;
+    
+  } else if (spindump_connections_isestablishing(connection) &&
+	     lastAction >= (unsigned long long)(spindump_connection_establishing_timeout)) {
+    
+    spindump_deepdebugf("timeouts last action %llu timeout %lu comparison %llu",
+			lastAction,
+			spindump_connection_establishing_timeout,
+			(unsigned long long)(spindump_connection_establishing_timeout * 1000 * 1000));
+    spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed");
+    stats->connectionsDeletedInactive++;
+    
+  } else if (lastAction >= (unsigned long long)(spindump_connection_inactive_timeout)) {
+    
+    spindump_connectionstable_deleteconnection(connection,table,analyzer,"inactive");
+    stats->connectionsDeletedInactive++;
+    
   }
 }
 
@@ -162,13 +195,13 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
 int
 spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
 					const struct timeval* now,
-					struct spindump_stats* stats) {
+					struct spindump_analyze* analyzer) {
   spindump_assert(now->tv_sec > 0);
   spindump_assert(now->tv_usec < 1000 * 1000);
   if (table->lastPeriodicCheck.tv_sec != now->tv_sec) {
     for (unsigned int i = 0; i < table->nConnections; i++) {
       struct spindump_connection* connection = table->connections[i];
-      if (connection != 0) spindump_connectionstable_periodiccheck_aux(connection,now,table,stats);
+      if (connection != 0) spindump_connectionstable_periodiccheck_aux(connection,now,table,analyzer);
     }
     spindump_connectionstable_compresstable(table);
     return(1);
@@ -180,6 +213,7 @@ spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
 void
 spindump_connectionstable_deleteconnection(struct spindump_connection* connection,
 					   struct spindump_connectionstable* table,
+					   struct spindump_analyze* analyzer,
 					   const char* reason) {
 
   //
@@ -194,6 +228,18 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
 		  spindump_connection_type_to_string(connection->type),
 		  connection->id,
 		  reason);
+
+  //
+  // Call some handlers
+  //
+  
+  struct spindump_packet dummy;
+  memset(&dummy,0,sizeof(dummy));
+  spindump_getcurrenttime(&dummy.timestamp);
+  spindump_analyze_process_handlers(analyzer,
+				    spindump_analyze_event_connectiondelete,
+				    &dummy,
+				    connection);
   
   //
   // Delete the connection from the table

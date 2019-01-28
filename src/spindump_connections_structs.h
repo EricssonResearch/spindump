@@ -65,9 +65,9 @@ enum spindump_connection_state {
   spindump_connection_state_static
 };
 
-#define spindump_connection_deleted_timeout      30 // s
-#define spindump_connection_establishing_timeout 30 // s
-#define spindump_connection_inactive_timeout    180 // s
+#define spindump_connection_deleted_timeout         (10*1000*1000) // us
+#define spindump_connection_establishing_timeout    (30*1000*1000) // us
+#define spindump_connection_inactive_timeout       (180*1000*1000) // us
 
 struct spindump_quic_connectionid {
   unsigned int len;
