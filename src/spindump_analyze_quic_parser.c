@@ -210,6 +210,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
       break;
     case spindump_quic_byte_type_handshake:
     case spindump_quic_byte_type_retry:
+      break;
     default:
       return(0);
     }
@@ -224,6 +225,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
       break;
     case spindump_quic_byte_type_handshake_draft16:
     case spindump_quic_byte_type_retry_draft16:
+      break;
     default:
       return(0);
     }
@@ -404,16 +406,21 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
 	break;
       case spindump_quic_byte_type_0rttprotected:
 	spindump_deepdebugf("QUIC message type = 0rttprotected");
-	stats->unsupportedQuicType++;
-	return(0);
+	type = spindump_quic_message_type_other;
+	// stats->unsupportedQuicType++; 
+	// return(0);
+	break;
       case spindump_quic_byte_type_handshake:
 	spindump_deepdebugf("QUIC message type = handshake");
-	stats->unsupportedQuicType++;
-	return(0);
+	type = spindump_quic_message_type_other;
+	// stats->unsupportedQuicType++;
+	// return(0);
+	break;
       case spindump_quic_byte_type_retry:
 	spindump_deepdebugf("QUIC message type = retry");
 	type = spindump_quic_message_type_retry;
-	return(0);
+	// return(0);
+	break;
       default:
 	stats->unrecognisedQuicType++;
 	return(0);
@@ -430,16 +437,21 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
 	break;
       case spindump_quic_byte_type_0rttprotected_draft16:
 	spindump_deepdebugf("QUIC message type = 0rttprotected");
-	stats->unsupportedQuicType++;
-	return(0);
+	type = spindump_quic_message_type_other;
+	// stats->unsupportedQuicType++;
+	// return(0);
+	break;
       case spindump_quic_byte_type_handshake_draft16:
 	spindump_deepdebugf("QUIC message type = handshake");
-	stats->unsupportedQuicType++;
-	return(0);
+	type = spindump_quic_message_type_other;
+	// stats->unsupportedQuicType++;
+	// return(0);
+	break;
       case spindump_quic_byte_type_retry_draft16:
 	spindump_deepdebugf("QUIC message type = retry");
 	type = spindump_quic_message_type_retry;
-	return(0);
+	// return(0);
+	break;
       default:
 	stats->unrecognisedQuicType++;
 	return(0);
@@ -528,7 +540,9 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
     spindump_deepdebugf("SPIN not parseable for the long version header");
     return(0);
   } else if (version == spindump_quic_version_rfc ||
-	     version == spindump_quic_version_draft17) {
+	     version == spindump_quic_version_draft17 ||
+	     version == spindump_quic_version_mozilla ||
+	     version == spindump_quic_version_huitema) {
     int altSpin = ((firstByte & spindump_quic_byte_spin_draft16) != 0);
     *p_spin = ((firstByte & spindump_quic_byte_spin) != 0);
     spindump_deepdebugf("SPIN = %u (draft 17) from %s (as an aside, draft 16 spin would be %u)",
