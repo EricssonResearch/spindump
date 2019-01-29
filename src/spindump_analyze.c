@@ -207,9 +207,12 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
 
   spindump_assert(state != 0);
   spindump_assert((event & spindump_analyze_event_alllegal) == event);
-  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(event == spindump_analyze_event_connectiondelete ||
+		  spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
-
+  spindump_deepdebugf("calling handlers for event %x (%s)",
+		      event, spindump_analyze_eventtostring(event));
+  
   //
   // Scan through the registered handlers and execute them if they
   // match this event
@@ -220,6 +223,7 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
     if ((handler->eventmask & event) != 0) {
       spindump_assert(spindump_analyze_max_handlers == spindump_connection_max_handlers);
       spindump_assert(i < spindump_connection_max_handlers);
+      spindump_deepdebugf("calling handler %x", handler->eventmask);
       (*(handler->function))(state,
 			     handler->handlerData,
 			     &connection->handlerConnectionDatas[i],
@@ -438,7 +442,19 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-
+  
+  //
+  // Check if the packet is a fragment
+  //
+  
+  uint16_t off = ntohs(ip->ip_off);
+  if ((off & SPINDUMP_IP_OFFMASK) != 0) {
+    state->stats->unhandledFragment++;
+    spindump_debugf("ignored a fragment at offset %u", (off & SPINDUMP_IP_OFFMASK));
+    *p_connection = 0;
+    return;
+  }
+  
   //
   // Done with the IP header. Now look at what protocol (TCP, ICMP,
   // UDP, etc) is carried inside!
@@ -524,6 +540,36 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   }  
 
   //
+  // Check if the packet is a fragment
+  //
+
+  uint8_t proto = ip6->ip6_nextheader;
+  unsigned int passFh = 0;
+  
+  if (proto == SPINDUMP_IP6_FH_NEXTHDR) {
+
+    unsigned int fhSize = sizeof(struct spindump_ip6_fh);
+    uint16_t pl = ntohs(ip6->ip6_payloadlen);
+    if (pl < fhSize || packet->caplen < position + ipHeaderSize + fhSize) {
+      state->stats->fragmentTooShort++;
+      spindump_debugf("not enough fragment header to process");
+      *p_connection = 0;
+      return;
+    }
+    struct spindump_ip6_fh* fh = (struct spindump_ip6_fh*)(packet->contents + position + ipHeaderSize);
+    uint16_t off = ntohs(fh->fh_off);
+    if (spindump_ip6_fh_fragoff(off) != 0) {
+      state->stats->unhandledFragment++;
+      spindump_debugf("ignored a fragment at offset %u", (off & SPINDUMP_IP_OFFMASK));
+      *p_connection = 0;
+      return;
+    } else {
+      passFh = fhSize;
+      ipHeaderSize += fhSize;
+    }
+  }
+  
+  //
   // Done with the IP header. Now look at what protocol (TCP, ICMP,
   // UDP, etc) is carried inside!
   //
@@ -534,8 +580,8 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
 				   ipHeaderSize,
 				   ipVersion,
 				   ipPacketLength,
-				   ip6->ip6_nextheader,
-				   position + ipHeaderSize,
+				   proto,
+				   position + ipHeaderSize + passFh,
 				   p_connection);
 }
 
@@ -861,4 +907,26 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
   // 
   
   spindump_debugf("non-matching packet...");
+}
+
+//
+// Event flag to string. The returned string points to a static area,
+// and need not be deallocated.
+//
+
+const char*
+spindump_analyze_eventtostring(spindump_analyze_event event) {
+  if (event == 0) return("none");
+  else if (event == spindump_analyze_event_newconnection) return("newconnection");
+  else if (event == spindump_analyze_event_connectiondelete) return("connectiondelete");
+  else if (event == spindump_analyze_event_newleftrttmeasurement) return("newleftrttmeasurement");
+  else if (event == spindump_analyze_event_newrightrttmeasurement) return("newrightrttmeasurement");
+  else if (event == spindump_analyze_event_initiatorspinflip) return("initiatorspinflip");
+  else if (event == spindump_analyze_event_responderspinflip) return("responderspinflip");
+  else if (event == spindump_analyze_event_initiatorspinvalue) return("initiatorspinvalue");
+  else if (event == spindump_analyze_event_responderspinvalue) return("responderspinvalue");
+  else if (event == spindump_analyze_event_newpacket) return("newpacket");
+  else if (event == spindump_analyze_event_firstresponsepacket) return("firstresponsepacket");
+  else if (event == spindump_analyze_event_statechange) return("statechange");
+  else return("multiple");
 }

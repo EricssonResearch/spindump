@@ -39,6 +39,8 @@ struct spindump_stats {
   unsigned int notEnoughPacketForIpHdr;
   unsigned int versionMismatch;
   unsigned int invalidIpLength;
+  unsigned int unhandledFragment;
+  unsigned int fragmentTooShort;
   unsigned int receivedIcmp;
   unsigned int invalidIcmpHdrSize;
   unsigned int notEnoughPacketForIcmpHdr;
