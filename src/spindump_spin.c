@@ -76,7 +76,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
 				       fromResponder,
 				       &spin0to1)) {
     struct timeval* otherSpinTime = spindump_spintracker_matchspin(otherDirectionTracker,
-								   0,
+								   1,
 								   fromResponder ? !spin0to1 : spin0to1);
     if (otherSpinTime) {
       spindump_deepdebugf("found a matching %s spin for the spin %s",
