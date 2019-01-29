@@ -442,7 +442,19 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-
+  
+  //
+  // Check if the packet is a fragment
+  //
+  
+  uint16_t off = ntohs(ip->ip_off);
+  if ((off & SPINDUMP_IP_OFFMASK) != 0) {
+    state->stats->unhandledFragment++;
+    spindump_debugf("ignored a fragment at offset %u", (off & SPINDUMP_IP_OFFMASK));
+    *p_connection = 0;
+    return;
+  }
+  
   //
   // Done with the IP header. Now look at what protocol (TCP, ICMP,
   // UDP, etc) is carried inside!
@@ -528,6 +540,36 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   }  
 
   //
+  // Check if the packet is a fragment
+  //
+
+  uint8_t proto = ip6->ip6_nextheader;
+  unsigned int passFh = 0;
+  
+  if (proto == SPINDUMP_IP6_FH_NEXTHDR) {
+
+    unsigned int fhSize = sizeof(struct spindump_ip6_fh);
+    uint16_t pl = ntohs(ip6->ip6_payloadlen);
+    if (pl < fhSize || packet->caplen < position + ipHeaderSize + fhSize) {
+      state->stats->fragmentTooShort++;
+      spindump_debugf("not enough fragment header to process");
+      *p_connection = 0;
+      return;
+    }
+    struct spindump_ip6_fh* fh = (struct spindump_ip6_fh*)(packet->contents + position + ipHeaderSize);
+    uint16_t off = ntohs(fh->fh_off);
+    if (spindump_ip6_fh_fragoff(off) != 0) {
+      state->stats->unhandledFragment++;
+      spindump_debugf("ignored a fragment at offset %u", (off & SPINDUMP_IP_OFFMASK));
+      *p_connection = 0;
+      return;
+    } else {
+      passFh = fhSize;
+      ipHeaderSize += fhSize;
+    }
+  }
+  
+  //
   // Done with the IP header. Now look at what protocol (TCP, ICMP,
   // UDP, etc) is carried inside!
   //
@@ -538,8 +580,8 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
 				   ipHeaderSize,
 				   ipVersion,
 				   ipPacketLength,
-				   ip6->ip6_nextheader,
-				   position + ipHeaderSize,
+				   proto,
+				   position + ipHeaderSize + passFh,
 				   p_connection);
 }
 

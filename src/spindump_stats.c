@@ -71,6 +71,8 @@ spindump_stats_report(struct spindump_stats* stats,
   fprintf(file,"packet not long enough for IP hdr:	%8u\n", stats->notEnoughPacketForIpHdr);
   fprintf(file,"version mismatch:			%8u\n", stats->versionMismatch);
   fprintf(file,"invalid IP length:			%8u\n", stats->invalidIpLength);
+  fprintf(file,"unprocessed IP fragment:                %8u\n", stats->unhandledFragment);
+  fprintf(file,"packet not long enough for FH:          %8u\n", stats->fragmentTooShort);
   fprintf(file,"received ICMP packets:			%8u\n", stats->receivedIcmp);
   fprintf(file,"invalid ICMP header size:		%8u\n", stats->invalidIcmpHdrSize);
   fprintf(file,"packet not long enough for ICMP hdr:	%8u\n", stats->notEnoughPacketForIcmpHdr);

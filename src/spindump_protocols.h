@@ -78,6 +78,26 @@ struct spindump_ip6 {
 #define SPINDUMP_IP6_HL(ip)		(((ip)->ip6_vhl) & 0x0f)
 #define SPINDUMP_IP6_V(ip)		(((ip)->ip6_vhl) >> 4)
 
+//
+// Fragment header from RFC 2460:
+//
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |  Next Header  |   Reserved    |      Fragment Offset    |Res|M|
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                         Identification                        |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+
+#define SPINDUMP_IP6_FH_NEXTHDR         44
+
+struct spindump_ip6_fh {
+  unsigned char fh_nextheader;	        // protocol
+  unsigned char fh_reserved;
+  unsigned char fh_off;
+# define spindump_ip6_fh_fragoff(field)    ((field)>>2)
+# define spindump_ip6_fh_morefrag(field)   ((field)&1)
+};
+
 struct spindump_icmp {
   uint8_t  ih_type;        	// type
   uint8_t  ih_code;        	// code
