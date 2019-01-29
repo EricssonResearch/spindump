@@ -165,7 +165,7 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
     spindump_deepdebugf("timeouts last action %llu timeout %lu comparison %llu",
 			lastAction,
 			spindump_connection_establishing_timeout,
-			(unsigned long long)(spindump_connection_establishing_timeout * 1000 * 1000));
+			(unsigned long long)(spindump_connection_establishing_timeout));
     spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed");
     stats->connectionsDeletedInactive++;
     
