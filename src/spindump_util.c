@@ -789,6 +789,7 @@ spindump_errorf(const char* format, ...) {
   fprintf(errordestination,"spindump: error: ");
   va_start (args, format);
   vfprintf(errordestination, format, args);
+  fprintf(errordestination,"\n");
   va_end (args);
   
 }
