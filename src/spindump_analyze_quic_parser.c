@@ -299,6 +299,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   
   int longForm = 0;
   uint32_t version = spindump_quic_version_unknown;
+  uint32_t originalVersion = spindump_quic_version_unknown;
   
   //
   // Parse initial byte
@@ -321,10 +322,11 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
       stats->notEnoughPacketForQuicHdr++;
       return(0);
     }
-    version = ((quic->u.longheader.qh_version[0] << 24) +
-	       (quic->u.longheader.qh_version[1] << 16) +
-	       (quic->u.longheader.qh_version[2] << 8) +
-	       (quic->u.longheader.qh_version[3] << 0));
+    version =
+      originalVersion = ((quic->u.longheader.qh_version[0] << 24) +
+			 (quic->u.longheader.qh_version[1] << 16) +
+			 (quic->u.longheader.qh_version[2] << 8) +
+			 (quic->u.longheader.qh_version[3] << 0));
     spindump_deepdebugf("QUIC long form packet version = %lx", version);
     if ((version & spindump_quic_version_forcenegotmask) == spindump_quic_version_forcenegotiation) {
       version = spindump_quic_version_forcenegotiation;
@@ -511,7 +513,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // 
   
   *p_longform = longForm;
-  *p_version = version;
+  *p_version = originalVersion;
   *p_type = type;
   spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %lx, type = %s",
 		      longForm,
@@ -613,6 +615,11 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version) {
   case spindump_quic_version_negotiation:
     return("v.tbd");
   default:
-    return("v.unknown");
+    {
+      static char buf[20];
+      memset(buf,0,sizeof(buf));
+      snprintf(buf,sizeof(buf)-1,"v.0x%08x", version);
+      return(buf);
+    }
   }
 }
