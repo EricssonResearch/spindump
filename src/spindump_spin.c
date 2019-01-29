@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -75,9 +75,13 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
 				       spin,
 				       fromResponder,
 				       &spin0to1)) {
+		//
+		// Try to match the spin flip with the most recent matching flip in the other direction.
+		// Responder spin flips match with equal flips, initiator flips match with inverse flips.
+		//
     struct timeval* otherSpinTime = spindump_spintracker_matchspin(otherDirectionTracker,
 								   1,
-								   fromResponder ? !spin0to1 : spin0to1);
+								   fromResponder ? spin0to1 : !spin0to1);
     if (otherSpinTime) {
       spindump_deepdebugf("found a matching %s spin for the spin %s",
 			  spin0to1 ? "1to0" : "0to1",
@@ -94,7 +98,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
 			  spin0to1 ? "1to0" : "0to1",
 			  spin0to1 ? "0to1" : "1to0");
     }
-    
+
   }
 }
 
@@ -151,7 +155,7 @@ void
 spindump_spintracker_add(struct spindump_spintracker* tracker,
 			 struct timeval* ts,
 			 int spin0to1) {
-  
+
   spindump_assert(tracker != 0);
   spindump_assert(ts != 0);
   spindump_assert(spin0to1 == 0 || spin0to1 == 1);
@@ -166,53 +170,53 @@ spindump_spintracker_add(struct spindump_spintracker* tracker,
 }
 
 struct timeval*
-spindump_spintracker_matchspin(struct spindump_spintracker* tracker,
+	spindump_spintracker_matchspin(struct spindump_spintracker* tracker,
 			       int requireExactSpinValue,
 			       int spin0to1) {
-  
+
   spindump_assert(requireExactSpinValue == 0 || requireExactSpinValue == 1);
   spindump_assert(spin0to1 == 0 || spin0to1 == 1);
-  
+
   //
   // Find the spin
-  // 
-  
+  //
+
   struct spindump_spinstore* chosen = 0;
   for (unsigned int i = 0; i < spindump_spintracker_nstored; i++) {
-    
+
     struct spindump_spinstore* candidate = &tracker->stored[i];
-    
+
     //
     // Is this entry in use? If not, go to next
-    // 
+    //
 
     if (!candidate->outstanding) continue;
-    
+
     //
     // Is this correct?
-    // 
-    
-    if (!requireExactSpinValue || candidate->spin0to1 == !spin0to1) {
-      
+    //
+
+    if (!requireExactSpinValue || candidate->spin0to1 == spin0to1) {
+
       //
       // It is. Now see if this is the earliest one.
-      // 
-      
+      //
+
       if (chosen == 0)
 	chosen = candidate;
       else if (spindump_isearliertime(&chosen->received,&candidate->received))
 	chosen = candidate;
     }
   }
-  
+
   if (chosen != 0) {
-    
+
     //
     // Found. Return the time when that packet was sent.
     // But first, clear the spin stores from all entries
     // sent earlier than the one that we found. And clear this
     // entry too.
-    // 
+    //
 
     for (unsigned int j = 0; j < spindump_spintracker_nstored; j++) {
       struct spindump_spinstore* other = &tracker->stored[j];
@@ -220,24 +224,23 @@ spindump_spintracker_matchspin(struct spindump_spintracker* tracker,
 	other->outstanding = 0;
       }
     }
-    
+
     chosen->outstanding = 0;
     return(&chosen->received);
-    
+
   } else {
-    
+
     //
     // Not found
-    // 
-    
+    //
+
     return(0);
-    
+
   }
 }
 
 void
 spindump_spintracker_uninitialize(struct spindump_spintracker* tracker) {
   spindump_assert(tracker != 0);
-  // no-op// 
+  // no-op//
 }
-
