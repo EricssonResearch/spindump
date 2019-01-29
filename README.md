@@ -2,7 +2,7 @@
 
 ## A latency measurement tool
 
-The "Spindump" tool is a Unix command-line ulitity that can be used for latency monitoring in traffic passing through an interface. The tool performs passive, in-network monitoring. It is not a tool to monitor traffic content or metadata of individual connections, and indeed that is not possible in the Internet as most connections are encrypted.
+The "Spindump" tool is a Unix command-line utility that can be used for latency monitoring in traffic passing through an interface. The tool performs passive, in-network monitoring. It is not a tool to monitor traffic content or metadata of individual connections, and indeed that is not possible in the Internet as most connections are encrypted.
 
 The tool looks at the characteristics of transport protocols, such as the QUIC Spin Bit, and attempts to derive information about round-trip times for individual connections or for the aggregate or average values. The tool supports TCP, QUIC, COAP, DNS, and ICMP traffic. There's also an easy way to anonymize connection information so that the resulting statistics cannot be used to infer anything about specific connections or users.
 
