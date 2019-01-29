@@ -885,3 +885,17 @@ spindump_deepdebugf(const char* format, ...) {
   
 }
 
+//
+// A copy of the BSD strlcpy function for Linux, as it does not exist
+// there without extra installations
+//
+
+#if defined(__linux__)
+size_t
+strlcpy(char * restrict dst, const char * restrict src, size_t size) {
+  spindump_assert(size > 1);
+  strncpy(dst,src,size-1);
+  dst[size-1] = 0;
+  return(strlen(dst));
+}
+#endif
