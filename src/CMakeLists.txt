@@ -5,12 +5,6 @@ find_package(PkgConfig)
 find_package(Curses)
 pkg_check_modules(PCAP REQUIRED libpcap)
 
-add_library(common OBJECT
-  spindump_capture.c
-  spindump_remote.c
-  spindump_report.c
-)
-
 add_library(libspindump
   spindump_analyze.c
   spindump_analyze_aggregate.c
@@ -22,6 +16,7 @@ add_library(libspindump
   spindump_analyze_tcp.c
   spindump_analyze_tls_parser.c
   spindump_analyze_udp.c
+  spindump_capture.c
   spindump_connections.c
   spindump_connections_new.c
   spindump_connections_print.c
@@ -31,6 +26,8 @@ add_library(libspindump
   spindump_mid.c
   spindump_packet.c
   spindump_protocols.c
+  spindump_remote.c
+  spindump_report.c
   spindump_reversedns.c
   spindump_rtt.c
   spindump_seq.c
@@ -38,11 +35,6 @@ add_library(libspindump
   spindump_stats.c
   spindump_table.c
   spindump_util.c
-  $<TARGET_OBJECTS:common>
-)
-
-add_library(libspindumpcmd
-  $<TARGET_OBJECTS:common>
 )
 
 target_include_directories(libspindump
@@ -55,19 +47,6 @@ target_link_libraries(libspindump
     ${PCAP_LIBRARIES}
     ${CURSES_LIBRARIES}
 )
-
-
-target_include_directories(libspindumpcmd
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-target_link_libraries(libspindumpcmd
-  PRIVATE
-    ${PCAP_LIBRARIES}
-    ${CURSES_LIBRARIES}
-)
-
 
 add_executable(spindump spindump_main.c)
 target_link_libraries(spindump libspindump)
