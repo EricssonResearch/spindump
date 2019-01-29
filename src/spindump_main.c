@@ -26,6 +26,8 @@
 #include <signal.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "spindump_util.h"
 #include "spindump_capture.h"
 #include "spindump_analyze.h"
@@ -738,6 +740,10 @@ spindump_main_operation() {
   
   if (capturer == 0) exit(1);
 
+  if (setuid(getuid()) < 0) {
+	spindump_errorf("unable to drop root privileges");
+        exit(1);
+  }
   //
   // Initialize the user interface
   // 
