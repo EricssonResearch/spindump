@@ -147,6 +147,14 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
 				      connection);
     return(1);
   } else {
+    spindump_deepdebugf("regular SPIN still %u from %s",
+			spin,
+			fromResponder ? "responder" : "initiator");
+    spindump_analyze_process_handlers(state,
+				      (fromResponder ? spindump_analyze_event_responderspinvalue :
+				       spindump_analyze_event_initiatorspinvalue),
+				      packet,
+				      connection);
     return(0);
   }
 }
