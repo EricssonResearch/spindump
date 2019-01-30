@@ -508,13 +508,13 @@ spindump_main_textualmeasurement_text(spindump_analyze_event event,
   case spindump_analyze_event_newinitrespfullrttmeasurement:
     strlcpy(rttbuf1,spindump_rtt_tostring(connection->initToRespFullRTT.lastRTT),sizeof(rttbuf1));
     memset(what,0,sizeof(what));
-    snprintf(what,sizeof(what)-1,"Full RTT, init to resp %s", rttbuf1);
+    snprintf(what,sizeof(what)-1,"full RTT, init to resp %s", rttbuf1);
     break;
 
   case spindump_analyze_event_newrespinitfullrttmeasurement:
     strlcpy(rttbuf1,spindump_rtt_tostring(connection->respToInitFullRTT.lastRTT),sizeof(rttbuf1));
     memset(what,0,sizeof(what));
-    snprintf(what,sizeof(what)-1,"Full RTT, resp to init %s", rttbuf1);
+    snprintf(what,sizeof(what)-1,"full RTT, resp to init %s", rttbuf1);
     break;
 
   case spindump_analyze_event_initiatorspinflip:
@@ -601,7 +601,7 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
     if (connection->leftRTT.lastRTT != spindump_rtt_infinite &&
 	connection->rightRTT.lastRTT != spindump_rtt_infinite) {
       unsigned long sumRtt = connection->leftRTT.lastRTT + connection->rightRTT.lastRTT;
-      snprintf(what+strlen(what),sizeof(what)-strlen(what)-1," \"rtt\": %lu,",
+      snprintf(what+strlen(what),sizeof(what)-strlen(what)-1," \"sum_rtt\": %lu,",
 	       sumRtt);
     }
     if (connection->leftRTT.lastRTT != spindump_rtt_infinite) {
@@ -614,6 +614,14 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
     }
     break;
 
+  case spindump_analyze_event_newinitrespfullrttmeasurement:
+    snprintf(what,sizeof(what)-1,"\"full_rtt_initiator\": %lu", connection->initToRespFullRTT.lastRTT);
+    break;
+
+  case spindump_analyze_event_newrespinitfullrttmeasurement:
+    snprintf(what,sizeof(what)-1,"\"full_rtt_responder\": %lu", connection->respToInitFullRTT.lastRTT);
+    break;
+    
   case spindump_analyze_event_initiatorspinflip:
     spindump_assert(connection->type == spindump_connection_transport_quic);
     snprintf(what,sizeof(what)-1,"\"event\": \"spinflip\", \"transition\": \"%s\", \"who\": \"%s\",",
