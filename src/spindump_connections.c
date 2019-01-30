@@ -395,6 +395,13 @@ spindump_connections_isaggregate(struct spindump_connection* connection) {
   }
 }
 
+//
+// Return the set of connections that this aggregate connection
+// consists of.
+//
+// Note: This function is not thread safe.
+//
+
 struct spindump_connection_set*
 spindump_connections_aggregateset(struct spindump_connection* connection) {
 

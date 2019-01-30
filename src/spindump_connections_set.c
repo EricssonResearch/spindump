@@ -226,6 +226,8 @@ spindump_connections_set_remove(struct spindump_connection_set* set,
 // Return a string listing (some maximum number of) connection IDs of
 // the connections in the set.
 // 
+// Note: This function is not thread safe.
+//
 
 const char*
 spindump_connections_set_listids(struct spindump_connection_set* set) {

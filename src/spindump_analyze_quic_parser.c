@@ -567,6 +567,14 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
   }
 }
 
+//
+// Return a string representation of a QUIC version number, e.g., "v17".
+// The returned string need not be freed, but it will not surive the next call
+// to this function.
+//
+// Note: This function is not thread safe.
+//
+
 const char*
 spindump_analyze_quic_parser_versiontostring(uint32_t version) {
   switch (version) {

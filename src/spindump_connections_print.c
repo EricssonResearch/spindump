@@ -134,6 +134,13 @@ spindump_connection_report_coap(struct spindump_connection* connection,
 	  connection->u.coap.side2peerPort);
 }
 
+//
+// Convert a QUIC connection ID to a string. The returned string need
+// not be freed, but will not survive the next call to this function.
+//
+// Note: This function is not thread safe.
+//
+
 const char*
 spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id) {
   spindump_assert(id != 0);
@@ -302,6 +309,13 @@ spindump_connection_address_tostring(int anonymize,
   }
 }
 
+//
+// Return a string representation of the addresses in a connection
+// object. The returned string need not be freed.
+//
+// Note: This function is not thread safe.
+//
+
 const char*
 spindump_connection_addresses(struct spindump_connection* connection,
 			      unsigned int maxlen,
@@ -411,6 +425,13 @@ spindump_connection_statestring(struct spindump_connection* connection) {
   spindump_assert(connection != 0);
   return(spindump_connection_statestring_aux(connection->state));
 }
+
+//
+// Return a string describing a session. The string need not be freed,
+// but will not survive the next call to this function.
+//
+// Note: This function is not thread safe.
+//
 
 const char*
 spindump_connection_sessionstring(struct spindump_connection* connection,
@@ -545,6 +566,12 @@ spindump_connection_addtobuf(char* buf,
     snprintf(buf+strlen(buf),bufsize-1-strlen(buf),"%s",value);
   }
 }
+
+//
+// Return the value of the note field in the spindump --visual mode.
+//
+// Note: This function is not thread safe.
+//
 
 static const char*
 spindump_connection_report_brief_notefieldval(struct spindump_connection* connection) {

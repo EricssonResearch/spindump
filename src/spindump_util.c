@@ -158,6 +158,8 @@ spindump_zerotime(struct timeval* result) {
 // Get time as string. The result need not be deallocated, but is only
 // valid for one call at a time
 //
+// Note: This function is not thread safe.
+//
 
 const char*
 spindump_timetostring(const struct timeval* result) {
@@ -205,6 +207,8 @@ spindump_address_equal(spindump_address* address1,
 
 //
 // Multicast address check
+//
+// Note: This function is not thread safe.
 //
 
 static int
@@ -519,6 +523,13 @@ spindump_address_frombytes(spindump_address* address,
   }
 }
 
+//
+// Convert an address to a string. Returned string need not be freed,
+// but will not survive the next call to this same function.
+//
+// Note: This function is not thread safe.
+//
+
 const char*
 spindump_address_tostring(spindump_address* address) {
   spindump_assert(address != 0);
@@ -566,6 +577,8 @@ spindump_anon_aux(unsigned long seed,
 
 //
 // Anonymize an address and return it as a string
+//
+// Note: This function is not thread safe.
 //
 
 const char*
@@ -656,6 +669,14 @@ spindump_network_fromstring(spindump_network* network,
   return(result);
 }
 
+//
+// Convert a network (e.g., "1.2.3.0/24") to a string. Returned string
+// need not be freed, but will not survive the next call to this same
+// function.
+//
+// Note: This function is not thread safe.
+//
+
 const char*
 spindump_network_tostring(spindump_network* network) {
   static char buf[100];
@@ -665,6 +686,13 @@ spindump_network_tostring(spindump_network* network) {
 	   network->length);
   return(buf);
 }
+
+//
+// Convert a large number to a string, e.g., 1000000 would become
+// "1M".
+//
+// Note: This function is not thread safe.
+//
 
 const char*
 spindump_meganumber_tostring(unsigned long x) {
@@ -694,6 +722,13 @@ spindump_meganumber_tostring(unsigned long x) {
   }
   return(buf);
 }
+
+//
+// Convert a large number to a string, e.g., 1000000 would become
+// "1M". The input is a "long long".
+//
+// Note: This function is not thread safe.
+//
 
 const char*
 spindump_meganumberll_tostring(unsigned long long x) {
@@ -886,16 +921,15 @@ spindump_deepdebugf(const char* format, ...) {
 }
 
 //
-// A copy of the BSD strlcpy function for Linux, as it does not exist
-// there without extra installations
+// A copy of the BSD strlcpy function. As for Linux, as it does not exist
+// there without extra installations.
 //
 
-#if defined(__linux__)
 size_t
-strlcpy(char * restrict dst, const char * restrict src, size_t size) {
+spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size) {
   spindump_assert(size > 1);
   strncpy(dst,src,size-1);
   dst[size-1] = 0;
   return(strlen(dst));
 }
-#endif
+

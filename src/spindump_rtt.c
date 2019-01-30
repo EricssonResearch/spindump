@@ -30,6 +30,10 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Initialize an RTT-tracking object
+//
+
 void
 spindump_rtt_initialize(struct spindump_rtt* rtt) {
   spindump_assert(rtt != 0);
@@ -39,6 +43,10 @@ spindump_rtt_initialize(struct spindump_rtt* rtt) {
     rtt->recentRTTs[i] = spindump_rtt_infinite;
   }
 }
+
+//
+// Provide a new measurement point
+//
 
 unsigned long
 spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
@@ -110,6 +118,14 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt) {
   
   return(lastMovingAvgRTT);
 }
+
+//
+// Create a printable string representation of an RTT value. E.g., "10
+// ms". The returned buffer need not be deallocated, but it will not
+// survive the next call to this same function.
+//
+// Note: not thread safe.
+//
 
 const char*
 spindump_rtt_tostring(unsigned long rttval) {

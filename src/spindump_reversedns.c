@@ -249,6 +249,13 @@ spindump_reverse_dns_uninitialize(struct spindump_reverse_dns* service) {
   free(service);
 }
 
+//
+// The actual function that performs the resolving on address to a
+// name.
+//
+// Note: This function is not thread safe.
+//
+
 static const char*
 spindump_reverse_dns_resolveinternal(spindump_address* address) {
 

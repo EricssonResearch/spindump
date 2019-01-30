@@ -48,6 +48,13 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// The function spindump_analyze_dns_isprobablednspacket is one of the
+// two main entrypoints for the DNS analyzer. It checks whether a
+// packet is likely a DNS packet. The parameter payload points to the
+// beginning of the UDP payload. payload_len is the length of that.
+//
+
 int
 spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
 					 unsigned int payload_len,
@@ -76,6 +83,15 @@ spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
 
   return(1);
 }
+
+//
+// Parse a DNS name from a DNS packet, returning the usual DNS name
+// representation as a string, e.g., "www.example.com". The returned
+// string need not be freed, but it will not survive the next call to
+// this same function.
+//
+// Note: This function is not thread safe.
+//
 
 const char*
 spindump_analyzer_dns_parsename(const char* dnspayload,
@@ -221,10 +237,9 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 // that this packet belongs to (and possibly creates this connection
 // if the packet is the first in a flow).
 //
-// It is assumed that prior modules, i.e., the capture and UDP modules
-// have filled in the relevant header pointers in the packet structure
-// "packet" correctly. For instance, the packet->udp and packet->dns
-// pointer needs to have already been set.
+// It is assumed that prior modules, i.e., the capture module has
+// filled in the relevant header pointers in the packet structure
+// "packet" correctly.
 //
 // Note that this function is not called directly by the top-level
 // analyzer, but rather by the UDP module, if the UDP flow looks

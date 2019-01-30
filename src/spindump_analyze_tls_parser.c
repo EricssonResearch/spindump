@@ -60,6 +60,14 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(struct sp
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Return a string representation of a TLS version number, e.g.,
+// "1.3".  The returned string need not be freed, but it will not
+// surive the next call to this function.
+//
+// Note: This function is not thread safe.
+//
+
 const char*
 spindump_analyze_tls_parser_versiontostring(const spindump_tls_version version) {
   static char buf[40];

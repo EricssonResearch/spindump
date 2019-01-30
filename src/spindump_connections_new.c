@@ -55,6 +55,8 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
 // Helper function to fill in a new connection object with its basic
 // fields set correctly.
 //
+// Note: this function is not thread safe.
+//
 
 static void
 spindump_connections_newconnection_aux(struct spindump_connection* connection,

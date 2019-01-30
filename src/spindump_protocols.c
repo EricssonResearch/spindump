@@ -32,6 +32,8 @@
 // This helper function converts a TCP flags field to a set of
 // printable option names, useful for debugs etc.
 // 
+// Note: This function is not thread safe.
+//
 
 const char*
 spindump_protocols_tcp_flagstostring(uint8_t flags) {

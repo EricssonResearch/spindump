@@ -489,40 +489,40 @@ spindump_main_textualmeasurement_text(spindump_analyze_event event,
   switch (event) {
 
   case spindump_analyze_event_newconnection:
-    strlcpy(what,"new connection",sizeof(what));
+    spindump_strlcpy(what,"new connection",sizeof(what));
     break;
 
   case spindump_analyze_event_connectiondelete:
-    strlcpy(what,"connection deleted",sizeof(what));
+    spindump_strlcpy(what,"connection deleted",sizeof(what));
     break;
 
   case spindump_analyze_event_newleftrttmeasurement:
   case spindump_analyze_event_newrightrttmeasurement:
-    strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
-    strlcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT),sizeof(rttbuf2));
+    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
+    spindump_strlcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT),sizeof(rttbuf2));
     memset(what,0,sizeof(what));
     snprintf(what,sizeof(what)-1,"left %s right %s",
 	     rttbuf1, rttbuf2);
     break;
 
   case spindump_analyze_event_newinitrespfullrttmeasurement:
-    strlcpy(rttbuf1,spindump_rtt_tostring(connection->initToRespFullRTT.lastRTT),sizeof(rttbuf1));
+    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->initToRespFullRTT.lastRTT),sizeof(rttbuf1));
     memset(what,0,sizeof(what));
     snprintf(what,sizeof(what)-1,"full RTT, init to resp %s", rttbuf1);
     break;
 
   case spindump_analyze_event_newrespinitfullrttmeasurement:
-    strlcpy(rttbuf1,spindump_rtt_tostring(connection->respToInitFullRTT.lastRTT),sizeof(rttbuf1));
+    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->respToInitFullRTT.lastRTT),sizeof(rttbuf1));
     memset(what,0,sizeof(what));
     snprintf(what,sizeof(what)-1,"full RTT, resp to init %s", rttbuf1);
     break;
 
   case spindump_analyze_event_initiatorspinflip:
-    strlcpy(what,"initiator spin flip",sizeof(what));
+    spindump_strlcpy(what,"initiator spin flip",sizeof(what));
     break;
 
   case spindump_analyze_event_responderspinflip:
-    strlcpy(what,"responder spin flip",sizeof(what));
+    spindump_strlcpy(what,"responder spin flip",sizeof(what));
     break;
 
   case spindump_analyze_event_initiatorspinvalue:
@@ -589,11 +589,11 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
   switch (event) {
 
   case spindump_analyze_event_newconnection:
-    strlcpy(what,"\"event\": \"new\",",sizeof(what));
+    spindump_strlcpy(what,"\"event\": \"new\",",sizeof(what));
     break;
 
   case spindump_analyze_event_connectiondelete:
-    strlcpy(what,"\"event\": \"delete\",",sizeof(what));
+    spindump_strlcpy(what,"\"event\": \"delete\",",sizeof(what));
     break;
 
   case spindump_analyze_event_newleftrttmeasurement:
