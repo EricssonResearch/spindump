@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 #ifndef SPINDUMP_SPIN_STRUCTS_H
 #define SPINDUMP_SPIN_STRUCTS_H
@@ -32,6 +32,16 @@
 //
 
 #define spindump_spintracker_nstored		10
+
+//
+// Spinstore flags ----------------------------------------------------------------------------
+//
+
+#define spindump_spinstore_outstanding_unidir    0x1
+#define spindump_spinstore_outstanding_bidir     0x2
+
+#define spindump_spinstore_outstanding_init      \
+    spindump_spinstore_outstanding_unidir | spindump_spinstore_outstanding_bidir
 
 //
 // Data structures ----------------------------------------------------------------------------

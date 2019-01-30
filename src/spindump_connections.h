@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 #ifndef SPINDUMP_CONNECTIONS_H
 #define SPINDUMP_CONNECTIONS_H
@@ -237,6 +237,7 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
 				       struct spindump_packet* packet,
 				       struct spindump_connection* connection,
 				       const int right,
+							 const int unidirectional,
 				       const struct timeval* sent,
 				       const struct timeval* rcvd,
 				       const char* why);
@@ -306,4 +307,3 @@ spindump_connections_lastaction(struct spindump_connection* connection,
 				const struct timeval* now);
 
 #endif // SPINDUMP_CONNECTIONS_H
-

@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -55,10 +55,10 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   spindump_assert(ipVersion == 4);
   spindump_assert(icmpHeaderPosition > ipHeaderPosition);
   spindump_assert(p_connection != 0);
-  
+
   //
   // Parse the ICMP header
-  // 
+  //
 
   state->stats->receivedIcmp++;
   if (icmpLength <= 4) {
@@ -78,9 +78,9 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   spindump_debugf("received an IPv%u ICMP packet of %u bytes",
 		  ipVersion,
 		  packet->etherlen);
-  
+
   uint8_t peerType = icmp->ih_type;
-  
+
   switch (peerType) {
   case ICMP_ECHO:
     if (icmp->ih_code != 0) {
@@ -93,7 +93,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 			ntohs(icmp->ih_u.ih_echo.ih_id),
 			ntohs(icmp->ih_u.ih_echo.ih_seq));
     break;
-    
+
   case ICMP_ECHOREPLY:
     if (icmp->ih_code != 0) {
       state->stats->invalidIcmpCode++;
@@ -105,28 +105,28 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 			ntohs(icmp->ih_u.ih_echo.ih_id),
 			ntohs(icmp->ih_u.ih_echo.ih_seq));
     break;
-    
+
   default:
     state->stats->unsupportedIcmpType++;
     *p_connection = 0;
     return;
   }
-  
+
   //
   // Check whether this is an ICMP ECHO or ECHO REPLY and if so, proceed
-  // 
+  //
 
   int new = 0;
   int fromResponder;
-  
+
   if (peerType == ICMP_ECHO ||
       peerType == ICMP_ECHOREPLY) {
-    
+
     spindump_address source;
     spindump_address destination;
     uint16_t peerId = icmp->ih_u.ih_echo.ih_id;
     uint16_t peerSeq = icmp->ih_u.ih_echo.ih_seq;
-    
+
     if (peerType == ICMP_ECHO) {
       spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
       spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
@@ -134,38 +134,38 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
       spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&destination);
       spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&source);
     }
-    
+
     //
     // Look for existing connection
-    // 
-    
+    //
+
     struct spindump_connection* connection =
       spindump_connections_searchconnection_icmp(&source,
 						 &destination,
 						 ICMP_ECHO,
 						 peerId,
 						 state->table);
-    
+
     //
     // If not found, create a new one
-    // 
-    
+    //
+
     if (connection == 0) {
-      
+
       if (peerType == ICMP_ECHOREPLY) {
-	
+
 	//
 	// We're only seeing a REPLY without corresponding REQUEST, so
 	// we will drop this packet and not deal with the connection;
 	// it packet may of course still be counted within some
 	// aggregate statistics.
 	//
-	
+
 	*p_connection = 0;
 	return;
-	
+
       } else {
-	
+
 	connection = spindump_connections_newconnection_icmp(&source,
 							     &destination,
 							     peerType,
@@ -179,59 +179,60 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 	new = 1;
 	state->stats->connections++;
 	state->stats->connectionsIcmp++;
-	
+
       }
     }
 
     //
     // Mark the reception of a packet in the connection
-    // 
-    
+    //
+
     if (peerType == ICMP_ECHOREPLY) {
-      
+
       if (connection->state == spindump_connection_state_establishing) {
 	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
-      
+
       if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
 	spindump_connections_newrttmeasurement(state,
 					       packet,
 					       connection,
 					       1,
+								 0,
 					       &connection->latestPacketFromSide1,
 					       &packet->timestamp,
 					       "ICMP echo reply");
       }
-      
+
       fromResponder = 1;
-      
+
     } else {
-      
+
       connection->u.icmp.side1peerLatestSequence = peerSeq;
       fromResponder = 0;
-      
+
     }
-    
+
     //
     // Call some handlers based on what happened here, if needed
-    // 
-    
+    //
+
     if (new) {
       spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
     }
-    
+
     //
     // Update statistics
     //
-    
+
     spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
 
     //
     // Done. Return connection information to caller.
     //
-    
+
     *p_connection = connection;
-    
+
   } else {
 
     //
@@ -239,9 +240,9 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     // packet may still be counted among host-to-host or other
     // aggregate statistics, if the addresses match that aggregate.
     //
-    
+
     *p_connection = 0;
-    
+
   }
 }
 
@@ -262,11 +263,11 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
   spindump_assert(ipVersion == 6);
   spindump_assert(icmpHeaderPosition > ipHeaderPosition);
   spindump_assert(p_connection != 0);
-  
+
   //
   // Parse the ICMPv6 header
-  // 
-  
+  //
+
   state->stats->receivedIcmp++;
   if (icmpLength <= 4) {
     state->stats->notEnoughPacketForIcmpHdr++;
@@ -285,11 +286,11 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
   spindump_debugf("received an IPv%u ICMP packet of %u bytes",
 		  ipVersion,
 		  packet->etherlen);
-  
+
   uint8_t peerType = icmp6->ih6_type;
   int new = 0;
   int fromResponder;
-  
+
   switch (peerType) {
   case ICMP6_ECHO_REQUEST:
     if (icmp6->ih6_code != 0) {
@@ -302,7 +303,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			ntohs(icmp6->ih6_u.ih6_echo.ih6_id),
 			ntohs(icmp6->ih6_u.ih6_echo.ih6_seq));
     break;
-    
+
   case ICMP6_ECHO_REPLY:
     if (icmp6->ih6_code != 0) {
       state->stats->invalidIcmpCode++;
@@ -314,7 +315,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			ntohs(icmp6->ih6_u.ih6_echo.ih6_id),
 			ntohs(icmp6->ih6_u.ih6_echo.ih6_seq));
     break;
-    
+
   default:
     state->stats->unsupportedIcmpType++;
     *p_connection = 0;
@@ -323,11 +324,11 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 
   //
   // Check whether this is an ICMP ECHO or ECHO REPLY and if so, proceed
-  // 
-  
+  //
+
   if (peerType == ICMP6_ECHO_REQUEST ||
       peerType == ICMP6_ECHO_REPLY) {
-    
+
     spindump_address source;
     spindump_address destination;
     uint16_t peerId = icmp6->ih6_u.ih6_echo.ih6_id;
@@ -340,10 +341,10 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
       spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&destination);
       spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&source);
     }
-    
+
     //
     // Look for existing connection
-    // 
+    //
 
     struct spindump_connection* connection =
       spindump_connections_searchconnection_icmp(&source,
@@ -351,11 +352,11 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 						 ICMP6_ECHO_REQUEST,
 						 peerId,
 						 state->table);
-    
+
     //
     // If not found, create a new one
-    // 
-    
+    //
+
     if (connection == 0) {
       if (peerType == ICMP6_ECHO_REPLY) {
 	*p_connection = 0;
@@ -379,10 +380,10 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 
     //
     // Mark the reception of a packet in the connection
-    // 
-    
+    //
+
     if (peerType == ICMP6_ECHO_REPLY) {
-      
+
       if (connection->state == spindump_connection_state_establishing) {
 	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
@@ -391,44 +392,45 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 					       packet,
 					       connection,
 					       1,
+								 0,
 					       &connection->latestPacketFromSide1,
 					       &packet->timestamp,
 					       "ICMPv6 ECHO reply");
       }
 
       fromResponder = 1;
-      
+
     } else {
-      
+
       connection->u.icmp.side1peerLatestSequence = peerSeq;
       fromResponder = 0;
-      
+
     }
-    
+
     //
     // Call some handlers based on what happened here, if needed
-    // 
-    
+    //
+
     if (new) {
       spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
     }
-    
+
     //
     // Update statistics
     //
-    
+
     spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
-    
+
     //
     // Done. Return connection information to caller.
     //
-    
+
     *p_connection = connection;
-    
+
   } else {
-    
+
     *p_connection = 0;
-    
+
   }
 
 }

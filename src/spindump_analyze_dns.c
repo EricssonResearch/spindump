@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -53,27 +53,27 @@ spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
 					 unsigned int payload_len,
 					 uint16_t sourcePort,
 					 uint16_t destPort) {
-  
+
   //
   // Do ports look like DNS?
   //
-  
+
   if (sourcePort != SPINDUMP_DNS_PORT && destPort != SPINDUMP_DNS_PORT) {
     return(0);
   }
-  
+
   //
   // Does packet format look right?
   //
-  
+
   if (payload_len < sizeof(struct spindump_dns)) {
     return(0);
   }
-  
+
   //
   // Probable DNS packet!
   //
-  
+
   return(1);
 }
 
@@ -120,11 +120,11 @@ spindump_analyzer_dns_markmidsent(struct spindump_connection* connection,
 				  int fromResponder,
 				  const uint16_t mid,
 				  const struct timeval* t) {
-  
+
   spindump_assert(connection != 0);
   spindump_assert(fromResponder == 0 || fromResponder == 1);
   spindump_assert(t != 0);
-  
+
   if (fromResponder) {
     spindump_messageidtracker_add(&connection->u.dns.side2MIDs,t,mid);
     spindump_deepdebugf("responder sent MID %u", mid);
@@ -150,20 +150,20 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 				      int fromResponder,
 				      const uint16_t mid,
 				      const struct timeval* t) {
-  
+
   const struct timeval* ackto;
-  
+
   spindump_assert(connection != 0);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
-  
+
   if (fromResponder) {
-    
+
     ackto = spindump_messageidtracker_ackto(&connection->u.dns.side1MIDs,mid);
-    
+
     if (ackto != 0) {
-      
+
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
       spindump_deepdebugf("the responder DNS response %u refers to initiator DNS message that came %llu ms earlier",
 			  mid,
@@ -172,24 +172,25 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 					     packet,
 					     connection,
 					     1,
+							 0,
 					     ackto,
 					     t,
 					     "DNS response");
       return(1);
-      
+
     } else {
-      
+
       spindump_deepdebugf("did not find the initiator DNS message that responder mid %u refers to", mid);
       return(0);
-      
+
     }
-    
+
   } else {
-    
+
     ackto = spindump_messageidtracker_ackto(&connection->u.dns.side2MIDs,mid);
-    
+
     if (ackto != 0) {
-      
+
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
       spindump_deepdebugf("the initiator response MID %u refers to responder DNS message that came %llu ms earlier",
 			  mid,
@@ -198,16 +199,17 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 					     packet,
 					     connection,
 					     0,
+							 0,
 					     ackto,
 					     t,
 					     "DNS response");
       return(1);
-      
+
     } else {
-      
+
       spindump_deepdebugf("did not find the responder DNS message that initiator mid %u refers to", mid);
       return(0);
-      
+
     }
   }
 }
@@ -242,22 +244,22 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
 			     unsigned int udpLength,
 			     unsigned int remainingCaplen,
 			     struct spindump_connection** p_connection) {
-  
+
   //
   // Some checks first
   //
-  
+
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(udpHeaderPosition > ipHeaderPosition);
   spindump_assert(p_connection != 0);
-  
+
   //
   // Find out some information about the packet
   //
-  
+
   struct spindump_connection* connection = 0;
   spindump_address source;
   spindump_address destination;
@@ -268,7 +270,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   uint16_t side2port = ntohs(udp->uh_dport);
   int fromResponder;
   int new = 0;
-  
+
   //
   // Check that the packet looks sensible
   //
@@ -281,11 +283,11 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-  
+
   //
   // Parse the packet enough to determine what is going on
   //
-  
+
   const struct spindump_dns* dns = (const struct spindump_dns*)(packet->contents + udpHeaderPosition + spindump_udp_header_size);
   uint16_t mid = dns->id;
   int qr = ((dns->flagsOpcode & spindump_dns_flagsopcode_qr) >> spindump_dns_flagsopcode_qr_shift);
@@ -293,11 +295,11 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   uint16_t qdcount = dns->QDCount;
   unsigned int dnspayloadsize = dnsSize - sizeof(struct spindump_dns);
   const char* dnspayload = ((const char*)dns + sizeof(struct spindump_dns));
-  
+
   //
   // Debugs
   //
-  
+
   spindump_debugf("saw DNS packet from %s (ports %u:%u) QR=%u MID=%04x OP=%u QD=%u payload = %02x%02x%02x...",
 		  spindump_address_tostring(&source), side1port, side2port,
 		  mid,
@@ -305,24 +307,24 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
 		  opcode,
 		  qdcount,
 		  dnspayload[0], dnspayload[1], dnspayload[2]);
-  
+
   //
   // Then, look for existing connection
   //
-  
+
   connection = spindump_connections_searchconnection_dns_either(&source,
 								&destination,
 								side1port,
 								side2port,
 								state->table,
 								&fromResponder);
-  
+
   //
   // If not found, create a new one
   //
-  
+
   if (connection == 0) {
-    
+
     connection = spindump_connections_newconnection_dns(&source,
 							&destination,
 							side1port,
@@ -332,15 +334,15 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
 
     fromResponder = 0;
     new = 1;
-    
+
     if (connection == 0) {
       *p_connection = 0;
       return;
     }
-    
+
     state->stats->connections++;
     state->stats->connectionsDns++;
-    
+
   }
 
   //
@@ -358,11 +360,11 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
       spindump_deepdebugf("storing queried DNS name %s for interest", connection->u.dns.lastQueriedName);
     }
   }
-  
+
   //
   // Track message IDs of requests and responses
   //
-  
+
   int foundmid = 0;
   if (qr == 0) {
     spindump_analyzer_dns_markmidsent(connection,
@@ -377,35 +379,35 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
 						     mid,
 						     &packet->timestamp);
   }
-  
+
   //
   // Call some handlers based on what happened here, if needed
-  // 
-  
+  //
+
   if (new) {
     spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
   }
-  
+
   //
   // If we've seen a response from the responder, mark state as
   // established and then closed, as the response is complete.
   //
-  
+
   if (fromResponder && foundmid && connection->state == spindump_connection_state_establishing) {
     spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
     spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
   }
-  
+
   //
   // Update stats.
   //
-  
+
   spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
-  
+
   //
   // Done. Inform caller of the connection.
   //
-  
+
   *p_connection = connection;
-  
+
 }

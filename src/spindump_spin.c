@@ -39,10 +39,44 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
 				 int spin,
 				 int fromResponder,
 				 int* p_spin0to1);
+
+static struct timeval*
+spindump_spintracker_match_unidirectional_spin(struct spindump_spintracker* tracker,
+	int spin0to1);
+
 static struct timeval*
 spindump_spintracker_matchspin(struct spindump_spintracker* tracker,
 			       int requireExactSpinValue,
 			       int spin0to1);
+
+//
+// Helper functions  --------------------------------------------------------------------------
+//
+
+static inline int
+spindump_spinstore_is_outstanding_unidir(int outstanding) {
+	return outstanding & spindump_spinstore_outstanding_unidir;
+}
+
+static inline int
+spindump_spinstore_is_outstanding_bidir(int outstanding) {
+	return outstanding & spindump_spinstore_outstanding_bidir;
+}
+
+static inline void
+spindump_spinstore_observed_unidir(struct spindump_spinstore* store) {
+	store->outstanding &= (~spindump_spinstore_outstanding_unidir);
+}
+
+static inline void
+spindump_spinstore_observed_bidir(struct spindump_spinstore* store) {
+	store->outstanding &= (~spindump_spinstore_outstanding_bidir);
+}
+
+static inline int
+spindump_spintracker_prev_index(struct spindump_spintracker* tracker) {
+	return tracker->spinindex > 0 ? tracker->spinindex - 1 : spindump_spintracker_nstored - 1;
+}
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -90,6 +124,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
 					     packet,
 					     connection,
 					     fromResponder,
+							 0, // bidirectional
 					     otherSpinTime,
 					     ts,
 					     "SPIN");
@@ -99,6 +134,25 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
 			  spin0to1 ? "0to1" : "1to0");
     }
 
+		//
+		// Match spin with previous in same direction to obtain end to end RTT.
+		//
+		otherSpinTime = spindump_spintracker_match_unidirectional_spin(tracker, spin0to1);
+
+		if (otherSpinTime) {
+			spindump_debugf("found a matching unidirectional %s to %s spin flip",
+				spin0to1 ? "1to0" : "0to1",
+				spin0to1 ? "0to1" : "1to0");
+
+			spindump_connections_newrttmeasurement(state,
+							 packet,
+							 connection,
+							 fromResponder,
+							 1, // unidirectional
+							 otherSpinTime,
+							 ts,
+							 "SPIN_UNIDIR");
+		}
   }
 }
 
@@ -168,13 +222,34 @@ spindump_spintracker_add(struct spindump_spintracker* tracker,
   spindump_assert(ts != 0);
   spindump_assert(spin0to1 == 0 || spin0to1 == 1);
   spindump_assert(tracker->spinindex < spindump_spintracker_nstored);
-  tracker->stored[tracker->spinindex].outstanding = 1;
+  tracker->stored[tracker->spinindex].outstanding = spindump_spinstore_outstanding_init;
   tracker->stored[tracker->spinindex].received = *ts;
   tracker->stored[tracker->spinindex].spin0to1 = spin0to1;
   tracker->spinindex++;
   tracker->spinindex %= spindump_spintracker_nstored;
   spindump_assert(tracker->spinindex < spindump_spintracker_nstored);
   tracker->totalSpins++;
+}
+
+struct timeval*
+spindump_spintracker_match_unidirectional_spin(struct spindump_spintracker* tracker,
+	int spin0to1) {
+
+	spindump_assert(spin0to1 == 0 || spin0to1 == 1);
+
+	//
+	// Find earlier spin
+	//
+
+	struct spindump_spinstore* previous = &tracker->stored[spindump_spintracker_prev_index(tracker)];
+
+	if (!spindump_spinstore_is_outstanding_unidir(previous->outstanding)) {
+		return 0;
+	}
+
+	spindump_assert(spin0to1 != previous->spin0to1);
+	spindump_spinstore_observed_unidir(previous);
+	return (&previous->received);
 }
 
 struct timeval*
@@ -198,7 +273,7 @@ struct timeval*
     // Is this entry in use? If not, go to next
     //
 
-    if (!candidate->outstanding) continue;
+    if (!spindump_spinstore_is_outstanding_bidir(candidate->outstanding)) continue;
 
     //
     // Is this correct?
@@ -211,9 +286,9 @@ struct timeval*
       //
 
       if (chosen == 0)
-	chosen = candidate;
+				chosen = candidate;
       else if (spindump_isearliertime(&chosen->received,&candidate->received))
-	chosen = candidate;
+				chosen = candidate;
     }
   }
 
@@ -228,12 +303,12 @@ struct timeval*
 
     for (unsigned int j = 0; j < spindump_spintracker_nstored; j++) {
       struct spindump_spinstore* other = &tracker->stored[j];
-      if (other->outstanding && spindump_isearliertime(&chosen->received,&other->received)) {
-	other->outstanding = 0;
+      if (spindump_spinstore_is_outstanding_bidir(other->outstanding) && spindump_isearliertime(&chosen->received,&other->received)) {
+				spindump_spinstore_observed_bidir(other);
       }
     }
 
-    chosen->outstanding = 0;
+    spindump_spinstore_observed_bidir(chosen);
     return(&chosen->received);
 
   } else {

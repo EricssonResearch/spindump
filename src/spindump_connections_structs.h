@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 #ifndef SPINDUMP_CONNECTIONS_STRUCTS_H
 #define SPINDUMP_CONNECTIONS_STRUCTS_H
@@ -96,10 +96,12 @@ struct spindump_connection {
   unsigned int bytesFromSide2;                      // byte counts
   struct spindump_rtt leftRTT;                      // left-side (side 1) RTT calculations
   struct spindump_rtt rightRTT;                     // right-side (side 2) RTT calculations
+  struct spindump_rtt respToInitFullRTT;            // end-to-end RTT calculations observed from responder
+  struct spindump_rtt initToRespFullRTT;            // end-to-end RTT calculations observed from initiator
   struct spindump_connection_set aggregates;        // aggregate connection sets where this connection belongs to
   void* handlerConnectionDatas
         [spindump_connection_max_handlers];         // data store for registered handlers to add data to a connection
-  
+
   union {
     
     struct {
@@ -112,14 +114,14 @@ struct spindump_connection {
       struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
       struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
     } tcp;
-    
+
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
       spindump_port side2peerPort;                  // destination port for the initial packet
     } udp;
-    
+
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
@@ -129,7 +131,7 @@ struct spindump_connection {
       struct spindump_messageidtracker side2MIDs;   // when did we see message IDs from side2?
       char lastQueriedName[40];                     // the latest name that was queried
     } dns;
-    
+
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
@@ -140,7 +142,7 @@ struct spindump_connection {
       struct spindump_messageidtracker side1MIDs;   // when did we see message IDs from side1?
       struct spindump_messageidtracker side2MIDs;   // when did we see message IDs from side2?
     } coap;
-    
+
     struct {
       uint32_t version;                             // QUIC version
       uint32_t originalVersion;                     // original, offered QUIC version
@@ -159,7 +161,7 @@ struct spindump_connection {
       struct spindump_spintracker spinFromPeer1to2; // tracking spin bit flips from side 1 to 2
       struct spindump_spintracker spinFromPeer2to1; // tracking spin bit flips from side 2 to 1
     } quic;
-    
+
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
@@ -167,32 +169,32 @@ struct spindump_connection {
       u_int16_t side1peerId;                        // the ICMP id used in a request from side 1
       u_int16_t	side1peerLatestSequence;            // latest seen sequence number from side 1
     } icmp;
-    
+
     struct {
       spindump_address side1peerAddress;            // address of host on side 1
       spindump_address side2peerAddress;            // address of host on side 2
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
     } aggregatehostpair;
-    
+
     struct {
       spindump_address side1peerAddress;            // address of host on side 1
       spindump_network side2Network;                // network address on side 2
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
     } aggregatehostnetwork;
-    
+
     struct {
       spindump_network side1Network;                // network address on side 1
       spindump_network side2Network;                // network address on side 2
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
     } aggregatenetworknetwork;
-    
+
     struct {
       spindump_address group;                       // multicast group address
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
     } aggregatemulticastgroup;
-    
+
   } u;
-  
+
 };
 
 enum spindump_connection_searchcriteria_srcdst {
@@ -203,7 +205,7 @@ enum spindump_connection_searchcriteria_srcdst {
 };
 
 struct spindump_connection_searchcriteria {
-  
+
   int matchType;
   enum spindump_connection_type type;
 
@@ -216,18 +218,18 @@ struct spindump_connection_searchcriteria {
   enum spindump_connection_searchcriteria_srcdst matchAddresses;
   spindump_address side1address;
   spindump_address side2address;
-  
+
   enum spindump_connection_searchcriteria_srcdst matchPorts;
   spindump_port side1port;
   spindump_port side2port;
-  
+
   enum spindump_connection_searchcriteria_srcdst matchQuicCids;
   struct spindump_quic_connectionid side1connectionId;
   struct spindump_quic_connectionid side2connectionId;
-  
+
   int matchPartialDestinationCid;
   const unsigned char* partialDestinationCid;
-  
+
   int matchPartialSourceCid;
   const unsigned char* partialSourceCid;
 };

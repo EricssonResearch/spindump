@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 // connection, if fromResponder = 0, it is the client. Seq is the
 // sequence number from the other party that is being acked. Based on
 // this sequence one one can track RTT later when an ACK is received.
-// 
+//
 
 static void
 spindump_analyze_process_tcp_markseqsent(struct spindump_connection* connection,
@@ -66,12 +66,12 @@ spindump_analyze_process_tcp_markseqsent(struct spindump_connection* connection,
 					 unsigned int payloadlen,
 					 struct timeval* t,
 					 int finset) {
-  
+
   spindump_assert(connection != 0);
   spindump_assert(fromResponder == 0 || fromResponder == 1);
   spindump_assert(t != 0);
   spindump_assert(spindump_isbool(finset));
-  
+
   if (fromResponder) {
     spindump_seqtracker_add(&connection->u.tcp.side2Seqs,t,seq,payloadlen,finset);
     spindump_deepdebugf("responder sent SEQ %u..%u (FIN=%u)", seq, seq + payloadlen, finset);
@@ -88,7 +88,7 @@ spindump_analyze_process_tcp_markseqsent(struct spindump_connection* connection,
 // connection, if fromResponder = 0, it is the client. Seq is the
 // sequence number from the other party that is being acked. Based on
 // this sequence one one can track RTT.
-// 
+//
 
 static void
 spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
@@ -108,11 +108,11 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
   spindump_assert(finset != 0);
-  
+
   if (fromResponder) {
-    
+
     ackto = spindump_seqtracker_ackto(&connection->u.tcp.side1Seqs,seq,&sentSeq,finset);
-    
+
     if (ackto != 0) {
 
       spindump_deepdebugf("spindump_analyze_process_tcp_markackreceived");
@@ -126,22 +126,23 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 					     packet,
 					     connection,
 					     1,
+							 0,
 					     ackto,
 					     t,
 					     "TCP ACK");
-      
+
     } else {
-      
+
       spindump_deepdebugf("did not find the initiator TCP message that responder ack %u refers to", seq);
-      
+
     }
-    
+
   } else {
-    
+
     ackto = spindump_seqtracker_ackto(&connection->u.tcp.side2Seqs,seq,&sentSeq,finset);
-    
+
     if (ackto != 0) {
-      
+
       spindump_deepdebugf("spindump_analyze_process_tcp_markackreceived 2");
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
       spindump_deepdebugf("the initiator ack %u refers to responder TCP message (seq=%u) that came %llu ms earlier (its FIN was %u)",
@@ -153,14 +154,15 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 					     packet,
 					     connection,
 					     0,
+							 0,
 					     ackto,
 					     t,
 					     "TCP ACK");
-      
+
     } else {
-      
+
       spindump_deepdebugf("did not find the responder TCP message that initiator ack %u refers to", seq);
-      
+
     }
   }
 }
@@ -177,7 +179,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 // filled in the relevant header pointers in the packet structure
 // "packet" correctly. For instance, the packet->tcp pointer needs to
 // have already been set.
-// 
+//
 
 void
 spindump_analyze_process_tcp(struct spindump_analyze* state,
@@ -193,18 +195,18 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 
   //
   // Some checks first
-  // 
-  
+  //
+
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(tcpHeaderPosition > ipHeaderPosition);
   spindump_assert(p_connection != 0);
-  
+
   //
   // Parse the header
-  // 
+  //
 
   state->stats->receivedTcp++;
   if (tcpLength < sizeof(struct spindump_tcp)) {
@@ -232,10 +234,10 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 		  ipVersion,
 		  packet->etherlen,
 		  size_tcppayload);
-  
+
   //
   // Find out some information about the packet
-  // 
+  //
 
   struct spindump_connection* connection = 0;
   spindump_address source;
@@ -251,19 +253,19 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   int ackedfin = 0;
   int new = 0;
   int closed = 0;
-  
+
   //
   // Debugs
-  // 
-  
+  //
+
   spindump_debugf("saw packet from %s (ports %u:%u)",
 		  spindump_address_tostring(&source), side1port, side2port);
   spindump_deepdebugf("flags = %s", spindump_protocols_tcp_flagstostring(tcp->th_flags));
-  
+
   //
   // Check whether this is a SYN, SYN ACK, FIN, FIN ACK, or RST
   // packet, create or delete the connection accordingly
-  // 
+  //
 
   if ((tcp->th_flags & SPINDUMP_TH_SYN) &&
       (tcp->th_flags & SPINDUMP_TH_ACK) == 0) {
@@ -271,24 +273,24 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     //
     // SYN packet. Create a connection in stable establishing,
     // if it doesn't exist yet.
-    // 
+    //
 
     spindump_deepdebugf("case 1: SYN (seq = %u, ack = %u)", seq, ack);
-    
+
     //
     // First, look for existing connection
-    // 
-    
+    //
+
     connection = spindump_connections_searchconnection_tcp(&source,
 							   &destination,
 							   side1port,
 							   side2port,
 							   state->table);
-    
+
     //
     // If not found, create a new one
-    // 
-    
+    //
+
     if (connection == 0) {
 
       connection = spindump_connections_newconnection_tcp(&source,
@@ -298,17 +300,17 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 							  &packet->timestamp,
 							  state->table);
       new = 1;
-      
+
       if (connection == 0) {
 	*p_connection = 0;
 	return;
       }
-      
+
       state->stats->connections++;
       state->stats->connectionsTcp++;
-      
+
     }
-    
+
     spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength);
     spindump_analyze_process_tcp_markseqsent(connection,
 					      0,
@@ -317,22 +319,22 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 					      &packet->timestamp,
 					      finreceived);
     *p_connection = connection;
-      
-    
+
+
   } else if ((tcp->th_flags & SPINDUMP_TH_SYN) &&
 	     (tcp->th_flags & SPINDUMP_TH_ACK)) {
-    
+
     //
     // SYN ACK packet. Mark the connection as established, if
     // the connection is already found. Otherwise ignore.
-    // 
+    //
 
     spindump_deepdebugf("case 2: SYN ACK (seq = %u, ack = %u)", seq, ack);
-    
+
     //
     // First, look for existing connection
-    // 
-    
+    //
+
     connection = spindump_connections_searchconnection_tcp(&destination,
 							   &source,
 							   side2port,
@@ -342,14 +344,14 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     //
     // If found, change state and mark reception of an ACK. If not
     // found, ignore.
-    // 
-    
+    //
+
     if (connection != 0) {
 
       if (connection->state == spindump_connection_state_establishing) {
 	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
-      
+
       spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength);
       spindump_analyze_process_tcp_markseqsent(connection,
 						1,
@@ -358,53 +360,53 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 						&packet->timestamp,
 						finreceived);
       spindump_analyze_process_tcp_markackreceived(state,packet,connection,1,ack,&packet->timestamp,&ackedfin);
-      
+
       *p_connection = connection;
-      
+
     } else {
-      
+
       state->stats->unknownTcpConnection++;
-      
+
     }
-    
+
   } else if ((tcp->th_flags & SPINDUMP_TH_FIN)) {
-    
+
     //
     // FIN packet. Mark the connection as closing, if the
     // connection exists.
-    // 
+    //
 
     spindump_deepdebugf("case 3: FIN (seq = %u, ack = %u)", seq, ack);
-    
+
     //
     // First, look for existing connection
-    // 
-    
+    //
+
     connection = spindump_connections_searchconnection_tcp_either(&source,
 								  &destination,
 								  side1port,
 								  side2port,
 								  state->table,
 								  &fromResponder);
-    
+
     //
     // If found, change state and mark reception of an ACK. If not
     // found, ignore.
-    // 
-    
+    //
+
     if (connection != 0) {
-      
+
       if (connection->state == spindump_connection_state_establishing ||
 	  connection->state == spindump_connection_state_established ||
 	  connection->state == spindump_connection_state_closing) {
 	spindump_connections_changestate(state,packet,connection,spindump_connection_state_closing);
       }
-      
+
       if (fromResponder)
 	connection->u.tcp.finFromSide2 = 1;
-      else 
+      else
 	connection->u.tcp.finFromSide1 = 1;
-      
+
       spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
       spindump_analyze_process_tcp_markseqsent(connection,
 					       fromResponder,
@@ -417,18 +419,18 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 	spindump_deepdebugf("this was an ack to a FIN");
 	if (fromResponder)
 	  connection->u.tcp.finFromSide1 = 1;
-	else 
+	else
 	  connection->u.tcp.finFromSide2 = 1;
       }
-      
+
       //
       // Both sides have sent a FIN?
-      // 
-      
+      //
+
       spindump_deepdebugf("seen FIN from %u and %u",
 			  connection->u.tcp.finFromSide1,
 			  connection->u.tcp.finFromSide2);
-      
+
       if (connection->u.tcp.finFromSide1 && connection->u.tcp.finFromSide2) {
 	if (connection->state == spindump_connection_state_closing) {
 	  spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
@@ -436,89 +438,89 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 	  closed = 1;
 	}
       }
-      
+
       *p_connection = connection;
-      
+
     } else {
-      
+
       state->stats->unknownTcpConnection++;
-      
+
     }
-    
+
   } else if ((tcp->th_flags & SPINDUMP_TH_RST)) {
 
     //
     // RST packet. Delete the connection, if there was one
-    // 
+    //
 
     spindump_deepdebugf("case 5: RST (seq = %u, ack = %u)", seq, ack);
-    
+
     //
     // First, look for existing connection
-    // 
-    
+    //
+
     connection = spindump_connections_searchconnection_tcp_either(&source,
 								  &destination,
 								  side1port,
 								  side2port,
 								  state->table,
 								  &fromResponder);
-    
+
     //
     // If found, delete connection and mark reception of an ACK. If not
     // found, ignore.
-    // 
-    
+    //
+
     if (connection != 0) {
-      
+
       spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
       spindump_analyze_process_tcp_markackreceived(state,packet,connection,fromResponder,ack,&packet->timestamp,&ackedfin);
       spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
       spindump_connections_markconnectiondeleted(connection);
       closed = 1;
-      
+
       *p_connection = connection;
-      
+
     } else {
-      
+
       state->stats->unknownTcpConnection++;
-      
+
     }
-    
+
   } else {
 
     //
     // Normal packet. Update the connection, if there was one.
-    // 
-    
+    //
+
     spindump_deepdebugf("case 6: OTHER (seq = %u, ack = %u)", seq, ack);
-    
+
     //
     // First, look for existing connection
-    // 
-    
+    //
+
     connection = spindump_connections_searchconnection_tcp_either(&source,
 								  &destination,
 								  side1port,
 								  side2port,
 								  state->table,
 								  &fromResponder);
-    
+
     //
     // Call some handlers based on what happened here, if needed
-    // 
-    
+    //
+
     if (new) {
       spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
     }
-    
+
     //
     // If found, mark reception of an ACK and sent SEQ. If not
     // found, ignore.
-    // 
-    
+    //
+
     if (connection != 0) {
-      
+
       spindump_analyze_process_tcp_markseqsent(connection,
 					       fromResponder,
 					       seq,
@@ -530,17 +532,17 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 	spindump_deepdebugf("this was an ack to a FIN");
 	if (fromResponder)
 	  connection->u.tcp.finFromSide1 = 1;
-	else 
+	else
 	  connection->u.tcp.finFromSide2 = 1;
-	
+
 	//
 	// Both sides have sent a FIN?
-	// 
-	
+	//
+
 	spindump_deepdebugf("seen acked FIN from %u and %u",
 			    connection->u.tcp.finFromSide1,
 			    connection->u.tcp.finFromSide2);
-	
+
 	if (connection->u.tcp.finFromSide1 && connection->u.tcp.finFromSide2) {
 	  if (connection->state == spindump_connection_state_closing) {
 	    spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
@@ -548,30 +550,30 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 	    closed = 1;
 	  }
 	}
-	
+
       }
 
       //
       // Update statistics
       //
-      
+
       spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
       *p_connection = connection;
-      
+
     } else {
-      
+
       state->stats->unknownTcpConnection++;
       *p_connection = 0;
       return;
-      
+
     }
-    
+
   }
-  
+
   //
   // Call some handlers based on what happened here, if needed
-  // 
-  
+  //
+
   if (0 && closed) {
     spindump_analyze_process_handlers(state,spindump_analyze_event_connectiondelete,packet,connection);
   }

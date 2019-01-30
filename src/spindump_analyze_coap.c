@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ spindump_analyze_coap_isprobablecoappacket(const unsigned char* payload,
 
   //
   // Do ports look like COAP?
-  // 
+  //
 
   int dtls = 0;
   if (sourcePort == SPINDUMP_COAP_PORT1 || destPort == SPINDUMP_COAP_PORT1) {
@@ -105,29 +105,29 @@ spindump_analyze_coap_isprobablecoappacket(const unsigned char* payload,
   } else {
     return(0);
   }
-  
+
   //
   // Does packet format look right?
-  // 
-  
+  //
+
   if (dtls) {
-    
+
     if (!spindump_analyze_tls_parser_isprobabletlspacket(payload,payload_len,1)) {
       return(0);
     }
-    
+
   } else {
-    
+
     if (payload_len < sizeof(struct spindump_coap)) {
       return(0);
     }
-    
+
   }
-  
+
   //
   // Probable COAP packet!
-  // 
-  
+  //
+
   *p_isDtls = dtls;
   return(1);
 }
@@ -139,18 +139,18 @@ spindump_analyze_coap_isprobablecoappacket(const unsigned char* payload,
 // connection, if fromResponder = 0, it is the client. Mid is the
 // message ID from the other party that is being acked. Based on this,
 // one one can track RTT later when a COAP response is sent.
-// 
+//
 
 static void
 spindump_analyze_coap_markmidsent(struct spindump_connection* connection,
 				  const int fromResponder,
 				  const uint16_t mid,
 				  const struct timeval* t) {
-  
+
   spindump_assert(connection != 0);
   spindump_assert(fromResponder == 0 || fromResponder == 1);
   spindump_assert(t != 0);
-  
+
   if (fromResponder) {
     spindump_messageidtracker_add(&connection->u.coap.side2MIDs,t,mid);
     spindump_deepdebugf("responder sent MID %u", mid);
@@ -167,7 +167,7 @@ spindump_analyze_coap_markmidsent(struct spindump_connection* connection,
 // connection, if fromResponder = 0, it is the client. Mid is the
 // message id from the other party that is being acked. Based on this,
 // one one can track RTT.
-// 
+//
 
 static int
 spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
@@ -180,28 +180,28 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
   //
   // Some sanity checks
   //
-  
+
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
-  
+
   //
   // Based on whether this is a response or request, either look for a
   // matching message id in the COAP header, or store the message id
   // for a later match
   //
-  
+
   const struct timeval* ackto;
-  
+
   if (fromResponder) {
-    
+
     ackto = spindump_messageidtracker_ackto(&connection->u.coap.side1MIDs,mid);
-    
+
     if (ackto != 0) {
-      
+
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
       spindump_deepdebugf("the responder COAP response %u refers to initiator COAP message that came %llu ms earlier",
 			  mid,
@@ -210,24 +210,25 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
 					     packet,
 					     connection,
 					     1,
+							 0,
 					     ackto,
 					     t,
 					     "COAP response");
       return(1);
-      
+
     } else {
-      
+
       spindump_deepdebugf("did not find the initiator COAP message that responder mid %u refers to", mid);
       return(0);
-      
+
     }
-    
+
   } else {
-    
+
     ackto = spindump_messageidtracker_ackto(&connection->u.coap.side2MIDs,mid);
-    
+
     if (ackto != 0) {
-      
+
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
       spindump_deepdebugf("the initiator response MID %u refers to responder COAP message that came %llu ms earlier",
 			  mid,
@@ -236,16 +237,17 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
 					     packet,
 					     connection,
 					     0,
+							 0,
 					     ackto,
 					     t,
 					     "COAP response");
       return(1);
-      
+
     } else {
-      
+
       spindump_deepdebugf("did not find the responder COAP message that initiator mid %u refers to", mid);
       return(0);
-      
+
     }
   }
 }
@@ -273,11 +275,11 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
   spindump_assert(connection != 0);
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
-  
+
   //
   // Calculate the time for the initial request-response
   //
-  
+
   const struct timeval* ackto = &connection->creationTime;
   unsigned long long diff = spindump_timediffinusecs(t,ackto);
   spindump_deepdebugf("the responder COAP TLS initial response refers to initiator COAP message that came %llu ms earlier",
@@ -286,6 +288,7 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
 					 packet,
 					 connection,
 					 1,
+					 0,
 					 ackto,
 					 t,
 					 "initial COAP TLS response");
@@ -308,7 +311,7 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
 // heuristically like one that matches COAP characteristics. This
 // determination is made based on port numbers and the ability to
 // perform a rudimentary parsing of the COAP header.
-// 
+//
 
 void
 spindump_analyze_process_coap(struct spindump_analyze* state,
@@ -322,11 +325,11 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 			      unsigned int remainingCaplen,
 			      int isDtls,
 			      struct spindump_connection** p_connection) {
-  
+
   //
   // Some checks first
-  // 
-  
+  //
+
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
@@ -334,11 +337,11 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
   spindump_assert(udpHeaderPosition > ipHeaderPosition);
   spindump_assert(spindump_isbool(isDtls));
   spindump_assert(p_connection != 0);
-  
+
   //
   // Find out some information about the packet
-  // 
-  
+  //
+
   spindump_address source;
   spindump_address destination;
   spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
@@ -347,9 +350,9 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
   uint16_t side1port = ntohs(udp->uh_sport);
   uint16_t side2port = ntohs(udp->uh_dport);
   const unsigned char* payload = (const unsigned char*)(packet->contents + udpHeaderPosition + spindump_udp_header_size);
-  
+
   if (isDtls) {
-    
+
     spindump_analyze_process_coap_dtls(state,
 				       packet,
 				       ipPacketLength,
@@ -361,9 +364,9 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 				       side2port,
 				       payload,
 				       p_connection);
-    
+
   } else {
-    
+
     spindump_analyze_process_coap_cleartext(state,
 					    packet,
 					    ipPacketLength,
@@ -377,7 +380,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 					    p_connection);
 
   }
-  
+
 }
 
 //
@@ -392,7 +395,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 // have filled in the relevant header pointers in the packet structure
 // "packet" correctly. The etherlen, caplen, timestamp, and the actual
 // packet (the contents field) needs to have been set.
-// 
+//
 
 static void
 spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
@@ -410,7 +413,7 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   //
   // Some sanity checks first
   //
-  
+
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
@@ -420,19 +423,19 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   spindump_assert(destination != 0);
   spindump_assert(payload != 0);
   spindump_assert(p_connection != 0);
-  
+
   //
   // Initialize our analysis
   //
-  
+
   const struct spindump_coap* coap = (const struct spindump_coap*)payload;
   struct spindump_connection* connection = 0;
   int fromResponder;
   int new = 0;
-  
+
   //
   // Check that the packet looks sensible
-  // 
+  //
 
   unsigned int coapSize = udpLength - spindump_udp_header_size;
   if (coapSize < sizeof(struct spindump_coap) ||
@@ -442,22 +445,22 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-  
+
   //
   // Parse the packet enough to determine what is going on
-  // 
-  
+  //
+
   uint8_t ver = (coap->verttkl & spindump_coap_verttkl_vermask);
   uint8_t type = (coap->verttkl & spindump_coap_verttkl_tmask);
   uint8_t classf = (coap->code & spindump_coap_code_classmask);
   uint16_t mid = coap->id;
   unsigned int coappayloadsize = coapSize - sizeof(struct spindump_coap);
   const char* coappayload = ((const char*)coap + sizeof(struct spindump_coap));
-  
+
   //
   // Debugs
-  // 
-  
+  //
+
   spindump_debugf("saw COAP packet from %s (ports %u:%u) Byte1=%02x (Ver=%02x, Type=%02x) Code=%02x (Class=%02x) MID=%04x payload = %02x%02x%02x... (size %u)",
 		  spindump_address_tostring(source), side1port, side2port,
 		  coap->verttkl, ver, type,
@@ -465,24 +468,24 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 		  mid,
 		  coappayload[0], coappayload[1], coappayload[2],
 		  coappayloadsize);
-  
+
   //
   // Then, look for existing connection
-  // 
-  
+  //
+
   connection = spindump_connections_searchconnection_coap_either(source,
 								 destination,
 								 side1port,
 								 side2port,
 								 state->table,
 								 &fromResponder);
-  
+
   //
   // If not found, create a new one
-  // 
-  
+  //
+
   if (connection == 0) {
-    
+
     connection = spindump_connections_newconnection_coap(source,
 							 destination,
 							 side1port,
@@ -492,34 +495,34 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 
     fromResponder = 0;
     new = 1;
-    
+
     if (connection == 0) {
       *p_connection = 0;
       return;
     }
-    
+
     connection->u.coap.dtls = 0;
-    
+
     state->stats->connections++;
     state->stats->connectionsCoap++;
-    
+
   }
 
   //
   // Check version
-  // 
-  
+  //
+
   if (ver != spindump_coap_verttkl_ver1) {
     spindump_debugf("COAP version %02x is not supported", ver);
     state->stats->unrecognisedCoapVersion++;
     *p_connection = 0;
     return;
   }
-  
+
   //
   // Track message IDs of requests and responses
-  // 
-  
+  //
+
   int foundmid = 0;
   if (type == spindump_coap_verttkl_tcomfirmable &&
       classf == spindump_coap_code_classrequest) {
@@ -543,37 +546,37 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-  
+
   //
   // Call some handlers based on what happened here, if needed
-  // 
-  
+  //
+
   if (new) {
     spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
   }
-  
+
   //
   // Update stats.
-  // 
-  
+  //
+
   spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
-  
+
   //
   // If we've seen a response from the responder, mark state as
   // established and then closed, as the response is complete.
-  // 
-  
+  //
+
   if (fromResponder && foundmid && connection->state == spindump_connection_state_establishing) {
     spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
     spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
   }
-  
+
   //
   // Done. Inform caller of the connection.
-  // 
-  
+  //
+
   *p_connection = connection;
-  
+
 }
 
 //
@@ -588,19 +591,19 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 // have filled in the relevant header pointers in the packet structure
 // "packet" correctly. The etherlen, caplen, timestamp, and the actual
 // packet (the contents field) needs to have been set.
-// 
+//
 
-static void                                                                  
-spindump_analyze_process_coap_dtls(struct spindump_analyze* state,           
-                                   struct spindump_packet* packet,           
-                                   unsigned int ipPacketLength,              
+static void
+spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
+                                   struct spindump_packet* packet,
+                                   unsigned int ipPacketLength,
                                    unsigned int udpLength,
 				   unsigned int remainingCaplen,
-                                   spindump_address* source,                 
-                                   spindump_address* destination,            
-                                   uint16_t side1port,                       
-                                   uint16_t side2port,                       
-                                   const unsigned char* payload,             
+                                   spindump_address* source,
+                                   spindump_address* destination,
+                                   uint16_t side1port,
+                                   uint16_t side2port,
+                                   const unsigned char* payload,
                                    struct spindump_connection** p_connection) {
 
   //
@@ -616,17 +619,17 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
   spindump_assert(destination != 0);
   spindump_assert(payload != 0);
   spindump_assert(p_connection != 0);
-  
+
   //
   // Initialize our analysis
   //
-  
+
   struct spindump_connection* connection = 0;
   int fromResponder;
-  
+
   //
   // Check that the packet looks sensible
-  // 
+  //
 
   unsigned int tlsLength = udpLength - spindump_udp_header_size;
   int isHandshake;
@@ -646,35 +649,35 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-  
+
   //
   // Debugs
-  // 
-  
+  //
+
   spindump_debugf("saw COAP DTLS packet from %s (ports %u:%u) handshake %u initial %u response %u tls version %04x",
 		  spindump_address_tostring(source), side1port, side2port,
 		  isHandshake,
 		  isInitialHandshake,
 		  isResponse,
 		  dtlsVersion);
-  
+
   //
   // Then, look for existing connection
-  // 
-  
+  //
+
   connection = spindump_connections_searchconnection_coap_either(source,
 								 destination,
 								 side1port,
 								 side2port,
 								 state->table,
 								 &fromResponder);
-  
+
   //
   // If not found, create a new one
-  // 
-  
+  //
+
   if (connection == 0) {
-    
+
     connection = spindump_connections_newconnection_coap(source,
 							 destination,
 							 side1port,
@@ -683,17 +686,17 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
 							 state->table);
 
     fromResponder = 0;
-    
+
     if (connection == 0) {
       *p_connection = 0;
       return;
     }
-    
+
     connection->u.coap.dtls = 1;
-    
+
     state->stats->connections++;
     state->stats->connectionsCoap++;
-    
+
   }
 
   //
@@ -705,42 +708,42 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
 			dtlsVersion);
     connection->u.coap.dtlsVersion = dtlsVersion;
   }
-  
+
   //
   // Calculate RTT based on initial hello exchange
-  // 
-  
+  //
+
   if (fromResponder) {
 
     if (isHandshake && isInitialHandshake && isResponse && connection->packetsFromSide2 == 0) {
-      
+
       spindump_analyze_coap_markinitialresponsereceived(state,packet,connection,1,&packet->timestamp);
-      
+
     } else {
-      
+
       spindump_debugf("this COAP DTLS response does not update RTT");
 
     }
-    
+
   }
-  
+
   //
   // If we've seen a response from the responder, mark state as
   // established.
-  // 
-  
+  //
+
   if (fromResponder && isHandshake && isInitialHandshake && isResponse &&
       connection->state == spindump_connection_state_establishing) {
-    
+
     spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
-    
+
   }
-  
+
   //
   // Done. Inform caller of the connection and update stats.
-  // 
-  
+  //
+
   *p_connection = connection;
   spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
-  
+
 }
