@@ -215,15 +215,24 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
 				       struct spindump_packet* packet,
 				       struct spindump_connection* connection,
 				       const int right,
-							 const int unidirectional,
+				       const int unidirectional,
 				       const struct timeval* sent,
 				       const struct timeval* rcvd,
 				       const char* why) {
 
+  //
+  // Sanity checks
+  //
+  
+  spindump_assert(state != 0);
+  spindump_assert(packet != 0);
   spindump_assert(connection != 0);
+  spindump_assert(spindump_isbool(right));
+  spindump_assert(spindump_isbool(unidirectional));
   spindump_assert(sent != 0);
   spindump_assert(rcvd != 0);
-
+  spindump_assert(why != 0);
+  
   //
   // Calculate the RTT
   //
@@ -238,28 +247,29 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   //
   // Store in connection in suitable form
   //
-	if (unidirectional) {
-	  if (right) {
-	    ret = spindump_rtt_newmeasurement(&connection->respToInitFullRTT,diff);
-	    spindump_debugf("due to %s new calculated full RTT from responder = %lu us for connection %u",
-			    why, connection->respToInitFullRTT.lastRTT, connection->id);
-	  } else {
-	    ret = spindump_rtt_newmeasurement(&connection->initToRespFullRTT,diff);
-	    spindump_debugf("due to %s new calculated full RTT from initiator = %lu us for connection %u",
-			    why, connection->initToRespFullRTT.lastRTT, connection->id);
-	  }
-	} else {
-		if (right) {
-			ret = spindump_rtt_newmeasurement(&connection->rightRTT,diff);
-			spindump_debugf("due to %s new calculated right RTT = %lu us for connection %u",
-					why, connection->rightRTT.lastRTT, connection->id);
-		} else {
-			ret = spindump_rtt_newmeasurement(&connection->leftRTT,diff);
-			spindump_debugf("due to %s new calculated left RTT = %lu us for connection %u",
-					why, connection->leftRTT.lastRTT, connection->id);
-		}
-	}
-
+  
+  if (unidirectional) {
+    if (right) {
+      ret = spindump_rtt_newmeasurement(&connection->respToInitFullRTT,diff);
+      spindump_debugf("due to %s new calculated full RTT from responder = %lu us for connection %u",
+		      why, connection->respToInitFullRTT.lastRTT, connection->id);
+    } else {
+      ret = spindump_rtt_newmeasurement(&connection->initToRespFullRTT,diff);
+      spindump_debugf("due to %s new calculated full RTT from initiator = %lu us for connection %u",
+		      why, connection->initToRespFullRTT.lastRTT, connection->id);
+    }
+  } else {
+    if (right) {
+      ret = spindump_rtt_newmeasurement(&connection->rightRTT,diff);
+      spindump_debugf("due to %s new calculated right RTT = %lu us for connection %u",
+		      why, connection->rightRTT.lastRTT, connection->id);
+    } else {
+      ret = spindump_rtt_newmeasurement(&connection->leftRTT,diff);
+      spindump_debugf("due to %s new calculated left RTT = %lu us for connection %u",
+		      why, connection->leftRTT.lastRTT, connection->id);
+    }
+  }
+  
   //
   // Loop through any possible aggregated connections this connection
   // belongs to, and report the same measurement udpates there.
@@ -279,21 +289,21 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   //
   // Call some handlers, if any, for the new measurements
   //
-	if (unidirectional) {
-		spindump_analyze_process_handlers(state,
-					    right ? spindump_analyze_event_newrespinitfullrttmeasurement :
-					    spindump_analyze_event_newinitrespfullrttmeasurement,
-					    packet,
-					    connection);
-	} else {
-		spindump_analyze_process_handlers(state,
-					    right ? spindump_analyze_event_newrightrttmeasurement :
-					    spindump_analyze_event_newleftrttmeasurement,
-					    packet,
-					    connection);
-	}
-
-
+  
+  if (unidirectional) {
+    spindump_analyze_process_handlers(state,
+				      right ? spindump_analyze_event_newrespinitfullrttmeasurement :
+				      spindump_analyze_event_newinitrespfullrttmeasurement,
+				      packet,
+				      connection);
+  } else {
+    spindump_analyze_process_handlers(state,
+				      right ? spindump_analyze_event_newrightrttmeasurement :
+				      spindump_analyze_event_newleftrttmeasurement,
+				      packet,
+				      connection);
+  }
+  
   //
   // Done. Return.
   //
