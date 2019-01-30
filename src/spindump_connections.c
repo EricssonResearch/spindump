@@ -271,22 +271,6 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   }
   
   //
-  // Loop through any possible aggregated connections this connection
-  // belongs to, and report the same measurement udpates there.
-  //
-
-  struct spindump_connection_set_iterator iter;
-  for (spindump_connection_set_iterator_initialize(&connection->aggregates,&iter);
-       !spindump_connection_set_iterator_end(&iter);
-       ) {
-
-    struct spindump_connection* aggregate = spindump_connection_set_iterator_next(&iter);
-    spindump_assert(aggregate != 0);
-    spindump_connections_newrttmeasurement(state,packet,aggregate,right,unidirectional,sent,rcvd,why);
-
-  }
-
-  //
   // Call some handlers, if any, for the new measurements
   //
   
@@ -304,6 +288,22 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
 				      connection);
   }
   
+  //
+  // Loop through any possible aggregated connections this connection
+  // belongs to, and report the same measurement udpates there.
+  //
+
+  struct spindump_connection_set_iterator iter;
+  for (spindump_connection_set_iterator_initialize(&connection->aggregates,&iter);
+       !spindump_connection_set_iterator_end(&iter);
+       ) {
+
+    struct spindump_connection* aggregate = spindump_connection_set_iterator_next(&iter);
+    spindump_assert(aggregate != 0);
+    spindump_connections_newrttmeasurement(state,packet,aggregate,right,unidirectional,sent,rcvd,why);
+
+  }
+
   //
   // Done. Return.
   //
