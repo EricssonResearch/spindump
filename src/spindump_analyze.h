@@ -93,6 +93,7 @@ struct spindump_stats*
 spindump_analyze_getstats(struct spindump_analyze* state);
 void
 spindump_analyze_process(struct spindump_analyze* state,
+			 enum spindump_capture_linktype linktype,
 			 struct spindump_packet* packet,
 			 struct spindump_connection** p_connection);
 void

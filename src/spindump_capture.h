@@ -39,8 +39,14 @@
 // Capture data structures --------------------------------------------------------------------
 //
 
+enum spindump_capture_linktype {
+  spindump_capture_linktype_ethernet,
+  spindump_capture_linktype_null
+};
+
 struct spindump_capture_state {
   pcap_t *handle;
+  enum spindump_capture_linktype linktype;
   uint32_t ourNetmask;
   uint32_t ourAddress;
   uint32_t ourLocalBroadcastAddress;
@@ -60,6 +66,8 @@ spindump_capture_initialize(const char* interface,
 struct spindump_capture_state*
 spindump_capture_initialize_file(const char* file,
 				 const char* filter);
+enum spindump_capture_linktype
+spindump_capture_getlinktype(struct spindump_capture_state* state);
 void
 spindump_capture_nextpacket(struct spindump_capture_state* state,
 			    struct spindump_packet** p_packet,

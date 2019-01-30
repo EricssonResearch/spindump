@@ -322,7 +322,7 @@ static void systemtests() {
   packet1.contents = packet1bytes;
   packet1.etherlen = sizeof(packet1bytes);
   packet1.caplen = packet1.etherlen;
-  spindump_analyze_process(analyzer,&packet1,&connection1);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet1,&connection1);
   
   spindump_checktest(connection1 != 0);
   spindump_checktest(connection1->type == spindump_connection_transport_icmp);
@@ -350,7 +350,7 @@ static void systemtests() {
   packet2.etherlen = sizeof(packet2bytes);
   packet2.caplen = packet2.etherlen;
   connection1 = 0;
-  spindump_analyze_process(analyzer,&packet2,&connection1);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet2,&connection1);
   
   spindump_checktest(connection1 != 0);
   spindump_checktest(connection1->type == spindump_connection_transport_icmp);
@@ -389,7 +389,7 @@ static void systemtests() {
   packet3.contents = packet3bytes;
   packet3.etherlen = sizeof(packet3bytes);
   packet3.caplen = packet3.etherlen;
-  spindump_analyze_process(analyzer,&packet3,&connection2);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet3,&connection2);
   
   spindump_checktest(connection2 != 0);
   spindump_checktest(connection2 != connection1);
@@ -418,7 +418,7 @@ static void systemtests() {
   packet4.etherlen = sizeof(packet4bytes);
   packet4.caplen = packet4.etherlen;
   connection2 = 0;
-  spindump_analyze_process(analyzer,&packet4,&connection2);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet4,&connection2);
   
   spindump_checktest(connection2 != 0);
   spindump_checktest(connection2 != connection1);
@@ -459,7 +459,7 @@ static void systemtests() {
   packet5.contents = packet5bytes;
   packet5.etherlen = sizeof(packet5bytes);
   packet5.caplen = packet5.etherlen;
-  spindump_analyze_process(analyzer,&packet5,&connection3);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet5,&connection3);
   
   spindump_checktest(connection3 != 0);
   spindump_checktest(connection3->type == spindump_connection_transport_dns);
@@ -491,7 +491,7 @@ static void systemtests() {
   packet6.etherlen = sizeof(packet6bytes);
   packet6.caplen = packet6.etherlen;
   connection3 = 0;
-  spindump_analyze_process(analyzer,&packet6,&connection3);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet6,&connection3);
   
   spindump_checktest(connection3 != 0);
   spindump_checktest(connection3->type == spindump_connection_transport_dns);
@@ -531,7 +531,7 @@ static void systemtests() {
   packet7.contents = packet7bytes;
   packet7.etherlen = sizeof(packet7bytes);
   packet7.caplen = packet7.etherlen;
-  spindump_analyze_process(analyzer,&packet7,&connection4);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet7,&connection4);
   
   spindump_checktest(connection4 != 0);
   spindump_checktest(connection4 != connection3);
@@ -564,7 +564,7 @@ static void systemtests() {
   packet8.etherlen = sizeof(packet8bytes);
   packet8.caplen = packet8.etherlen;
   connection4 = 0;
-  spindump_analyze_process(analyzer,&packet8,&connection4);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet8,&connection4);
   
   spindump_checktest(connection4 != 0);
   spindump_checktest(connection4 != connection3);
@@ -592,7 +592,7 @@ static void systemtests() {
   packet9.contents = packet1bytes;
   packet9.etherlen = sizeof(packet1bytes);
   packet9.caplen = packet1.etherlen - 4; // miss the last bytes of the ICMPv6, should not matter
-  spindump_analyze_process(analyzer,&packet9,&connection5);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet9,&connection5);
   
   spindump_checktest(connection5 != 0);
 
@@ -601,7 +601,7 @@ static void systemtests() {
   packet9.contents = packet1bytes;
   packet9.etherlen = sizeof(packet1bytes);
   packet9.caplen = packet1.etherlen - 20; // miss plenty, including some of the IPv6 header, should be an error
-  spindump_analyze_process(analyzer,&packet9,&connection5);
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet9,&connection5);
   
   spindump_checktest(connection5 == 0);
   spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForIpHdr == 1);

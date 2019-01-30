@@ -832,7 +832,10 @@ spindump_main_operation() {
 
     if (packet != 0) {
       struct spindump_connection* connection = 0;
-      spindump_analyze_process(analyzer,packet,&connection);
+      spindump_analyze_process(analyzer,
+			       spindump_capture_getlinktype(capturer),
+			       packet,
+			       &connection);
     }
 
     //

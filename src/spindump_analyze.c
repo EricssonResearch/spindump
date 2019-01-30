@@ -40,6 +40,14 @@
 //
 
 static void
+spindump_analyze_process_null(struct spindump_analyze* state,
+			      struct spindump_packet* packet,
+			      struct spindump_connection** p_connection);
+static void
+spindump_analyze_process_ethernet(struct spindump_analyze* state,
+				  struct spindump_packet* packet,
+				  struct spindump_connection** p_connection);
+static void
 spindump_analyze_decodeiphdr(struct spindump_analyze* state,
 			     struct spindump_packet* packet,
 			     unsigned int position,
@@ -311,6 +319,7 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
 
 void
 spindump_analyze_process(struct spindump_analyze* state,
+			 enum spindump_capture_linktype linktype,
 			 struct spindump_packet* packet,
 			 struct spindump_connection** p_connection) {
 
@@ -322,7 +331,93 @@ spindump_analyze_process(struct spindump_analyze* state,
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(p_connection != 0);
+
+  //
+  // Switch based on type of L2
+  //
+
+  switch (linktype) {
+  case spindump_capture_linktype_null:
+    spindump_analyze_process_null(state,packet,p_connection);
+    break;
+  case spindump_capture_linktype_ethernet:
+    spindump_analyze_process_ethernet(state,packet,p_connection);
+    break;
+  default:
+    spindump_errorf("unsupported linktype");
+  }
+}
+
+static void
+spindump_analyze_process_null(struct spindump_analyze* state,
+			      struct spindump_packet* packet,
+			      struct spindump_connection** p_connection) {
+  //
+  // Check there is enough of the null header. As pcap_datalink man page says:
+  //
+  //    https://www.tcpdump.org/linktypes.html  lists  the values
+  //    pcap_datalink() can return and describes the packet formats
+  //    that correspond to those values.
+  //
+  // And tcpdump.org says:
+  //
+  //    BSD loopback encapsulation; the link layer header is a 4-byte
+  //    field, in host byte order, containing a value of 2 for IPv4
+  //    packets, a value of either 24, 28, or 30 for IPv6 packets, a
+  //    value of 7 for OSI packets, or a value of 23 for IPX packets. All
+  //    of the IPv6 values correspond to IPv6 packets; code reading files
+  //    should check for all of them.
+  //
+  //    Note that ``host byte order'' is the byte order of the machine on
+  //    which the packets are captured; if a live capture is being done,
+  //    ``host byte order'' is the byte order of the machine capturing
+  //    the packets, but if a ``savefile'' is being read, the byte order
+  //    is not necessarily that of the machine reading the capture file.
+  // 
   
+  if (packet->etherlen < spindump_null_header_size ||
+      packet->caplen < spindump_null_header_size) {
+    spindump_warnf("not enough bytes for the Null header, only %u bytes in received frame",
+		   packet->etherlen);
+    *p_connection = 0;
+    return;
+  }
+  
+  //
+  // Branch based on the stored int
+  // 
+
+  uint32_t nullInt = *(uint32_t*)packet->contents;
+  switch (nullInt) {
+  case 2:
+    spindump_analyze_decodeiphdr(state,
+				 packet,
+				 spindump_null_header_size,
+				 p_connection);
+    return;
+    
+  case 22:
+  case 28:
+  case 30:
+    spindump_analyze_decodeip6hdr(state,
+				  packet,
+				  spindump_null_header_size,
+				  p_connection);
+    return;
+    
+  default:
+    spindump_debugf("received an unsupported null datalink layer type %4x", nullInt);
+    state->stats->unsupportedNulltype++;
+    *p_connection = 0;
+    return;
+    
+  }
+}
+
+void
+spindump_analyze_process_ethernet(struct spindump_analyze* state,
+				  struct spindump_packet* packet,
+				  struct spindump_connection** p_connection) {
   //
   // Check there is enough of the Ethernet header
   // 

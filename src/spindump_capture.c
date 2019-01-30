@@ -129,9 +129,18 @@ spindump_capture_initialize_aux(const char* interface,
       return(0);
     }
   }
-  
-  if (pcap_datalink(state->handle) != DLT_EN10MB) {
-    spindump_errorf("device %s doesn't provide Ethernet headers - not supported", interface);
+
+  int linktype = pcap_datalink(state->handle);
+  switch (linktype) {
+  case DLT_NULL:
+    state->linktype = spindump_capture_linktype_null;
+    break;
+  case DLT_EN10MB:
+    state->linktype = spindump_capture_linktype_ethernet;
+    break;
+  default:
+    spindump_errorf("device %s doesn't provide Ethernet headers - value %u not supported",
+		    interface, linktype);
     pcap_close(state->handle);
     free(state);
     return(0);
@@ -273,6 +282,19 @@ spindump_capture_nextpacket(struct spindump_capture_state* state,
 
   }
 }
+
+//
+// Return the currently used data link layer type
+//
+
+enum spindump_capture_linktype
+spindump_capture_getlinktype(struct spindump_capture_state* state) {
+  return(state->linktype);
+}
+
+//
+// Delete the object, close the PCAP interface
+//
 
 void
 spindump_capture_uninitialize(struct spindump_capture_state* state) {
