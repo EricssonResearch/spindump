@@ -77,13 +77,12 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize(struct spindump_connectionstable* table) {
+spindump_analyze_initialize() {
 
   //
   // Checks
   //
   
-  spindump_assert(table != 0);
   if (spindump_connection_max_handlers != spindump_analyze_max_handlers) {
     spindump_fatalf("the maximum number of registered handlers must be defined to be the same, "
 		    "now spindump_connection_max_handlers (%u) and spindump_analyze_max_handlers (%u) "
@@ -109,7 +108,6 @@ spindump_analyze_initialize(struct spindump_connectionstable* table) {
   // 
   
   memset(state,0,size);
-  state->table = table;
   state->table = spindump_connectionstable_initialize();
   if (state->table == 0) {
     free(state);
