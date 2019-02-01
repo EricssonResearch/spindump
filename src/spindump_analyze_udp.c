@@ -41,9 +41,8 @@
 // if the packet is the first in a flow).
 //
 // It is assumed that prior modules, i.e., the capture module has
-// filled in the relevant header pointers in the packet structure
-// "packet" correctly. For instance, the packet->udp pointer needs to
-// have already been set.
+// filled in the relevant fields in the packet structure "packet"
+// correctly.
 //
 // Note that this function for UDP processing branches out immediately
 // to some other protocol analyzers for DNS, COAP, and QUIC packets,

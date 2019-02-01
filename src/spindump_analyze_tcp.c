@@ -176,9 +176,8 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 // packets).
 //
 // It is assumed that prior modules, i.e., the capture module has
-// filled in the relevant header pointers in the packet structure
-// "packet" correctly. For instance, the packet->tcp pointer needs to
-// have already been set.
+// filled in the relevant fields in the packet structure "packet"
+// correctly.
 //
 
 void
@@ -350,18 +349,20 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     if (connection != 0) {
 
       if (connection->state == spindump_connection_state_establishing) {
-				spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+	spindump_connections_changestate(state,
+					 packet,
+					 connection,
+					 spindump_connection_state_established);
       }
 
       spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
       spindump_analyze_process_tcp_markseqsent(connection,
-						1,
-						seq,
-						1,
-						&packet->timestamp,
-						finreceived);
+					       1,
+					       seq,
+					       1,
+					       &packet->timestamp,
+					       finreceived);
       spindump_analyze_process_tcp_markackreceived(state,packet,connection,1,ack,&packet->timestamp,&ackedfin);
-
       *p_connection = connection;
 
     } else {
@@ -399,15 +400,15 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 
       if (connection->state == spindump_connection_state_establishing ||
           connection->state == spindump_connection_state_established ||
-					connection->state == spindump_connection_state_closing) {
-				spindump_connections_changestate(state,packet,connection,spindump_connection_state_closing);
+	  connection->state == spindump_connection_state_closing) {
+	spindump_connections_changestate(state,packet,connection,spindump_connection_state_closing);
       }
 
       if (fromResponder)
-				connection->u.tcp.finFromSide2 = 1;
+	connection->u.tcp.finFromSide2 = 1;
       else
-				connection->u.tcp.finFromSide1 = 1;
-
+	connection->u.tcp.finFromSide1 = 1;
+      
       spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
       spindump_analyze_process_tcp_markseqsent(connection,
 					       fromResponder,
@@ -417,13 +418,13 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 					       finreceived);
       spindump_analyze_process_tcp_markackreceived(state,packet,connection,fromResponder,ack,&packet->timestamp,&ackedfin);
       if (ackedfin) {
-				spindump_deepdebugf("this was an ack to a FIN");
-				if (fromResponder)
-					connection->u.tcp.finFromSide1 = 1;
-				else
-					connection->u.tcp.finFromSide2 = 1;
+	spindump_deepdebugf("this was an ack to a FIN");
+	if (fromResponder)
+	  connection->u.tcp.finFromSide1 = 1;
+	else
+	  connection->u.tcp.finFromSide2 = 1;
       }
-
+      
       //
       // Both sides have sent a FIN?
       //
@@ -433,19 +434,19 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 			  connection->u.tcp.finFromSide2);
 
       if (connection->u.tcp.finFromSide1 && connection->u.tcp.finFromSide2) {
-				if (connection->state == spindump_connection_state_closing) {
-					spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
-					spindump_connections_markconnectiondeleted(connection);
-					closed = 1;
-				}
+	if (connection->state == spindump_connection_state_closing) {
+	  spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
+	  spindump_connections_markconnectiondeleted(connection);
+	  closed = 1;
+	}
       }
-
+      
       *p_connection = connection;
-
+      
     } else {
-
+      
       state->stats->unknownTcpConnection++;
-
+      
     }
 
   } else if ((tcp->th_flags & SPINDUMP_TH_RST)) {

@@ -24,8 +24,14 @@
 //
 
 void
-spindump_analyze_process_aggregate(struct spindump_connection* connection,
+spindump_analyze_process_aggregate(struct spindump_analyze* state,
+				   struct spindump_connection* connection,
 				   struct spindump_packet* packet,
+				   unsigned int ipHeaderPosition,
+				   unsigned int ipHeaderSize,
+				   uint8_t ipVersion,
+				   uint8_t ecnFlags,
+				   unsigned int ipPacketLength,
 				   struct spindump_stats* stats);
 
 #endif // SPINDUMP_ANALYZE_AGGREGATE_H

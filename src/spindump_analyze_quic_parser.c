@@ -45,6 +45,11 @@ spindump_analyze_quic_parser_cidlengths(uint8_t lengthsbyte,
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Compare two QUIC Connection IDs. Return 1 if they are equal (same
+// length, same content).
+//
+
 int
 spindump_analyze_quic_quicidequal(struct spindump_quic_connectionid* id1,
 				  struct spindump_quic_connectionid* id2) {
@@ -54,6 +59,14 @@ spindump_analyze_quic_quicidequal(struct spindump_quic_connectionid* id1,
 	 memcmp(id1->id,id2->id,id2->len) == 0);
 }
 
+//
+// Compare two QUIC Connection IDs. Return 1 if they are equal (same
+// length, same content), but allow the first identifier to be of
+// unknown length. So if all the bytes of the second identifier match
+// the byte string in the first, we're return 1. This means that a
+// zero-length identifier will match anything.
+//
+
 int
 spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
 					struct spindump_quic_connectionid* id2) {
@@ -61,6 +74,10 @@ spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
   spindump_assert(id2 != 0);
   return(memcmp(id1,id2->id,id2->len) == 0);
 }
+
+//
+// Return a string describing a particular QUIC message
+//
 
 static const char*
 spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type) {
@@ -76,12 +93,23 @@ spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type) 
   }
 }
 
+//
+// Determine the length of a QUIC Connection ID based on the nibble
+// that describes its length. The QUIC specification says that 0 maps
+// to zero 0 length, but for all other lengths the value is the nibble
+// value + 3.
+//
+
 static unsigned int
 spindump_analyze_quic_parser_onecidlength(uint8_t value) {
   spindump_assert(value < 16);
   if (value == 0) return(0);
   else return(value + 3);
 }
+
+//
+// Helper function to parse Connection IDs from a QUIC long-form message.
+//
 
 static void
 spindump_analyze_quic_parser_cidlengths(uint8_t lengthsbyte,
@@ -93,6 +121,13 @@ spindump_analyze_quic_parser_cidlengths(uint8_t lengthsbyte,
 		      *p_destinationLength,
 		      *p_sourceLength);
 }
+
+//
+// Look to see if an UDP packet is a likely QUIC packet. This check is
+// based on port numbers and the basics of packet format (length
+// sufficient, first byte values reasonable, if there's a version
+// field, the version looks reasonable, etc)
+//
 
 int
 spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
@@ -251,6 +286,29 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   spindump_deepdebugf("probably is a quic packet returns yes!");
   return(1);
 }
+
+//
+// This is the main entry point to the QUIC parser. Spindump does not
+// parse QUIC packets beyond what the header is, as it is not a party
+// of the communication and does not have encryption keys and does not
+// want to have them either :-) But the parser looks at the header and
+// basic connection establishment messages conveyed by the header.
+//
+// The inputs are pointer to the beginning of the QUIC packet (= UDP
+// payload), length of that payload, and how much of that has been
+// captured in the part given to Spindump (as it may not use the full
+// packets).
+//
+// This function returns 0 if the parsing fails, and then we can be
+// sure that the packet is either invalid QUIC packet or from a
+// version that this parser does not support.
+//
+// If the function returns 1, it will update the output parameters, by
+// setting p_longForm to 1 if the packet is a QUIC long form packet,
+// p_version to the QUIC version indicated in the packet, set the
+// destination and source CIDs if they are known, and set the abstract
+// QUIC message type to the message carried by this packet.
+//
 
 int
 spindump_analyze_quic_parser_parse(const unsigned char* payload,
@@ -527,6 +585,16 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
 		      *p_sourceCidPresent);
   return(1);
 }
+
+//
+// This is the third entry point to the QUIC parser. If a packet has
+// been determined to be a QUIC packet, this function determines its
+// Spin bit value. If the function succeeds in retrieving a Spin bit
+// value, it returns 1, otherwise 0.
+//
+// The output parameter is p_spin, which will hold the value of the
+// Spin bit (either 0 or 1).
+//
 
 int
 spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,

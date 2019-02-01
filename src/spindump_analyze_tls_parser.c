@@ -97,6 +97,13 @@ spindump_analyze_tls_parser_versiontostring(const spindump_tls_version version) 
   return(buf);
 }
 
+//
+// Retrieve a TLS version number from the packet, and after byte order
+// conversion, do the DTLS mapping of version numbers if needed (TLS
+// version numbers can be algorithmically determined from the
+// corresponding DTLS version number).
+//
+
 static void
 spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valueInPacket,
 					     int isDatagram,
@@ -126,6 +133,13 @@ spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valu
     *result = hostVersion;
   }
 }
+
+//
+// Look to see if a packet is a likely TLS/DTLS packet. This check is
+// on the basics of packet format (length sufficient, first byte
+// values reasonable, if there's a version field, the version looks
+// reasonable, etc)
+//
 
 int
 spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
@@ -232,6 +246,29 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
   
   return(1);
 }
+
+//
+// This is the main entry point to the TLS parser. Spindump does not
+// parse TLS packets beyond what the header is, as it is not a party
+// of the communication and does not have encryption keys and does not
+// want to have them either :-) But the parser looks at the header and
+// basic connection establishment messages conveyed by the header.
+//
+// The inputs are pointer to the beginning of the TLS packet (= UDP or TCP
+// payload), length of that payload, and how much of that has been
+// captured in the part given to Spindump (as it may not use the full
+// packets).
+//
+// This function returns 0 if the parsing fails, and then we can be
+// sure that the packet is either invalid TLS/DTLS packet or from a
+// version that this parser does not support.
+//
+// If the function returns 1, it will update the output parameters, by
+// setting p_isHandshake to 1 if this is a TLS handshake,
+// p_isInitialHandshake if it is the initial handshake, p_tlsVersion
+// to the negotiated version, and p_isResponse to 1 if this is a
+// response from a server.
+//
 
 int
 spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
@@ -365,6 +402,10 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
   return(1);
 }
 
+//
+// Parse a TLS handshake packet
+//
+
 static int
 spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payload,
 						     unsigned int payload_len,
@@ -456,6 +497,10 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
   
 }
 
+//
+// Parse the handshake type and the handshake (e.g., client hello) within DTLS.
+//
+
 static void
 spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct spindump_dtls_handshake* handshake,
 									int* p_isInitialHandshake,
@@ -516,6 +561,10 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct s
 
 }
 
+//
+// Parse the handshake type and the handshake (e.g., client hello) within TLS.
+//
+
 static void
 spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(struct spindump_tls_handshake* handshake,
 								       int* p_isInitialHandshake,
@@ -561,6 +610,10 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(struct sp
   }
 
 }
+
+//
+// Determine whether a given TLS record layer content type is valid
+//
 
 static int
 spindump_analyze_tls_isvalid_recordlayer_content_type(uint8_t type) {

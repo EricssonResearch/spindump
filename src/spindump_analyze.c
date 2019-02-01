@@ -74,6 +74,7 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
 				unsigned int ipHeaderPosition,
 				unsigned int ipHeaderSize,
 				uint8_t ipVersion,
+				uint8_t ecnFlags,
 				unsigned int ipPacketLength,
 				struct spindump_connection** p_connection);
 
@@ -349,6 +350,11 @@ spindump_analyze_process(struct spindump_analyze* state,
   }
 }
 
+//
+// Process a packet when the datalink layer is the BSD null/loop layer.
+// This layer has just a 4-byte number indicating the packet type.
+//
+
 static void
 spindump_analyze_process_null(struct spindump_analyze* state,
 			      struct spindump_packet* packet,
@@ -414,6 +420,11 @@ spindump_analyze_process_null(struct spindump_analyze* state,
 
   }
 }
+
+//
+// Process a packet when the datalink layer is the Ethernet layer.
+// This layer has the Ethernet header before the IP packet.
+//
 
 void
 spindump_analyze_process_ethernet(struct spindump_analyze* state,
@@ -522,7 +533,8 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
 
   if (packet->caplen < position + ipHeaderSize) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes for the IP header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
+    spindump_warnf("not enough bytes for the IP header (capture length only %u, IP header size %u)",
+		   packet->caplen, ipHeaderSize);
     *p_connection = 0;
     return;
   }
@@ -621,7 +633,8 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
 
   if (packet->caplen < position + ipHeaderSize) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes for the IPv6 header (capture length only %u, IP header size %u)", packet->caplen, ipHeaderSize);
+    spindump_warnf("not enough bytes for the IPv6 header (capture length only %u, IP header size %u)",
+		   packet->caplen, ipHeaderSize);
     *p_connection = 0;
     return;
   }
@@ -970,6 +983,7 @@ spindump_analyze_decodeippayload(struct spindump_analyze* state,
 				    ipHeaderPosition,
 				    ipHeaderSize,
 				    ipVersion,
+				    ecnFlags,
 				    ipPacketLength,
 				    p_connection);
   }
@@ -993,6 +1007,7 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
 				unsigned int ipHeaderPosition,
 				unsigned int ipHeaderSize,
 				uint8_t ipVersion,
+				uint8_t ecnFlags,
 				unsigned int ipPacketLength,
 				struct spindump_connection** p_connection) {
   //
@@ -1030,16 +1045,24 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
       //
       // Found a matching connection! Report it there.
       //
-
-      spindump_analyze_process_aggregate(connection,packet,state->stats);
-
+      
+      spindump_analyze_process_aggregate(state,
+					 connection,
+					 packet,
+					 ipHeaderPosition,
+					 ipHeaderSize,
+					 ipVersion,
+					 ecnFlags,
+					 ipPacketLength,
+					 state->stats);
+      
       //
       // Return the first matching connection to the caller; note that
       // there may be more than one match!
       //
 
       if (*p_connection == 0) {
-				*p_connection = connection;
+	*p_connection = connection;
       }
 
     }

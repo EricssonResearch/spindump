@@ -29,9 +29,84 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// This function is called when an input packet matches only an
+// aggregate connection and nothing else. Note that there are both
+// packets that match a built-in traffic type (e.g., TCP) and packets
+// that only match aggregate connections if those (e.g., a protocol
+// not supported by Spindump). The former class of packets gets
+// processed at the specific connection, and then aggregates get to
+// know of these packets through the spindump_analyze_process_pakstats
+// and spindump_connections_newrttmeasurement functions. But latter
+// class of packets is directly passed to the aggregate connection
+// from spindump_analyze_decodeippayload and
+// spindump_analyze_otherippayload.
+//
+
 void
-spindump_analyze_process_aggregate(struct spindump_connection* connection,
+spindump_analyze_process_aggregate(struct spindump_analyze* state,
+				   struct spindump_connection* connection,
 				   struct spindump_packet* packet,
+				   unsigned int ipHeaderPosition,
+				   unsigned int ipHeaderSize,
+				   uint8_t ipVersion,
+				   uint8_t ecnFlags,
+				   unsigned int ipPacketLength,
 				   struct spindump_stats* stats) {
-  // ...
+  
+  //
+  // Some sanity checks
+  //
+
+  spindump_assert(connection != 0);
+  spindump_assert(spindump_connections_isaggregate(connection));
+  spindump_assert(packet != 0);
+  spindump_assert(stats != 0);
+  
+  //
+  // First, determine whether this packet is from the side1, which we
+  // mark as the "initiator" and the other as "responder".
+  //
+  
+  spindump_address source;
+  spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
+  int fromResponder;
+  switch (connection->type) {
+  case spindump_connection_aggregate_hostpair:
+    fromResponder = spindump_address_equal(&source,
+					   &connection->u.aggregatehostpair.side1peerAddress);
+    break;
+  case spindump_connection_aggregate_hostnetwork:
+    fromResponder = spindump_address_equal(&source,
+					   &connection->u.aggregatehostnetwork.side1peerAddress);
+    break;
+  case spindump_connection_aggregate_networknetwork:
+    fromResponder = spindump_address_innetwork(&source,
+					       &connection->u.aggregatenetworknetwork.side1Network);
+    break;
+  case spindump_connection_aggregate_multicastgroup:
+    fromResponder = spindump_address_equal(&source,
+					   &connection->u.aggregatemulticastgroup.group);
+    break;
+  default:
+    spindump_errorf("invalid connection type");
+    return;
+  }
+  spindump_assert(spindump_isbool(fromResponder));
+  
+  //
+  // There's little to do than note that we had a packet on this
+  // aggregate connection, and increase stats.
+  //
+  
+  spindump_analyze_process_pakstats(state,
+				    connection,
+				    fromResponder,
+				    packet,
+				    ipPacketLength,
+				    ecnFlags);
+  
+  //
+  // Done.
+  //
 }

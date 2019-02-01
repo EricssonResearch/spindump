@@ -206,6 +206,23 @@ spindump_address_equal(spindump_address* address1,
 }
 
 //
+// How many bits is this address? Possible answers are 32 and 128
+// (unless there is an internal error, which should not happen).
+//
+
+unsigned int
+spindump_address_length(spindump_address* address) {
+  switch (address->ss_family) {
+    
+  case AF_INET: return(32);
+  case AF_INET6: return(128);
+  default:
+    spindump_errorf("invalid address family");
+    return(0);
+  }
+}
+
+//
 // Multicast address check
 //
 // Note: This function is not thread safe.

@@ -40,9 +40,8 @@
 // packets).
 //
 // It is assumed that prior modules, e.g., the capture module or the
-// UDP analyzer module, have filled in the relevant header pointers in
-// the packet structure "packet" correctly. For instance, the
-// packet->quic pointer needs to have already been set.
+// UDP analyzer module, have filled in the fields inside the packet
+// structure.
 //
 
 void

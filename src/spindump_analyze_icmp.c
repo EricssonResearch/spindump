@@ -38,6 +38,18 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// This is the main function to process an incoming (IPv4) ICMP
+// packet, parse the packet as much as we can and process it
+// appropriately. The function sets the p_connection output parameter
+// to the connection that this packet belongs to (and possibly creates
+// this connection if the packet is the first in a flow).
+//
+// It is assumed that prior modules, i.e., the capture module has
+// filled in the relevant header pointers in the packet structure
+// "packet" correctly.
+//
+
 void
 spindump_analyze_process_icmp(struct spindump_analyze* state,
 			      struct spindump_packet* packet,
@@ -246,6 +258,18 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 
   }
 }
+
+//
+// This is the main function to process an incoming (IPv6) ICMP
+// packet, parse the packet as much as we can and process it
+// appropriately. The function sets the p_connection output parameter
+// to the connection that this packet belongs to (and possibly creates
+// this connection if the packet is the first in a flow).
+//
+// It is assumed that prior modules, i.e., the capture module has
+// filled in the relevant header pointers in the packet structure
+// "packet" correctly.
+//
 
 void
 spindump_analyze_process_icmp6(struct spindump_analyze* state,
