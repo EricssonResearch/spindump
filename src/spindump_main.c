@@ -535,6 +535,14 @@ spindump_main_textualmeasurement_text(spindump_analyze_event event,
 	     connection->u.quic.spinFromPeer2to1.lastSpin);
     break;
 
+  case spindump_analyze_event_initiatorecnce:
+    snprintf(what,sizeof(what)-1,"ECN CE Initiator");
+    break;
+
+  case spindump_analyze_event_responderecnce:
+    snprintf(what,sizeof(what)-1,"ECN CE Responder");
+    break;
+
   default:
     return;
   }
@@ -653,7 +661,7 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
   case spindump_analyze_event_initiatorecnce:
     snprintf(what,sizeof(what)-1,"\"event\": ECN CE Initiator\"");
     break;
-    
+
   case spindump_analyze_event_responderecnce:
     snprintf(what,sizeof(what)-1,"\"event\": ECN CE Responder\"");
     break;
