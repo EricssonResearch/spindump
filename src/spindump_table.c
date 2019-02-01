@@ -113,14 +113,40 @@ spindump_connectionstable_initialize() {
 
 void
 spindump_connectionstable_uninitialize(struct spindump_connectionstable* table) {
+
+  //
+  // Sanity checks
+  //
+  
   spindump_assert(table != 0);
   spindump_assert(table->connections != 0);
+
+  //
+  // Go through all connections and delete them
+  //
+  
+  for (unsigned int i = 0; i < table->nConnections; i++) {
+    struct spindump_connection* connection = table->connections[i];
+    if (connection != 0) {
+      spindump_connections_delete(connection);
+      table->connections[i] = 0;
+    }
+  }
+  
+  //
+  // Free up the connections table resources themselves
+  //
+  
   memset(table->connections,0xFF,table->maxNConnections * sizeof(struct spindump_connection*));
   spindump_deepdebugf("free table->connections %lx in spindump_connections_freetable", table->connections);
   free(table->connections);
   memset(table,0xFF,sizeof(*table));
   spindump_deepdebugf("free table in spindump_connections_freetable");
   free(table);
+
+  //
+  // Done
+  //
 }
 
 //
