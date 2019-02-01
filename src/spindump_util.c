@@ -292,6 +292,10 @@ spindump_address_islocalbroadcast(uint32_t address) {
     
 }
 
+//
+// Check whether the given address is a multicast address
+//
+
 int
 spindump_address_ismulticast(spindump_address* address) {
 
@@ -888,6 +892,11 @@ void
 spindump_setdebugdestination(FILE* file) {
   debugdestination = file;
 }
+
+//
+// Print out debug in a manner similar to printf. This function will
+// only have an effect if the variable debug is 1.
+//
 
 void
 spindump_debugf(const char* format, ...) {

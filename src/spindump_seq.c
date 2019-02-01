@@ -29,12 +29,24 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Initialize a sequence number tracker. A sequence number tracker
+// records sent out sequence numbers that are 32 bits long, remembers
+// the time they were sent, and then can match an acknowledgment of
+// that sequence number These trackers are used in the TCP protocol
+// analyzer. There's two trackers, one for each direction.
+//
+
 void
 spindump_seqtracker_initialize(struct spindump_seqtracker* tracker) {
   spindump_assert(tracker != 0);
   memset(tracker,0,sizeof(*tracker));
   tracker->seqindex = 0;
 }
+
+//
+// Add a new sequence number to the tracker
+//
 
 void
 spindump_seqtracker_add(struct spindump_seqtracker* tracker,
@@ -54,6 +66,12 @@ spindump_seqtracker_add(struct spindump_seqtracker* tracker,
   tracker->seqindex %= spindump_seqtracker_nstored;
   spindump_assert(tracker->seqindex < spindump_seqtracker_nstored);
 }
+
+//
+// Determine what time the request message was sent for a given
+// sequence number. Return a pointer to that time, or 0 if no such
+// sequence number has been seen.
+//
 
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
@@ -137,6 +155,10 @@ spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
     
   }
 }
+
+//
+// Uninitialize the sequence number tracker object.
+//
 
 void
 spindump_seqtracker_uninitialize(struct spindump_seqtracker* tracker) {

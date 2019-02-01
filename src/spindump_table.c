@@ -45,6 +45,11 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Initialize the connections table, i.e, an object that holds all
+// connections observed by this Spindump instance.
+//
+
 struct spindump_connectionstable*
 spindump_connectionstable_initialize() {
 
@@ -102,6 +107,10 @@ spindump_connectionstable_initialize() {
   return(table);
 }
 
+//
+// Uninitialize the connection table, i.e., free up all resources associated with it.
+//
+
 void
 spindump_connectionstable_uninitialize(struct spindump_connectionstable* table) {
   spindump_assert(table != 0);
@@ -113,6 +122,12 @@ spindump_connectionstable_uninitialize(struct spindump_connectionstable* table) 
   spindump_deepdebugf("free table in spindump_connections_freetable");
   free(table);
 }
+
+//
+// Perform a check if a given connection needs idle timeout or some
+// other action. This function gets called every few seconds to scan
+// through a connection.
+//
 
 static void
 spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connection,
@@ -177,6 +192,12 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
   }
 }
 
+//
+// Compress the connections table by moving connections in the table
+// closer to the beginning of the table. This makes allocation easier,
+// as new entries can be added to the end.
+//
+
 static void
 spindump_connectionstable_compresstable(struct spindump_connectionstable* table) {
   unsigned int shiftdown = 0;
@@ -191,6 +212,13 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
   table->nConnections -= shiftdown;
   if (shiftdown > 0) spindump_debugf("spindump_connectionstable_compresstable freed %u positions", shiftdown);
 }
+
+//
+// This function gets called every few seconds to scan through a
+// connection. It performs periodic maintenance, compression, checking
+// if idle timeout or some other action is needed on a connection,
+// etc.
+//
 
 int
 spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
@@ -209,6 +237,10 @@ spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
     return(0);
   }
 }
+
+//
+// Delete a connection from the table
+//
 
 void
 spindump_connectionstable_deleteconnection(struct spindump_connection* connection,
@@ -261,6 +293,11 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
 
   spindump_connections_delete(connection);
 }
+
+//
+// Print a report (for debugging purposes) of all connections in the
+// table
+//
 
 void
 spindump_connectionstable_report(struct spindump_connectionstable* table,

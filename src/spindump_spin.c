@@ -56,7 +56,11 @@ spindump_spintracker_match_bidirectional_spin(struct spindump_spintracker* track
 #define spimdump_spin_spin0to1tostring(spin0to1) ((spin0to1) ? "1to0" : "0to1")
 
 //
-// Helper functions  --------------------------------------------------------------------------
+// Actual code --------------------------------------------------------------------------------
+//
+
+//
+// Is the given recorded spin still outstanding for a unidirectional measurement?
 //
 
 static inline int
@@ -64,20 +68,38 @@ spindump_spinstore_is_outstanding_unidir(int outstanding) {
   return((outstanding & spindump_spinstore_outstanding_unidir) != 0);
 }
 
+//
+// Is the given recorded spin still outstanding for a bidirectional measurement?
+//
+
 static inline int
 spindump_spinstore_is_outstanding_bidir(int outstanding) {
   return((outstanding & spindump_spinstore_outstanding_bidir) != 0);
 }
+
+//
+// Mark the given recorded spin still as no longer outstanding for a
+// unidirectional measurement
+//
 
 static inline void
 spindump_spinstore_observed_unidir(struct spindump_spinstore* store) {
   store->outstanding &= (~spindump_spinstore_outstanding_unidir);
 }
 
+//
+// Mark the given recorded spin still as no longer outstanding for a
+// biidirectional measurement
+//
+
 static inline void
 spindump_spinstore_observed_bidir(struct spindump_spinstore* store) {
   store->outstanding &= (~spindump_spinstore_outstanding_bidir);
 }
+
+//
+// Get the index of the current/last observed spin in the tracker
+//
 
 static inline int
 spindump_spintracker_curr_index(struct spindump_spintracker* tracker) {
@@ -85,6 +107,10 @@ spindump_spintracker_curr_index(struct spindump_spintracker* tracker) {
 	 tracker->spinindex - 1 :
 	 spindump_spintracker_nstored - 1);
 }
+
+//
+// Get the index of the previous-to-last observed spin in the tracker
+//
 
 static inline int
 spindump_spintracker_prev_index(struct spindump_spintracker* tracker) {
@@ -99,7 +125,7 @@ spindump_spintracker_prev_index(struct spindump_spintracker* tracker) {
 }
 
 //
-// Actual code --------------------------------------------------------------------------------
+// Initialize a spin-tracking object
 //
 
 void
@@ -110,6 +136,11 @@ spindump_spintracker_initialize(struct spindump_spintracker* tracker) {
   tracker->lastSpin = 0;
   tracker->spinindex = 0;
 }
+
+//
+// Mark a spin value as observed in the network, and calculate RTT
+// based on it if the spin did flip
+//
 
 void
 spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
@@ -180,6 +211,12 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
     }
   }
 }
+
+//
+// Mark a spin value as observed in the network, i.e., store it in the
+// spintracker ring buffer if it was a flip, remember the proper value
+// if this is the first observed spin value, etc.
+//
 
 static int
 spindump_spintracker_observespin(struct spindump_analyze* state,
@@ -264,6 +301,11 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
 				    connection);
   return(0);
 }
+
+//
+// Mark a spin flip as observed in the network, i.e., store it in the
+// spintracker ring buffer.
+//
 
 void
 spindump_spintracker_add(struct spindump_spintracker* tracker,
@@ -394,6 +436,10 @@ spindump_spintracker_match_bidirectional_spin(struct spindump_spintracker* track
 
   }
 }
+
+//
+// Uninitialize the spin tracker object
+//
 
 void
 spindump_spintracker_uninitialize(struct spindump_spintracker* tracker) {

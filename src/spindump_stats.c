@@ -30,6 +30,10 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Create a statistics tracking object
+//
+
 struct spindump_stats*
 spindump_stats_initialize() {
   
@@ -56,6 +60,10 @@ spindump_stats_initialize() {
   
   return(stats);
 }
+
+//
+// Print the statistics out
+//
 
 void
 spindump_stats_report(struct spindump_stats* stats,
@@ -108,6 +116,10 @@ spindump_stats_report(struct spindump_stats* stats,
   fprintf(file,"connections, deleted after closing:	%8u\n", stats->connectionsDeletedClosed);
   fprintf(file,"connections, deleted after inactive:	%8u\n", stats->connectionsDeletedInactive);
 }
+
+//
+// Uninitialize, i.e., free up resources in the statistics object.
+//
 
 void
 spindump_stats_uninitialize(struct spindump_stats* stats) {

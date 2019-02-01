@@ -75,6 +75,10 @@ spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
   return(rtt->lastRTT);
 }
 
+//
+// Uninitialize the RTT tracker object
+//
+
 void
 spindump_rtt_uninitialize(struct spindump_rtt* rtt) {
   spindump_assert(rtt != 0);
