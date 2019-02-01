@@ -254,6 +254,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
 			     unsigned int ipHeaderPosition,
 			     unsigned int ipHeaderSize,
 			     uint8_t ipVersion,
+					 uint8_t ecnFlags,
 			     unsigned int ipPacketLength,
 			     unsigned int udpHeaderPosition,
 			     unsigned int udpLength,
@@ -417,7 +418,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   // Update stats.
   //
 
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
 
   //
   // Done. Inform caller of the connection.

@@ -44,6 +44,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 			      unsigned int ipHeaderPosition,
 			      unsigned int ipHeaderSize,
 			      uint8_t ipVersion,
+						uint8_t ecnFlags,
 			      unsigned int ipPacketLength,
 			      unsigned int icmpHeaderPosition,
 			      unsigned int icmpLength,
@@ -225,7 +226,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     // Update statistics
     //
 
-    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
 
     //
     // Done. Return connection information to caller.
@@ -252,6 +253,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			       unsigned int ipHeaderPosition,
 			       unsigned int ipHeaderSize,
 			       uint8_t ipVersion,
+						 uint8_t ecnFlags,
 			       unsigned int ipPacketLength,
 			       unsigned int icmpHeaderPosition,
 			       unsigned int icmpLength,
@@ -419,7 +421,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     // Update statistics
     //
 
-    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
 
     //
     // Done. Return connection information to caller.

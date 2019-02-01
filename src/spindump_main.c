@@ -621,7 +621,7 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
   case spindump_analyze_event_newrespinitfullrttmeasurement:
     snprintf(what,sizeof(what)-1,"\"full_rtt_responder\": %lu", connection->respToInitFullRTT.lastRTT);
     break;
-    
+
   case spindump_analyze_event_initiatorspinflip:
     spindump_assert(connection->type == spindump_connection_transport_quic);
     snprintf(what,sizeof(what)-1,"\"event\": \"spinflip\", \"transition\": \"%s\", \"who\": \"%s\",",
@@ -650,6 +650,14 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
 	     "responder");
     break;
 
+  case spindump_analyze_event_initiatorecnce:
+    snprintf(what,sizeof(what)-1,"\"event\": ECN CE Initiator\"");
+    break;
+    
+  case spindump_analyze_event_responderecnce:
+    snprintf(what,sizeof(what)-1,"\"event\": ECN CE Responder\"");
+    break;
+
   default:
     return;
 
@@ -661,13 +669,16 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
   //
 
   memset(buf,0,sizeof(buf));
-  snprintf(buf,sizeof(buf)-1,"{ \"type\": \"%s\", \"addrs\": \"%s\", \"session\": \"%s\", \"ts\": %s,%s \"packets\": %u }",
+  snprintf(buf,sizeof(buf)-1,"{ \"type\": \"%s\", \"addrs\": \"%s\", \"session\": \"%s\", \"ts\": %s,%s \"packets\": %u, \"ECT(0)\": %u, \"ECT(1)\": %u, \"CE\": %u }",
 	   type,
 	   addrs,
 	   session,
 	   when,
 	   what,
-	   connection->packetsFromSide1 + connection->packetsFromSide2);
+	   connection->packetsFromSide1 + connection->packetsFromSide2,
+     connection->ect0FromInitiator + connection->ect0FromResponder,
+     connection->ect1FromInitiator + connection->ect1FromResponder,
+     connection->ceFromInitiator + connection->ceFromResponder);
 
   //
   // Print the buffer out
@@ -846,9 +857,9 @@ spindump_main_operation() {
 
     if (inputFile != 0) {
       if (packet != 0) {
-	now = previousPacketTimestamp = packet->timestamp;
+	       now = previousPacketTimestamp = packet->timestamp;
       } else {
-	now = previousPacketTimestamp;
+	       now = previousPacketTimestamp;
       }
     } else {
       spindump_getcurrenttime(&now);

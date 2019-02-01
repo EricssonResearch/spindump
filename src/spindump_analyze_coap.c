@@ -36,6 +36,7 @@
 static void
 spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
 				   struct spindump_packet* packet,
+					 uint8_t ecnFlags,
 				   unsigned int ipPacketLength,
 				   unsigned int udpLength,
 				   unsigned int remainingCaplen,
@@ -48,6 +49,7 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
 static void
 spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 					struct spindump_packet* packet,
+					uint8_t ecnFlags,
 					unsigned int ipPacketLength,
 					unsigned int udpLength,
 					unsigned int remainingCaplen,
@@ -319,6 +321,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 			      unsigned int ipHeaderPosition,
 			      unsigned int ipHeaderSize,
 			      uint8_t ipVersion,
+						uint8_t ecnFlags,
 			      unsigned int ipPacketLength,
 			      unsigned int udpHeaderPosition,
 			      unsigned int udpLength,
@@ -355,6 +358,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 
     spindump_analyze_process_coap_dtls(state,
 				       packet,
+							 ecnFlags,
 				       ipPacketLength,
 				       udpLength,
 				       remainingCaplen,
@@ -369,6 +373,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 
     spindump_analyze_process_coap_cleartext(state,
 					    packet,
+							ecnFlags,
 					    ipPacketLength,
 					    udpLength,
 					    remainingCaplen,
@@ -400,6 +405,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 static void
 spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 					struct spindump_packet* packet,
+					uint8_t ecnFlags,
 					unsigned int ipPacketLength,
 					unsigned int udpLength,
 					unsigned int remainingCaplen,
@@ -559,7 +565,7 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   // Update stats.
   //
 
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
 
   //
   // If we've seen a response from the responder, mark state as
@@ -596,9 +602,10 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
 static void
 spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
                                    struct spindump_packet* packet,
-                                   unsigned int ipPacketLength,
+                                   uint8_t ecnFlags,
+																	 unsigned int ipPacketLength,
                                    unsigned int udpLength,
-				   unsigned int remainingCaplen,
+                                   unsigned int remainingCaplen,
                                    spindump_address* source,
                                    spindump_address* destination,
                                    uint16_t side1port,
@@ -744,6 +751,6 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
   //
 
   *p_connection = connection;
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength);
+  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
 
 }

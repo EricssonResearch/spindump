@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 #ifndef SPINDUMP_PROTOCOLS_H
 #define SPINDUMP_PROTOCOLS_H
@@ -59,8 +59,9 @@ struct spindump_ip {
   uint32_t ip_src;                  // source address
   uint32_t ip_dst;                  // dest address
 };
-#define SPINDUMP_IP_HL(ip)		(((ip)->ip_vhl) & 0x0f)
-#define SPINDUMP_IP_V(ip)		(((ip)->ip_vhl) >> 4)
+#define SPINDUMP_IP_HL(ip)    (((ip)->ip_vhl) & 0x0f)
+#define SPINDUMP_IP_V(ip)     (((ip)->ip_vhl) >> 4)
+#define SPINDUMP_IP_ECN(ip)   (((ip)->ip_tos) & 0x3)
 
 struct spindump_ip6addr {
   uint8_t addr[16];
@@ -78,7 +79,8 @@ struct spindump_ip6 {
 };
 #define SPINDUMP_IP6_HL(ip)		(((ip)->ip6_vhl) & 0x0f)
 #define SPINDUMP_IP6_V(ip)		(((ip)->ip6_vhl) >> 4)
-
+#define SPINDUMP_IP6_ECN(ip)  (((ip)->ip6_tos) & 0x3)
+  
 //
 // Fragment header from RFC 2460:
 //
@@ -256,7 +258,7 @@ struct spindump_dns {
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |1 1 1 1 1 1 1 1|    Payload (if any) ...
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-// 
+//
 //
 
 struct spindump_coap {
@@ -357,7 +359,7 @@ struct spindump_coap {
 //          uint24 length;
 //          uint16 message_seq;
 //          uint24 fragment_offset;
-//          uint24 fragment_length; 
+//          uint24 fragment_length;
 //          select (HandshakeType) {
 //              case hello_request: HelloRequest;
 //              case client_hello:  ClientHello;
@@ -375,7 +377,7 @@ struct spindump_coap {
 //
 //
 //  A client hello:
-//  
+//
 //      uint16 ProtocolVersion;
 //      opaque Random[32];
 //
@@ -389,7 +391,7 @@ struct spindump_coap {
 //          opaque legacy_compression_methods<1..2^8-1>;
 //          Extension extensions<8..2^16-1>;
 //      } ClientHello;
-// 
+//
 //  A server hello:
 //
 //       struct {
@@ -690,11 +692,11 @@ enum spindump_quic_message_type {
 #define spindump_quic_version_unknown          0xffffffff
 
 struct spindump_quic {
-  
+
   union {
-    
+
     struct {
-      
+
       //
       //   +-+-+-+-+-+-+-+-+
       //   |0|1|S|R|R|K|P P|
@@ -707,12 +709,12 @@ struct spindump_quic {
       //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       //
       //
-      
+
       uint8_t   qh_byte;
       uint8_t   qh_destCid[1]; // could be 0-18 bytes
-      
+
     } shortheader;
-    
+
     struct {
 
       //
@@ -729,14 +731,14 @@ struct spindump_quic {
       // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       //
       //
-      
+
       uint8_t   qh_byte;
       uint8_t   qh_destCID;
-      
+
     } shortheaderv16;
-    
+
     struct {
-      
+
       //
       //   +-+-+-+-+-+-+-+-+
       //   |1|1|T T|R R|P P|
@@ -757,12 +759,12 @@ struct spindump_quic {
       //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       //
       //
-      
+
       uint8_t   qh_byte;
       uint8_t   qh_version[4];
       uint8_t   qh_cidLengths;
       uint8_t   qh_cids[1];        // can be 0..2*14 bytes
-      
+
     } longheader;
 
     struct {
@@ -787,16 +789,16 @@ struct spindump_quic {
       //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       //
       //
-      
+
       uint8_t   qh_byte;
       uint32_t  qh_version;
       uint8_t   qh_cidLengths;
       uint8_t   qh_cids[1];       // can be 0..2*14 bytes
-      
+
     } longheaderv16;
-    
+
     struct {
-      
+
       //
       //   +-+-+-+-+-+-+-+-+
       //   |1|  Unused (7) |
@@ -819,14 +821,14 @@ struct spindump_quic {
       //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       //
       //
-      
+
       uint8_t   qh_byte;
       uint32_t  qh_version;
       uint8_t   qh_cidLengths;
       uint8_t   qh_cids[1];      // can be 0..2*14 bytes
-      
+
     } versionnegotiation;
-    
+
   } u;
 };
 

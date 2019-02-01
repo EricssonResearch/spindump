@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 #ifndef SPINDUMP_ANALYZE_COAP_H
 #define SPINDUMP_ANALYZE_COAP_H
@@ -48,6 +48,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 			      unsigned int ipHeaderPosition,
 			      unsigned int ipHeaderSize,
 			      uint8_t ipVersion,
+						uint8_t ecnFlags,
 			      unsigned int ipPacketLength,
 			      unsigned int udpHeaderPosition,
 			      unsigned int udpLength,

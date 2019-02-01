@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 #ifndef SPINDUMP_ANALYZE_ICMP_H
 #define SPINDUMP_ANALYZE_ICMP_H
@@ -35,6 +35,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 			      unsigned int ipHeaderPosition,
 			      unsigned int ipHeaderSize,
 			      uint8_t ipVersion,
+						uint8_t ecnFlags,
 			      unsigned int ipPacketLength,
 			      unsigned int icmpHeaderPosition,
 			      unsigned int icmpLength,
@@ -46,6 +47,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			       unsigned int ipHeaderPosition,
 			       unsigned int ipHeaderSize,
 			       uint8_t ipVersion,
+						 uint8_t ecnFlags,
 			       unsigned int ipPacketLength,
 			       unsigned int icmpHeaderPosition,
 			       unsigned int icmpLength,
@@ -53,5 +55,3 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			       struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_ICMP_H
-
-

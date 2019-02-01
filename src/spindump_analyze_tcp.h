@@ -14,7 +14,7 @@
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
-// 
+//
 
 #ifndef SPINDUMP_ANALYZE_TCP_H
 #define SPINDUMP_ANALYZE_TCP_H
@@ -35,6 +35,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* table,
 			     unsigned int ipHeaderPosition,
 			     unsigned int ipHeaderSize,
 			     uint8_t ipVersion,
+					 uint8_t ecnFlags,
 			     unsigned int ipPacketLength,
 			     unsigned int tcpHeaderPosition,
 			     unsigned int tcpLength,

@@ -51,8 +51,10 @@ typedef uint16_t spindump_analyze_event;
 #define spindump_analyze_event_newpacket                          1024
 #define spindump_analyze_event_firstresponsepacket                2048
 #define spindump_analyze_event_statechange                        4096
+#define spindump_analyze_event_initiatorecnce                     8192
+#define spindump_analyze_event_responderecnce                     16384
 
-#define spindump_analyze_event_alllegal                           8191
+#define spindump_analyze_event_alllegal                           32767
 
 struct spindump_analyze;
 
@@ -118,7 +120,8 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
 				  struct spindump_connection* connection,
 				  int fromResponder,
 				  struct spindump_packet* packet,
-				  unsigned int ipPacketLength);
+				  unsigned int ipPacketLength,
+					uint8_t ecnFlags);
 void
 spindump_analyze_process_handlers(struct spindump_analyze* state,
 				  spindump_analyze_event event,

@@ -94,6 +94,12 @@ struct spindump_connection {
   unsigned int packetsFromSide2;                    // packet counts
   unsigned int bytesFromSide1;                      // byte counts
   unsigned int bytesFromSide2;                      // byte counts
+  unsigned int ect0FromInitiator;                   // ECN ECT(0) counts
+  unsigned int ect0FromResponder;                   // ECN ECT(0) counts
+  unsigned int ect1FromInitiator;                   // ECN ECT(1) counts
+  unsigned int ect1FromResponder;                   // ECN ECT(1) counts
+  unsigned int ceFromInitiator;                     // ECN CE counts
+  unsigned int ceFromResponder;                     // ECN CE counts
   struct spindump_rtt leftRTT;                      // left-side (side 1) RTT calculations
   struct spindump_rtt rightRTT;                     // right-side (side 2) RTT calculations
   struct spindump_rtt respToInitFullRTT;            // end-to-end RTT calculations observed from responder
@@ -103,7 +109,7 @@ struct spindump_connection {
         [spindump_connection_max_handlers];         // data store for registered handlers to add data to a connection
 
   union {
-    
+
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
