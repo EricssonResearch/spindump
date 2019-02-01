@@ -49,6 +49,10 @@ spindump_capture_initialize_aux(const char* interface,
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Return the name of the default interface in this system.
+//
+
 const char*
 spindump_capture_defaultinterface() {
 
@@ -80,6 +84,12 @@ spindump_capture_defaultinterface() {
   
   return(result);
 }
+
+//
+// A helper function for initialization of the spindump_capture
+// object. This is the function that does almost everything, including
+// setting up filters, etc.
+//
 
 static struct spindump_capture_state*
 spindump_capture_initialize_aux(const char* interface,
@@ -203,12 +213,21 @@ spindump_capture_initialize_aux(const char* interface,
   return(state);
 }
 
+//
+// Initialize a capture object to read packets from a PCAP file
+//
+
 struct spindump_capture_state*
 spindump_capture_initialize_file(const char* file,
 				 const char* filter) {
   spindump_debugf("opening capture file %s...", file);
   return(spindump_capture_initialize_aux(0,file,filter));
 }
+
+//
+// Initialize a capture object to capture packets from a live
+// interface
+//
 
 struct spindump_capture_state*
 spindump_capture_initialize(const char* interface,
@@ -218,6 +237,10 @@ spindump_capture_initialize(const char* interface,
   return(spindump_capture_initialize_aux(interface,0,filter));
   
 }
+
+//
+// Retrieve the next packet from the capture interface or file.
+//
 
 void
 spindump_capture_nextpacket(struct spindump_capture_state* state,

@@ -49,6 +49,12 @@ spindump_connections_setisestablishing(struct spindump_connection_set* set);
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Calculate when was the last action on a given connection. This is
+// useful when determining whether an idle connection should be
+// deleted, etc.
+//
+
 unsigned long long
 spindump_connections_lastaction(struct spindump_connection* connection,
 				const struct timeval* now) {
@@ -76,6 +82,12 @@ spindump_connections_lastaction(struct spindump_connection* connection,
   }
 }
 
+//
+// Mark a connection for later deletion (e.g., based on being closed
+// in the protocol). It is not immediately dweleted, because there may
+// be still packets in flight related to the connection.
+//
+
 void
 spindump_connections_markconnectiondeleted(struct spindump_connection* connection) {
   //
@@ -91,6 +103,13 @@ spindump_connections_markconnectiondeleted(struct spindump_connection* connectio
 
   connection->deleted = 1;
 }
+
+//
+// Determine the addresses associated with the connection. The outputs
+// are in the two output parameters. There is no address associated
+// with all connections, or not both addresses. In those cases the
+// output is set to a null pointer.
+//
 
 void
 spindump_connections_getaddresses(struct spindump_connection* connection,
@@ -151,6 +170,13 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
   }
 }
 
+//
+// Determine the ports associated with the connection. The outputs
+// are in the two output parameters. There are no ports associated
+// with all connections, of course. In those cases the
+// output is set to a null pointer.
+//
+
 void
 spindump_connections_getports(struct spindump_connection* connection,
 			      spindump_port* p_side1port,
@@ -209,6 +235,19 @@ spindump_connections_getports(struct spindump_connection* connection,
     break;
   }
 }
+
+//
+// Report a new RTT measurement. This could have been determined in
+// many ways, by way of the initial packet exchange, looking at QUIC
+// spin bit or TCP sequence numbers.
+//
+// In any case, the new measurement is recorded, proper averages etc
+// are counted, and also any handlers associated with this connection
+// are called.
+//
+// In the end, the same updates are propagated to any aggregate
+// connection this connection may belong to.
+//
 
 unsigned long
 spindump_connections_newrttmeasurement(struct spindump_analyze* state,
@@ -311,6 +350,10 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   return(ret);
 }
 
+//
+// Is a given set of connections all closed?
+//
+
 static int
 spindump_connections_setisclosed(struct spindump_connection_set* set) {
   unsigned int i;
@@ -325,6 +368,10 @@ spindump_connections_setisclosed(struct spindump_connection_set* set) {
   }
   return(1);
 }
+
+//
+// Is a given connection closed?
+//
 
 int
 spindump_connections_isclosed(struct spindump_connection* connection) {
@@ -347,6 +394,10 @@ spindump_connections_isclosed(struct spindump_connection* connection) {
     return(connection->state == spindump_connection_state_closed);
 }
 
+//
+// Is a given set of connections all in the establishing state?
+//
+
 static int
 spindump_connections_setisestablishing(struct spindump_connection_set* set) {
   unsigned int i;
@@ -361,6 +412,10 @@ spindump_connections_setisestablishing(struct spindump_connection_set* set) {
   }
   return(1);
 }
+
+//
+// Is a given connection in the establishing state?
+//
 
 int
 spindump_connections_isestablishing(struct spindump_connection* connection) {
@@ -382,6 +437,11 @@ spindump_connections_isestablishing(struct spindump_connection* connection) {
   else
     return(connection->state == spindump_connection_state_establishing);
 }
+
+//
+// Is a given connection an aggregate connection? E.g., a TCP flow on
+// 5-tuple is not, but a host pair is an aggregate connection.
+//
 
 int
 spindump_connections_isaggregate(struct spindump_connection* connection) {
@@ -441,6 +501,12 @@ spindump_connections_aggregateset(struct spindump_connection* connection) {
   }
 }
 
+//
+// Determine if a given new connection matches an aggregate
+// connection. If so, this connection can be marked as "belonging" to
+// the aggregate.
+//
+
 int
 spindump_connections_matches_aggregate_connection(struct spindump_connection* connection,
 						  struct spindump_connection* aggregate) {
@@ -461,8 +527,10 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
     spindump_deepdebugf("comparing addresses");
     spindump_deepdebugf("  side1address %s",spindump_address_tostring(side1address));
     spindump_deepdebugf("  side2address %s",spindump_address_tostring(side2address));
-    spindump_deepdebugf("  hostpair side1 address %s",spindump_address_tostring(&aggregate->u.aggregatehostpair.side1peerAddress));
-    spindump_deepdebugf("  hostpair side2 address %s",spindump_address_tostring(&aggregate->u.aggregatehostpair.side2peerAddress));
+    spindump_deepdebugf("  hostpair side1 address %s",
+			spindump_address_tostring(&aggregate->u.aggregatehostpair.side1peerAddress));
+    spindump_deepdebugf("  hostpair side2 address %s",
+			spindump_address_tostring(&aggregate->u.aggregatehostpair.side2peerAddress));
     return((spindump_address_equal(side1address,&aggregate->u.aggregatehostpair.side1peerAddress) &&
 	    spindump_address_equal(side2address,&aggregate->u.aggregatehostpair.side2peerAddress)) ||
 	   (spindump_address_equal(side1address,&aggregate->u.aggregatehostpair.side2peerAddress) &&
@@ -485,11 +553,16 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
 	   spindump_address_equal(side2address,&aggregate->u.aggregatemulticastgroup.group));
 
   default:
-    spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_connection", aggregate->type);
+    spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_connection",
+		    aggregate->type);
     return(0);
 
   }
 }
+
+//
+// Do the addresses match an aggregate?
+//
 
 int
 spindump_connections_matches_aggregate_srcdst(spindump_address* source,
@@ -528,6 +601,11 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
 
   }
 }
+
+//
+// Report a changed state for a connection. This may involve calling
+// handlers associated with state change events.
+//
 
 void
 spindump_connections_changestate(struct spindump_analyze* state,

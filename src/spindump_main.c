@@ -787,9 +787,13 @@ spindump_main_operation() {
   int closedMode = 1;
   int udpMode = 0;
   struct spindump_reverse_dns* querier =
-    reverseDns ? spindump_reverse_dns_initialize_full() : spindump_reverse_dns_initialize_noop();
+    reverseDns ?
+    spindump_reverse_dns_initialize_full() :
+    spindump_reverse_dns_initialize_noop();
   struct spindump_report_state* reporter =
-    (toolmode != spindump_toolmode_visual ? spindump_report_initialize_quiet() : spindump_report_initialize_terminal(querier));
+    (toolmode != spindump_toolmode_visual ?
+     spindump_report_initialize_quiet() :
+     spindump_report_initialize_terminal(querier));
   if (reporter == 0) exit(1);
   spindump_report_setanonymization(reporter,anonymizeLeft,anonymizeRight);
 
@@ -885,7 +889,9 @@ spindump_main_operation() {
 						&now,
 						analyzer)) {
       if (server != 0) spindump_remote_server_update(server,analyzer->table);
-      for (unsigned int i = 0; i < nRemotes; i++) spindump_remote_client_update(remotes[i],analyzer->table);
+      for (unsigned int i = 0; i < nRemotes; i++) {
+	spindump_remote_client_update(remotes[i],analyzer->table);
+      }
     }
 
     //
@@ -894,9 +900,7 @@ spindump_main_operation() {
 
     if (spindump_iszerotime(&previousupdate) ||
 	spindump_timediffinusecs(&now,&previousupdate) >= updateperiod) {
-      //spindump_deepdebugf("time to report, diff = %llu (period %llu)",
-      //                    spindump_timediffinusecs(&now,&previousupdate),
-      //                    updateperiod);
+      
       spindump_report_update(reporter,
 			     averageMode,
 			     aggregateMode,
@@ -905,6 +909,7 @@ spindump_main_operation() {
 			     analyzer->table,
 			     spindump_analyze_getstats(analyzer));
       if (spindump_isearliertime(&now,&previousupdate)) previousupdate = now;
+      
     }
 
     //
@@ -1012,6 +1017,10 @@ int main(int argc,char** argv) {
   exit(0);
 }
 
+//
+// Print out help
+//
+
 static void
 help() {
 
@@ -1061,6 +1070,11 @@ help() {
   printf("    --version             Outputs the version number\n");
   printf("\n");
 }
+
+//
+// Parse a request to use a particular output format. Call an error if
+// the input is invalid.
+//
 
 static enum spindump_outputformat
 spindump_main_parseformat(const char* string) {

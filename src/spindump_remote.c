@@ -38,6 +38,11 @@
 // Server API
 //
 
+//
+// Create an object to represent perform a server function to listen
+// for requests for Spindump data.
+//
+
 struct spindump_remote_server*
 spindump_remote_server_init() {
   unsigned int size = sizeof(struct spindump_remote_server);
@@ -57,6 +62,10 @@ spindump_remote_server_init() {
   return(server);
 }
 
+//
+// Send an update to all clients of the server that are connected.
+//
+
 void
 spindump_remote_server_update(struct spindump_remote_server* server,
 			      struct spindump_connectionstable* table) {
@@ -68,6 +77,10 @@ spindump_remote_server_update(struct spindump_remote_server* server,
     }
   }
 }
+
+//
+// Close the server object and all connections associated with it.
+//
 
 void
 spindump_remote_server_close(struct spindump_remote_server* server) {
@@ -87,6 +100,11 @@ spindump_remote_server_close(struct spindump_remote_server* server) {
 // Client API
 // 
 
+//
+// Create an object to present a client that wants to access Spindump
+// data from a server somewhere in the network.
+//
+
 struct spindump_remote_client*
 spindump_remote_client_init(const char* name) {
   unsigned int size = sizeof(struct spindump_remote_client);
@@ -102,11 +120,19 @@ spindump_remote_client_init(const char* name) {
   return(0);
 }
 
+//
+// Retrieve an update from the server
+//
+
 void
 spindump_remote_client_update(struct spindump_remote_client* client,
 			      struct spindump_connectionstable* table) {
   // ...
 }
+
+//
+// Close the client to no longer receive updates from the server.
+//
 
 void
 spindump_remote_client_close(struct spindump_remote_client* client) {

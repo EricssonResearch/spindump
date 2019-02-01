@@ -29,12 +29,24 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Initialize a message ID tracker. A message ID tracker records sent
+// out request identifiers that are 16 bits long, remembers the time
+// they were sent, and then can match a response identifier to that
+// request. These trackers are used e.g. in the COAP and DNS protocol
+// analyzers.
+//
+
 void
 spindump_messageidtracker_initialize(struct spindump_messageidtracker* tracker) {
   spindump_assert(tracker != 0);
   memset(tracker,0,sizeof(*tracker));
   tracker->messageidindex = 0;
 }
+
+//
+// Add a new message ID to the tracker
+//
 
 void
 spindump_messageidtracker_add(struct spindump_messageidtracker* tracker,
@@ -49,6 +61,12 @@ spindump_messageidtracker_add(struct spindump_messageidtracker* tracker,
   tracker->messageidindex %= spindump_messageidtracker_nstored;
   spindump_assert(tracker->messageidindex < spindump_messageidtracker_nstored);
 }
+
+//
+// Determine what time the request message was sent for a given
+// message ID. Return a pointer to that time, or 0 if no such message
+// ID has been seen.
+//
 
 const struct timeval*
 spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
@@ -117,6 +135,10 @@ spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
     
   }
 }
+
+//
+// Uninitialize the message ID tracker object.
+//
 
 void
 spindump_messageidtracker_uninitialize(struct spindump_messageidtracker* tracker) {

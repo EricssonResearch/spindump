@@ -27,6 +27,11 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// This debugging function checks that a given packet structure is
+// correctly built. It is used in assertions.
+//
+
 int
 spindump_packet_isvalid(struct spindump_packet* packet) {
   return(packet != 0 &&

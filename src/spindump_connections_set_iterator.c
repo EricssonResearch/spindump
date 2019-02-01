@@ -28,6 +28,10 @@
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Initialize an iterator
+//
+
 void
 spindump_connection_set_iterator_initialize(struct spindump_connection_set* set,
 					    struct spindump_connection_set_iterator* iter) {
@@ -37,11 +41,23 @@ spindump_connection_set_iterator_initialize(struct spindump_connection_set* set,
   iter->iteration = 0;
 }
 
+//
+// Is the iterator at end? If yes, return 1, otherwise 0.
+//
+
 int
 spindump_connection_set_iterator_end(struct spindump_connection_set_iterator* iter) {
   spindump_assert(iter != 0);
   return(iter->iteration >= iter->set->nConnections);
 }
+
+//
+// Move the iterator to the next available connection in a set. Return
+// that connection.
+//
+// Note: This function must not be called if the iterator is already at
+// the end.
+//
 
 struct spindump_connection*
 spindump_connection_set_iterator_next(struct spindump_connection_set_iterator* iter) {
@@ -49,6 +65,10 @@ spindump_connection_set_iterator_next(struct spindump_connection_set_iterator* i
   spindump_assert(!spindump_connection_set_iterator_end(iter));
   return(iter->set->set[iter->iteration++]);
 }
+
+//
+// Uninitialize the iterator
+//
 
 void
 spindump_connection_set_iterator_uninitialize(struct spindump_connection_set_iterator* iter) {

@@ -86,6 +86,10 @@ spindump_connection_type_to_string(enum spindump_connection_type type) {
   }
 }
 
+//
+// Print a report of a TCP connection
+//
+
 void
 spindump_connection_report_tcp(struct spindump_connection* connection,
 			       FILE* file,
@@ -97,6 +101,10 @@ spindump_connection_report_tcp(struct spindump_connection* connection,
 	  spindump_address_tostring(&connection->u.tcp.side2peerAddress),
 	  connection->u.tcp.side2peerPort);
 }
+
+//
+// Print a report of a UDP connection
+//
 
 void
 spindump_connection_report_udp(struct spindump_connection* connection,
@@ -110,6 +118,10 @@ spindump_connection_report_udp(struct spindump_connection* connection,
 	  connection->u.udp.side2peerPort);
 }
 
+//
+// Print a report of a DNS connection
+//
+
 void
 spindump_connection_report_dns(struct spindump_connection* connection,
 			       FILE* file,
@@ -121,6 +133,10 @@ spindump_connection_report_dns(struct spindump_connection* connection,
 	  spindump_address_tostring(&connection->u.dns.side2peerAddress),
 	  connection->u.dns.side2peerPort);
 }
+
+//
+// Print a report of a COAP connection
+//
 
 void
 spindump_connection_report_coap(struct spindump_connection* connection,
@@ -154,6 +170,10 @@ spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid*
   return(buf);
 }
 
+//
+// Print a report of a QUIC connection
+//
+
 void
 spindump_connection_report_quic(struct spindump_connection* connection,
 				FILE* file,
@@ -174,6 +194,10 @@ spindump_connection_report_quic(struct spindump_connection* connection,
 	  spindump_rtt_tostring(connection->u.quic.initialLeftRTT));
 }
 
+//
+// Map an ICMP type value to a string
+//
+
 static const char*
 spindump_icmptype_tostring(u_int8_t type) {
   switch (type) {
@@ -184,6 +208,10 @@ spindump_icmptype_tostring(u_int8_t type) {
   default: return("UNKNOWN");
   }
 }
+
+//
+// Print a report of an ICMP connection
+//
 
 void
 spindump_connection_report_icmp(struct spindump_connection* connection,
@@ -196,6 +224,10 @@ spindump_connection_report_icmp(struct spindump_connection* connection,
   fprintf(file,"  last sequence #:         %38u\n", ntohs(connection->u.icmp.side1peerLatestSequence));
 }
 
+//
+// Print a report of a host pair aggregate connection
+//
+
 void
 spindump_connection_report_hostpair(struct spindump_connection* connection,
 				    FILE* file,
@@ -205,6 +237,10 @@ spindump_connection_report_hostpair(struct spindump_connection* connection,
   fprintf(file,"  aggregates:            %40s\n",
 	  spindump_connections_set_listids(&connection->u.aggregatehostpair.connections));
 }
+
+//
+// Print a report of a host - network aggregate connection
+//
 
 void
 spindump_connection_report_hostnetwork(struct spindump_connection* connection,
@@ -216,6 +252,10 @@ spindump_connection_report_hostnetwork(struct spindump_connection* connection,
 	  spindump_connections_set_listids(&connection->u.aggregatehostnetwork.connections));
 }
 
+//
+// Print a report of a network pair aggregate connection
+//
+
 void
 spindump_connection_report_networknetwork(struct spindump_connection* connection,
 					  FILE* file,
@@ -226,6 +266,10 @@ spindump_connection_report_networknetwork(struct spindump_connection* connection
 	  spindump_connections_set_listids(&connection->u.aggregatenetworknetwork.connections));
 }
 
+//
+// Print a report of a multicast group aggregate connection
+//
+
 void
 spindump_connection_report_multicastgroup(struct spindump_connection* connection,
 					  FILE* file,
@@ -234,6 +278,10 @@ spindump_connection_report_multicastgroup(struct spindump_connection* connection
   fprintf(file,"  aggregates:            %40s\n",
 	  spindump_connections_set_listids(&connection->u.aggregatemulticastgroup.connections));
 }
+
+//
+// Make a report of a connection (i.e., print out the data we have on it)
+//
 
 void
 spindump_connection_report(struct spindump_connection* connection,
@@ -295,6 +343,11 @@ spindump_connection_report(struct spindump_connection* connection,
   fprintf(file,"  last right RTT:          %38s\n", rttbuf1);
   fprintf(file,"  moving avg right RTT:    %38s\n", rttbuf2);
 }
+
+//
+// Map a connection address to a string, handling anonymisation,
+// reverse DNS, etc.
+//
 
 static const char*
 spindump_connection_address_tostring(int anonymize,
@@ -406,6 +459,11 @@ spindump_connection_addresses(struct spindump_connection* connection,
   return(buf);
 }
 
+//
+// Map a state of a connection to a string that can be used outputs
+// and the UI
+//
+
 const char*
 spindump_connection_statestring_aux(enum spindump_connection_state state) {
   switch (state) {
@@ -419,6 +477,11 @@ spindump_connection_statestring_aux(enum spindump_connection_state state) {
     return("invalid");
   }
 }
+
+//
+// Map a state of a connection to a string that can be used outputs
+// and the UI
+//
 
 const char*
 spindump_connection_statestring(struct spindump_connection* connection) {
@@ -510,6 +573,11 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
   return(buf);
 }
 
+//
+// Determine what should be the field size of the session field, given
+// a particular number of characters available per line.
+//
+
 unsigned int
 spindump_connection_report_brief_sessionsize(unsigned int linelen) {
   if (linelen >= 100)
@@ -520,10 +588,19 @@ spindump_connection_report_brief_sessionsize(unsigned int linelen) {
     return(12);
 }
 
+//
+// Determine whether we have space for a note field, given a
+// particular number of characters available per line.
+//
+
 int
 spindump_connection_report_brief_isnotefield(unsigned int linelen) {
   return(linelen >= 100);
 }
+
+//
+// Determine what should be the field size of the note field.
+//
 
 #define spindump_connection_report_brief_notefieldval_length_val 24
 
@@ -532,17 +609,33 @@ spindump_connection_report_brief_notefieldval_length() {
   return(spindump_connection_report_brief_notefieldval_length_val);
 }
 
+//
+// Determine what should be the size of all the fixed-length fields,
+// given a particular number of characters available per line.
+//
+
 unsigned int
 spindump_connection_report_brief_fixedsize(unsigned int linelen) {
   return(7+1+spindump_connection_report_brief_sessionsize(linelen)+
 	 1+8+1+6+1+10+1+10+1+
-	 (spindump_connection_report_brief_isnotefield(linelen) ? spindump_connection_report_brief_notefieldval_length_val+2 : 0));
+	 (spindump_connection_report_brief_isnotefield(linelen) ?
+	  spindump_connection_report_brief_notefieldval_length_val+2 :
+	  0));
 }
+
+//
+// Determine what should be the size of all variable-length fields,
+// given a particular number of characters available per line.
+//
 
 unsigned int
 spindump_connection_report_brief_variablesize(unsigned int linelen) {
   return(linelen - spindump_connection_report_brief_fixedsize(linelen));
 }
+
+//
+// Add material to a buffer
+//
 
 static void
 spindump_connection_addtobuf(char* buf,
@@ -677,6 +770,12 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   spindump_deepdebugf("report_brief_notefieldval point 999");
   return(buf);
 }
+
+//
+// This is the main entry point for the connection-printing function
+// in the Spindump UI. This function prints one line of a report for
+// one connection
+//
 
 void
 spindump_connection_report_brief(struct spindump_connection* connection,

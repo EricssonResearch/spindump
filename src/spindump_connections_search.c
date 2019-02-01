@@ -49,6 +49,10 @@ spindump_connections_match(struct spindump_connection* connection,
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Does a connection match search criteria?
+//
+
 static int
 spindump_connections_match(struct spindump_connection* connection,
 			   struct spindump_connection_searchcriteria* criteria,
@@ -320,6 +324,10 @@ spindump_connections_match(struct spindump_connection* connection,
   return(1);
 }
 
+//
+// Search for a connection based on given criteria
+//
+
 struct spindump_connection*
 spindump_connections_search(struct spindump_connection_searchcriteria* criteria,
 			    struct spindump_connectionstable* table,
@@ -362,6 +370,11 @@ spindump_connections_search(struct spindump_connection_searchcriteria* criteria,
   return(0);
 }
 
+//
+// Search for an ICMP connection, based on addresses a ICMP type and
+// id. Return the found object, or 0 if not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_icmp(spindump_address* side1address,
 					   spindump_address* side2address,
@@ -396,6 +409,11 @@ spindump_connections_searchconnection_icmp(spindump_address* side1address,
 				     &fromResponder));
 }
 
+//
+// Search for a TCP connection, based on addresses and ports. Return
+// the found object, or 0 if not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_tcp(spindump_address* side1address,
 					  spindump_address* side2address,
@@ -428,6 +446,12 @@ spindump_connections_searchconnection_tcp(spindump_address* side1address,
 				     &fromResponder));
 }
 
+//
+// Search for a TCP connection, based on addresses and ports; allow
+// finding either direction object. Return the found object, or 0 if
+// not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_tcp_either(spindump_address* side1address,
 						 spindump_address* side2address,
@@ -458,6 +482,11 @@ spindump_connections_searchconnection_tcp_either(spindump_address* side1address,
 				     table,
 				     fromResponder));
 }
+
+//
+// Search for a UDP connection, based on addresses and ports. Return
+// the found object, or 0 if not found.
+//
 
 struct spindump_connection*
 spindump_connections_searchconnection_udp(spindump_address* side1address,
@@ -491,6 +520,12 @@ spindump_connections_searchconnection_udp(spindump_address* side1address,
 				     &fromResponder));
 }
 
+//
+// Search for a UDP connection, based on addresses and ports; allow
+// finding either direction object. Return the found object, or 0 if
+// not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_udp_either(spindump_address* side1address,
 						 spindump_address* side2address,
@@ -520,6 +555,11 @@ spindump_connections_searchconnection_udp_either(spindump_address* side1address,
 				     table,
 				     fromResponder));
 }
+
+//
+// Search for a DNS connection, based on addresses and ports. Return
+// the found object, or 0 if not found.
+//
 
 struct spindump_connection*
 spindump_connections_searchconnection_dns(spindump_address* side1address,
@@ -553,6 +593,12 @@ spindump_connections_searchconnection_dns(spindump_address* side1address,
 				     &fromResponder));
 }
 
+//
+// Search for a DNS connection, based on addresses and ports; allow
+// finding either direction object. Return the found object, or 0 if
+// not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_dns_either(spindump_address* side1address,
 						 spindump_address* side2address,
@@ -582,6 +628,11 @@ spindump_connections_searchconnection_dns_either(spindump_address* side1address,
 				     table,
 				     fromResponder));
 }
+
+//
+// Search for a COAP connection, based on addresses and ports. Return
+// the found object, or 0 if not found.
+//
 
 struct spindump_connection*
 spindump_connections_searchconnection_coap(spindump_address* side1address,
@@ -615,6 +666,12 @@ spindump_connections_searchconnection_coap(spindump_address* side1address,
 				     &fromResponder));
 }
 
+//
+// Search for a COAP connection, based on addresses and ports; allow
+// finding either direction object. Return the found object, or 0 if
+// not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_coap_either(spindump_address* side1address,
 						  spindump_address* side2address,
@@ -644,6 +701,11 @@ spindump_connections_searchconnection_coap_either(spindump_address* side1address
 				     table,
 				     fromResponder));
 }
+
+//
+// Search for a QUIC connection, based on addresses and ports. Return
+// the found object, or 0 if not found.
+//
 
 struct spindump_connection*
 spindump_connections_searchconnection_quic_5tuple(spindump_address* side1address,
@@ -677,6 +739,11 @@ spindump_connections_searchconnection_quic_5tuple(spindump_address* side1address
 				     &fromResponder));
 }
 
+//
+// Search for a QUIC connection, based on addresses the QUIC connection
+// IDs. Return the found object, or 0 if not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_quic_cids(struct spindump_quic_connectionid* destinationCid,
 						struct spindump_quic_connectionid* sourceCid,
@@ -704,6 +771,11 @@ spindump_connections_searchconnection_quic_cids(struct spindump_quic_connectioni
   
 }
 
+//
+// Search for a QUIC connection, based on the destination QUIC
+// vonnection ID. Return the found object, or 0 if not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_quic_destcid(struct spindump_quic_connectionid* destinationCid,
 						   struct spindump_connectionstable* table) {
@@ -726,6 +798,11 @@ spindump_connections_searchconnection_quic_destcid(struct spindump_quic_connecti
 				     table,
 				     &fromResponder));
 }
+
+//
+// Search for a QUIC connection, based on partial information about a
+// connection ID. Return the found object, or 0 if not found.
+//
 
 struct spindump_connection*
 spindump_connections_searchconnection_quic_partialcid(const unsigned char* destinationCid,
@@ -750,6 +827,12 @@ spindump_connections_searchconnection_quic_partialcid(const unsigned char* desti
 				     &fromResponder));
 }
 
+//
+// Search for a TCP connection, based on partial information abnout a
+// connection ID that needs to be the source of the initial
+// connection. Return the found object, or 0 if not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_quic_partialcid_source(const unsigned char* destinationCid,
 							     struct spindump_connectionstable* table) {
@@ -772,6 +855,12 @@ spindump_connections_searchconnection_quic_partialcid_source(const unsigned char
 				     table,
 				     &fromResponder));
 }
+
+//
+// Search for a QUIC connection, based on addresses and ports; allow
+// finding either direction object. Return the found object, or 0 if
+// not found.
+//
 
 struct spindump_connection*
 spindump_connections_searchconnection_quic_5tuple_either(spindump_address* side1address,
@@ -804,6 +893,12 @@ spindump_connections_searchconnection_quic_5tuple_either(spindump_address* side1
 				     fromResponder));
 }
 
+//
+// Search for a TCP connection, based on QUIC connection IDs; allow
+// finding either direction object. Return the found object, or 0 if
+// not found.
+//
+
 struct spindump_connection*
 spindump_connections_searchconnection_quic_cids_either(struct spindump_quic_connectionid* destinationCid,
 						       struct spindump_quic_connectionid* sourceCid,
@@ -828,6 +923,12 @@ spindump_connections_searchconnection_quic_cids_either(struct spindump_quic_conn
 				     fromResponder));
   
 }
+
+//
+// Search for a TCP connection, based on partial matching of a QUIC
+// connection ID; allow finding either direction object. Return the
+// found object, or 0 if not found.
+//
 
 struct spindump_connection*
 spindump_connections_searchconnection_quic_partialcid_either(const unsigned char* destinationCid,

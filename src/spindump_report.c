@@ -44,6 +44,11 @@ spindump_report_update_comparetwoconnections(const void* data1,
 // Actual code --------------------------------------------------------------------------------
 //
 
+//
+// Initialize curses. This is used by the --visual mode of Spindump,
+// to reset the screen as it starts.
+//
+
 static void
 spindump_report_cursesinit() {
   
@@ -58,6 +63,11 @@ spindump_report_cursesinit() {
   
 }
 
+//
+// Uninitialize curses. This is used by the --visual mode of Spindump,
+// to set the screen back to normal as it finishes.
+//
+
 static void
 spindump_report_cursesfinish() {
   
@@ -71,6 +81,10 @@ spindump_report_cursesfinish() {
   endwin();
   
 }
+
+//
+// Initialize the reporter function in a way that no reports will be made.
+//
 
 struct spindump_report_state*
 spindump_report_initialize_quiet() {
@@ -101,6 +115,11 @@ spindump_report_initialize_quiet() {
   
   return(reporter);
 }
+
+//
+// Initialize the reporting function so that reports will be made to
+// screen. This is used by the --visual mode of Spindump.
+//
 
 struct spindump_report_state*
 spindump_report_initialize_terminal(struct spindump_reverse_dns* querier) {
@@ -161,6 +180,12 @@ spindump_report_setanonymization(struct spindump_report_state* reporter,
   reporter->anonymizeRight = anonymizeRight;
 }
 
+//
+// Check which of two connections should be displayed higher in the
+// --visual mode of Spindump. The highest connections are the ones
+// with most packets.
+//
+
 static int
 spindump_report_update_comparetwoconnections(const void* data1,
 					     const void* data2) {
@@ -179,6 +204,10 @@ spindump_report_update_comparetwoconnections(const void* data1,
   else if (packets1 > packets2) return(-1);
   else return(0);
 }
+
+//
+// Update the screen
+//
 
 void
 spindump_report_update(struct spindump_report_state* reporter,
@@ -309,6 +338,10 @@ spindump_report_update(struct spindump_report_state* reporter,
   
 }
 
+//
+// Put current input to a keyboard command (e.g., "s") to the screen
+//
+
 static
 void spindump_report_putcurrentinputonscreen(struct spindump_report_state* reporter,
 					     const char* string,
@@ -319,11 +352,19 @@ void spindump_report_putcurrentinputonscreen(struct spindump_report_state* repor
   refresh();
 }
 
+//
+// Display an error on the screen
+//
+
 static
 void spindump_report_puterroronscreen(struct spindump_report_state* reporter,
 				      const char* string) {
   spindump_report_putcurrentinputonscreen(reporter,"Error: ",string);
 }
+
+//
+// Implement the "s" command, to change the update interval of the screen
+//
 
 static
 int
@@ -358,6 +399,15 @@ spindump_report_checkinput_updateinterval(struct spindump_report_state* reporter
   }
 }
 
+//
+// Check if there's any input from user. This function returns the
+// abstract command given by the user, or spindump_report_command_none
+// otherwise.
+//
+// Some commands may take a numeric input parameter. Such a parameter
+// is stored in the output parameter p_argument.
+//
+
 enum spindump_report_command
 spindump_report_checkinput(struct spindump_report_state* reporter,
 			   double* p_argument) {
@@ -391,6 +441,10 @@ spindump_report_checkinput(struct spindump_report_state* reporter,
     }
     
 }
+
+//
+// Show help in the visual mode
+//
 
 void
 spindump_report_showhelp(struct spindump_report_state* reporter) {
@@ -434,6 +488,11 @@ spindump_report_showhelp(struct spindump_report_state* reporter) {
   refresh();
   while ((ch = getch()) == ERR);
 }
+
+//
+// Uninitialize the reporter object, and reset the screen back to
+// normal if we used the screen UI (--visual mode of Spindump).
+//
 
 void
 spindump_report_uninitialize(struct spindump_report_state* reporter) {
