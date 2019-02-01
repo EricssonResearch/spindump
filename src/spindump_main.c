@@ -659,11 +659,11 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
     break;
 
   case spindump_analyze_event_initiatorecnce:
-    snprintf(what,sizeof(what)-1,"\"event\": ECN CE Initiator\"");
+    snprintf(what,sizeof(what)-1,"\"event\": \"ECN CE initiator\"");
     break;
 
   case spindump_analyze_event_responderecnce:
-    snprintf(what,sizeof(what)-1,"\"event\": ECN CE Responder\"");
+    snprintf(what,sizeof(what)-1,"\"event\": \"ECN CE responder\"");
     break;
 
   default:
