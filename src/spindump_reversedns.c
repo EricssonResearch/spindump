@@ -345,7 +345,7 @@ spindump_reverse_dns_backgroundfunction_resolveone(struct spindump_reverse_dns_e
     entry->responseName[0] = 0;
   } else {
     spindump_assert(strlen(result) < sizeof(entry->responseName)-1);
-    strcpy(&entry->responseName[0],result);
+    spindump_strlcpy(&entry->responseName[0],result,sizeof(entry->responseName));
   }
 
   //

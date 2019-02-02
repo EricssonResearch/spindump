@@ -572,7 +572,7 @@ spindump_address_tostring(spindump_address* address) {
     break;
   default:
     spindump_errorf("invalid address family");
-    strcpy(buf,"invalid");
+    spindump_strlcpy(buf,"invalid",sizeof(buf));
   }
   return(buf);
 }
@@ -953,9 +953,29 @@ spindump_deepdebugf(const char* format, ...) {
 
 size_t
 spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size) {
+  spindump_assert(dst != 0);
+  spindump_assert(src != 0);
   spindump_assert(size > 1);
   strncpy(dst,src,size-1);
   dst[size-1] = 0;
   return(strlen(dst));
+}
+
+//
+// A copy of the BSD strlcat function. As for Linux, as it does not exist
+// there without extra installations.
+//
+
+size_t
+spindump_strlcat(char * restrict dst, const char * restrict src, size_t size) {
+  spindump_assert(dst != 0);
+  spindump_assert(src != 0);
+  spindump_assert(size > 1);
+  unsigned int sizeSofar = strlen(dst);
+  spindump_assert(sizeSofar < size);
+  unsigned int sizeRemains = size - sizeSofar;
+  strncat(dst + sizeSofar,src,sizeRemains-1);
+  dst[size-1] = 0;
+  return(strlen(src));
 }
 

@@ -70,25 +70,26 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(struct sp
 
 const char*
 spindump_analyze_tls_parser_versiontostring(const spindump_tls_version version) {
-  static char buf[40];
-
+  static char buf[20];
+  memset(buf,0,sizeof(buf));
+  
   if (version == 0) {
     
-    sprintf(buf,"no version");
+    snprintf(buf,sizeof(buf)-1,"no version");
     
   } else if (!spindump_tls_tls_version_is_valid(version)) {
     
-    sprintf(buf,"unknown version");
+    snprintf(buf,sizeof(buf)-1,"unknown version");
     
   } else if (spindump_tls_tls_version_13_is_draft(version)) {
     
-    sprintf(buf,"1.3 draft %u", spindump_tls_tls_version_13_draft_ver(version));
+    snprintf(buf,sizeof(buf)-1,"1.3 draft %u", spindump_tls_tls_version_13_draft_ver(version));
     
   } else {
     
     unsigned char majorver = spindump_tls_tls_version_major(version);
     unsigned char minorver = spindump_tls_tls_version_minor(version);
-    sprintf(buf,"%u.%u", majorver, minorver);
+    snprintf(buf,sizeof(buf)-1,"%u.%u", majorver, minorver);
     
   }
   

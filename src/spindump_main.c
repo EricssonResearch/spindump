@@ -408,9 +408,9 @@ spindump_main_processargs(int argc,char** argv) {
 	  spindump_fatalf("Cannot allocate %u bytes", n);
 	  exit(1);
 	} else {
-	  strcpy(filter,prevfilter);
-	  strcat(filter," ");
-	  strcat(filter,argv[0]);
+	  spindump_strlcpy(filter,prevfilter,n);
+	  spindump_strlcat(filter," ",n);
+	  spindump_strlcat(filter,argv[0],n);
 	  free((void*)prevfilter);
 	}
       }

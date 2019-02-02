@@ -135,5 +135,7 @@ void
 spindump_deepdebugf(const char* format, ...);
 size_t
 spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size);
+size_t
+spindump_strlcat(char * restrict dst, const char * restrict src, size_t size);
 
 #endif // SPIDUMP_UTIL_H

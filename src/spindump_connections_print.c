@@ -164,8 +164,13 @@ spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid*
   static char buf[50];
   memset(buf,0,sizeof(buf));
   if (id->len == 0) return("null");
+  unsigned int sizeRemains = sizeof(buf)-1;
+  unsigned int position = 0;
   for (unsigned int i = 0; i < id->len; i++) {
-    sprintf(buf + strlen(buf), "%02x", id->id[i]);
+    spindump_assert(position < sizeof(buf));
+    int howmuch = snprintf(buf + position, sizeRemains, "%02x", id->id[i]);
+    position += howmuch;
+    sizeRemains -= howmuch;
   }
   return(buf);
 }
@@ -334,12 +339,12 @@ spindump_connection_report(struct spindump_connection* connection,
   fprintf(file,"  bytes 2->1:              %38u\n", connection->bytesFromSide2);
   char rttbuf1[50];
   char rttbuf2[50];
-  strcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT));
-  strcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT)));
+  spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
+  spindump_strlcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT)),sizeof(rttbuf2));
   fprintf(file,"  last left RTT:           %38s\n", rttbuf1);
   fprintf(file,"  moving avg left RTT:     %38s\n", rttbuf2);
-  strcpy(rttbuf1,spindump_rtt_tostring(connection->rightRTT.lastRTT));
-  strcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT)));
+  spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->rightRTT.lastRTT),sizeof(rttbuf1));
+  spindump_strlcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT)),sizeof(rttbuf2));
   fprintf(file,"  last right RTT:          %38s\n", rttbuf1);
   fprintf(file,"  moving avg right RTT:    %38s\n", rttbuf2);
 }
@@ -391,63 +396,94 @@ spindump_connection_addresses(struct spindump_connection* connection,
   //
   
   static char buf[200];
-
+  memset(buf,0,sizeof(buf));
+  
   //
   // Branch based on connection type
   //
   
   switch (connection->type) {
   case spindump_connection_transport_tcp:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.tcp.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.tcp.side2peerAddress,querier));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.tcp.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,
+		     spindump_connection_address_tostring(anonymizeRight,&connection->u.tcp.side2peerAddress,querier),
+		     sizeof(buf));
     break;
   case spindump_connection_transport_udp:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.udp.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.udp.side2peerAddress,querier));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.udp.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,
+		     spindump_connection_address_tostring(anonymizeRight,&connection->u.udp.side2peerAddress,querier),
+		     sizeof(buf));
     break;
   case spindump_connection_transport_dns:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.dns.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.dns.side2peerAddress,querier));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.dns.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,
+		     spindump_connection_address_tostring(anonymizeRight,&connection->u.dns.side2peerAddress,querier),
+		     sizeof(buf));
     break;
   case spindump_connection_transport_coap:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.coap.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.coap.side2peerAddress,querier));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.coap.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,
+		     spindump_connection_address_tostring(anonymizeRight,&connection->u.coap.side2peerAddress,querier),
+		     sizeof(buf));
     break;
   case spindump_connection_transport_quic:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.quic.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.quic.side2peerAddress,querier));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.quic.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,
+		     spindump_connection_address_tostring(anonymizeRight,&connection->u.quic.side2peerAddress,querier),
+		     sizeof(buf));
     break;
   case spindump_connection_transport_icmp:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.icmp.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.icmp.side2peerAddress,querier));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.icmp.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,
+		     spindump_connection_address_tostring(anonymizeRight,&connection->u.icmp.side2peerAddress,querier),
+		     sizeof(buf));
     break;
   case spindump_connection_aggregate_hostpair:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostpair.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_connection_address_tostring(anonymizeRight,&connection->u.aggregatehostpair.side2peerAddress,querier));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostpair.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,
+		     spindump_connection_address_tostring(anonymizeRight,&connection->u.aggregatehostpair.side2peerAddress,querier),
+		     sizeof(buf));
     break;
   case spindump_connection_aggregate_hostnetwork:
-    strcpy(buf,spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostnetwork.side1peerAddress,querier));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_network_tostring(&connection->u.aggregatehostnetwork.side2Network));
+    spindump_strlcpy(buf,
+		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostnetwork.side1peerAddress,querier),
+		     sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,spindump_network_tostring(&connection->u.aggregatehostnetwork.side2Network),sizeof(buf));
     break;
   case spindump_connection_aggregate_networknetwork:
-    strcpy(buf,spindump_network_tostring(&connection->u.aggregatenetworknetwork.side1Network));
-    strcat(buf," <-> ");
-    strcat(buf,spindump_network_tostring(&connection->u.aggregatenetworknetwork.side2Network));
+    spindump_strlcpy(buf,spindump_network_tostring(&connection->u.aggregatenetworknetwork.side1Network),sizeof(buf));
+    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,spindump_network_tostring(&connection->u.aggregatenetworknetwork.side2Network),sizeof(buf));
     break;
   case spindump_connection_aggregate_multicastgroup:
-    strcpy(buf,spindump_address_tostring(&connection->u.aggregatemulticastgroup.group));
+    spindump_strlcpy(buf,spindump_address_tostring(&connection->u.aggregatemulticastgroup.group),sizeof(buf));
     break;
   default:
     spindump_errorf("invalid connection type");
-    strcpy(buf,"invalid");
+    spindump_strlcpy(buf,"invalid",sizeof(buf));
   }
   
   if (strlen(buf) > maxlen) {
@@ -711,12 +747,13 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
 				   "",
 				   1);
     } else {
-      char vbuf[40];
+      char vbuf[50];
       const char* orig = spindump_analyze_quic_parser_versiontostring(connection->u.quic.originalVersion);
       if (strncmp(orig,"v.",2) == 0) orig += 2;
-      sprintf(vbuf,"%s(%s)",
-	      spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
-	      orig);
+      memset(vbuf,0,sizeof(vbuf));
+      snprintf(vbuf,sizeof(vbuf)-1,"%s(%s)",
+	       spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
+	       orig);
       spindump_connection_addtobuf(buf,sizeof(buf),
 				   vbuf,
 				   "",
@@ -804,11 +841,11 @@ spindump_connection_report_brief(struct spindump_connection* connection,
   memset(rttbuf2,0,sizeof(rttbuf2));
   spindump_deepdebugf("report_brief point 2");
   if (avg) {
-    strcpy(rttbuf1,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT)));
-    strcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT)));
+    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT)),sizeof(rttbuf1));
+    spindump_strlcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT)),sizeof(rttbuf2));
   } else {
-    strcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT));
-    strcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT));
+    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
+    spindump_strlcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT),sizeof(rttbuf2));
   }
   spindump_deepdebugf("report_brief point 3");
   unsigned int addrsiz = spindump_connection_report_brief_variablesize(linelen);
