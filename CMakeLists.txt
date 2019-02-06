@@ -18,7 +18,6 @@ find_program(CPPCHECK NAMES cppcheck)
 if(CPPCHECK)
   message(STATUS "Found cppcheck: ${CPPCHECK}")
   set(CMAKE_C_CPPCHECK ${CPPCHECK} -q --inline-suppr --enable=all)
-  set(CMAKE_CXX_CPPCHECK ${CMAKE_C_CPPCHECK})
 endif()
 
 include(CheckCCompilerFlag)
