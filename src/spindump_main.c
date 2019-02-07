@@ -1053,6 +1053,9 @@ help() {
   printf("    --no-stats            Produces statistics at the end of the execution.\n");
   printf("    --stats\n");
   printf("\n");
+  printf("    --aggregate p1 p2     Collect aggregate information for flows matching patterns\n");
+  printf("                          p1 to p2. Pattern is either an address or a network prefix.\n");
+  printf("\n");
   printf("    --max-receive n       Sets a limit of how many packets the tool accepts.\n");
   printf("\n");
   printf("    --interface i         Set the interface to listen on, or the capture\n");
