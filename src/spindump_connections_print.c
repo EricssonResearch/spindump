@@ -641,7 +641,7 @@ spindump_connection_report_brief_isnotefield(unsigned int linelen) {
 #define spindump_connection_report_brief_notefieldval_length_val 24
 
 unsigned int
-spindump_connection_report_brief_notefieldval_length() {
+spindump_connection_report_brief_notefieldval_length(void) {
   return(spindump_connection_report_brief_notefieldval_length_val);
 }
 

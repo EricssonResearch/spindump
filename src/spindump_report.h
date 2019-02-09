@@ -66,7 +66,7 @@ struct spindump_report_state {
 //
 
 struct spindump_report_state*
-spindump_report_initialize_quiet();
+spindump_report_initialize_quiet(void);
 struct spindump_report_state*
 spindump_report_initialize_terminal(struct spindump_reverse_dns* querier);
 void

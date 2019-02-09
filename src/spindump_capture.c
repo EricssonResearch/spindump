@@ -54,7 +54,7 @@ spindump_capture_initialize_aux(const char* interface,
 //
 
 const char*
-spindump_capture_defaultinterface() {
+spindump_capture_defaultinterface(void) {
 
   //
   // Look up default device from PCAP

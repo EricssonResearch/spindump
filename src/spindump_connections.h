@@ -297,7 +297,7 @@ spindump_connection_report_brief_fixedsize(unsigned int linelen);
 int
 spindump_connection_report_brief_isnotefield(unsigned int linelen);
 unsigned int
-spindump_connection_report_brief_notefieldval_length();
+spindump_connection_report_brief_notefieldval_length(void);
 unsigned int
 spindump_connection_report_brief_sessionsize(unsigned int linelen);
 unsigned int

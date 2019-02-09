@@ -87,7 +87,7 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize() {
+spindump_analyze_initialize(void) {
 
   //
   // Checks

@@ -41,10 +41,10 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
-static void unittests();
-static void unittests_util();
-static void unittests_table();
-static void systemtests();
+static void unittests(void);
+static void unittests_util(void);
+static void unittests_table(void);
+static void systemtests(void);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -54,7 +54,8 @@ static void systemtests();
 // The tests -- unit tests
 //
 
-static void unittests() {
+static void
+unittests(void) {
   unittests_util();
   unittests_table();
 }
@@ -63,7 +64,8 @@ static void unittests() {
 // The tests -- unit tests for the Spindump util module
 //
 
-static void unittests_util() {
+static void
+unittests_util(void) {
   
   //
   // Address tests
@@ -150,7 +152,8 @@ static void unittests_util() {
 // Unit tests for the connection table
 //
 
-static void unittests_table() {
+static void
+unittests_table(void) {
 
   //
   // Creation and deletion of the table itself
@@ -291,7 +294,8 @@ static void unittests_table() {
 // The tests -- system tests
 //
 
-static void systemtests() {
+static void
+systemtests(void) {
   
   //
   // Analyzer tests -- ICMP

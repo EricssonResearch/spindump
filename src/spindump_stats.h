@@ -83,7 +83,7 @@ struct spindump_stats {
 //
 
 struct spindump_stats*
-spindump_stats_initialize();
+spindump_stats_initialize(void);
 void
 spindump_stats_report(struct spindump_stats* stats,
 		      FILE* file);

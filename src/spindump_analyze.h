@@ -83,7 +83,7 @@ struct spindump_analyze {
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize();
+spindump_analyze_initialize(void);
 void
 spindump_analyze_uninitialize(struct spindump_analyze* state);
 void

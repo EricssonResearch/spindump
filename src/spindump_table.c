@@ -51,7 +51,7 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
 //
 
 struct spindump_connectionstable*
-spindump_connectionstable_initialize() {
+spindump_connectionstable_initialize(void) {
 
   //
   // Figure out sizes

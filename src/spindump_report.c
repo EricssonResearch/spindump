@@ -33,9 +33,9 @@
 //
 
 static void
-spindump_report_cursesinit();
+spindump_report_cursesinit(void);
 static void
-spindump_report_cursesfinish();
+spindump_report_cursesfinish(void);
 static int
 spindump_report_update_comparetwoconnections(const void* data1,
 					     const void* data2);
@@ -50,7 +50,7 @@ spindump_report_update_comparetwoconnections(const void* data1,
 //
 
 static void
-spindump_report_cursesinit() {
+spindump_report_cursesinit(void) {
   
   setlocale(LC_ALL, "");
   initscr();
@@ -69,7 +69,7 @@ spindump_report_cursesinit() {
 //
 
 static void
-spindump_report_cursesfinish() {
+spindump_report_cursesfinish(void) {
   
   nodelay(stdscr, FALSE);
   keypad(stdscr, FALSE);
@@ -87,7 +87,7 @@ spindump_report_cursesfinish() {
 //
 
 struct spindump_report_state*
-spindump_report_initialize_quiet() {
+spindump_report_initialize_quiet(void) {
 
   //
   // Calculate size and allocate state

@@ -44,7 +44,7 @@
 //
 
 struct spindump_remote_server*
-spindump_remote_server_init() {
+spindump_remote_server_init(void) {
   unsigned int size = sizeof(struct spindump_remote_server);
   struct spindump_remote_server* server = (struct spindump_remote_server*)malloc(size);
   if (server == 0) {

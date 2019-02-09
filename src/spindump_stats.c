@@ -35,7 +35,7 @@
 //
 
 struct spindump_stats*
-spindump_stats_initialize() {
+spindump_stats_initialize(void) {
   
   //
   // Calculate size and allocate state

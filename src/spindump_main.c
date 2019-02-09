@@ -76,11 +76,11 @@ static FILE* debugfile = 0;
 //
 
 static void
-help();
+help(void);
 static void
 spindump_main_processargs(int argc,char** argv);
 static void
-spindump_main_operation();
+spindump_main_operation(void);
 static enum spindump_outputformat
 spindump_main_parseformat(const char* string);
 static void
@@ -701,7 +701,7 @@ spindump_main_textualmeasurement_json(spindump_analyze_event event,
 //
 
 static void
-spindump_main_operation() {
+spindump_main_operation(void) {
 
   //
   // Initialize the actual operation
@@ -1022,7 +1022,7 @@ int main(int argc,char** argv) {
 //
 
 static void
-help() {
+help(void) {
 
   printf("Usage:\n");
   printf("  \n");

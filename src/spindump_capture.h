@@ -59,7 +59,7 @@ struct spindump_capture_state {
 //
 
 const char*
-spindump_capture_defaultinterface();
+spindump_capture_defaultinterface(void);
 struct spindump_capture_state*
 spindump_capture_initialize(const char* interface,
 			    const char* filter);

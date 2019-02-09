@@ -51,7 +51,7 @@ spindump_reverse_dns_backgroundfunction_resolveone(struct spindump_reverse_dns_e
 //
 
 struct spindump_reverse_dns*
-spindump_reverse_dns_initialize_noop() {
+spindump_reverse_dns_initialize_noop(void) {
 
   //
   // Allocate an object
@@ -84,7 +84,7 @@ spindump_reverse_dns_initialize_noop() {
 //
 
 struct spindump_reverse_dns*
-spindump_reverse_dns_initialize_full() {
+spindump_reverse_dns_initialize_full(void) {
 
   //
   // Allocate an object
