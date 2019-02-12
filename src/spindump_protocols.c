@@ -21,6 +21,12 @@
 //
 
 #include <string.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <netinet/icmp6.h>
 #include "spindump_util.h"
 #include "spindump_protocols.h"
 
@@ -57,6 +63,93 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
   spindump_checkflag(SPINDUMP_TH_CWR,"CWR",flags);
   
   return(buf);
+}
+
+//
+// Decode a ICMP header from the packet bytes starting from the pointer
+// "header". It is assumed to be long enough for the DNS header, i.e.,
+// the caller must have checked this.  The header as parsed and as
+// converted to host byte order where applicable, is placed in the
+// output parameter "decoded".
+//
+
+void
+spindump_protocols_icmp_header_decode(const unsigned char* header,
+				      struct spindump_icmp* decoded) {
+  
+  //
+  // Sanity checks
+  //
+  
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+  
+  //
+  // Parse the ICMPv6 header. The header is defined in RFC 792:
+  //
+  //    0                   1                   2                   3
+  //    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |     Type      |     Code      |          Checksum             |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |           Identifier          |        Sequence Number        |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |     Data ...
+  //   +-+-+-+-+-
+  //
+  
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->ih_type,header,pos);       // type
+  spindump_decodebyte(decoded->ih_code,header,pos);       // code
+  spindump_decode2byteint(decoded->ih_csum,header,pos);   // csum
+  if (decoded->ih_type == ICMP_ECHO || decoded->ih_type == ICMP_ECHOREPLY) {
+    spindump_decode2byteint(decoded->ih_u.ih_echo.ih_id,header,pos);   // identifier
+    spindump_decode2byteint(decoded->ih_u.ih_echo.ih_seq,header,pos);  // sequence number
+  }
+}
+
+//
+// Decode a ICMPv6 header from the packet bytes starting from the pointer
+// "header". It is assumed to be long enough for the DNS header, i.e.,
+// the caller must have checked this.  The header as parsed and as
+// converted to host byte order where applicable, is placed in the
+// output parameter "decoded".
+//
+
+void
+spindump_protocols_icmp6_header_decode(const unsigned char* header,
+				       struct spindump_icmpv6* decoded) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  //
+  // Parse the ICMPv6 header. The header is defined in RFC 2463:
+  //
+  //     0                   1                   2                   3
+  //     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //    |     Type      |     Code      |          Checksum             |
+  //    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //    |           Identifier          |        Sequence Number        |
+  //    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //    |     Data ...
+  //    +-+-+-+-+-
+  //
+  
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->ih6_type,header,pos);       // type
+  spindump_decodebyte(decoded->ih6_code,header,pos);       // code
+  spindump_decode2byteint(decoded->ih6_csum,header,pos);   // csum
+  if (decoded->ih6_type == ICMP6_ECHO_REQUEST || decoded->ih6_type == ICMP6_ECHO_REPLY) {
+    spindump_decode2byteint(decoded->ih6_u.ih6_echo.ih6_id,header,pos);   // identifier
+    spindump_decode2byteint(decoded->ih6_u.ih6_echo.ih6_seq,header,pos);  // sequence number
+  }
+  
 }
 
 //

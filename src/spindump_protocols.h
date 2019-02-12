@@ -101,6 +101,20 @@ struct spindump_ip6_fh {
 # define spindump_ip6_fh_morefrag(field)   ((field)&1)
 };
 
+//
+// ICMP header, as defined in RFC 792:
+//
+//    0                   1                   2                   3
+//    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |     Type      |     Code      |          Checksum             |
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |           Identifier          |        Sequence Number        |
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |     Data ...
+//   +-+-+-+-+-
+//
+
 struct spindump_icmp {
   uint8_t  ih_type;        	// type
   uint8_t  ih_code;        	// code
@@ -113,6 +127,20 @@ struct spindump_icmp {
     } ih_echo;
   } ih_u;
 };
+
+//
+// ICMPv6 header, as defined in RFC 2463:
+//
+//     0                   1                   2                   3
+//     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//    |     Type      |     Code      |          Checksum             |
+//    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//    |           Identifier          |        Sequence Number        |
+//    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//    |     Data ...
+//    +-+-+-+-+-
+//
 
 struct spindump_icmpv6 {
   uint8_t  ih6_type;        	// type
@@ -878,6 +906,12 @@ struct spindump_quic {
 
 const char*
 spindump_protocols_tcp_flagstostring(uint8_t flags);
+void
+spindump_protocols_icmp_header_decode(const unsigned char* header,
+				      struct spindump_icmp* decoded);
+void
+spindump_protocols_icmp6_header_decode(const unsigned char* header,
+				       struct spindump_icmpv6* decoded);
 void
 spindump_protocols_udp_header_decode(const unsigned char* header,
 				     struct spindump_udp* decoded);

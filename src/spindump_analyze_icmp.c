@@ -87,36 +87,37 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-  const struct spindump_icmp* icmp = (const struct spindump_icmp*)(packet->contents + icmpHeaderPosition);
+  struct spindump_icmp icmp;
+  spindump_protocols_icmp_header_decode(packet->contents + icmpHeaderPosition,&icmp);
   spindump_debugf("received an IPv%u ICMP packet of %u bytes",
 		  ipVersion,
 		  packet->etherlen);
 
-  uint8_t peerType = icmp->ih_type;
+  uint8_t peerType = icmp.ih_type;
 
   switch (peerType) {
   case ICMP_ECHO:
-    if (icmp->ih_code != 0) {
+    if (icmp.ih_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;
       return;
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO request for id=%u seq=%u",
-			ntohs(icmp->ih_u.ih_echo.ih_id),
-			ntohs(icmp->ih_u.ih_echo.ih_seq));
+			icmp.ih_u.ih_echo.ih_id,
+			icmp.ih_u.ih_echo.ih_seq);
     break;
 
   case ICMP_ECHOREPLY:
-    if (icmp->ih_code != 0) {
+    if (icmp.ih_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;
       return;
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO reply for id=%u seq=%u",
-			ntohs(icmp->ih_u.ih_echo.ih_id),
-			ntohs(icmp->ih_u.ih_echo.ih_seq));
+			icmp.ih_u.ih_echo.ih_id,
+			icmp.ih_u.ih_echo.ih_seq);
     break;
 
   default:
@@ -124,21 +125,21 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-
+  
   //
   // Check whether this is an ICMP ECHO or ECHO REPLY and if so, proceed
   //
-
+  
   int new = 0;
   int fromResponder;
-
+  
   if (peerType == ICMP_ECHO ||
       peerType == ICMP_ECHOREPLY) {
 
     spindump_address source;
     spindump_address destination;
-    uint16_t peerId = icmp->ih_u.ih_echo.ih_id;
-    uint16_t peerSeq = icmp->ih_u.ih_echo.ih_seq;
+    uint16_t peerId = icmp.ih_u.ih_echo.ih_id;
+    uint16_t peerSeq = icmp.ih_u.ih_echo.ih_seq;
 
     if (peerType == ICMP_ECHO) {
       spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
@@ -301,7 +302,8 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-  const struct spindump_icmpv6* icmp6 = (const struct spindump_icmpv6*)(packet->contents + icmpHeaderPosition);
+  struct spindump_icmpv6 icmp6;
+  spindump_protocols_icmp6_header_decode(packet->contents + icmpHeaderPosition,&icmp6);
   unsigned int hdrsize_icmp6 = spindump_max(4,icmpLength);
   if (hdrsize_icmp6 < 4) {
     state->stats->invalidIcmpHdrSize++;
@@ -313,33 +315,33 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 		  ipVersion,
 		  packet->etherlen);
 
-  uint8_t peerType = icmp6->ih6_type;
+  uint8_t peerType = icmp6.ih6_type;
   int new = 0;
   int fromResponder;
 
   switch (peerType) {
   case ICMP6_ECHO_REQUEST:
-    if (icmp6->ih6_code != 0) {
+    if (icmp6.ih6_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;
       return;
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO request for id=%u seq=%u",
-			ntohs(icmp6->ih6_u.ih6_echo.ih6_id),
-			ntohs(icmp6->ih6_u.ih6_echo.ih6_seq));
+			icmp6.ih6_u.ih6_echo.ih6_id,
+			icmp6.ih6_u.ih6_echo.ih6_seq);
     break;
 
   case ICMP6_ECHO_REPLY:
-    if (icmp6->ih6_code != 0) {
+    if (icmp6.ih6_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;
       return;
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO reply for id=%u seq=%u",
-			ntohs(icmp6->ih6_u.ih6_echo.ih6_id),
-			ntohs(icmp6->ih6_u.ih6_echo.ih6_seq));
+			icmp6.ih6_u.ih6_echo.ih6_id,
+			icmp6.ih6_u.ih6_echo.ih6_seq);
     break;
 
   default:
@@ -357,8 +359,8 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 
     spindump_address source;
     spindump_address destination;
-    uint16_t peerId = icmp6->ih6_u.ih6_echo.ih6_id;
-    uint16_t peerSeq = icmp6->ih6_u.ih6_echo.ih6_seq;
+    uint16_t peerId = icmp6.ih6_u.ih6_echo.ih6_id;
+    uint16_t peerSeq = icmp6.ih6_u.ih6_echo.ih6_seq;
 
     if (peerType == ICMP6_ECHO_REQUEST) {
       spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
