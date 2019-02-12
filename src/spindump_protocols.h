@@ -127,6 +127,19 @@ struct spindump_icmpv6 {
   } ih6_u;
 };
 
+//
+// UDP header is defined in RFC 768:
+//
+// 0      7 8     15 16    23 24    31
+// +--------+--------+--------+--------+
+// |     Source      |   Destination   |
+// |      Port       |      Port       |
+// +--------+--------+--------+--------+
+// |                 |                 |
+// |     Length      |    Checksum     |
+// +--------+--------+--------+--------+
+//
+
 #define spindump_udp_header_size 8
 
 struct spindump_udp {
@@ -855,6 +868,9 @@ struct spindump_quic {
 
 const char*
 spindump_protocols_tcp_flagstostring(uint8_t flags);
+void
+spindump_protocols_udp_header_decode(const unsigned char* header,
+				     struct spindump_udp* decoded);
 void
 spindump_protocols_dns_header_decode(const unsigned char* header,
 				     struct spindump_dns* decoded);

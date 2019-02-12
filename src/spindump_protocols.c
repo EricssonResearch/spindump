@@ -60,6 +60,46 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
 }
 
 //
+// Decode a UDP header from the packet bytes starting from the pointer
+// "header". It is assumed to be long enough for the DNS header, i.e.,
+// the caller must have checked this.  The header as parsed and as
+// converted to host byte order where applicable, is placed in the
+// output parameter "decoded".
+//
+
+void
+spindump_protocols_udp_header_decode(const unsigned char* header,
+				     struct spindump_udp* decoded) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  // 
+  // Parse the UDP header. The structure is defined in RFC 768:
+  //
+  // 0      7 8     15 16    23 24    31
+  // +--------+--------+--------+--------+
+  // |     Source      |   Destination   |
+  // |      Port       |      Port       |
+  // +--------+--------+--------+--------+
+  // |                 |                 |
+  // |     Length      |    Checksum     |
+  // +--------+--------+--------+--------+
+  //
+
+  unsigned int pos = 0;
+  
+  spindump_decode2byteint(decoded->uh_sport,header,pos);       // source port
+  spindump_decode2byteint(decoded->uh_dport,header,pos);       // destination port
+  spindump_decode2byteint(decoded->uh_len,header,pos);         // UDP header and payload length
+  spindump_decode2byteint(decoded->uh_csum,header,pos);        // checksum
+}
+
+//
 // Decode a DNS header from the packet bytes starting from the pointer
 // "header". It is assumed to be long enough for the DNS header, i.e.,
 // the caller must have checked this.  The header as parsed and as

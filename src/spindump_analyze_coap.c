@@ -349,16 +349,17 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
   spindump_address destination;
   spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
   spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
-  const struct spindump_udp* udp = (const struct spindump_udp*)(packet->contents + udpHeaderPosition);
-  uint16_t side1port = ntohs(udp->uh_sport);
-  uint16_t side2port = ntohs(udp->uh_dport);
+  struct spindump_udp udp;
+  spindump_protocols_udp_header_decode(packet->contents + udpHeaderPosition,&udp);
+  uint16_t side1port = udp.uh_sport;
+  uint16_t side2port = udp.uh_dport;
   const unsigned char* payload = (const unsigned char*)(packet->contents + udpHeaderPosition + spindump_udp_header_size);
-
+  
   if (isDtls) {
 
     spindump_analyze_process_coap_dtls(state,
 				       packet,
-							 ecnFlags,
+				       ecnFlags,
 				       ipPacketLength,
 				       udpLength,
 				       remainingCaplen,
@@ -373,7 +374,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
 
     spindump_analyze_process_coap_cleartext(state,
 					    packet,
-							ecnFlags,
+					    ecnFlags,
 					    ipPacketLength,
 					    udpLength,
 					    remainingCaplen,

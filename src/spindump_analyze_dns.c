@@ -291,12 +291,13 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   spindump_address destination;
   spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
   spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
-  const struct spindump_udp* udp = (const struct spindump_udp*)(packet->contents + udpHeaderPosition);
-  uint16_t side1port = ntohs(udp->uh_sport);
-  uint16_t side2port = ntohs(udp->uh_dport);
+  struct spindump_udp udp;
+  spindump_protocols_udp_header_decode(packet->contents + udpHeaderPosition,&udp);
+  uint16_t side1port = udp.uh_sport;
+  uint16_t side2port = udp.uh_dport;
   int fromResponder;
   int new = 0;
-
+  
   //
   // Check that the packet looks sensible
   //

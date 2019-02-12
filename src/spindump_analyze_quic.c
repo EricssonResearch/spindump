@@ -72,16 +72,17 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   // Find out some information about the packet
   //
 
-  const struct spindump_udp* udp = (const struct spindump_udp*)(packet->contents + udpHeaderPosition);
-  const unsigned char* udpPayload = ((const unsigned char*)udp + spindump_udp_header_size);
+  struct spindump_udp udp;
+  spindump_protocols_udp_header_decode(packet->contents + udpHeaderPosition,&udp);
+  const unsigned char* udpPayload = packet->contents + udpHeaderPosition + spindump_udp_header_size;
   unsigned int size_udppayload = packet->etherlen - udpHeaderPosition - spindump_udp_header_size;
   struct spindump_connection* connection = 0;
   spindump_address source;
   spindump_address destination;
   spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
   spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
-  uint16_t side1port = ntohs(udp->uh_sport);
-  uint16_t side2port = ntohs(udp->uh_dport);
+  uint16_t side1port = udp.uh_sport;
+  uint16_t side2port = udp.uh_dport;
   int fromResponder;
   int new = 0;
 

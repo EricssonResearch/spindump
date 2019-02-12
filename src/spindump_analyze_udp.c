@@ -88,16 +88,17 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
     return;
   }
 
-  const struct spindump_udp* udp = (const struct spindump_udp*)(packet->contents + udpHeaderPosition);
+  struct spindump_udp udp;
+  spindump_protocols_udp_header_decode(packet->contents + udpHeaderPosition,&udp);
   unsigned int udpHeaderSize = spindump_udp_header_size;
-  spindump_deepdebugf("udp header: sport = %u", htons(udp->uh_sport));
-  spindump_deepdebugf("udp header: dport = %u", htons(udp->uh_dport));
-  spindump_deepdebugf("udp header: len = %u", htons(udp->uh_len));
-  spindump_deepdebugf("udp header: csum = %x", htons(udp->uh_csum));
-
+  spindump_deepdebugf("udp header: sport = %u", udp.uh_sport);
+  spindump_deepdebugf("udp header: dport = %u", udp.uh_dport);
+  spindump_deepdebugf("udp header: len = %u", udp.uh_len);
+  spindump_deepdebugf("udp header: csum = %x", udp.uh_csum);
+  
   const unsigned char* payload = packet->contents + udpHeaderPosition + udpHeaderSize;
-  unsigned int size_udppayload = spindump_max(ntohs(udp->uh_len),udpLength) - udpHeaderSize;
-
+  unsigned int size_udppayload = spindump_max(udp.uh_len,udpLength) - udpHeaderSize;
+  
   spindump_debugf("received an IPv%u UDP packet of %u bytes (eth %u ip %u udp %u) size_payload = %u payload = %02x%02x%02x...",
 		  ipVersion,
 		  packet->etherlen,
@@ -118,11 +119,11 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   spindump_address destination;
   spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
   spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
-  uint16_t side1port = ntohs(udp->uh_sport);
-  uint16_t side2port = ntohs(udp->uh_dport);
+  uint16_t side1port = udp.uh_sport;
+  uint16_t side2port = udp.uh_dport;
   int fromResponder;
   int new = 0;
-
+  
   //
   // Debugs
   //
