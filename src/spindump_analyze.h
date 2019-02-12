@@ -52,9 +52,9 @@ typedef uint16_t spindump_analyze_event;
 #define spindump_analyze_event_firstresponsepacket                2048
 #define spindump_analyze_event_statechange                        4096
 #define spindump_analyze_event_initiatorecnce                     8192
-#define spindump_analyze_event_responderecnce                     16384
+#define spindump_analyze_event_responderecnce                    16384
 
-#define spindump_analyze_event_alllegal                           32767
+#define spindump_analyze_event_alllegal                          32767
 
 struct spindump_analyze;
 
