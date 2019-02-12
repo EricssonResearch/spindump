@@ -58,3 +58,54 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
   
   return(buf);
 }
+
+//
+// Decode a DNS header from the packet bytes starting from the pointer
+// "header". It is assumed to be long enough for the DNS header, i.e.,
+// the caller must have checked this.  The header as parsed and as
+// converted to host byte order where applicable, is placed in the
+// output parameter "decoded".
+//
+
+void
+spindump_protocols_dns_header_decode(const unsigned char* header,
+				     struct spindump_dns* decoded) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  // 
+  // Parse the DNS header. The structure is from RFC 1035, Section
+  // 4.1.1:
+  //
+  //                                    1  1  1  1  1  1
+  //      0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+  //    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+  //    |                      ID                       |
+  //    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+  //    |QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |
+  //    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+  //    |                    QDCOUNT                    |
+  //    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+  //    |                    ANCOUNT                    |
+  //    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+  //    |                    NSCOUNT                    |
+  //    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+  //    |                    ARCOUNT                    |
+  //    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+  //
+  
+  unsigned int pos = 0;
+  
+  spindump_decode2byteint(decoded->id,header,pos);       // message identifier
+  spindump_decodebyte(decoded->flagsOpcode,header,pos);  // QR, Opcode, AA, TC, and RD fields
+  spindump_decodebyte(decoded->flagsRcode,header,pos);   // RA, Z, and RCODE fields
+  spindump_decode2byteint(decoded->QDCount,header,pos);  // QDCOUNT
+  spindump_decode2byteint(decoded->ANCount,header,pos);  // ANCOUNT
+  spindump_decode2byteint(decoded->NSCount,header,pos);  // NSCOUNT
+  spindump_decode2byteint(decoded->ARCount,header,pos);  // ARCOUNT
+}

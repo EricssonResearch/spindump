@@ -193,6 +193,8 @@ struct spindump_udp {
 // 23	BADCOOKIE	Bad/missing Server Cookie	[RFC7873]
 //
 
+#define spindump_dns_header_size     (2+1+1+4*2)
+
 struct spindump_dns {
   uint16_t id;                  // message identifier
   uint8_t flagsOpcode;          // QR, Opcode, AA, TC, and RD fields
@@ -833,10 +835,28 @@ struct spindump_quic {
 };
 
 //
+// Macros helping the decoding of messages ----------------------------------------------------
+//
+
+#define spindump_decodebyte(field,payload,position)     \
+  memcpy(&(field),(payload)+((position)++),1)
+#define spindump_decode2byteint(field,payload,position) \
+  memcpy(&(field),(payload)+(position),2);              \
+  (position) += 2;                                      \
+  (field) = ntohs((field));
+#define spindump_decode4byteint(field,payload,position) \
+  memcpy(&(field),(payload)+(position),4);              \
+  (position) += 4;                                      \
+  (field) = ntoh((field));
+
+//
 // External API interface ---------------------------------------------------------------------
 //
 
 const char*
 spindump_protocols_tcp_flagstostring(uint8_t flags);
+void
+spindump_protocols_dns_header_decode(const unsigned char* header,
+				     struct spindump_dns* decoded);
 
 #endif // SPINDUMP_PROTOCOLS_H

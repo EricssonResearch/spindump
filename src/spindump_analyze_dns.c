@@ -43,6 +43,9 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 				      int fromResponder,
 				      const uint16_t mid,
 				      const struct timeval* t);
+static const char*
+spindump_analyzer_dns_parsename(const char* dnspayload,
+				unsigned int dnspayloadsize);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -62,6 +65,12 @@ spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
 					 uint16_t destPort) {
 
   //
+  // Sanity checks
+  //
+  
+  spindump_assert(payload != 0);
+  
+  //
   // Do ports look like DNS?
   //
 
@@ -73,7 +82,7 @@ spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
   // Does packet format look right?
   //
 
-  if (payload_len < sizeof(struct spindump_dns)) {
+  if (payload_len < spindump_dns_header_size) {
     return(0);
   }
 
@@ -93,7 +102,7 @@ spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
 // Note: This function is not thread safe.
 //
 
-const char*
+static const char*
 spindump_analyzer_dns_parsename(const char* dnspayload,
 				unsigned int dnspayloadsize) {
   static char buf[200];
@@ -102,7 +111,7 @@ spindump_analyzer_dns_parsename(const char* dnspayload,
     spindump_deepdebugf("DNS payload size 0 is not allowed, failing");
     return(0);
   }
-  uint8_t labelsize = *(dnspayload++);
+  uint8_t labelsize = (uint8_t)*(dnspayload++);
   dnspayloadsize--;
   while (labelsize > 0) {
     if (labelsize > dnspayloadsize - 1) {
@@ -117,7 +126,7 @@ spindump_analyzer_dns_parsename(const char* dnspayload,
     }
     if (strlen(buf) < sizeof(buf) - 1) buf[strlen(buf)] = '.';
     spindump_assert(dnspayloadsize > 0);
-    labelsize = *(dnspayload++);
+    labelsize = (uint8_t)*(dnspayload++);
   }
   return(buf);
 }
@@ -254,7 +263,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
 			     unsigned int ipHeaderPosition,
 			     unsigned int ipHeaderSize,
 			     uint8_t ipVersion,
-					 uint8_t ecnFlags,
+			     uint8_t ecnFlags,
 			     unsigned int ipPacketLength,
 			     unsigned int udpHeaderPosition,
 			     unsigned int udpLength,
@@ -270,6 +279,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ipVersion == 4 || ipVersion == 6);
   spindump_assert(udpHeaderPosition > ipHeaderPosition);
+  spindump_assert(ipHeaderSize > 0);
   spindump_assert(p_connection != 0);
 
   //
@@ -292,8 +302,8 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   //
 
   unsigned int dnsSize = udpLength - spindump_udp_header_size;
-  if (dnsSize < sizeof(struct spindump_dns) ||
-      remainingCaplen < spindump_udp_header_size + sizeof(struct spindump_dns)) {
+  if (dnsSize < spindump_dns_header_size ||
+      remainingCaplen < spindump_udp_header_size + spindump_dns_header_size) {
     spindump_debugf("packet too short for DNS");
     state->stats->notEnoughPacketForDnsHdr++;
     *p_connection = 0;
@@ -304,13 +314,16 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   // Parse the packet enough to determine what is going on
   //
 
-  const struct spindump_dns* dns = (const struct spindump_dns*)(packet->contents + udpHeaderPosition + spindump_udp_header_size);
-  uint16_t mid = dns->id;
-  int qr = ((dns->flagsOpcode & spindump_dns_flagsopcode_qr) >> spindump_dns_flagsopcode_qr_shift);
-  uint8_t opcode = ((dns->flagsOpcode & spindump_dns_flagsopcode_opcode) >> spindump_dns_flagsopcode_opcode_shift);
-  uint16_t qdcount = dns->QDCount;
-  unsigned int dnspayloadsize = dnsSize - sizeof(struct spindump_dns);
-  const char* dnspayload = ((const char*)dns + sizeof(struct spindump_dns));
+  struct spindump_dns dns;
+  const unsigned char* dnsHeader = packet->contents + udpHeaderPosition + spindump_udp_header_size;
+  spindump_protocols_dns_header_decode(dnsHeader,
+				       &dns);
+  uint16_t mid = dns.id;
+  int qr = ((dns.flagsOpcode & spindump_dns_flagsopcode_qr) >> spindump_dns_flagsopcode_qr_shift);
+  uint8_t opcode = ((dns.flagsOpcode & spindump_dns_flagsopcode_opcode) >> spindump_dns_flagsopcode_opcode_shift);
+  uint16_t qdcount = dns.QDCount;
+  unsigned int dnspayloadsize = dnsSize - spindump_dns_header_size;
+  const char* dnspayload = ((const char*)dnsHeader + spindump_dns_header_size);
 
   //
   // Debugs

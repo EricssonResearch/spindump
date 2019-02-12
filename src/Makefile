@@ -128,9 +128,18 @@ SPINDUMP_ALL_SOURCES	=	$(SPINDUMP_LIB_HEADERS) \
 				$(SPINDUMP_CMD_SOURCES) \
 				$(SPINDUMP_TST_SOURCES) \
 				$(SPINDUMP_OTHER_SOURCES)
-CFLAGS			=	-Wall --pedantic $(OPTFLAGS)
 #OPTFLAGS		=	-O3
 OPTFLAGS		=	-g -DSPINDUMP_DEBUG
+CFLAGS			=	-Wall --pedantic $(OPTFLAGS)
+#CFLAGS			=	-Wall -Wextra -Wpedantic -Weverything -Werror \
+#			        -fno-diagnostics-color \
+#			        -fsanitize=address \
+#			        -fsanitize=undefined -fno-omit-frame-pointer \
+#			        -fno-optimize-sibling-calls -fno-common \
+#			        -fsanitize=unsigned-integer-overflow \
+#			        -fsanitize=nullability \
+#				-Wno-covered-switch-default \
+#				$(OPTFLAGS)
 LDFLAGS			=	-lpthread -lpcap -lncurses -lm
 CC			=	gcc
 LD			=	$(CC)
