@@ -270,11 +270,13 @@ spindump_analyze_getsource(struct spindump_packet* packet,
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(address != 0);
   if (ipVersion == 4) {
-    const struct spindump_ip* iphdr = (const struct spindump_ip*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET,(const unsigned char*)&iphdr->ip_src);
+    struct spindump_ip iphdr;
+    spindump_protocols_ip_header_decode(packet->contents + ipHeaderPosition,&iphdr);
+    spindump_address_frombytes(address,AF_INET,(const unsigned char*)&iphdr.ip_src);
   } else if (ipVersion == 6) {
-    const struct spindump_ip6* ip6hdr = (const struct spindump_ip6*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET6,(const unsigned char*)&ip6hdr->source);
+    struct spindump_ip6 ip6hdr;
+    spindump_protocols_ip6_header_decode(packet->contents + ipHeaderPosition,&ip6hdr);
+    spindump_address_frombytes(address,AF_INET6,(const unsigned char*)&ip6hdr.ip6_source);
   } else {
     spindump_errorf("no version set");
     spindump_address_fromstring(address,"0.0.0.0");
@@ -294,11 +296,13 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(address != 0);
   if (ipVersion == 4) {
-    const struct spindump_ip* iphdr = (const struct spindump_ip*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET,(const unsigned char*)&iphdr->ip_dst);
+    struct spindump_ip iphdr;
+    spindump_protocols_ip_header_decode(packet->contents + ipHeaderPosition,&iphdr);
+    spindump_address_frombytes(address,AF_INET,(const unsigned char*)&iphdr.ip_dst);
   } else if (ipVersion == 6) {
-    const struct spindump_ip6* ip6hdr = (const struct spindump_ip6*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET6,(const unsigned char*)&ip6hdr->destination);
+    struct spindump_ip6 ip6hdr;
+    spindump_protocols_ip6_header_decode(packet->contents + ipHeaderPosition,&ip6hdr);
+    spindump_address_frombytes(address,AF_INET6,(const unsigned char*)&ip6hdr.ip6_destination);
   } else {
     spindump_errorf("no version set");
     spindump_address_fromstring(address,"0.0.0.0");
@@ -446,8 +450,9 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
   // Branch based on the ether type
   //
 
-  const struct spindump_ethernet *ethernet = (const struct spindump_ethernet*)packet->contents;
-  switch (htons(ethernet->etherType)) {
+  struct spindump_ethernet ethernet;
+  spindump_protocols_ethernet_header_decode(packet->contents,&ethernet);
+  switch (ethernet.ether_type) {
 
   case spindump_ethertype_ip:
     spindump_analyze_decodeiphdr(state,
@@ -464,7 +469,7 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
     return;
 
   default:
-    spindump_debugf("received an unsupported ethertype %4x", htons(ethernet->etherType));
+    spindump_debugf("received an unsupported ethertype %4x", ethernet.ether_type);
     state->stats->unsupportedEthertype++;
     *p_connection = 0;
     return;
@@ -509,20 +514,21 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-
-  const struct spindump_ip* ip = (const struct spindump_ip*)(packet->contents + position);
-  unsigned int ipHeaderSize = SPINDUMP_IP_HL(ip)*4;
+  
+  struct spindump_ip ip;
+  spindump_protocols_ip_header_decode(packet->contents + position,&ip);
+  unsigned int ipHeaderSize = SPINDUMP_IP_HL(&ip)*4;
   if (ipHeaderSize < 20) {
     state->stats->invalidIpHdrSize++;
     spindump_warnf("packet header length %u less than 20 bytes", ipHeaderSize);
     *p_connection = 0;
     return;
   }
-
-  uint8_t ipVersion = SPINDUMP_IP_V(ip);
+  
+  uint8_t ipVersion = SPINDUMP_IP_V(&ip);
   if (ipVersion != 4) {
     state->stats->versionMismatch++;
-    spindump_warnf("IP versions inconsistent in Ethernet frame and IP packet", SPINDUMP_IP_V(ip));
+    spindump_warnf("IP versions inconsistent in Ethernet frame and IP packet", SPINDUMP_IP_V(&ip));
     *p_connection = 0;
     return;
   }
@@ -539,7 +545,7 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
     return;
   }
 
-  unsigned int ipPacketLength = ntohs(ip->ip_len);
+  unsigned int ipPacketLength = ip.ip_len;
   if (ipPacketLength > packet->etherlen - position) {
     state->stats->invalidIpLength++;
     spindump_warnf("IP packet length is invalid (%u vs. %u)",
@@ -549,13 +555,13 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
     return;
   }
 
-	uint8_t ecnFlags = SPINDUMP_IP_ECN(ip);
-
+  uint8_t ecnFlags = SPINDUMP_IP_ECN(&ip);
+  
   //
   // Check if the packet is a fragment
   //
 
-  uint16_t off = ntohs(ip->ip_off);
+  uint16_t off = ip.ip_off;
   if ((off & SPINDUMP_IP_OFFMASK) != 0) {
     state->stats->unhandledFragment++;
     spindump_debugf("ignored a fragment at offset %u", (off & SPINDUMP_IP_OFFMASK));
@@ -573,9 +579,9 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
 				   position,
 				   ipHeaderSize,
 				   ipVersion,
-					 ecnFlags,
+				   ecnFlags,
 				   ipPacketLength,
-				   ip->ip_proto,
+				   ip.ip_proto,
 				   position + ipHeaderSize,
 				   p_connection);
 }
@@ -617,12 +623,13 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
     return;
   }
 
-  const struct spindump_ip6* ip6 = (const struct spindump_ip6*)(packet->contents + position);
+  struct spindump_ip6 ip6;
+  spindump_protocols_ip6_header_decode(packet->contents + position,&ip6);
   unsigned int ipHeaderSize = 40;
-  uint8_t ipVersion = SPINDUMP_IP6_V(ip6);
+  uint8_t ipVersion = SPINDUMP_IP6_V(&ip6);
   if (ipVersion != 6) {
     state->stats->versionMismatch++;
-    spindump_warnf("IP versions inconsistent in Ethernet frame and IP packet", SPINDUMP_IP6_V(ip6));
+    spindump_warnf("IP versions inconsistent in Ethernet frame and IP packet", SPINDUMP_IP6_V(&ip6));
     *p_connection = 0;
     return;
   }
@@ -639,7 +646,7 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
     return;
   }
 
-  unsigned int ipPacketLength = ipHeaderSize + (unsigned int)ntohs(ip6->ip6_payloadlen);
+  unsigned int ipPacketLength = ipHeaderSize + (unsigned int)ip6.ip6_payloadlen;
   if (ipPacketLength > packet->etherlen - position) {
     state->stats->invalidIpLength++;
     spindump_warnf("IP packet length is invalid (%u vs. u%)",
@@ -648,28 +655,29 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
     *p_connection = 0;
     return;
   }
-
-	uint8_t ecnFlags = SPINDUMP_IP6_ECN(ip6);
-
+  
+  uint8_t ecnFlags = SPINDUMP_IP6_ECN(&ip6);
+  
   //
   // Check if the packet is a fragment
   //
 
-  uint8_t proto = ip6->ip6_nextheader;
+  uint8_t proto = ip6.ip6_nextheader;
   unsigned int passFh = 0;
 
   if (proto == SPINDUMP_IP6_FH_NEXTHDR) {
 
-    unsigned int fhSize = sizeof(struct spindump_ip6_fh);
-    uint16_t pl = ntohs(ip6->ip6_payloadlen);
+    unsigned int fhSize = spindump_ip6_fh_header_size;
+    uint16_t pl = ip6.ip6_payloadlen;
     if (pl < fhSize || packet->caplen < position + ipHeaderSize + fhSize) {
       state->stats->fragmentTooShort++;
       spindump_debugf("not enough fragment header to process");
       *p_connection = 0;
       return;
     }
-    const struct spindump_ip6_fh* fh = (const struct spindump_ip6_fh*)(packet->contents + position + ipHeaderSize);
-    uint16_t off = ntohs(fh->fh_off);
+    struct spindump_ip6_fh fh;
+    spindump_protocols_ip6_fh_header_decode(packet->contents + position + ipHeaderSize,&fh);
+    uint16_t off = fh.fh_off;
     if (spindump_ip6_fh_fragoff(off) != 0) {
       state->stats->unhandledFragment++;
       spindump_debugf("ignored a fragment at offset %u", (off & SPINDUMP_IP_OFFMASK));

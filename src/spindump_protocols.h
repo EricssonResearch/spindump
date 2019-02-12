@@ -36,9 +36,9 @@
 typedef uint16_t spindump_port;
 
 struct spindump_ethernet {
-  unsigned char etherDest[spindump_ethernet_address_length];
-  unsigned char etherSrc[spindump_ethernet_address_length];
-  uint16_t etherType;
+  unsigned char ether_dest[spindump_ethernet_address_length];
+  unsigned char ether_src[spindump_ethernet_address_length];
+  uint16_t ether_type;
 # define spindump_ethertype_ip  0x0800
 # define spindump_ethertype_ip6 0x86dd
 };
@@ -67,19 +67,45 @@ struct spindump_ip6addr {
   uint8_t addr[16];
 };
 
+//
+// IPv6 header, as defined in RFC 2460:
+//
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |Version| Traffic Class |           Flow Label                  |
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |         Payload Length        |  Next Header  |   Hop Limit   |
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |                                                               |
+//   +                                                               +
+//   |                                                               |
+//   +                         Source Address                        +
+//   |                                                               |
+//   +                                                               +
+//   |                                                               |
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |                                                               |
+//   +                                                               +
+//   |                                                               |
+//   +                      Destination Address                      +
+//   |                                                               |
+//   +                                                               +
+//   |                                                               |
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+//
+
 struct spindump_ip6 {
-  unsigned char ip6_vhl;	        // version << 4 | header length >> 2
-  unsigned char ip6_tos;	        // type of service
-  uint16_t ip6_flowlable;	        // flow label
-  uint16_t ip6_payloadlen;	        // payload length
-  unsigned char ip6_nextheader;	        // protocol
-  unsigned char ip6_hoplimit;	        // hop limit
-  struct spindump_ip6addr source;       // source address
-  struct spindump_ip6addr destination;  // destination address
+  unsigned char ip6_vtc;	           // version & traffic class
+  unsigned char ip6_tcfl;	           // traffic class & flow label
+  uint8_t ip6_flowlabel[2];	           // flow label
+  uint16_t ip6_payloadlen;	           // payload length
+  unsigned char ip6_nextheader;	           // protocol
+  unsigned char ip6_hoplimit;	           // hop limit
+  struct spindump_ip6addr ip6_source;      // source address
+  struct spindump_ip6addr ip6_destination; // destination address
 };
-#define SPINDUMP_IP6_HL(ip)		(((ip)->ip6_vhl) & 0x0f)
-#define SPINDUMP_IP6_V(ip)		(((ip)->ip6_vhl) >> 4)
-#define SPINDUMP_IP6_ECN(ip)  (((ip)->ip6_tos) & 0x3)
+#define SPINDUMP_IP6_V(ip)		(((ip)->ip6_vtc) >> 4)
+#define SPINDUMP_IP6_ECN(ip)            ((((ip)->ip6_tcfl >> 4)) & 0x3)
   
 //
 // Fragment header from RFC 2460:
@@ -91,12 +117,26 @@ struct spindump_ip6 {
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //
 
+//
+// IPv6 fragment header (FH) as defined in RFC 2460:
+//
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |  Next Header  |   Reserved    |      Fragment Offset    |Res|M|
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//   |                         Identification                        |
+//   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+//
+   
 #define SPINDUMP_IP6_FH_NEXTHDR         44
 
+#define spindump_ip6_fh_header_size      8
+
 struct spindump_ip6_fh {
-  unsigned char fh_nextheader;	        // protocol
-  unsigned char fh_reserved;
-  unsigned char fh_off;
+  uint8_t fh_nextheader;	        // protocol
+  uint8_t fh_reserved;                  // reserved
+  uint16_t fh_off;                      // offset, reserved, and more flag
+  uint32_t fh_identification;           // identification
 # define spindump_ip6_fh_fragoff(field)    ((field)>>2)
 # define spindump_ip6_fh_morefrag(field)   ((field)&1)
 };
@@ -894,11 +934,11 @@ struct spindump_quic {
 #define spindump_decode2byteint(field,payload,position) \
   memcpy(&(field),(payload)+(position),2);              \
   (position) += 2;                                      \
-  (field) = ntohs((field));
+  (field) = ntohs((field))
 #define spindump_decode4byteint(field,payload,position) \
   memcpy(&(field),(payload)+(position),4);              \
   (position) += 4;                                      \
-  (field) = ntohl((field));
+  (field) = ntohl((field))
 
 //
 // External API interface ---------------------------------------------------------------------
@@ -906,6 +946,18 @@ struct spindump_quic {
 
 const char*
 spindump_protocols_tcp_flagstostring(uint8_t flags);
+void
+spindump_protocols_ethernet_header_decode(const unsigned char* header,
+					  struct spindump_ethernet* decoded);
+void
+spindump_protocols_ip_header_decode(const unsigned char* header,
+				    struct spindump_ip* decoded);
+void
+spindump_protocols_ip6_header_decode(const unsigned char* header,
+				     struct spindump_ip6* decoded);
+void
+spindump_protocols_ip6_fh_header_decode(const unsigned char* header,
+					struct spindump_ip6_fh* decoded);
 void
 spindump_protocols_icmp_header_decode(const unsigned char* header,
 				      struct spindump_icmp* decoded);

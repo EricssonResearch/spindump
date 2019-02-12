@@ -66,6 +66,186 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
 }
 
 //
+// Decode an Ethernet header from the packet bytes starting from the
+// pointer "header". It is assumed to be long enough for the DNS
+// header, i.e., the caller must have checked this.  The header as
+// parsed and as converted to host byte order where applicable, is
+// placed in the output parameter "decoded".
+//
+
+void
+spindump_protocols_ethernet_header_decode(const unsigned char* header,
+					  struct spindump_ethernet* decoded) {
+  
+  //
+  // Sanity checks
+  //
+  
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+  
+  //
+  // Parse the Ethernet header.
+  //
+  
+  unsigned int pos = 0;
+  spindump_decodebytes(decoded->ether_dest,header,spindump_ethernet_address_length,pos); // destination
+  spindump_decodebytes(decoded->ether_src,header,spindump_ethernet_address_length,pos);  // source
+  spindump_decode2byteint(decoded->ether_type,header,pos);                               // type
+}
+
+//
+// Decode a IPv4 header from the packet bytes starting from the pointer
+// "header". It is assumed to be long enough for the DNS header, i.e.,
+// the caller must have checked this.  The header as parsed and as
+// converted to host byte order where applicable, is placed in the
+// output parameter "decoded".
+//
+
+void
+spindump_protocols_ip_header_decode(const unsigned char* header,
+				    struct spindump_ip* decoded) {
+  
+  //
+  // Sanity checks
+  //
+  
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+  
+  //
+  // Parse the IP header. The header is defined in RFC 760:
+  //
+  //   0                   1                   2                   3   
+  //   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |Version|  IHL  |Type of Service|          Total Length         |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |         Identification        |Flags|      Fragment Offset    |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |  Time to Live |    Protocol   |         Header Checksum       |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                       Source Address                          |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                    Destination Address                        |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                    Options                    |    Padding    |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->ip_vhl,header,pos);       // version & header length
+  spindump_decodebyte(decoded->ip_tos,header,pos);       // type of service
+  spindump_decode2byteint(decoded->ip_len,header,pos);   // total length
+  spindump_decode2byteint(decoded->ip_id,header,pos);    // identification
+  spindump_decode2byteint(decoded->ip_off,header,pos);   // fragment offset field
+  spindump_decodebyte(decoded->ip_ttl,header,pos);       // time to live
+  spindump_decodebyte(decoded->ip_proto,header,pos);     // protocol
+  spindump_decode2byteint(decoded->ip_sum,header,pos);   // checksum
+  spindump_decodebytes(decoded->ip_src,header,4,pos);    // source address
+  spindump_deepdebugf("IPv4 source set from %u.%u.%u.%u to %08x",
+		      header[pos - 4], header[pos - 3], header[pos - 2], header[pos - 1],
+		      decoded->ip_src);
+  spindump_decodebytes(decoded->ip_dst,header,4,pos);    // destination address
+  spindump_deepdebugf("IPv4 destination set from %u.%u.%u.%u to %08x",
+		      header[pos - 4], header[pos - 3], header[pos - 2], header[pos - 1],
+		      decoded->ip_dst);
+}
+
+//
+// Decode a IPv6 header from the packet bytes starting from the pointer
+// "header". It is assumed to be long enough for the DNS header, i.e.,
+// the caller must have checked this.  The header as parsed and as
+// converted to host byte order where applicable, is placed in the
+// output parameter "decoded".
+//
+
+void
+spindump_protocols_ip6_header_decode(const unsigned char* header,
+				     struct spindump_ip6* decoded) {
+  
+  //
+  // Sanity checks
+  //
+  
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+  
+  //
+  // Parse the IPv6 header. The header is defined in RFC 2460:
+  //
+  //
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |Version| Traffic Class |           Flow Label                  |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |         Payload Length        |  Next Header  |   Hop Limit   |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                                                               |
+  //   +                                                               +
+  //   |                                                               |
+  //   +                         Source Address                        +
+  //   |                                                               |
+  //   +                                                               +
+  //   |                                                               |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                                                               |
+  //   +                                                               +
+  //   |                                                               |
+  //   +                      Destination Address                      +
+  //   |                                                               |
+  //   +                                                               +
+  //   |                                                               |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->ip6_vtc,header,pos);             // version & traffic class
+  spindump_decodebyte(decoded->ip6_tcfl,header,pos);            // traffic class & flow label
+  spindump_decodebytes(decoded->ip6_flowlabel,header,2,pos);    // flow label
+  spindump_decode2byteint(decoded->ip6_payloadlen,header,pos);  // length
+  spindump_decodebyte(decoded->ip6_nextheader,header,pos);      // protocol
+  spindump_decodebyte(decoded->ip6_hoplimit,header,pos);        // hop limit
+  spindump_decodebytes(decoded->ip6_source,header,16,pos);      // source address
+  spindump_decodebytes(decoded->ip6_destination,header,16,pos); // destination address
+}
+
+//
+// Decode an IPv6 Fragment Header (FH) from the packet bytes starting
+// from the pointer "header". It is assumed to be long enough for the
+// DNS header, i.e., the caller must have checked this.  The header as
+// parsed and as converted to host byte order where applicable, is
+// placed in the output parameter "decoded".
+//
+
+void
+spindump_protocols_ip6_fh_header_decode(const unsigned char* header,
+					struct spindump_ip6_fh* decoded) {
+  
+  //
+  // Sanity checks
+  //
+  
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  //
+  // Parse the FH header. The header is as defined in RFC 2460:
+  //
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |  Next Header  |   Reserved    |      Fragment Offset    |Res|M|
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                         Identification                        |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->fh_nextheader,header,pos);         // next header
+  spindump_decodebyte(decoded->fh_reserved,header,pos);           // reserved
+  spindump_decode2byteint(decoded->fh_off,header,pos);            // offset, reserved, and more flag
+  spindump_decode4byteint(decoded->fh_identification,header,pos); // identification
+}
+
+//
 // Decode a ICMP header from the packet bytes starting from the pointer
 // "header". It is assumed to be long enough for the DNS header, i.e.,
 // the caller must have checked this.  The header as parsed and as
