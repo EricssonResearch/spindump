@@ -435,7 +435,8 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   // Initialize our analysis
   //
 
-  const struct spindump_coap* coap = (const struct spindump_coap*)payload;
+  struct spindump_coap coap;
+  spindump_protocols_coap_header_decode(payload,&coap);
   struct spindump_connection* connection = 0;
   int fromResponder;
   int new = 0;
@@ -445,33 +446,33 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   //
 
   unsigned int coapSize = udpLength - spindump_udp_header_size;
-  if (coapSize < sizeof(struct spindump_coap) ||
-      remainingCaplen < spindump_udp_header_size + sizeof(struct spindump_coap)) {
+  if (coapSize < spindump_coap_header_size ||
+      remainingCaplen < spindump_udp_header_size + spindump_coap_header_size) {
     spindump_debugf("packet too short for COAP");
     state->stats->notEnoughPacketForCoapHdr++;
     *p_connection = 0;
     return;
   }
-
+  
   //
   // Parse the packet enough to determine what is going on
   //
 
-  uint8_t ver = (coap->verttkl & spindump_coap_verttkl_vermask);
-  uint8_t type = (coap->verttkl & spindump_coap_verttkl_tmask);
-  uint8_t classf = (coap->code & spindump_coap_code_classmask);
-  uint16_t mid = coap->id;
-  unsigned int coappayloadsize = coapSize - sizeof(struct spindump_coap);
-  const char* coappayload = ((const char*)coap + sizeof(struct spindump_coap));
-
+  uint8_t ver = (coap.verttkl & spindump_coap_verttkl_vermask);
+  uint8_t type = (coap.verttkl & spindump_coap_verttkl_tmask);
+  uint8_t classf = (coap.code & spindump_coap_code_classmask);
+  uint16_t mid = coap.id;
+  unsigned int coappayloadsize = coapSize - spindump_coap_header_size;
+  const unsigned char* coappayload = payload + spindump_coap_header_size;
+  
   //
   // Debugs
   //
-
+  
   spindump_debugf("saw COAP packet from %s (ports %u:%u) Byte1=%02x (Ver=%02x, Type=%02x) Code=%02x (Class=%02x) MID=%04x payload = %02x%02x%02x... (size %u)",
 		  spindump_address_tostring(source), side1port, side2port,
-		  coap->verttkl, ver, type,
-		  coap->code, classf,
+		  coap.verttkl, ver, type,
+		  coap.code, classf,
 		  mid,
 		  coappayload[0], coappayload[1], coappayload[2],
 		  coappayloadsize);

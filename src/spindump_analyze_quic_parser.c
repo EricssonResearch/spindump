@@ -154,14 +154,14 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   // Look at the packet contents, can we parse it?
   // 
   
-  struct spindump_quic* quic = (struct spindump_quic*)payload;
+  const unsigned char* quic = payload;
   
   //
   // Parse initial byte
   // 
   
   if (payload_len < 1) return(0);
-  uint8_t headerByte = quic->u.shortheader.qh_byte;
+  uint8_t headerByte = quic[0];
   int longForm = 0;
   uint32_t version = spindump_quic_version_unknown;
   if ((headerByte & spindump_quic_byte_header_form_draft16) == spindump_quic_byte_form_long_draft16) {
@@ -189,10 +189,10 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   // Look at the version
   // 
   
-  version = ((quic->u.longheader.qh_version[0] << 24) +
-	     (quic->u.longheader.qh_version[1] << 16) +
-	     (quic->u.longheader.qh_version[2] << 8) +
-	     (quic->u.longheader.qh_version[3] << 0));
+  version = ((quic[1] << 24) +
+	     (quic[2] << 16) +
+	     (quic[3] << 8) +
+	     (quic[4] << 0));
   spindump_deepdebugf("got the version %08x", version);
   if ((version & spindump_quic_version_forcenegotmask) == spindump_quic_version_forcenegotiation) {
     version = spindump_quic_version_forcenegotiation;
@@ -349,7 +349,6 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // or short (data phase).
   // 
   
-  struct spindump_quic* quic = (struct spindump_quic*)payload;
   if (payload_len < 1 || remainingCaplen < 1) {
     stats->notEnoughPacketForQuicHdr++;
     return(0);
@@ -363,7 +362,8 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // Parse initial byte
   // 
   
-  uint8_t headerByte = quic->u.shortheader.qh_byte;
+  uint8_t headerByte;
+  spindump_protocols_quic_header_decode(payload,&headerByte);
   if ((headerByte & spindump_quic_byte_header_form_draft16) == spindump_quic_byte_form_long_draft16) {
     longForm = 1;
     spindump_deepdebugf("QUIC long form packet first byte = %02x (payload %02x)", headerByte, payload[0]);
@@ -375,16 +375,19 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // Parse version number
   // 
   
+  struct spindump_quic quic;
+  quic.u.shortheader.qh_byte = headerByte;
   if (longForm) {
     if (payload_len < 6 || remainingCaplen < 6) {
       stats->notEnoughPacketForQuicHdr++;
       return(0);
     }
+    spindump_protocols_quic_longheader_decode(payload,&quic);
     version =
-      originalVersion = ((quic->u.longheader.qh_version[0] << 24) +
-			 (quic->u.longheader.qh_version[1] << 16) +
-			 (quic->u.longheader.qh_version[2] << 8) +
-			 (quic->u.longheader.qh_version[3] << 0));
+      originalVersion = ((quic.u.longheader.qh_version[0] << 24) +
+			 (quic.u.longheader.qh_version[1] << 16) +
+			 (quic.u.longheader.qh_version[2] << 8) +
+			 (quic.u.longheader.qh_version[3] << 0));
     spindump_deepdebugf("QUIC long form packet version = %lx", version);
     if ((version & spindump_quic_version_forcenegotmask) == spindump_quic_version_forcenegotiation) {
       version = spindump_quic_version_forcenegotiation;
@@ -543,7 +546,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   if (longForm) {
     unsigned int destLen;
     unsigned int sourceLen;
-    spindump_analyze_quic_parser_cidlengths(quic->u.longheader.qh_cidLengths,
+    spindump_analyze_quic_parser_cidlengths(quic.u.longheader.qh_cidLengths,
 					    &destLen,
 					    &sourceLen);
     if (payload_len < 6 + destLen + sourceLen ||
@@ -554,18 +557,18 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
     }
     *p_destinationCidLengthKnown = 1;
     p_destinationCid->len = destLen;
-    memcpy(p_destinationCid->id,&quic->u.longheader.qh_cids[0],destLen);
+    memcpy(p_destinationCid->id,payload + spindump_quic_longheader_length,destLen);
     *p_sourceCidPresent = 1;
     p_sourceCid->len = sourceLen;
-    memcpy(p_sourceCid->id,&quic->u.longheader.qh_cids[destLen],sourceLen);
+    memcpy(p_sourceCid->id,&((payload + spindump_quic_longheader_length)[destLen]),sourceLen);
     spindump_deepdebugf("destination CID = %s", spindump_connection_quicconnectionid_tostring(p_destinationCid));
     spindump_deepdebugf("source CID = %s", spindump_connection_quicconnectionid_tostring(p_sourceCid));
   } else {
     *p_destinationCidLengthKnown = 0;
-    memcpy(p_destinationCid->id,&quic->u.shortheader.qh_destCid[0],spindump_min(18,payload_len-1));
+    memcpy(p_destinationCid->id,payload + spindump_quic_header_length,spindump_min(18,payload_len-1));
     *p_sourceCidPresent = 0;
   }
-
+  
   //
   // All seems ok.
   // 

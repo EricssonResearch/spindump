@@ -209,20 +209,21 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   //
 
   state->stats->receivedTcp++;
-  if (tcpLength < sizeof(struct spindump_tcp)) {
+  if (tcpLength < spindump_tcp_header_length) {
     state->stats->notEnoughPacketForTcpHdr++;
     spindump_warnf("not enough payload bytes for a TCP header", tcpLength);
     *p_connection = 0;
     return;
   }
-  const struct spindump_tcp* tcp = (const struct spindump_tcp*)(packet->contents + tcpHeaderPosition);
-  unsigned int tcpHeaderSize = SPINDUMP_TH_OFF(tcp)*4;
-  spindump_deepdebugf("tcp header: sport = %u", htons(tcp->th_sport));
-  spindump_deepdebugf("tcp header: dport = %u", htons(tcp->th_dport));
-  spindump_deepdebugf("tcp header: seq = %u", htonl(tcp->th_seq));
-  spindump_deepdebugf("tcp header: ack = %u", htonl(tcp->th_ack));
-  spindump_deepdebugf("tcp header: off = %u (raw %02x)", SPINDUMP_TH_OFF(tcp), tcp->th_offx2);
-  spindump_deepdebugf("tcp header: flags = %x", tcp->th_flags);
+  struct spindump_tcp tcp;
+  spindump_protocols_tcp_header_decode(packet->contents + tcpHeaderPosition,&tcp);
+  unsigned int tcpHeaderSize = SPINDUMP_TH_OFF(&tcp)*4;
+  spindump_deepdebugf("tcp header: sport = %u", tcp.th_sport);
+  spindump_deepdebugf("tcp header: dport = %u", tcp.th_dport);
+  spindump_deepdebugf("tcp header: seq = %u", tcp.th_seq);
+  spindump_deepdebugf("tcp header: ack = %u", tcp.th_ack);
+  spindump_deepdebugf("tcp header: off = %u (raw %02x)", SPINDUMP_TH_OFF(&tcp), tcp.th_offx2);
+  spindump_deepdebugf("tcp header: flags = %x", tcp.th_flags);
   if (tcpHeaderSize < 20 || remainingCaplen < tcpHeaderSize) {
     state->stats->invalidTcpHdrSize++;
     spindump_warnf("TCP header length %u invalid", tcpHeaderSize);
@@ -244,12 +245,12 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   spindump_address destination;
   spindump_analyze_getsource(packet,ipVersion,ipHeaderPosition,&source);
   spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
-  uint16_t side1port = ntohs(tcp->th_sport);
-  uint16_t side2port = ntohs(tcp->th_dport);
-  tcp_seq seq = ntohl(tcp->th_seq);
-  tcp_seq ack = ntohl(tcp->th_ack);
+  uint16_t side1port = tcp.th_sport;
+  uint16_t side2port = tcp.th_dport;
+  tcp_seq seq = tcp.th_seq;
+  tcp_seq ack = tcp.th_ack;
   int fromResponder;
-  int finreceived = ((tcp->th_flags & SPINDUMP_TH_FIN) != 0);
+  int finreceived = ((tcp.th_flags & SPINDUMP_TH_FIN) != 0);
   int ackedfin = 0;
   int new = 0;
   int closed = 0;
@@ -260,23 +261,23 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 
   spindump_debugf("saw packet from %s (ports %u:%u)",
 		  spindump_address_tostring(&source), side1port, side2port);
-  spindump_deepdebugf("flags = %s", spindump_protocols_tcp_flagstostring(tcp->th_flags));
+  spindump_deepdebugf("flags = %s", spindump_protocols_tcp_flagstostring(tcp.th_flags));
 
   //
   // Check whether this is a SYN, SYN ACK, FIN, FIN ACK, or RST
   // packet, create or delete the connection accordingly
   //
 
-  if ((tcp->th_flags & SPINDUMP_TH_SYN) &&
-      (tcp->th_flags & SPINDUMP_TH_ACK) == 0) {
+  if ((tcp.th_flags & SPINDUMP_TH_SYN) &&
+      (tcp.th_flags & SPINDUMP_TH_ACK) == 0) {
 
     //
     // SYN packet. Create a connection in stable establishing,
     // if it doesn't exist yet.
     //
-
+    
     spindump_deepdebugf("case 1: SYN (seq = %u, ack = %u)", seq, ack);
-
+    
     //
     // First, look for existing connection
     //
@@ -321,8 +322,8 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     *p_connection = connection;
 
 
-  } else if ((tcp->th_flags & SPINDUMP_TH_SYN) &&
-	     (tcp->th_flags & SPINDUMP_TH_ACK)) {
+  } else if ((tcp.th_flags & SPINDUMP_TH_SYN) &&
+	     (tcp.th_flags & SPINDUMP_TH_ACK)) {
 
     //
     // SYN ACK packet. Mark the connection as established, if
@@ -371,7 +372,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 
     }
 
-  } else if ((tcp->th_flags & SPINDUMP_TH_FIN)) {
+  } else if ((tcp.th_flags & SPINDUMP_TH_FIN)) {
 
     //
     // FIN packet. Mark the connection as closing, if the
@@ -449,7 +450,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
       
     }
 
-  } else if ((tcp->th_flags & SPINDUMP_TH_RST)) {
+  } else if ((tcp.th_flags & SPINDUMP_TH_RST)) {
 
     //
     // RST packet. Delete the connection, if there was one

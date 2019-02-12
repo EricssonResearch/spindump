@@ -276,6 +276,8 @@ struct spindump_dns {
 //
 //
 
+#define spindump_coap_header_size       (1+1+2)
+
 struct spindump_coap {
   uint8_t verttkl;              // version, T, and TKL fields
   uint8_t code;                 // code
@@ -580,6 +582,8 @@ struct spindump_dtls_handshake_helloverifyrequest {
 
 typedef uint32_t tcp_seq;
 
+#define spindump_tcp_header_length     (2+2+4+4+1+1+2+2+2)
+
 struct spindump_tcp {
   spindump_port th_sport;      	// source port
   spindump_port th_dport;    	// destination port
@@ -706,6 +710,9 @@ enum spindump_quic_message_type {
 #define spindump_quic_version_forcenegotiation 0x0a0a0a0a
 #define spindump_quic_version_unknown          0xffffffff
 
+#define spindump_quic_header_length            1
+#define spindump_quic_longheader_length        (1+4+1)
+
 struct spindump_quic {
 
   union {
@@ -806,7 +813,7 @@ struct spindump_quic {
       //
 
       uint8_t   qh_byte;
-      uint32_t  qh_version;
+      uint8_t   qh_version[4];
       uint8_t   qh_cidLengths;
       uint8_t   qh_cids[1];       // can be 0..2*14 bytes
 
@@ -838,7 +845,7 @@ struct spindump_quic {
       //
 
       uint8_t   qh_byte;
-      uint32_t  qh_version;
+      uint8_t   qh_version[4];
       uint8_t   qh_cidLengths;
       uint8_t   qh_cids[1];      // can be 0..2*14 bytes
 
@@ -853,6 +860,9 @@ struct spindump_quic {
 
 #define spindump_decodebyte(field,payload,position)     \
   memcpy(&(field),(payload)+((position)++),1)
+#define spindump_decodebytes(field,payload,n,position)	\
+  memcpy(&(field),(payload)+(position),(n));		\
+  (position) += (n);
 #define spindump_decode2byteint(field,payload,position) \
   memcpy(&(field),(payload)+(position),2);              \
   (position) += 2;                                      \
@@ -860,7 +870,7 @@ struct spindump_quic {
 #define spindump_decode4byteint(field,payload,position) \
   memcpy(&(field),(payload)+(position),4);              \
   (position) += 4;                                      \
-  (field) = ntoh((field));
+  (field) = ntohl((field));
 
 //
 // External API interface ---------------------------------------------------------------------
@@ -874,5 +884,17 @@ spindump_protocols_udp_header_decode(const unsigned char* header,
 void
 spindump_protocols_dns_header_decode(const unsigned char* header,
 				     struct spindump_dns* decoded);
+void
+spindump_protocols_coap_header_decode(const unsigned char* header,
+				      struct spindump_coap* decoded);
+void
+spindump_protocols_tcp_header_decode(const unsigned char* header,
+				     struct spindump_tcp* decoded);
+void
+spindump_protocols_quic_header_decode(const unsigned char* header,
+				      unsigned char* decoded);
+void
+spindump_protocols_quic_longheader_decode(const unsigned char* header,
+					  struct spindump_quic* decoded);
 
 #endif // SPINDUMP_PROTOCOLS_H
