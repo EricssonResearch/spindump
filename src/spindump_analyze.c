@@ -271,10 +271,10 @@ spindump_analyze_getsource(struct spindump_packet* packet,
   spindump_assert(address != 0);
   if (ipVersion == 4) {
     const struct spindump_ip* iphdr = (const struct spindump_ip*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET,(unsigned char*)&iphdr->ip_src);
+    spindump_address_frombytes(address,AF_INET,(const unsigned char*)&iphdr->ip_src);
   } else if (ipVersion == 6) {
     const struct spindump_ip6* ip6hdr = (const struct spindump_ip6*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET6,(unsigned char*)&ip6hdr->source);
+    spindump_address_frombytes(address,AF_INET6,(const unsigned char*)&ip6hdr->source);
   } else {
     spindump_errorf("no version set");
     spindump_address_fromstring(address,"0.0.0.0");
@@ -295,10 +295,10 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
   spindump_assert(address != 0);
   if (ipVersion == 4) {
     const struct spindump_ip* iphdr = (const struct spindump_ip*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET,(unsigned char*)&iphdr->ip_dst);
+    spindump_address_frombytes(address,AF_INET,(const unsigned char*)&iphdr->ip_dst);
   } else if (ipVersion == 6) {
     const struct spindump_ip6* ip6hdr = (const struct spindump_ip6*)(packet->contents + ipHeaderPosition);
-    spindump_address_frombytes(address,AF_INET6,(unsigned char*)&ip6hdr->destination);
+    spindump_address_frombytes(address,AF_INET6,(const unsigned char*)&ip6hdr->destination);
   } else {
     spindump_errorf("no version set");
     spindump_address_fromstring(address,"0.0.0.0");
@@ -394,7 +394,7 @@ spindump_analyze_process_null(struct spindump_analyze* state,
   // Branch based on the stored int
   //
 
-  uint32_t nullInt = *(uint32_t*)packet->contents;
+  uint32_t nullInt = *(const uint32_t*)packet->contents;
   switch (nullInt) {
   case 2:
     spindump_analyze_decodeiphdr(state,
@@ -668,7 +668,7 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
       *p_connection = 0;
       return;
     }
-    struct spindump_ip6_fh* fh = (struct spindump_ip6_fh*)(packet->contents + position + ipHeaderSize);
+    const struct spindump_ip6_fh* fh = (const struct spindump_ip6_fh*)(packet->contents + position + ipHeaderSize);
     uint16_t off = ntohs(fh->fh_off);
     if (spindump_ip6_fh_fragoff(off) != 0) {
       state->stats->unhandledFragment++;

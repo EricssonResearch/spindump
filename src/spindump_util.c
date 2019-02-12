@@ -116,12 +116,14 @@ spindump_timediffinusecs(const struct timeval* later,
 		      earlier->tv_usec, later->tv_usec);
       return(0);
     } else {
-      return(later->tv_usec - earlier->tv_usec);
+      return(((unsigned long long)later->tv_usec) - ((unsigned long long)earlier->tv_usec));
     }
   } else {
-    unsigned long long result = 1000 * 1000 * (later->tv_sec - earlier->tv_sec - 1);
-    result += (1000*1000) - earlier->tv_usec;
-    result += later->tv_usec;
+    unsigned long long result = 1000 * 1000 * (((unsigned long long)later->tv_sec) -
+					       ((unsigned long long)earlier->tv_sec) -
+					       1);
+    result += ((unsigned long long)(1000*1000)) - (unsigned long long)earlier->tv_usec;
+    result += (unsigned long long)later->tv_usec;
     return(result);
   }
 }
@@ -269,14 +271,16 @@ spindump_address_islocalbroadcast(uint32_t address) {
       
       spindump_deepdebugf("local broadcast: looking at interface %s",
 			  thisInterface->ifa_name != 0 ? thisInterface->ifa_name : "none");
-      struct sockaddr_in* addressv4 = (struct sockaddr_in*)thisInterface->ifa_addr;
-      struct sockaddr_in* maskv4 = (struct sockaddr_in*)thisInterface->ifa_netmask;
+      struct sockaddr_in addressv4;
+      struct sockaddr_in maskv4;
+      memcpy((unsigned char*)&addressv4,(unsigned char*)(thisInterface->ifa_addr),sizeof(addressv4));
+      memcpy((unsigned char*)&maskv4,(unsigned char*)(thisInterface->ifa_netmask),sizeof(maskv4));
       uint32_t thisBroadcast =
-	(addressv4->sin_addr.s_addr & maskv4->sin_addr.s_addr) |
-	(~(maskv4->sin_addr.s_addr));
+	(addressv4.sin_addr.s_addr & maskv4.sin_addr.s_addr) |
+	(~(maskv4.sin_addr.s_addr));
       spindump_deepdebugf("address %08x netmask %08x broadcast %08x compare to %08x\n",
-			  addressv4->sin_addr.s_addr,
-			  maskv4->sin_addr.s_addr,
+			  addressv4.sin_addr.s_addr,
+			  maskv4.sin_addr.s_addr,
 			  thisBroadcast,
 			  address);
       if (address == thisBroadcast) return(1);
@@ -525,7 +529,7 @@ spindump_address_fromstring(spindump_address* address,
 
 void
 spindump_address_frombytes(spindump_address* address,
-			   int af,
+			   sa_family_t af,
 			   const unsigned char* string) {
   spindump_assert(address != 0);
   spindump_assert(af == AF_INET || af == AF_INET6);
@@ -627,7 +631,7 @@ spindump_address_tostring_anon(int anonymize,
   //
 
   static unsigned long seed = 0;
-  if (seed == 0) seed = rand();
+  if (seed == 0) seed = (unsigned long)rand();
   
   //
   // Map the input address to another address
@@ -675,7 +679,11 @@ spindump_network_fromstring(spindump_network* network,
     spindump_warnf("invalid prefix number format: %s", string);
     return(0);
   }
-  network->length = atoi(prefix+1);
+  network->length = (unsigned int)atoi(prefix+1);
+  if (network->length > 128) {
+    spindump_errorf("network length must be at most 32 or 128 bits, %us given", network->length);
+    return(0);
+  }
   char* addressString = strdup(string);
   if (addressString == 0) {
     spindump_errorf("cannot allocate memory for string of %u bytes", strlen(string));
@@ -796,7 +804,8 @@ spindump_seterrordestination(FILE* file) {
 // Display a fatal error
 //
 
-void
+__attribute__((__format__ (__printf__, 1, 0)))
+noreturn void
 spindump_fatalf(const char* format, ...) {
   
   va_list args;
@@ -819,7 +828,7 @@ spindump_fatalf(const char* format, ...) {
 // Display a fatal error a la perror
 //
 
-void
+noreturn void
 spindump_fatalp(const char* message) {
   
   const char* string = strerror(errno);
@@ -832,6 +841,7 @@ spindump_fatalp(const char* message) {
 // Display an error
 //
 
+__attribute__((__format__ (__printf__, 1, 0)))
 void
 spindump_errorf(const char* format, ...) {
   
@@ -867,6 +877,7 @@ spindump_errorp(const char* message) {
 // Display a warning
 //
 
+__attribute__((__format__ (__printf__, 1, 0)))
 void
 spindump_warnf(const char* format, ...) {
   
@@ -898,6 +909,7 @@ spindump_setdebugdestination(FILE* file) {
 // only have an effect if the variable debug is 1.
 //
 
+__attribute__((__format__ (__printf__, 1, 0)))
 void
 spindump_debugf(const char* format, ...) {
 
@@ -924,6 +936,7 @@ spindump_debugf(const char* format, ...) {
 // Debug helper function
 //
 
+__attribute__((__format__ (__printf__, 1, 0)))
 void
 spindump_deepdebugf(const char* format, ...) {
 
@@ -971,9 +984,9 @@ spindump_strlcat(char * restrict dst, const char * restrict src, size_t size) {
   spindump_assert(dst != 0);
   spindump_assert(src != 0);
   spindump_assert(size > 1);
-  unsigned int sizeSofar = strlen(dst);
+  size_t sizeSofar = strlen(dst);
   spindump_assert(sizeSofar < size);
-  unsigned int sizeRemains = size - sizeSofar;
+  size_t sizeRemains = size - sizeSofar;
   strncat(dst + sizeSofar,src,sizeRemains-1);
   dst[size-1] = 0;
   return(strlen(src));

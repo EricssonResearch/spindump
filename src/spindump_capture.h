@@ -41,7 +41,8 @@
 
 enum spindump_capture_linktype {
   spindump_capture_linktype_ethernet,
-  spindump_capture_linktype_null
+  spindump_capture_linktype_null,
+  spindump_capture_linktype_invalid // never used, but useful to avoid compiler warnings about default branches
 };
 
 struct spindump_capture_state {

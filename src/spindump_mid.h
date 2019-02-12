@@ -38,9 +38,10 @@
 //
 
 struct spindump_messageidstore {
-  int outstanding;
   struct timeval received;
+  int outstanding;
   uint16_t messageid;
+  uint16_t padding; // unused
 };
 
 struct spindump_messageidtracker {

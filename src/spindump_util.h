@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 #include <time.h>
 #include <sys/time.h>
 #include <netinet/in.h>
@@ -54,6 +55,7 @@ typedef struct sockaddr_storage spindump_address;
 typedef struct {
   spindump_address address;
   unsigned int length;
+  unsigned int padding; // unused
 } spindump_network;
 
 //
@@ -84,7 +86,7 @@ spindump_address_fromstring(spindump_address* address,
 			    const char* string);
 void
 spindump_address_frombytes(spindump_address* address,
-			   int af,
+			   sa_family_t af,
 			   const unsigned char* string);
 const char*
 spindump_address_tostring(spindump_address* address);
@@ -117,9 +119,9 @@ const char*
 spindump_meganumberll_tostring(unsigned long long x);
 void
 spindump_seterrordestination(FILE* file);
-void
+noreturn void
 spindump_fatalf(const char* format, ...);
-void
+noreturn void
 spindump_fatalp(const char* message);
 void
 spindump_errorf(const char* format, ...);

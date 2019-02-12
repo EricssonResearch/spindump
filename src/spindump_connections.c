@@ -447,11 +447,21 @@ int
 spindump_connections_isaggregate(struct spindump_connection* connection) {
   spindump_assert(connection != 0);
   switch (connection->type) {
-  case spindump_connection_aggregate_hostpair: return(1);
-  case spindump_connection_aggregate_hostnetwork: return(1);
-  case spindump_connection_aggregate_networknetwork: return(1);
-  case spindump_connection_aggregate_multicastgroup: return(1);
-  default: return(0);
+  case spindump_connection_transport_tcp:
+  case spindump_connection_transport_udp:
+  case spindump_connection_transport_dns:
+  case spindump_connection_transport_coap:
+  case spindump_connection_transport_quic:
+  case spindump_connection_transport_icmp:
+    return(0);
+  case spindump_connection_aggregate_hostpair:
+  case spindump_connection_aggregate_hostnetwork:
+  case spindump_connection_aggregate_networknetwork:
+  case spindump_connection_aggregate_multicastgroup:
+     return(1);
+  default:
+    spindump_errorf("invalid connection type");
+    return(0);
   }
 }
 
@@ -488,6 +498,13 @@ spindump_connections_aggregateset(struct spindump_connection* connection) {
   //
 
   switch (connection->type) {
+  case spindump_connection_transport_tcp:
+  case spindump_connection_transport_udp:
+  case spindump_connection_transport_dns:
+  case spindump_connection_transport_coap:
+  case spindump_connection_transport_quic:
+  case spindump_connection_transport_icmp:
+    return(&empty);
   case spindump_connection_aggregate_hostpair:
     return(&connection->u.aggregatehostpair.connections);
   case spindump_connection_aggregate_hostnetwork:
@@ -497,6 +514,7 @@ spindump_connections_aggregateset(struct spindump_connection* connection) {
   case spindump_connection_aggregate_multicastgroup:
     return(&connection->u.aggregatemulticastgroup.connections);
   default:
+    spindump_errorf("invalid connection type");
     return(&empty);
   }
 }
@@ -552,6 +570,15 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
     return(spindump_address_equal(side1address,&aggregate->u.aggregatemulticastgroup.group) ||
 	   spindump_address_equal(side2address,&aggregate->u.aggregatemulticastgroup.group));
 
+  case spindump_connection_transport_tcp:
+  case spindump_connection_transport_udp:
+  case spindump_connection_transport_dns:
+  case spindump_connection_transport_coap:
+  case spindump_connection_transport_quic:
+  case spindump_connection_transport_icmp:
+    spindump_errorf("connection is not an aggregate");
+    return(0);
+    
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_connection",
 		    aggregate->type);
@@ -573,6 +600,15 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
 
   switch (aggregate->type) {
 
+  case spindump_connection_transport_tcp:
+  case spindump_connection_transport_udp:
+  case spindump_connection_transport_dns:
+  case spindump_connection_transport_coap:
+  case spindump_connection_transport_quic:
+  case spindump_connection_transport_icmp:
+    spindump_errorf("connection is not aggregate");
+    return(0);
+    
   case spindump_connection_aggregate_hostpair:
     return((spindump_address_equal(source,&aggregate->u.aggregatehostpair.side1peerAddress) &&
 	    spindump_address_equal(destination,&aggregate->u.aggregatehostpair.side2peerAddress)) ||

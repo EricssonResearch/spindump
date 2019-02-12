@@ -38,16 +38,18 @@
 //
 
 struct spindump_seqstore {
-  int outstanding;
   struct timeval received;
-  tcp_seq seq;
+  int outstanding;
   unsigned int len;
   int finset;
+  tcp_seq seq;
+  //char padding[2]; // unused
 };
 
 struct spindump_seqtracker {
-  unsigned int seqindex;
   struct spindump_seqstore stored[spindump_seqtracker_nstored];
+  unsigned int seqindex;
+  char padding[4]; // unused
 };
 
 //

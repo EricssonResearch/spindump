@@ -35,10 +35,11 @@
 #define spindump_reverse_dns_maxnentries   128
 
 struct spindump_reverse_dns_entry {
-  atomic_bool requestMade;                     // written by main thread, read by background thread
   spindump_address address;                    // written by main thread, read by background thread
+  atomic_bool requestMade;                     // written by main thread, read by background thread
   atomic_bool responseGotten;                  // written by background thread, read by main thread
   char responseName[NI_MAXHOST+1];             // written by background thread, read by main thread
+  char padding[4];                             // unused
 };
 
 struct spindump_reverse_dns {

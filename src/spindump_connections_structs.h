@@ -115,10 +115,11 @@ struct spindump_connection {
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
       spindump_port side2peerPort;                  // destination port for the initial packet
-      int finFromSide1;                             // seen a FIN from side1?
-      int finFromSide2;                             // seen a FIN from side2?
+      char padding[4];                              // unused
       struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
       struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
+      int finFromSide1;                             // seen a FIN from side1?
+      int finFromSide2;                             // seen a FIN from side2?
     } tcp;
 
     struct {

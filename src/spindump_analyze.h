@@ -66,15 +66,17 @@ typedef void (*spindump_analyze_handler)(struct spindump_analyze* state,
 					 struct spindump_connection* connection);
 
 struct spindump_analyze_handler {
-  spindump_analyze_event eventmask;
   spindump_analyze_handler function;
   void* handlerData;
+  spindump_analyze_event eventmask;
+  char padding[6]; // unused
 };
 
 struct spindump_analyze {
   struct spindump_connectionstable* table;
   struct spindump_stats* stats;
   unsigned int nHandlers;
+  unsigned int padding; // unused
   struct spindump_analyze_handler handlers[spindump_analyze_max_handlers];
 };
 
@@ -85,6 +87,7 @@ struct spindump_analyze {
 struct spindump_analyze*
 spindump_analyze_initialize(void);
 void
+
 spindump_analyze_uninitialize(struct spindump_analyze* state);
 void
 spindump_analyze_registerhandler(struct spindump_analyze* state,
