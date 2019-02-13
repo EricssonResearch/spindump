@@ -572,11 +572,4 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 
   }
 
-  //
-  // Call some handlers based on what happened here, if needed
-  //
-
-  if (0 && closed) {
-    spindump_analyze_process_handlers(state,spindump_analyze_event_connectiondelete,packet,connection);
-  }
 }

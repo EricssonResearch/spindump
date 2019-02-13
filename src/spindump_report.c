@@ -186,17 +186,14 @@ spindump_report_setanonymization(struct spindump_report_state* reporter,
 // with most packets.
 //
 
+typedef const struct spindump_connection* spindump_connection_constptr;
 static int
 spindump_report_update_comparetwoconnections(const void* data1,
 					     const void* data2) {
-  const struct spindump_connection** elem1 = (const struct spindump_connection**)data1;
-  const struct spindump_connection** elem2 = (const struct spindump_connection**)data2;
-  //spindump_deepdebugf("elem1 = %lx", elem1);
-  //spindump_deepdebugf("elem2 = %lx", elem2);
+  const spindump_connection_constptr* elem1 = (const spindump_connection_constptr*)data1;
+  const spindump_connection_constptr* elem2 = (const spindump_connection_constptr*)data2;
   const struct spindump_connection* connection1 = *elem1;
   const struct spindump_connection* connection2 = *elem2;
-  //spindump_deepdebugf("connection1 = %lx", connection1);
-  //spindump_deepdebugf("connection2 = %lx", connection2);
   unsigned long packets1 = connection1->packetsFromSide1 + connection1->packetsFromSide2;
   unsigned long packets2 = connection2->packetsFromSide1 + connection2->packetsFromSide2;
   //spindump_deepdebugf("comparetwoconnections %u (%lu) vs. %u (%lu)", connection1->id, packets1, connection2->id, packets2);
@@ -247,7 +244,7 @@ spindump_report_update(struct spindump_report_state* reporter,
     clear();
     
     spindump_deepdebugf("report start done");
-    if (LINES < 7 || COLS < spindump_connection_report_brief_fixedsize(LINES) + 5) {
+    if (LINES < 7 || ((unsigned int)COLS) < spindump_connection_report_brief_fixedsize((unsigned int)LINES) + 5) {
       
       mvaddstr(y++, 0, "TOO SMALL");
       
@@ -259,12 +256,12 @@ spindump_report_update(struct spindump_report_state* reporter,
       reporter->inputlineposition = y;
       mvaddstr(y++, 0, "           ");
       char columnsbuf[spindump_report_maxlinelen];
-      unsigned int addrsiz = spindump_connection_report_brief_variablesize(COLS);
-      unsigned int maxsessionlen = spindump_connection_report_brief_sessionsize(COLS);
+      unsigned int addrsiz = spindump_connection_report_brief_variablesize((unsigned int)COLS);
+      unsigned int maxsessionlen = spindump_connection_report_brief_sessionsize((unsigned int)COLS);
       snprintf(columnsbuf,sizeof(columnsbuf)-1,
 	       "%-7s %-*s %-*s %8s %6s %10s %10s",
 	       "TYPE",addrsiz,"ADDRESSES",maxsessionlen,"SESSION","STATE","PAKS","LEFT RTT","RIGHT RTT");
-      if (spindump_connection_report_brief_isnotefield(COLS)) {
+      if (spindump_connection_report_brief_isnotefield((unsigned int)COLS)) {
 	snprintf(columnsbuf+strlen(columnsbuf),sizeof(columnsbuf)-1-strlen(columnsbuf),"  %-*s",
 		 spindump_connection_report_brief_notefieldval_length(),
 		 "NOTE");
@@ -286,7 +283,7 @@ spindump_report_update(struct spindump_report_state* reporter,
       for (i = 0;
 	   (i < table->nConnections &&
 	    actualConnections < maxActualConnections &&
-	    actualConnections < LINES - y);
+	    actualConnections < ((unsigned int)LINES) - y);
 	   i++) {
 	struct spindump_connection* connection = table->connections[i];
 	if (connection != 0 &&
@@ -322,7 +319,7 @@ spindump_report_update(struct spindump_report_state* reporter,
 					 connectionbuf,
 					 sizeof(connectionbuf),
 					 average,
-					 COLS,
+					 (unsigned int)COLS,
 					 reporter->anonymizeLeft,
 					 reporter->anonymizeRight,
 					 reporter->querier);
@@ -346,7 +343,7 @@ static
 void spindump_report_putcurrentinputonscreen(struct spindump_report_state* reporter,
 					     const char* string,
 					     const char* value) {
-  for (unsigned int i = 0; i < COLS; i++) mvaddstr(reporter->inputlineposition, i, " ");
+  for (unsigned int i = 0; i < (unsigned int)COLS; i++) mvaddstr(reporter->inputlineposition, i, " ");
   mvaddstr(reporter->inputlineposition, 0, string);
   mvaddstr(reporter->inputlineposition, strlen(string), value);
   refresh();
@@ -371,7 +368,7 @@ int
 spindump_report_checkinput_updateinterval(struct spindump_report_state* reporter,
 					  double* p_argument) {
   spindump_report_putcurrentinputonscreen(reporter,"interval: ","");
-  unsigned int ch;
+  int ch;
   char buf[20];
   memset(buf,0,sizeof(buf));
   while ((ch = getch()) != '\n' && ch != '\r' && strlen(buf) < sizeof(buf)-1) {
@@ -412,7 +409,7 @@ enum spindump_report_command
 spindump_report_checkinput(struct spindump_report_state* reporter,
 			   double* p_argument) {
   
-    unsigned int ch;
+    int ch;
     
     if ((ch = getch()) == ERR) {
       
@@ -420,7 +417,7 @@ spindump_report_checkinput(struct spindump_report_state* reporter,
       
     } else {
       
-      char c = tolower((char)ch);
+      char c = (char)(tolower((char)ch));
       switch (c) {
       case 'q': return(spindump_report_command_quit);
       case 'h': return(spindump_report_command_help);

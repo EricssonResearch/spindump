@@ -37,6 +37,7 @@ struct spindump_rtt {
   unsigned long lastMovingAvgRTT;            // in usecs, spindump_rtt_infinite if not set
   unsigned int recentTableIndex;             // where the next recent RTT measurement will
 					     //	be placed in
+  unsigned int padding;                      // unused padding to align the next field properly
   unsigned long
     recentRTTs[spindump_rtt_nrecent];        // recent RTT measurements, in usec. Value 
 					     //	positions via above index.

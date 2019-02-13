@@ -134,7 +134,7 @@ spindump_capture_initialize_aux(const char* interface,
   } else {
     state->handle = pcap_open_offline(file, errbuf);
     if (state->handle == 0) {
-      spindump_fatalf("couldn't open file %s: %s", file, errbuf);
+      spindump_errorf("couldn't open file %s: %s", file, errbuf);
       free(state);
       return(0);
     }

@@ -58,7 +58,7 @@ static int reportSpins = 0;
 static int reportSpinFlips = 0;
 static int anonymizeLeft = 0;
 static int anonymizeRight = 0;
-static unsigned long long updateperiod = 0.5 * 1000 * 1000; // 0.5s//
+static unsigned long long updateperiod = 500 * 1000; // 0.5s
 static unsigned int nAggregates = 0;
 static struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
 
@@ -83,6 +83,13 @@ static void
 spindump_main_operation(void);
 static enum spindump_outputformat
 spindump_main_parseformat(const char* string);
+static void
+spindump_main_textualmeasurement(struct spindump_analyze* state,
+				 void* handlerData,
+				 void** handlerConnectionData,
+				 spindump_analyze_event event,
+				 struct spindump_packet* packet,
+				 struct spindump_connection* connection);
 static void
 spindump_main_textualmeasurement_text(spindump_analyze_event event,
 				      struct spindump_connection* connection,
@@ -238,7 +245,7 @@ spindump_main_processargs(int argc,char** argv) {
     } else if (strcmp(argv[0],"--remote") == 0 && argc > 1) {
 
       if (nRemotes == SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS) {
-	spindump_fatalf("too many --remote connections");
+	spindump_errorf("too many --remote connections");
 	exit(1);
       }
 
@@ -248,12 +255,12 @@ spindump_main_processargs(int argc,char** argv) {
     } else if (strcmp(argv[0],"--max-receive") == 0 && argc > 1) {
 
       if (!isdigit(*(argv[1]))) {
-	spindump_fatalf("expected a numeric argument for --max-receive, got %s", argv[1]);
+	spindump_errorf("expected a numeric argument for --max-receive, got %s", argv[1]);
 	exit(1);
       }
-      maxReceive = atoi(argv[1]);
+      maxReceive = (unsigned int)atoi(argv[1]);
       argc--; argv++;
-
+      
     } else if (strcmp(argv[0],"--aggregate") == 0 && argc > 1) {
 
       //
@@ -276,15 +283,18 @@ spindump_main_processargs(int argc,char** argv) {
       spindump_address side1address;
       spindump_network side1network;
 
+      memset(&side1address,0,sizeof(side1address));
+      memset(&side1network,0,sizeof(side1network));
+      
       if (side1ishost) {
 	if (!spindump_address_fromstring(&side1address,side1string)) {
-	  spindump_fatalf("expected an address as first argument for --aggregate, got %s", side1string);
+	  spindump_errorf("expected an address as first argument for --aggregate, got %s", side1string);
 	  exit(1);
 	}
 	side1isgroup = spindump_address_ismulticast(&side1address);
       } else {
 	if (!spindump_network_fromstring(&side1network,side1string)) {
-	  spindump_fatalf("expected a network as first argument bor --aggregate, got %s", side1string);
+	  spindump_errorf("expected a network as first argument bor --aggregate, got %s", side1string);
 	  exit(1);
 	}
 	side1isgroup = spindump_network_ismulticast(&side1network);
@@ -307,10 +317,13 @@ spindump_main_processargs(int argc,char** argv) {
       spindump_address side2address;
       spindump_network side2network;
 
+      memset(&side2address,0,sizeof(side2address));
+      memset(&side2network,0,sizeof(side2network));
+      
       if (!side1isgroup) {
 
 	if (!(argc > 1)) {
-	  spindump_fatalf("expected two addresses or networks as arguments to --aggregate, got just one (%s)",
+	  spindump_errorf("expected two addresses or networks as arguments to --aggregate, got just one (%s)",
 			  side1string);
 	  exit(1);
 	}
@@ -329,12 +342,12 @@ spindump_main_processargs(int argc,char** argv) {
 
 	if (side2ishost) {
 	  if (!spindump_address_fromstring(&side2address,side2string)) {
-	    spindump_fatalf("expected an address as second argument for --aggregate, got %s", side2string);
+	    spindump_errorf("expected an address as second argument for --aggregate, got %s", side2string);
 	    exit(1);
 	  }
 	} else {
 	  if (!spindump_network_fromstring(&side2network,side2string)) {
-	    spindump_fatalf("expected a network as second argument for --aggregate, got %s", side2string);
+	    spindump_errorf("expected a network as second argument for --aggregate, got %s", side2string);
 	    exit(1);
 	  }
 	}
@@ -353,7 +366,7 @@ spindump_main_processargs(int argc,char** argv) {
       //
 
       if (nAggregates >= spindump_main_maxnaggregates) {
-	  spindump_fatalf("too many aggregates specified, can only support %u",
+	  spindump_errorf("too many aggregates specified, can only support %u",
 			  spindump_main_maxnaggregates);
 	  exit(1);
       }
@@ -388,7 +401,7 @@ spindump_main_processargs(int argc,char** argv) {
 	spindump_deepdebugf("initial filter component...");
 	filter = strdup(argv[0]);
 	if (filter == 0) {
-	  spindump_fatalf("Cannot allocate %u bytes", strlen(argv[0])+1);
+	  spindump_errorf("Cannot allocate %u bytes", strlen(argv[0])+1);
 	  exit(1);
 	}
 
@@ -400,18 +413,18 @@ spindump_main_processargs(int argc,char** argv) {
 	//
 
 	spindump_deepdebugf("additional filter components...");
-	const char* prevfilter = filter;
-	unsigned int n = strlen(prevfilter) + 1 + strlen(argv[0]) + 1;
+	char* prevfilter = filter;
+	unsigned long n = strlen(prevfilter) + 1 + strlen(argv[0]) + 1;
 	filter = malloc(n);
 
 	if (filter == 0) {
-	  spindump_fatalf("Cannot allocate %u bytes", n);
+	  spindump_errorf("Cannot allocate %u bytes", n);
 	  exit(1);
 	} else {
 	  spindump_strlcpy(filter,prevfilter,n);
 	  spindump_strlcat(filter," ",n);
 	  spindump_strlcat(filter,argv[0],n);
-	  free((void*)prevfilter);
+	  free(prevfilter);
 	}
       }
 
@@ -428,7 +441,7 @@ spindump_main_processargs(int argc,char** argv) {
 // any connection.  This is activated when the --textual mode is on.
 //
 
-void
+static void
 spindump_main_textualmeasurement(struct spindump_analyze* state,
 				 void* handlerData,
 				 void** handlerConnectionData,
@@ -451,7 +464,7 @@ spindump_main_textualmeasurement(struct spindump_analyze* state,
     spindump_main_textualmeasurement_json(event,connection,type,addrs,session,&packet->timestamp);
     break;
   default:
-    spindump_fatalf("invalid output format in internal variable");
+    spindump_errorf("invalid output format in internal variable");
     exit(1);
   }
 }
@@ -938,7 +951,10 @@ spindump_main_operation(void) {
       udpMode = !udpMode;
       break;
     case spindump_report_command_update_interval:
-      updateperiod = floor(commandArgument * 1000 * 1000);
+      {
+	double result = floor(commandArgument * 1000 * 1000);
+	updateperiod = (unsigned long long)result;
+      }
       break;
     case spindump_report_command_none:
       break;
@@ -962,8 +978,12 @@ spindump_main_operation(void) {
   //
 
   if (showStats || debug) {
-    spindump_stats_report(spindump_analyze_getstats(analyzer),stdout);
-    spindump_connectionstable_report(analyzer->table,stdout,querier);
+    spindump_stats_report(spindump_analyze_getstats(analyzer),
+			  stdout);
+    spindump_connectionstable_report(analyzer->table,
+				     stdout,
+				     anonymizeLeft,
+				     querier);
   }
   spindump_report_uninitialize(reporter);
   spindump_analyze_uninitialize(analyzer);
@@ -982,7 +1002,7 @@ int main(int argc,char** argv) {
   //
 
   signal(SIGINT, spindump_main_interrupt);
-  srand(time(0));
+  srand((unsigned int)time(0));
   debugfile = stderr;
 
   //
@@ -998,7 +1018,7 @@ int main(int argc,char** argv) {
   if (toolmode != spindump_toolmode_silent && debug) {
     debugfile = fopen("spindump.debug","w");
     if (debugfile == 0) {
-      spindump_fatalf("cannot open debug file");
+      spindump_errorf("cannot open debug file");
       exit(1);
     }
     spindump_setdebugdestination(debugfile);
@@ -1087,7 +1107,7 @@ spindump_main_parseformat(const char* string) {
   } else if (strcmp(string,"json") == 0) {
     return(spindump_outputformat_json);
   } else {
-    spindump_fatalf("invalid output format (%s) specified, expected text or json", string);
+    spindump_errorf("invalid output format (%s) specified, expected text or json", string);
     return(spindump_outputformat_text);
   }
 }

@@ -94,7 +94,7 @@ spindump_analyze_initialize(void) {
   //
 
   if (spindump_connection_max_handlers != spindump_analyze_max_handlers) {
-    spindump_fatalf("the maximum number of registered handlers must be defined to be the same, "
+    spindump_errorf("the maximum number of registered handlers must be defined to be the same, "
 		    "now spindump_connection_max_handlers (%u) and spindump_analyze_max_handlers (%u) "
 		    "differ",
 		    spindump_connection_max_handlers,
@@ -190,7 +190,7 @@ spindump_analyze_registerhandler(struct spindump_analyze* state,
   //
 
   if (state->nHandlers == spindump_analyze_max_handlers) {
-    spindump_fatalf("cannot add any more handlers, supporting only max %u handlers", spindump_analyze_max_handlers);
+    spindump_errorf("cannot add any more handlers, supporting only max %u handlers", spindump_analyze_max_handlers);
     return;
   }
 
@@ -398,7 +398,8 @@ spindump_analyze_process_null(struct spindump_analyze* state,
   // Branch based on the stored int
   //
 
-  uint32_t nullInt = *(const uint32_t*)packet->contents;
+  uint32_t nullInt;
+  memcpy(&nullInt,packet->contents,sizeof(nullInt));
   switch (nullInt) {
   case 2:
     spindump_analyze_decodeiphdr(state,
@@ -442,6 +443,7 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
       packet->caplen < spindump_ethernet_header_size) {
     spindump_warnf("not enough bytes for the Ethernet header, only %u bytes in received frame",
 		   packet->etherlen);
+    state->stats->notEnoughPacketForEthernetHdr++;
     *p_connection = 0;
     return;
   }
@@ -649,7 +651,7 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   unsigned int ipPacketLength = ipHeaderSize + (unsigned int)ip6.ip6_payloadlen;
   if (ipPacketLength > packet->etherlen - position) {
     state->stats->invalidIpLength++;
-    spindump_warnf("IP packet length is invalid (%u vs. u%)",
+    spindump_warnf("IP packet length is invalid (%u vs. %u)",
 		   ipPacketLength,
 		   packet->etherlen - position);
     *p_connection = 0;

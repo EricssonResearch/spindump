@@ -43,9 +43,11 @@ struct spindump_reverse_dns_entry {
 };
 
 struct spindump_reverse_dns {
-  int noop;
-  pthread_t thread;
+  int noop;                                    // written and read by main thread only
+  uint8_t padding1[4];                         // unused padding to align the next field properly
+  pthread_t thread;                            // written and read by main thread only
   atomic_bool exit;                            // written by main thread, read by background thread
+  uint8_t padding2[3];                         // unused padding to align the next field properly
   atomic_uint nextEntryIndex;                  // written by main thread, read by background thread
   struct spindump_reverse_dns_entry entries[spindump_reverse_dns_maxnentries];
 };

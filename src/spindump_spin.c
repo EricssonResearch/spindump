@@ -101,26 +101,26 @@ spindump_spinstore_observed_bidir(struct spindump_spinstore* store) {
 // Get the index of the current/last observed spin in the tracker
 //
 
-static inline int
+static inline unsigned int
 spindump_spintracker_curr_index(struct spindump_spintracker* tracker) {
   return(tracker->spinindex > 0 ?
-	 tracker->spinindex - 1 :
-	 spindump_spintracker_nstored - 1);
+	 (unsigned int)(tracker->spinindex - 1) :
+	 (unsigned int)(spindump_spintracker_nstored - 1));
 }
 
 //
 // Get the index of the previous-to-last observed spin in the tracker
 //
 
-static inline int
+static inline unsigned int
 spindump_spintracker_prev_index(struct spindump_spintracker* tracker) {
   switch (tracker->spinindex) {
   case 0:
-    return(spindump_spintracker_nstored - 2);
+    return((unsigned int)(spindump_spintracker_nstored - 2));
   case 1:
-    return(spindump_spintracker_nstored - 1);
+    return((unsigned int)(spindump_spintracker_nstored - 1));
   default:
-    return(tracker->spinindex - 2);
+    return((unsigned int)(tracker->spinindex - 2));
   }
 }
 

@@ -31,6 +31,7 @@
 
 struct spindump_stats {
   unsigned int receivedFrames;
+  unsigned int notEnoughPacketForEthernetHdr;
   unsigned int receivedIp;
   unsigned int receivedIpv6;
   unsigned long long receivedIpBytes;
@@ -76,6 +77,7 @@ struct spindump_stats {
   unsigned int connectionsQuic;
   unsigned int connectionsDeletedClosed;
   unsigned int connectionsDeletedInactive;
+  uint8_t padding2[4]; // unused padding to align the next field properly
 };
 
 //

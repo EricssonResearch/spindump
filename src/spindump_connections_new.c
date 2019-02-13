@@ -46,6 +46,9 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
 				       enum spindump_connection_type type,
 				       struct timeval* when,
 				       int manuallyCreated);
+static void
+spindump_connections_newconnection_addtoaggregates(struct spindump_connection* connection,
+						   struct spindump_connectionstable* table);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -163,7 +166,7 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
 // destination address.
 // 
 
-void
+static void
 spindump_connections_newconnection_addtoaggregates(struct spindump_connection* connection,
 						   struct spindump_connectionstable* table) {
   spindump_debugf("looking at aggregates that the new connection %u might fit into",
@@ -207,7 +210,13 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
 	case spindump_connection_aggregate_multicastgroup:
 	  spindump_connections_set_add(&aggregate->u.aggregatemulticastgroup.connections,connection);
 	  break;
-	  
+
+	case spindump_connection_transport_udp:
+	case spindump_connection_transport_tcp:
+	case spindump_connection_transport_quic:
+	case spindump_connection_transport_dns:
+	case spindump_connection_transport_coap:
+	case spindump_connection_transport_icmp:
 	default:
 	  spindump_errorf("invalid connection type %u in spindump_connections_newconnection_addtoaggregates",
 			  aggregate->type);

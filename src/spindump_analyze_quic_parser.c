@@ -189,10 +189,10 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   // Look at the version
   // 
   
-  version = ((quic[1] << 24) +
-	     (quic[2] << 16) +
-	     (quic[3] << 8) +
-	     (quic[4] << 0));
+  version = ((((uint32_t)quic[1]) << 24) +
+	     (((uint32_t)quic[2]) << 16) +
+	     (((uint32_t)quic[3]) << 8) +
+	     (((uint32_t)quic[4]) << 0));
   spindump_deepdebugf("got the version %08x", version);
   if ((version & spindump_quic_version_forcenegotmask) == spindump_quic_version_forcenegotiation) {
     version = spindump_quic_version_forcenegotiation;
@@ -384,10 +384,10 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
     }
     spindump_protocols_quic_longheader_decode(payload,&quic);
     version =
-      originalVersion = ((quic.u.longheader.qh_version[0] << 24) +
-			 (quic.u.longheader.qh_version[1] << 16) +
-			 (quic.u.longheader.qh_version[2] << 8) +
-			 (quic.u.longheader.qh_version[3] << 0));
+      originalVersion = ((((uint32_t)quic.u.longheader.qh_version[0]) << 24) +
+			 (((uint32_t)quic.u.longheader.qh_version[1]) << 16) +
+			 (((uint32_t)quic.u.longheader.qh_version[2]) << 8) +
+			 (((uint32_t)quic.u.longheader.qh_version[3]) << 0));
     spindump_deepdebugf("QUIC long form packet version = %lx", version);
     if ((version & spindump_quic_version_forcenegotmask) == spindump_quic_version_forcenegotiation) {
       version = spindump_quic_version_forcenegotiation;

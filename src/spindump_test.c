@@ -583,7 +583,7 @@ systemtests(void) {
 
   //
   // Analyzer tests -- capture length being first not the whole packet
-  // and then too small to contain an IP header
+  // and then too small to contain an IP header.
   //
   
   struct spindump_packet packet9;
@@ -609,7 +609,42 @@ systemtests(void) {
   
   spindump_checktest(connection5 == 0);
   spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForIpHdr == 1);
+
+  //
+  // Analyzer tests -- packets too small. Firsttoo small to contain an
+  // Ethernet header. Then too small to contain a full ICMP message.
+  //
   
+  connection5 = 0;
+  packet9.timestamp.tv_usec = 0;
+  packet9.contents = packet1bytes;
+  packet9.etherlen = 12; // miss plenty, including all of IP and some of Ethernet header
+  packet9.caplen = packet9.etherlen; 
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet9,&connection5);
+  
+  spindump_checktest(connection5 == 0);
+  spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForEthernetHdr == 1);
+  
+  connection5 = 0;
+  packet9.timestamp.tv_usec = 0;
+  packet9.contents = packet1bytes;
+  packet9.etherlen = packet1.etherlen;
+  packet9.caplen = 56; // include just two bytes of the ICMP part (14+40=54)
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet9,&connection5);
+  
+  spindump_checktest(connection5 == 0);
+  spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForIcmpHdr == 1);
+  
+  connection5 = 0;
+  packet9.timestamp.tv_usec = 0;
+  packet9.contents = packet1bytes;
+  packet9.etherlen = packet1.etherlen;
+  packet9.caplen = 58; // include ICMP header but no other parts (14+40=54)
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet9,&connection5);
+  
+  spindump_checktest(connection5 == 0);
+  spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForIcmpHdr == 2);
+
   //
   // Cleanup
   //
@@ -650,7 +685,7 @@ int main(int argc,char** argv) {
 
     } else {
 
-      spindump_fatalf("invalid argument: %s", argv[0]);
+      spindump_errorf("invalid argument: %s", argv[0]);
       exit(1);
       
     }

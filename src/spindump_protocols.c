@@ -672,3 +672,120 @@ spindump_protocols_quic_longheader_decode(const unsigned char* header,
   spindump_decodebytes(decoded->u.longheader.qh_version,header,4,pos);  // version
   spindump_decodebyte(decoded->u.longheader.qh_cidLengths,header,pos);  // CID length nibbles
 }
+
+//
+// Decode a TLS record layer header from the packet bytes starting
+// from the pointer "header". It is assumed to be long enough for the
+// DNS header, i.e., the caller must have checked this.  The header as
+// parsed and as converted to host byte order where applicable, is
+// placed in the output parameter "decoded".
+//
+
+void
+spindump_protocols_tls_recordlayerheader_decode(const unsigned char* header,
+						struct spindump_tls_recordlayer* decoded) {
+  
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  //
+  // Parse the header, as specified in RFC 8446
+  //
+
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->type,header,pos);        // type
+  spindump_decodebytes(decoded->version,header,2,pos);  // version
+  spindump_decodebytes(decoded->length,header,2,pos);   // length
+}
+
+//
+// Decode a DTLS record layer header from the packet bytes starting
+// from the pointer "header". It is assumed to be long enough for the
+// DNS header, i.e., the caller must have checked this.  The header as
+// parsed and as converted to host byte order where applicable, is
+// placed in the output parameter "decoded".
+//
+
+void
+spindump_protocols_dtls_recordlayerheader_decode(const unsigned char* header,
+						 struct spindump_dtls_recordlayer* decoded) {
+  
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  //
+  // Parse the header, as specified in RFC 6347
+  //
+
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->type,header,pos);              // type
+  spindump_decodebytes(decoded->version,header,2,pos);        // version
+  spindump_decodebytes(decoded->epoch,header,2,pos);          // epoch
+  spindump_decodebytes(decoded->sequenceNumber,header,2,pos); // sequence number
+  spindump_decodebytes(decoded->length,header,2,pos);         // length
+}
+
+//
+// Decode a DTLS handshake header from the packet bytes starting
+// from the pointer "header". It is assumed to be long enough for the
+// DNS header, i.e., the caller must have checked this.  The header as
+// parsed and as converted to host byte order where applicable, is
+// placed in the output parameter "decoded".
+//
+
+void
+spindump_protocols_tls_handshakeheader_decode(const unsigned char* header,
+					      struct spindump_tls_handshake* decoded) {
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  //
+  // Parse the header, as specified in RFC 8446
+  //
+
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->handshakeType,header,pos);       // type
+  spindump_decodebytes(decoded->length,header,3,pos);           // length
+}
+
+//
+// Decode a DTLS handshake header from the packet bytes starting
+// from the pointer "header". It is assumed to be long enough for the
+// DNS header, i.e., the caller must have checked this.  The header as
+// parsed and as converted to host byte order where applicable, is
+// placed in the output parameter "decoded".
+//
+
+void
+spindump_protocols_dtls_handshakeheader_decode(const unsigned char* header,
+					       struct spindump_dtls_handshake* decoded) {
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  //
+  // Parse the header, as specified in RFC 6347
+  //
+  
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->handshakeType,header,pos);       // type
+  spindump_decodebytes(decoded->length,header,3,pos);           // length
+  spindump_decodebytes(decoded->messageSeq,header,2,pos);       // sequence number
+  spindump_decodebytes(decoded->fragmentOffset,header,3,pos);   // fragment offset
+  spindump_decodebytes(decoded->fragmentLength,header,3,pos);   // fragment length
+}

@@ -56,7 +56,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 			      unsigned int ipHeaderPosition,
 			      unsigned int ipHeaderSize,
 			      uint8_t ipVersion,
-						uint8_t ecnFlags,
+			      uint8_t ecnFlags,
 			      unsigned int ipPacketLength,
 			      unsigned int icmpHeaderPosition,
 			      unsigned int icmpLength,
@@ -74,14 +74,16 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   //
 
   state->stats->receivedIcmp++;
-  if (icmpLength <= 4) {
+  if (icmpLength < spindump_icmp_header_size ||
+      remainingCaplen < spindump_icmp_header_size) {
     state->stats->notEnoughPacketForIcmpHdr++;
     spindump_warnf("not enough payload bytes for an ICMP header", icmpLength);
     *p_connection = 0;
     return;
   }
   unsigned int hdrsize_icmp = spindump_max(4,icmpLength);
-  if (hdrsize_icmp < 4) {
+  if (hdrsize_icmp < spindump_icmp_header_size ||
+      remainingCaplen < spindump_icmp_header_size) {
     state->stats->invalidIcmpHdrSize++;
     spindump_warnf("ICMP header length %u invalid", hdrsize_icmp);
     *p_connection = 0;
@@ -97,6 +99,13 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 
   switch (peerType) {
   case ICMP_ECHO:
+    if (icmpLength < spindump_icmp_echo_header_size ||
+	remainingCaplen < spindump_icmp_echo_header_size) {
+      state->stats->notEnoughPacketForIcmpHdr++;
+      spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
+      *p_connection = 0;
+      return;
+    }
     if (icmp.ih_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;
@@ -109,6 +118,13 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     break;
 
   case ICMP_ECHOREPLY:
+    if (icmpLength < spindump_icmp_echo_header_size ||
+	remainingCaplen < spindump_icmp_echo_header_size) {
+      state->stats->notEnoughPacketForIcmpHdr++;
+      spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
+      *p_connection = 0;
+      return;
+    }
     if (icmp.ih_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;
@@ -278,7 +294,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 			       unsigned int ipHeaderPosition,
 			       unsigned int ipHeaderSize,
 			       uint8_t ipVersion,
-						 uint8_t ecnFlags,
+			       uint8_t ecnFlags,
 			       unsigned int ipPacketLength,
 			       unsigned int icmpHeaderPosition,
 			       unsigned int icmpLength,
@@ -296,7 +312,8 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
   //
 
   state->stats->receivedIcmp++;
-  if (icmpLength <= 4) {
+  if (icmpLength < spindump_icmp_header_size ||
+      remainingCaplen < spindump_icmp_header_size) {
     state->stats->notEnoughPacketForIcmpHdr++;
     spindump_warnf("not enough payload bytes for an ICMPv6 header", icmpLength);
     *p_connection = 0;
@@ -305,7 +322,8 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
   struct spindump_icmpv6 icmp6;
   spindump_protocols_icmp6_header_decode(packet->contents + icmpHeaderPosition,&icmp6);
   unsigned int hdrsize_icmp6 = spindump_max(4,icmpLength);
-  if (hdrsize_icmp6 < 4) {
+  if (hdrsize_icmp6 < spindump_icmp_header_size ||
+      remainingCaplen < spindump_icmp_header_size) {
     state->stats->invalidIcmpHdrSize++;
     spindump_warnf("ICMPv6 header length %u invalid", hdrsize_icmp6);
     *p_connection = 0;
@@ -321,6 +339,15 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 
   switch (peerType) {
   case ICMP6_ECHO_REQUEST:
+    spindump_deepdebugf("ICMP6_ECHO_REQUEST sizes %u vs. %u",
+			icmpLength, spindump_icmp_echo_header_size);
+    if (icmpLength < spindump_icmp_echo_header_size ||
+	remainingCaplen < spindump_icmp_echo_header_size) {
+      state->stats->notEnoughPacketForIcmpHdr++;
+      spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
+      *p_connection = 0;
+      return;
+    }
     if (icmp6.ih6_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;
@@ -333,6 +360,13 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     break;
 
   case ICMP6_ECHO_REPLY:
+    if (icmpLength < spindump_icmp_echo_header_size ||
+	remainingCaplen < spindump_icmp_echo_header_size) {
+      state->stats->notEnoughPacketForIcmpHdr++;
+      spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
+      *p_connection = 0;
+      return;
+    }
     if (icmp6.ih6_code != 0) {
       state->stats->invalidIcmpCode++;
       *p_connection = 0;

@@ -32,6 +32,7 @@
 struct spindump_connection_set_iterator {
   struct spindump_connection_set* set;
   unsigned int iteration;
+  uint8_t padding[4]; // unused padding to align the size of the structure properly
 };
 
 //

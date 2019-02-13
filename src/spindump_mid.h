@@ -46,6 +46,7 @@ struct spindump_messageidstore {
 
 struct spindump_messageidtracker {
   unsigned int messageidindex;
+  unsigned int padding; // unused padding to align the next field properly
   struct spindump_messageidstore stored[spindump_messageidtracker_nstored];
 };
 

@@ -286,7 +286,7 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
 		  spindump_connection_type_to_string(connection->type),
 		  connection->id,
 		  reason);
-
+  
   //
   // Call some handlers
   //
@@ -328,11 +328,25 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
 void
 spindump_connectionstable_report(struct spindump_connectionstable* table,
 				 FILE* file,
+				 int anonymize,
 				 struct spindump_reverse_dns* querier) {
-  unsigned int i;
+
+  //
+  // Sanity checks
+  //
+  
   spindump_assert(table != 0);
+  spindump_assert(file != 0);
+  spindump_assert(spindump_isbool(anonymize));
+  spindump_assert(querier != 0);
+  
+  //
+  // Loop through the connections
+  //
+  
+  unsigned int i;
   for (i = 0; i < table->nConnections; i++) {
     struct spindump_connection* connection = table->connections[i];
-    if (connection != 0) spindump_connection_report(connection,file,querier);
+    if (connection != 0) spindump_connection_report(connection,file,anonymize,querier);
   }
 }
