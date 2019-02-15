@@ -90,17 +90,18 @@ spindump_connections_lastaction(struct spindump_connection* connection,
 
 void
 spindump_connections_markconnectiondeleted(struct spindump_connection* connection) {
+  
   //
   // Do some checks & print debugs
   //
 
   spindump_assert(connection != 0);
   spindump_debugf("marking connection %u deleted", connection->id);
-
+  
   //
   // Set the mark
   //
-
+  
   connection->deleted = 1;
 }
 

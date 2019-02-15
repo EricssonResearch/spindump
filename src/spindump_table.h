@@ -57,6 +57,7 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
 void
 spindump_connectionstable_report(struct spindump_connectionstable* table,
 				 FILE* file,
+				 int anonymize,
 				 struct spindump_reverse_dns* querier);
 
 #endif // SPINDUMP_TABLE_H

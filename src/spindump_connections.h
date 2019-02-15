@@ -269,6 +269,7 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
 void
 spindump_connection_report(struct spindump_connection* connection,
 			   FILE* file,
+			   int anonymize,
 			   struct spindump_reverse_dns* querier);
 void
 spindump_connection_report_brief(struct spindump_connection* connection,

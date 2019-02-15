@@ -39,6 +39,7 @@ struct spindump_main_aggregate {
   int ismulticastgroup;
   int side1ishost;
   int side2ishost;
+  uint8_t padding[4]; // unused padding to align the next field properly
   spindump_address side1address;
   spindump_address side2address;
   spindump_network side1network;

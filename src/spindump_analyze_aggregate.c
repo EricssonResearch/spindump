@@ -88,6 +88,14 @@ spindump_analyze_process_aggregate(struct spindump_analyze* state,
     fromResponder = spindump_address_equal(&source,
 					   &connection->u.aggregatemulticastgroup.group);
     break;
+  case spindump_connection_transport_udp:
+  case spindump_connection_transport_tcp:
+  case spindump_connection_transport_quic:
+  case spindump_connection_transport_dns:
+  case spindump_connection_transport_coap:
+  case spindump_connection_transport_icmp:
+    spindump_errorf("expected an aggregate connection type");
+    return;
   default:
     spindump_errorf("invalid connection type");
     return;

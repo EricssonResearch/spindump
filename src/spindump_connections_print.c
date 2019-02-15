@@ -59,6 +59,58 @@ spindump_connection_addtobuf(char* buf,
 			     int compress);
 static const char*
 spindump_connection_report_brief_notefieldval(struct spindump_connection* connection);
+static void
+spindump_connection_report_udp(struct spindump_connection* connection,
+			       FILE* file,
+			       int anonymize,
+			       struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_tcp(struct spindump_connection* connection,
+			       FILE* file,
+			       int anonymize,
+			       struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_quic(struct spindump_connection* connection,
+				FILE* file,
+				int anonymize,
+				struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_dns(struct spindump_connection* connection,
+			       FILE* file,
+			       int anonymize,
+			       struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_coap(struct spindump_connection* connection,
+				FILE* file,
+				int anonymize,
+				struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_icmp(struct spindump_connection* connection,
+				FILE* file,
+				int anonymize,
+				struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_hostpair(struct spindump_connection* connection,
+				    FILE* file,
+				    int anonymize,
+				    struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_hostnetwork(struct spindump_connection* connection,
+				       FILE* file,
+				       int anonymize,
+				       struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_networknetwork(struct spindump_connection* connection,
+					  FILE* file,
+					  int anonymize,
+					  struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_multicastgroup(struct spindump_connection* connection,
+					  FILE* file,
+					  int anonymize,
+					  struct spindump_reverse_dns* querier);
+static const char*
+spindump_connection_statestring_aux(enum spindump_connection_state state);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -90,15 +142,16 @@ spindump_connection_type_to_string(enum spindump_connection_type type) {
 // Print a report of a TCP connection
 //
 
-void
+static void
 spindump_connection_report_tcp(struct spindump_connection* connection,
 			       FILE* file,
+			       int anonymize,
 			       struct spindump_reverse_dns* querier) {
   fprintf(file,"  host & port 1:         %10s:%u\n",
-	  spindump_address_tostring(&connection->u.tcp.side1peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.tcp.side1peerAddress,querier),
 	  connection->u.tcp.side1peerPort);
   fprintf(file,"  host 2:                %10s:%u\n",
-	  spindump_address_tostring(&connection->u.tcp.side2peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.tcp.side2peerAddress,querier),
 	  connection->u.tcp.side2peerPort);
 }
 
@@ -106,15 +159,16 @@ spindump_connection_report_tcp(struct spindump_connection* connection,
 // Print a report of a UDP connection
 //
 
-void
+static void
 spindump_connection_report_udp(struct spindump_connection* connection,
 			       FILE* file,
+			       int anonymize,
 			       struct spindump_reverse_dns* querier) {
   fprintf(file,"  host & port 1:         %10s:%u\n",
-	  spindump_address_tostring(&connection->u.udp.side1peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.udp.side1peerAddress,querier),
 	  connection->u.udp.side1peerPort);
   fprintf(file,"  host 2:                %10s:%u\n",
-	  spindump_address_tostring(&connection->u.udp.side2peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.udp.side2peerAddress,querier),
 	  connection->u.udp.side2peerPort);
 }
 
@@ -122,15 +176,16 @@ spindump_connection_report_udp(struct spindump_connection* connection,
 // Print a report of a DNS connection
 //
 
-void
+static void
 spindump_connection_report_dns(struct spindump_connection* connection,
 			       FILE* file,
+			       int anonymize,
 			       struct spindump_reverse_dns* querier) {
   fprintf(file,"  host & port 1:         %10s:%u\n",
-	  spindump_address_tostring(&connection->u.dns.side1peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.dns.side1peerAddress,querier),
 	  connection->u.dns.side1peerPort);
   fprintf(file,"  host 2:                %10s:%u\n",
-	  spindump_address_tostring(&connection->u.dns.side2peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.dns.side2peerAddress,querier),
 	  connection->u.dns.side2peerPort);
 }
 
@@ -138,15 +193,16 @@ spindump_connection_report_dns(struct spindump_connection* connection,
 // Print a report of a COAP connection
 //
 
-void
+static void
 spindump_connection_report_coap(struct spindump_connection* connection,
 				FILE* file,
+				int anonymize,
 				struct spindump_reverse_dns* querier) {
   fprintf(file,"  host & port 1:         %10s:%u\n",
-	  spindump_address_tostring(&connection->u.coap.side1peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.coap.side1peerAddress,querier),
 	  connection->u.coap.side1peerPort);
   fprintf(file,"  host 2:                %10s:%u\n",
-	  spindump_address_tostring(&connection->u.coap.side2peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.coap.side2peerAddress,querier),
 	  connection->u.coap.side2peerPort);
 }
 
@@ -168,7 +224,8 @@ spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid*
   unsigned int position = 0;
   for (unsigned int i = 0; i < id->len; i++) {
     spindump_assert(position < sizeof(buf));
-    int howmuch = snprintf(buf + position, sizeRemains, "%02x", id->id[i]);
+    int ans = snprintf(buf + position, sizeRemains, "%02x", id->id[i]);
+    unsigned int howmuch = (unsigned int)ans;
     position += howmuch;
     sizeRemains -= howmuch;
   }
@@ -179,15 +236,16 @@ spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid*
 // Print a report of a QUIC connection
 //
 
-void
+static void
 spindump_connection_report_quic(struct spindump_connection* connection,
 				FILE* file,
+				int anonymize,
 				struct spindump_reverse_dns* querier) {
   fprintf(file,"  host & port 1:         %10s:%u\n",
-	  spindump_address_tostring(&connection->u.quic.side1peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.quic.side1peerAddress,querier),
 	  connection->u.quic.side1peerPort);
   fprintf(file,"  host 2:                %10s:%u\n",
-	  spindump_address_tostring(&connection->u.quic.side2peerAddress),
+	  spindump_connection_address_tostring(anonymize,&connection->u.quic.side2peerAddress,querier),
 	  connection->u.quic.side2peerPort);
   fprintf(file,"  peer 1 connection ID:  %40s\n",
 	  spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
@@ -218,12 +276,13 @@ spindump_icmptype_tostring(u_int8_t type) {
 // Print a report of an ICMP connection
 //
 
-void
+static void
 spindump_connection_report_icmp(struct spindump_connection* connection,
 				FILE* file,
+				int anonymize,
 				struct spindump_reverse_dns* querier) {
-  fprintf(file,"  host 1:                %40s\n", spindump_address_tostring(&connection->u.icmp.side1peerAddress));
-  fprintf(file,"  host 2:                %40s\n", spindump_address_tostring(&connection->u.icmp.side2peerAddress));
+  fprintf(file,"  host 1:                %40s\n", spindump_connection_address_tostring(anonymize,&connection->u.icmp.side1peerAddress,querier));
+  fprintf(file,"  host 2:                %40s\n", spindump_connection_address_tostring(anonymize,&connection->u.icmp.side2peerAddress,querier));
   fprintf(file,"  icmp type:             %40s\n", spindump_icmptype_tostring(connection->u.icmp.side1peerType));
   fprintf(file,"  id:                      %38u\n", ntohs(connection->u.icmp.side1peerId));
   fprintf(file,"  last sequence #:         %38u\n", ntohs(connection->u.icmp.side1peerLatestSequence));
@@ -233,12 +292,19 @@ spindump_connection_report_icmp(struct spindump_connection* connection,
 // Print a report of a host pair aggregate connection
 //
 
-void
+static void
 spindump_connection_report_hostpair(struct spindump_connection* connection,
 				    FILE* file,
+				    int anonymize,
 				    struct spindump_reverse_dns* querier) {
-  fprintf(file,"  host 1:                %40s\n", spindump_address_tostring(&connection->u.aggregatehostpair.side1peerAddress));
-  fprintf(file,"  host 2:                %40s\n", spindump_address_tostring(&connection->u.aggregatehostpair.side2peerAddress));
+  fprintf(file,"  host 1:                %40s\n",
+	  spindump_connection_address_tostring(anonymize,
+					       &connection->u.aggregatehostpair.side1peerAddress,
+					       querier));
+  fprintf(file,"  host 2:                %40s\n",
+	  spindump_connection_address_tostring(anonymize,
+					       &connection->u.aggregatehostpair.side2peerAddress,
+					       querier));
   fprintf(file,"  aggregates:            %40s\n",
 	  spindump_connections_set_listids(&connection->u.aggregatehostpair.connections));
 }
@@ -247,12 +313,17 @@ spindump_connection_report_hostpair(struct spindump_connection* connection,
 // Print a report of a host - network aggregate connection
 //
 
-void
+static void
 spindump_connection_report_hostnetwork(struct spindump_connection* connection,
 				       FILE* file,
+				       int anonymize,
 				       struct spindump_reverse_dns* querier) {
-  fprintf(file,"  host:                  %40s\n", spindump_address_tostring(&connection->u.aggregatehostnetwork.side1peerAddress));
-  fprintf(file,"  network:               %40s\n", spindump_network_tostring(&connection->u.aggregatehostnetwork.side2Network));
+  fprintf(file,"  host:                  %40s\n",
+	  spindump_connection_address_tostring(anonymize,
+					       &connection->u.aggregatehostnetwork.side1peerAddress,
+					       querier));
+  fprintf(file,"  network:               %40s\n",
+	  spindump_network_tostring(&connection->u.aggregatehostnetwork.side2Network));
   fprintf(file,"  aggregates:            %40s\n",
 	  spindump_connections_set_listids(&connection->u.aggregatehostnetwork.connections));
 }
@@ -261,12 +332,15 @@ spindump_connection_report_hostnetwork(struct spindump_connection* connection,
 // Print a report of a network pair aggregate connection
 //
 
-void
+static void
 spindump_connection_report_networknetwork(struct spindump_connection* connection,
 					  FILE* file,
+					  int anonymize,
 					  struct spindump_reverse_dns* querier) {
-  fprintf(file,"  network 1:               %40s\n", spindump_network_tostring(&connection->u.aggregatenetworknetwork.side1Network));
-  fprintf(file,"  network 2:               %40s\n", spindump_network_tostring(&connection->u.aggregatenetworknetwork.side2Network));
+  fprintf(file,"  network 1:               %40s\n",
+	  spindump_network_tostring(&connection->u.aggregatenetworknetwork.side1Network));
+  fprintf(file,"  network 2:               %40s\n",
+	  spindump_network_tostring(&connection->u.aggregatenetworknetwork.side2Network));
   fprintf(file,"  aggregates:            %40s\n",
 	  spindump_connections_set_listids(&connection->u.aggregatenetworknetwork.connections));
 }
@@ -275,11 +349,13 @@ spindump_connection_report_networknetwork(struct spindump_connection* connection
 // Print a report of a multicast group aggregate connection
 //
 
-void
+static void
 spindump_connection_report_multicastgroup(struct spindump_connection* connection,
 					  FILE* file,
+					  int anonymize,
 					  struct spindump_reverse_dns* querier) {
-  fprintf(file,"  group:                 %40s\n", spindump_address_tostring(&connection->u.aggregatemulticastgroup.group));
+  fprintf(file,"  group:                 %40s\n",
+	  spindump_address_tostring(&connection->u.aggregatemulticastgroup.group));
   fprintf(file,"  aggregates:            %40s\n",
 	  spindump_connections_set_listids(&connection->u.aggregatemulticastgroup.connections));
 }
@@ -291,46 +367,68 @@ spindump_connection_report_multicastgroup(struct spindump_connection* connection
 void
 spindump_connection_report(struct spindump_connection* connection,
 			   FILE* file,
+			   int anonymize,
 			   struct spindump_reverse_dns* querier) {
+
+  //
+  // Sanity checks
+  //
+  
   spindump_assert(connection != 0);
+  spindump_assert(spindump_isbool(anonymize));
+
+  //
+  // Print connection identifier (a running number, an id)
+  //
+  
   fprintf(file,"CONNECTION %u (%s):\n",
 	  connection->id,
 	  spindump_connection_type_to_string(connection->type));
+
+  //
+  // For the rest, branch out based on what type of connection this is
+  //
+  
   switch (connection->type) {
   case spindump_connection_transport_tcp:
-    spindump_connection_report_tcp(connection,file,querier);
+    spindump_connection_report_tcp(connection,file,anonymize,querier);
     break;
   case spindump_connection_transport_udp:
-    spindump_connection_report_udp(connection,file,querier);
+    spindump_connection_report_udp(connection,file,anonymize,querier);
     break;
   case spindump_connection_transport_dns:
-    spindump_connection_report_dns(connection,file,querier);
+    spindump_connection_report_dns(connection,file,anonymize,querier);
     break;
   case spindump_connection_transport_coap:
-    spindump_connection_report_coap(connection,file,querier);
+    spindump_connection_report_coap(connection,file,anonymize,querier);
     break;
   case spindump_connection_transport_quic:
-    spindump_connection_report_quic(connection,file,querier);
+    spindump_connection_report_quic(connection,file,anonymize,querier);
     break;
   case spindump_connection_transport_icmp:
-    spindump_connection_report_icmp(connection,file,querier);
+    spindump_connection_report_icmp(connection,file,anonymize,querier);
     break;
   case spindump_connection_aggregate_hostpair:
-    spindump_connection_report_hostpair(connection,file,querier);
+    spindump_connection_report_hostpair(connection,file,anonymize,querier);
     break;
   case spindump_connection_aggregate_hostnetwork:
-    spindump_connection_report_hostnetwork(connection,file,querier);
+    spindump_connection_report_hostnetwork(connection,file,anonymize,querier);
     break;
   case spindump_connection_aggregate_networknetwork:
-    spindump_connection_report_networknetwork(connection,file,querier);
+    spindump_connection_report_networknetwork(connection,file,anonymize,querier);
     break;
   case spindump_connection_aggregate_multicastgroup:
-    spindump_connection_report_multicastgroup(connection,file,querier);
+    spindump_connection_report_multicastgroup(connection,file,anonymize,querier);
     break;
   default:
     spindump_errorf("invalid connection type in spindump_connection_report");
     break;
   }
+
+  //
+  // Finally, print out some basic information common to all connections
+  //
+  
   fprintf(file,"  aggregated in:           %38s\n",
 	  spindump_connections_set_listids(&connection->aggregates));
   fprintf(file,"  packets 1->2:            %38u\n", connection->packetsFromSide1);
@@ -339,12 +437,20 @@ spindump_connection_report(struct spindump_connection* connection,
   fprintf(file,"  bytes 2->1:              %38u\n", connection->bytesFromSide2);
   char rttbuf1[50];
   char rttbuf2[50];
-  spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
-  spindump_strlcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT)),sizeof(rttbuf2));
+  spindump_strlcpy(rttbuf1,
+		   spindump_rtt_tostring(connection->leftRTT.lastRTT),
+		   sizeof(rttbuf1));
+  spindump_strlcpy(rttbuf2,
+		   spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT)),
+		   sizeof(rttbuf2));
   fprintf(file,"  last left RTT:           %38s\n", rttbuf1);
   fprintf(file,"  moving avg left RTT:     %38s\n", rttbuf2);
-  spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->rightRTT.lastRTT),sizeof(rttbuf1));
-  spindump_strlcpy(rttbuf2,spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT)),sizeof(rttbuf2));
+  spindump_strlcpy(rttbuf1,
+		   spindump_rtt_tostring(connection->rightRTT.lastRTT),
+		   sizeof(rttbuf1));
+  spindump_strlcpy(rttbuf2,
+		   spindump_rtt_tostring(spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT)),
+		   sizeof(rttbuf2));
   fprintf(file,"  last right RTT:          %38s\n", rttbuf1);
   fprintf(file,"  moving avg right RTT:    %38s\n", rttbuf2);
 }
@@ -500,7 +606,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
 // and the UI
 //
 
-const char*
+static const char*
 spindump_connection_statestring_aux(enum spindump_connection_state state) {
   switch (state) {
   case spindump_connection_state_establishing: return("Starting");

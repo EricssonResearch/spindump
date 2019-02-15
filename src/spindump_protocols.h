@@ -155,6 +155,9 @@ struct spindump_ip6_fh {
 //   +-+-+-+-+-
 //
 
+#define spindump_icmp_header_size        4
+#define spindump_icmp_echo_header_size   (spindump_icmp_header_size+4)
+
 struct spindump_icmp {
   uint8_t  ih_type;        	// type
   uint8_t  ih_code;        	// code
@@ -163,7 +166,7 @@ struct spindump_icmp {
     struct {
       uint16_t ih_id;      	// identifier
       uint16_t ih_seq;      	// sequence number
-      uint8_t  ih_data[1];     	// data (zero or more bytes)
+      uint8_t  ih_data[2];     	// data (zero or more bytes)
     } ih_echo;
   } ih_u;
 };
@@ -190,7 +193,7 @@ struct spindump_icmpv6 {
     struct {
       uint16_t ih6_id;      	// identifier
       uint16_t ih6_seq;      	// sequence number
-      uint8_t  ih6_data[1];    	// data (zero or more bytes)
+      uint8_t  ih6_data[2];    	// data (zero or more bytes)
     } ih6_echo;
   } ih6_u;
 };
@@ -557,7 +560,7 @@ struct spindump_coap {
 
 typedef uint16_t spindump_tls_version;                  // internal representation in host byte order
 typedef uint8_t spindump_tls_version_inpacket[2];       // 16 bit number
-#define spindump_tls_2bytenum2touint16(x)               ((((uint16_t)((x)[0])) << 8) | ((uint16_t)((x)[1])))
+#define spindump_tls_2bytenum2touint16(x)               ((uint16_t)(((((uint16_t)((x)[0])) << 8) | ((uint16_t)((x)[1])))))
 typedef uint8_t spindump_tls_epoch[2];                  // 16 bit number
 typedef uint8_t spindump_tls_seqno[6];                  // 48 bit sequence numbers
 typedef uint8_t spindump_tls_recordlength[2];           // 16 bit length
@@ -567,11 +570,15 @@ typedef uint8_t spindump_tls_random[32];
 typedef uint8_t spindump_dtls_sequencenumber[2];
 typedef uint8_t spindump_dtls_fragmentnumber[3];
 
+#define spindump_tls_recordlayer_header_size (1+2+2)
+
 struct spindump_tls_recordlayer {
   uint8_t type;
   spindump_tls_version_inpacket version;
   spindump_tls_recordlength length;
 };
+
+#define spindump_dtls_recordlayer_header_size (1+2+2+2+2)
 
 struct spindump_dtls_recordlayer {
   uint8_t type;
@@ -580,6 +587,8 @@ struct spindump_dtls_recordlayer {
   spindump_tls_seqno sequenceNumber;
   spindump_tls_recordlength length;
 };
+
+#define spindump_tls_handshake_header_size (1+3)
 
 struct spindump_tls_handshake {
   uint8_t handshakeType;
@@ -597,6 +606,8 @@ struct spindump_tls_handshake_serverhello {
   spindump_tls_version_inpacket version;
   spindump_tls_random random;
 };
+
+#define spindump_dtls_handshake_header_size (1+3+2+3+3)
 
 struct spindump_dtls_handshake {
   uint8_t handshakeType;
@@ -982,5 +993,17 @@ spindump_protocols_quic_header_decode(const unsigned char* header,
 void
 spindump_protocols_quic_longheader_decode(const unsigned char* header,
 					  struct spindump_quic* decoded);
+void
+spindump_protocols_tls_recordlayerheader_decode(const unsigned char* header,
+						struct spindump_tls_recordlayer* decoded);
+void
+spindump_protocols_dtls_recordlayerheader_decode(const unsigned char* header,
+						 struct spindump_dtls_recordlayer* decoded);
+void
+spindump_protocols_tls_handshakeheader_decode(const unsigned char* header,
+					      struct spindump_tls_handshake* decoded);
+void
+spindump_protocols_dtls_handshakeheader_decode(const unsigned char* header,
+					       struct spindump_dtls_handshake* decoded);
 
 #endif // SPINDUMP_PROTOCOLS_H

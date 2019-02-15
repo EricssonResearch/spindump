@@ -57,6 +57,7 @@ struct spindump_spintracker {
   int lastSpinSet;
   int lastSpin;
   unsigned int spinindex;
+  uint8_t padding[4]; // unused padding to align the next field properly
   struct spindump_spinstore stored[spindump_spintracker_nstored];
   unsigned long long totalSpins;
 };

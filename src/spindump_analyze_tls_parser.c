@@ -160,8 +160,8 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
   
   unsigned int recordLayerSize =
     isDatagram ?
-    sizeof(struct spindump_dtls_recordlayer) :
-    sizeof(struct spindump_tls_recordlayer);
+    spindump_dtls_recordlayer_header_size :
+    spindump_tls_recordlayer_header_size;
 
   spindump_deepdebugf("spindump TLS analyzer payload length %u", payload_len);
   if (payload_len < recordLayerSize) {
@@ -178,53 +178,55 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
   
   if (isDatagram) {
 
-    struct spindump_dtls_recordlayer* record = (struct spindump_dtls_recordlayer*)payload;
+    struct spindump_dtls_recordlayer record;
+    spindump_protocols_dtls_recordlayerheader_decode(payload,&record);
     
     spindump_deepdebugf("spindump TLS analyzer precheck datagram content type %u",
-			record->type);
-    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record->type)) {
+			record.type);
+    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record.type)) {
       spindump_deepdebugf("spindump TLS analyzer content type %u is invalid",
-			  record->type);
+			  record.type);
       return(0);
     }
 
     spindump_tls_version version;
-    spindump_analyze_tls_parse_versionconversion(&record->version,isDatagram,&version);
+    spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer precheck datagram version %04x (in the packet %04x)",
 			version,
-			spindump_tls_2bytenum2touint16(record->version));
+			spindump_tls_2bytenum2touint16(record.version));
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %04x is invalid",
 			  version);
       return(0);
     }
 
-    carriesLength = spindump_tls_2bytenum2touint16(record->length);
+    carriesLength = spindump_tls_2bytenum2touint16(record.length);
     
   } else {
     
-    struct spindump_tls_recordlayer* record = (struct spindump_tls_recordlayer*)payload;
+    struct spindump_tls_recordlayer record;
+    spindump_protocols_tls_recordlayerheader_decode(payload,&record);
     
     spindump_deepdebugf("spindump TLS analyzer precheck content type %u",
-			record->type);
-    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record->type)) {
+			record.type);
+    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record.type)) {
       spindump_deepdebugf("spindump TLS analyzer content type %u is invalid",
-			  record->type);
+			  record.type);
       return(0);
     }
     
     spindump_tls_version version;
-    spindump_analyze_tls_parse_versionconversion(&record->version,isDatagram,&version);
+    spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer precheck version %04x (in the packet %04x)",
 			version,
-			spindump_tls_2bytenum2touint16(record->version));
+			spindump_tls_2bytenum2touint16(record.version));
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %x is invalid",
 			  version);
       return(0);
     }
     
-    carriesLength = spindump_tls_2bytenum2touint16(record->length);
+    carriesLength = spindump_tls_2bytenum2touint16(record.length);
     
   }
   
@@ -304,8 +306,8 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
   
   unsigned int recordLayerSize =
     isDatagram ?
-    sizeof(struct spindump_dtls_recordlayer) :
-    sizeof(struct spindump_tls_recordlayer);
+    spindump_dtls_recordlayer_header_size :
+    spindump_tls_recordlayer_header_size;
   
   if (payload_len < recordLayerSize ||
       remainingCaplen < recordLayerSize) {
@@ -322,45 +324,47 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
   
   if (isDatagram) {
 
-    struct spindump_dtls_recordlayer* record = (struct spindump_dtls_recordlayer*)payload;
+    struct spindump_dtls_recordlayer record;
+    spindump_protocols_dtls_recordlayerheader_decode(payload,&record);
     
-    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record->type)) {
-      spindump_deepdebugf("spindump TLS analyzer content type %u is invalid", record->type);
+    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record.type)) {
+      spindump_deepdebugf("spindump TLS analyzer content type %u is invalid", record.type);
       return(0);
     }
     
     spindump_tls_version version;
-    spindump_analyze_tls_parse_versionconversion(&record->version,isDatagram,&version);
+    spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer datagram version in the packet %04x, converted as %04x",
-			spindump_tls_2bytenum2touint16(record->version),
+			spindump_tls_2bytenum2touint16(record.version),
 			version);
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %x is invalid", version);
       return(0);
     }
 
-    carriesLength = spindump_tls_2bytenum2touint16(record->length);
+    carriesLength = spindump_tls_2bytenum2touint16(record.length);
     
   } else {
     
-    struct spindump_tls_recordlayer* record = (struct spindump_tls_recordlayer*)payload;
+    struct spindump_tls_recordlayer record;
+    spindump_protocols_tls_recordlayerheader_decode(payload,&record);
     
-    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record->type)) {
-      spindump_deepdebugf("spindump TLS analyzer content type %u is invalid", record->type);
+    if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record.type)) {
+      spindump_deepdebugf("spindump TLS analyzer content type %u is invalid", record.type);
       return(0);
     }
     
     spindump_tls_version version;
-    spindump_analyze_tls_parse_versionconversion(&record->version,isDatagram,&version);
+    spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer version in the packet %04x, converted as %04x",
-			spindump_tls_2bytenum2touint16(record->version),
+			spindump_tls_2bytenum2touint16(record.version),
 			version);
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %x is invalid", version);
       return(0);
     }
     
-    carriesLength = spindump_tls_2bytenum2touint16(record->length);
+    carriesLength = spindump_tls_2bytenum2touint16(record.length);
     
   }
 
@@ -430,9 +434,10 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
   // Check that the remaining packet is long enough for TLS handshake:
   // 
   
-  if (payload_len < sizeof(struct spindump_tls_handshake) ||
-      record_layer_payload_len < sizeof(struct spindump_tls_handshake)) {
-    spindump_deepdebugf("spindump TLS analyzer too small payload lengths %u %u", payload_len, record_layer_payload_len);
+  if (payload_len < spindump_tls_handshake_header_size ||
+      record_layer_payload_len < spindump_tls_handshake_header_size) {
+    spindump_deepdebugf("spindump TLS analyzer too small payload lengths %u %u",
+			payload_len, record_layer_payload_len);
     return(0);
   }
   
@@ -440,9 +445,10 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
   // Check if the handshake type is know
   // 
 
-  struct spindump_tls_handshake* handshake = (struct spindump_tls_handshake*)payload;
-  spindump_deepdebugf("spindump TLS analyzer handshake type %u", handshake->handshakeType);
-  switch (handshake->handshakeType) {
+  struct spindump_tls_handshake handshake;
+  spindump_protocols_tls_handshakeheader_decode(payload,&handshake);
+  spindump_deepdebugf("spindump TLS analyzer handshake type %u", handshake.handshakeType);
+  switch (handshake.handshakeType) {
   case spindump_tls_handshake_client_hello:
   case spindump_tls_handshake_server_hello:
   case spindump_tls_handshake_hello_verify_request:
@@ -457,7 +463,7 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
   case spindump_tls_handshake_message_hash:
     break;
   default:
-    spindump_deepdebugf("spindump TLS analyzer invalid handshake type %u", handshake->handshakeType);
+    spindump_deepdebugf("spindump TLS analyzer invalid handshake type %u", handshake.handshakeType);
     return(0);
   }
 
@@ -465,11 +471,11 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
   // Check that the handshake length fits inside the claimed payload size
   // 
   
-  uint32_t length = spindump_tls_handshakelength_touint(handshake->length);
-  if (length < sizeof(struct spindump_tls_handshake) ||
+  uint32_t length = spindump_tls_handshakelength_touint(handshake.length);
+  if (length < spindump_tls_handshake_header_size ||
       length > payload_len ||
       length > record_layer_payload_len) {
-    spindump_deepdebugf("spindump TLS analyzer invalid handshake length %u", handshake->handshakeType);
+    spindump_deepdebugf("spindump TLS analyzer invalid handshake length %u", handshake.handshakeType);
     return(0);
   }
   
@@ -479,8 +485,9 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
 
   if (isDatagram) {
 
-    struct spindump_dtls_handshake* dtlsHandshake = (struct spindump_dtls_handshake*)handshake;
-    spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(dtlsHandshake,
+    struct spindump_dtls_handshake dtlsHandshake;
+    spindump_protocols_dtls_handshakeheader_decode(payload,&dtlsHandshake);
+    spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(&dtlsHandshake,
 									    p_isInitialHandshake,
 									    p_tlsVersion,
 									    p_isResponse);
@@ -488,7 +495,7 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
     
   } else {
     
-    spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(handshake,
+    spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(&handshake,
 									   p_isInitialHandshake,
 									   p_tlsVersion,
 									   p_isResponse);

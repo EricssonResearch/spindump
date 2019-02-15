@@ -72,6 +72,7 @@ enum spindump_connection_state {
 struct spindump_quic_connectionid {
   unsigned int len;
   unsigned char id[18];
+  unsigned char padding[2]; // unused padding, to align the structure size properly
 };
 
 struct spindump_connection_set {
@@ -87,6 +88,7 @@ struct spindump_connection {
   enum spindump_connection_state state;             // current state (establishing/established/etc)
   int manuallyCreated;                              // was this entry created by management action or dynamically?
   int deleted;                                      // is the connection closed/deleted (but not yet removed)?
+  uint8_t padding[4];                               // unused padding to align the next field properly
   struct timeval creationTime;                      // when did we see the first packet?
   struct timeval latestPacketFromSide1;             // when did we see the last packet from side 1?
   struct timeval latestPacketFromSide2;             // when did we see the last packet from side 2?
@@ -115,7 +117,7 @@ struct spindump_connection {
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
       spindump_port side2peerPort;                  // destination port for the initial packet
-      char padding[4];                              // unused
+      uint8_t padding[4];                           // unused
       struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
       struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
       int finFromSide1;                             // seen a FIN from side1?
@@ -127,6 +129,7 @@ struct spindump_connection {
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
       spindump_port side2peerPort;                  // destination port for the initial packet
+      uint8_t padding[4];                           // unused padding to align the structure size properly
     } udp;
 
     struct {
@@ -134,6 +137,7 @@ struct spindump_connection {
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
       spindump_port side2peerPort;                  // destination port for the initial packet
+      uint8_t padding[4];                           // unused padding to align the next field properly
       struct spindump_messageidtracker side1MIDs;   // when did we see message IDs from side1?
       struct spindump_messageidtracker side2MIDs;   // when did we see message IDs from side2?
       char lastQueriedName[40];                     // the latest name that was queried
@@ -146,6 +150,7 @@ struct spindump_connection {
       spindump_port side2peerPort;                  // destination port for the initial packet
       int dtls;                                     // is DTLS/TLS in use?
       spindump_tls_version dtlsVersion;             // which DTLS/TLS version is in use
+      uint8_t padding[6];                           // unused padding to align the next field properly
       struct spindump_messageidtracker side1MIDs;   // when did we see message IDs from side1?
       struct spindump_messageidtracker side2MIDs;   // when did we see message IDs from side2?
     } coap;
@@ -161,20 +166,24 @@ struct spindump_connection {
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
       spindump_port side2peerPort;                  // destination port for the initial packet
+      uint8_t padding1[4];                          // unused padding to align the next field properly
       struct timeval side1initialPacket;            // the time of the initial packet from side 1
       struct timeval side2initialResponsePacket;    // the time of the initial response packet from side 2
       unsigned long initialRightRTT;                // initial packet exchange RTT in us
       unsigned long initialLeftRTT;                 // initial packet exchange RTT in us (only available sometimes)
       struct spindump_spintracker spinFromPeer1to2; // tracking spin bit flips from side 1 to 2
       struct spindump_spintracker spinFromPeer2to1; // tracking spin bit flips from side 2 to 1
+      uint8_t padding2[8];                          // unused padding to align the structure size properly
     } quic;
 
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet
       spindump_address side2peerAddress;            // destination address for the initial packet
-      u_int8_t side1peerType;                       // the ICMP type used in a request from side 1
-      u_int16_t side1peerId;                        // the ICMP id used in a request from side 1
-      u_int16_t	side1peerLatestSequence;            // latest seen sequence number from side 1
+      uint8_t side1peerType;                        // the ICMP type used in a request from side 1
+      uint8_t padding1;                             // unused padding to align the next field properly
+      uint16_t side1peerId;                         // the ICMP id used in a request from side 1
+      uint16_t	side1peerLatestSequence;            // latest seen sequence number from side 1
+      uint8_t padding2[2];                          // unused padding to align the size of the structure properly
     } icmp;
 
     struct {
@@ -217,12 +226,15 @@ struct spindump_connection_searchcriteria {
   enum spindump_connection_type type;
 
   int matchIcmpType;
-  u_int8_t icmpType;
+  uint8_t icmpType;
+  uint8_t padding1[3]; // unused padding to align the next field properly
 
   int matchIcmpId;
-  u_int16_t icmpId;
+  uint16_t icmpId;
+  uint8_t padding2[2]; // unused padding to align the next field properly
 
   enum spindump_connection_searchcriteria_srcdst matchAddresses;
+  uint8_t padding3[4]; // unused padding to align the next field properly
   spindump_address side1address;
   spindump_address side2address;
 
@@ -238,6 +250,7 @@ struct spindump_connection_searchcriteria {
   const unsigned char* partialDestinationCid;
 
   int matchPartialSourceCid;
+  uint8_t padding4[4]; // unused padding to align the next field properly
   const unsigned char* partialSourceCid;
 };
 

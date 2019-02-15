@@ -53,28 +53,43 @@ spindump_connections_set_unlinkfromset(struct spindump_connection* connection,
   if (spindump_connections_set_inset(&connection->aggregates,otherConnection)) {
     spindump_connections_set_remove(&connection->aggregates,otherConnection);
   }
+  
   switch (connection->type) {
+    
+  case spindump_connection_transport_udp:
+  case spindump_connection_transport_tcp:
+  case spindump_connection_transport_quic:
+  case spindump_connection_transport_dns:
+  case spindump_connection_transport_coap:
+  case spindump_connection_transport_icmp:
+    break;
+    
   case spindump_connection_aggregate_hostpair:
     if (spindump_connections_set_inset(&connection->u.aggregatehostpair.connections,otherConnection)) {
       spindump_connections_set_remove(&connection->u.aggregatehostpair.connections,otherConnection);
     }
     break;
+    
   case spindump_connection_aggregate_hostnetwork:
     if (spindump_connections_set_inset(&connection->u.aggregatehostnetwork.connections,otherConnection)) {
       spindump_connections_set_remove(&connection->u.aggregatehostnetwork.connections,otherConnection);
     }
     break;
+    
   case spindump_connection_aggregate_networknetwork:
     if (spindump_connections_set_inset(&connection->u.aggregatenetworknetwork.connections,otherConnection)) {
       spindump_connections_set_remove(&connection->u.aggregatenetworknetwork.connections,otherConnection);
     }
     break;
+    
   case spindump_connection_aggregate_multicastgroup:
     if (spindump_connections_set_inset(&connection->u.aggregatemulticastgroup.connections,otherConnection)) {
       spindump_connections_set_remove(&connection->u.aggregatemulticastgroup.connections,otherConnection);
     }
     break;
+
   default:
+    spindump_errorf("invalid connection type");
     break;
   }
 }
@@ -156,7 +171,6 @@ spindump_connections_set_add(struct spindump_connection_set* set,
     set->set = (struct spindump_connection**)malloc(size);
     if (set->set == 0) {
       spindump_fatalf("cannot allocate connection set of %u bytes", size);
-      return;
     }
     memset(set->set,0,size);
     set->maxNConnections = defaultN;
@@ -181,9 +195,8 @@ spindump_connections_set_add(struct spindump_connection_set* set,
     unsigned int newN = 2 * set->maxNConnections;
     unsigned int size = newN * sizeof(struct spindump_connection*);
     struct spindump_connection** newSet = (struct spindump_connection**)malloc(size);
-    if (set->set == 0) {
+    if (newSet == 0) {
       spindump_fatalf("cannot expand connection set to %u bytes", size);
-      return;
     }
     memset(newSet,0,size);
     memcpy(newSet,set->set,set->maxNConnections * sizeof(struct spindump_connection*));

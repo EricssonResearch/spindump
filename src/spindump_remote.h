@@ -47,12 +47,14 @@ struct spindump_remote_connection {
 struct spindump_remote_server {
   int listenfd;
   spindump_port listenport;
+  uint8_t padding[2]; // unused padding to align the next field properly
   struct spindump_remote_connection clients[SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONS];
 };
 
 struct spindump_remote_client {
   const char* server;
   spindump_port serverport;
+  uint8_t padding[2]; // unused padding to align the next field properly
   int fd;
 };
 
