@@ -529,35 +529,36 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 					       finreceived);
       spindump_analyze_process_tcp_markackreceived(state,packet,connection,fromResponder,ack,&packet->timestamp,&ackedfin);
       if (ackedfin) {
-				spindump_deepdebugf("this was an ack to a FIN");
-				if (fromResponder)
-					connection->u.tcp.finFromSide1 = 1;
-				else
-					connection->u.tcp.finFromSide2 = 1;
-
-				//
-				// Both sides have sent a FIN?
-				//
-
-				spindump_deepdebugf("seen acked FIN from %u and %u",
-						    connection->u.tcp.finFromSide1,
-						    connection->u.tcp.finFromSide2);
-
-				if (connection->u.tcp.finFromSide1 && connection->u.tcp.finFromSide2) {
-				  if (connection->state == spindump_connection_state_closing) {
-				    spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
-				    spindump_connections_markconnectiondeleted(connection);
-				  }
-				}
+	spindump_deepdebugf("this was an ack to a FIN");
+	if (fromResponder) {
+	  connection->u.tcp.finFromSide1 = 1;
+	} else {
+	  connection->u.tcp.finFromSide2 = 1;
+	}
+	
+	//
+	// Both sides have sent a FIN?
+	//
+	
+	spindump_deepdebugf("seen acked FIN from %u and %u",
+			    connection->u.tcp.finFromSide1,
+			    connection->u.tcp.finFromSide2);
+	
+	if (connection->u.tcp.finFromSide1 && connection->u.tcp.finFromSide2) {
+	  if (connection->state == spindump_connection_state_closing) {
+	    spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
+	    spindump_connections_markconnectiondeleted(connection);
+	  }
+	}
       }
-
+      
       //
       // Update statistics
       //
-
+      
       spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
       *p_connection = connection;
-
+      
     } else {
 
       state->stats->unknownTcpConnection++;
