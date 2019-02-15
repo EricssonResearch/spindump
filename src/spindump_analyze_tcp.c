@@ -253,7 +253,6 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   int finreceived = ((tcp.th_flags & SPINDUMP_TH_FIN) != 0);
   int ackedfin = 0;
   int new = 0;
-  int closed = 0;
 
   //
   // Debugs
@@ -438,7 +437,6 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 	if (connection->state == spindump_connection_state_closing) {
 	  spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
 	  spindump_connections_markconnectiondeleted(connection);
-	  closed = 1;
 	}
       }
       
@@ -480,7 +478,6 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
       spindump_analyze_process_tcp_markackreceived(state,packet,connection,fromResponder,ack,&packet->timestamp,&ackedfin);
       spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
       spindump_connections_markconnectiondeleted(connection);
-      closed = 1;
 
       *p_connection = connection;
 
@@ -550,7 +547,6 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
 				  if (connection->state == spindump_connection_state_closing) {
 				    spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
 				    spindump_connections_markconnectiondeleted(connection);
-				    closed = 1;
 				  }
 				}
       }
