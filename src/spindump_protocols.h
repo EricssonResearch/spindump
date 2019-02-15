@@ -44,24 +44,24 @@ struct spindump_ethernet {
 };
 
 struct spindump_ip {
-  unsigned char ip_vhl;		    // version << 4 | header length >> 2
-  unsigned char ip_tos;		    // type of service
-  uint16_t ip_len;		    // total length
-  uint16_t ip_id;		    // identification
-  uint16_t ip_off;		    // fragment offset field
-#define SPINDUMP_IP_RF 0x8000	    // reserved fragment flag
-#define SPINDUMP_IP_DF 0x4000	    // dont fragment flag
-#define SPINDUMP_IP_MF 0x2000	    // more fragments flag
-#define SPINDUMP_IP_OFFMASK 0x1fff  // mask for fragmenting bits
-  unsigned char ip_ttl;		    // time to live
-  unsigned char ip_proto;	    // protocol
-  uint16_t ip_sum;		    // checksum
-  uint32_t ip_src;                  // source address
-  uint32_t ip_dst;                  // dest address
+  unsigned char ip_vhl;		                // version << 4 | header length >> 2
+  unsigned char ip_tos;	                        // type of service
+  uint16_t ip_len;		                // total length
+  uint16_t ip_id;		                // identification
+  uint16_t ip_off;		                // fragment offset field
+#define SPINDUMP_IP_RF ((uint16_t)0x8000)	// reserved fragment flag
+#define SPINDUMP_IP_DF ((uint16_t)0x4000)	// dont fragment flag
+#define SPINDUMP_IP_MF ((uint16_t)0x2000)       // more fragments flag
+#define SPINDUMP_IP_OFFMASK ((uint16_t)0x1fff)  // mask for fragmenting bits
+  unsigned char ip_ttl;		                // time to live
+  unsigned char ip_proto;	                // protocol
+  uint16_t ip_sum;		                // checksum
+  uint32_t ip_src;                              // source address
+  uint32_t ip_dst;                              // dest address
 };
-#define SPINDUMP_IP_HL(ip)    (((ip)->ip_vhl) & 0x0f)
-#define SPINDUMP_IP_V(ip)     (((ip)->ip_vhl) >> 4)
-#define SPINDUMP_IP_ECN(ip)   (((ip)->ip_tos) & 0x3)
+#define SPINDUMP_IP_HL(ip)    ((unsigned int)((((ip)->ip_vhl) & 0x0f)))
+#define SPINDUMP_IP_V(ip)     ((uint8_t)((((ip)->ip_vhl) >> 4)))
+#define SPINDUMP_IP_ECN(ip)   ((uint8_t)((((ip)->ip_tos) & 0x3)))
 
 struct spindump_ip6addr {
   uint8_t addr[16];
@@ -104,8 +104,8 @@ struct spindump_ip6 {
   struct spindump_ip6addr ip6_source;      // source address
   struct spindump_ip6addr ip6_destination; // destination address
 };
-#define SPINDUMP_IP6_V(ip)		(((ip)->ip6_vtc) >> 4)
-#define SPINDUMP_IP6_ECN(ip)            ((((ip)->ip6_tcfl >> 4)) & 0x3)
+#define SPINDUMP_IP6_V(ip)		((uint8_t)((((ip)->ip6_vtc) >> 4)))
+#define SPINDUMP_IP6_ECN(ip)            ((uint8_t)(((((ip)->ip6_tcfl >> 4)) & 0x3)))
   
 //
 // Fragment header from RFC 2460:

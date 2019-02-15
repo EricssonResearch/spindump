@@ -103,8 +103,11 @@ spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type) 
 static unsigned int
 spindump_analyze_quic_parser_onecidlength(uint8_t value) {
   spindump_assert(value < 16);
-  if (value == 0) return(0);
-  else return(value + 3);
+  if (value == 0) {
+    return(0);
+  } else {
+    return(value + 3);
+  }
 }
 
 //

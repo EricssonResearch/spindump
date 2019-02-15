@@ -148,8 +148,10 @@ CFLAGS			=	-Wall -Wextra -Wpedantic -Weverything -Werror \
 #				-Wno-covered-switch-default \
 #				-Wno-unused-parameter \
 #				$(OPTFLAGS)
-LDFLAGS			=	-lpthread -lpcap -lncurses -lm -lsandbox
-CC			=	gcc
+LDFLAGS			=	-lpthread -lpcap -lncurses -lm
+# -lsandbox
+CC			=	clang
+#CC			=	gcc
 LD			=	$(CC)
 AR			=	ar
 

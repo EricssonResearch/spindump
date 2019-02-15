@@ -212,8 +212,11 @@ const char*
 spindump_reverse_dns_address_tostring(spindump_address* address,
 				      struct spindump_reverse_dns* service) {
   const char* name = spindump_reverse_dns_query(address,service);
-  if (name != 0) return(name);
-  else return(spindump_address_tostring(address));
+  if (name != 0) {
+    return(name);
+  } else {
+    return(spindump_address_tostring(address));
+  }
 }
 
 //
