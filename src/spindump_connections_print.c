@@ -468,8 +468,11 @@ spindump_connection_address_tostring(int anonymize,
     return(spindump_address_tostring_anon(1,address));
   } else {
     const char* name = spindump_reverse_dns_query(address,querier);
-    if (name != 0) return(name);
-    else return(spindump_address_tostring(address));
+    if (name != 0) {
+      return(name);
+    } else {
+      return(spindump_address_tostring(address));
+    }
   }
 }
 

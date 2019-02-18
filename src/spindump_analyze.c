@@ -749,39 +749,42 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
     connection->packetsFromSide1++;
     connection->bytesFromSide1 += ipPacketLength;
   }
-
-	int ecnCe = 0;
-
-	switch (ecnFlags) {
-		case 0x1:
-			if (fromResponder)
-				connection->ect0FromResponder++;
-			else
-				connection->ect0FromInitiator++;
-			break;
-
-		case 0x2:
-			if (fromResponder)
-				connection->ect1FromResponder++;
-			else
-				connection->ect1FromInitiator++;
-			break;
-
-		case 0x3:
-			ecnCe = 1;
-			if (fromResponder)
-				connection->ceFromResponder++;
-			else
-				connection->ceFromInitiator++;
-			break;
-
-		default:
-			//
-			// No ECN flags set
-			//
-			break;
-	}
-
+  
+  int ecnCe = 0;
+  
+  switch (ecnFlags) {
+  case 0x1:
+    if (fromResponder) {
+      connection->ect0FromResponder++;
+    } else {
+      connection->ect0FromInitiator++;
+    }
+    break;
+    
+  case 0x2:
+    if (fromResponder) {
+      connection->ect1FromResponder++;
+    } else {
+      connection->ect1FromInitiator++;
+    }
+    break;
+    
+  case 0x3:
+    ecnCe = 1;
+    if (fromResponder) {
+      connection->ceFromResponder++;
+    } else {
+      connection->ceFromInitiator++;
+    }
+    break;
+    
+  default:
+    //
+    // No ECN flags set
+    //
+    break;
+  }
+  
   //
   // Call some handlers, if any, for the new measurements
   //
@@ -1098,17 +1101,31 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
 
 const char*
 spindump_analyze_eventtostring(spindump_analyze_event event) {
-  if (event == 0) return("none");
-  else if (event == spindump_analyze_event_newconnection) return("newconnection");
-  else if (event == spindump_analyze_event_connectiondelete) return("connectiondelete");
-  else if (event == spindump_analyze_event_newleftrttmeasurement) return("newleftrttmeasurement");
-  else if (event == spindump_analyze_event_newrightrttmeasurement) return("newrightrttmeasurement");
-  else if (event == spindump_analyze_event_initiatorspinflip) return("initiatorspinflip");
-  else if (event == spindump_analyze_event_responderspinflip) return("responderspinflip");
-  else if (event == spindump_analyze_event_initiatorspinvalue) return("initiatorspinvalue");
-  else if (event == spindump_analyze_event_responderspinvalue) return("responderspinvalue");
-  else if (event == spindump_analyze_event_newpacket) return("newpacket");
-  else if (event == spindump_analyze_event_firstresponsepacket) return("firstresponsepacket");
-  else if (event == spindump_analyze_event_statechange) return("statechange");
-  else return("multiple");
+  if (event == 0) {
+    return("none");
+  } else if (event == spindump_analyze_event_newconnection) {
+    return("newconnection");
+  } else if (event == spindump_analyze_event_connectiondelete) {
+    return("connectiondelete");
+  } else if (event == spindump_analyze_event_newleftrttmeasurement) {
+    return("newleftrttmeasurement");
+  } else if (event == spindump_analyze_event_newrightrttmeasurement) {
+    return("newrightrttmeasurement");
+  } else if (event == spindump_analyze_event_initiatorspinflip) {
+    return("initiatorspinflip");
+  } else if (event == spindump_analyze_event_responderspinflip) {
+    return("responderspinflip");
+  } else if (event == spindump_analyze_event_initiatorspinvalue) {
+    return("initiatorspinvalue");
+  } else if (event == spindump_analyze_event_responderspinvalue) {
+    return("responderspinvalue");
+  } else if (event == spindump_analyze_event_newpacket) {
+    return("newpacket");
+  } else if (event == spindump_analyze_event_firstresponsepacket) {
+    return("firstresponsepacket");
+  } else if (event == spindump_analyze_event_statechange) {
+    return("statechange");
+  } else {
+    return("multiple");
+  }
 }

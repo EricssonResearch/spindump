@@ -130,14 +130,14 @@ SPINDUMP_ALL_SOURCES	=	$(SPINDUMP_LIB_HEADERS) \
 				$(SPINDUMP_OTHER_SOURCES)
 #OPTFLAGS		=	-O3
 OPTFLAGS		=	-g -DSPINDUMP_DEBUG
-#CFLAGS			=	-Wall --pedantic $(OPTFLAGS)
-CFLAGS			=	-Wall -Wextra -Wpedantic -Weverything -Werror \
-			        -fno-diagnostics-color \
-				-fno-omit-frame-pointer \
-			        -fno-optimize-sibling-calls -fno-common \
-				-Wno-covered-switch-default \
-				-Wno-unused-parameter \
-				$(OPTFLAGS)
+CFLAGS			=	-Wall --pedantic $(OPTFLAGS)
+#CFLAGS			=	-Wall -Wextra -Wpedantic -Weverything -Werror \
+#			        -fno-diagnostics-color \
+#				-fno-omit-frame-pointer \
+#			        -fno-optimize-sibling-calls -fno-common \
+#				-Wno-covered-switch-default \
+#				-Wno-unused-parameter \
+#				$(OPTFLAGS)
 #CFLAGS			=	-Wall -Wextra -Wpedantic -Weverything -Werror \
 #			        -fno-diagnostics-color \
 #			        -fsanitize=address \
@@ -148,7 +148,9 @@ CFLAGS			=	-Wall -Wextra -Wpedantic -Weverything -Werror \
 #				-Wno-covered-switch-default \
 #				-Wno-unused-parameter \
 #				$(OPTFLAGS)
-LDFLAGS			=	-lpthread -lpcap -lncurses -lm -lsandbox
+LDFLAGS			=	-lpthread -lpcap -lncurses -lm
+# -lsandbox
+#CC			=	clang
 CC			=	gcc
 LD			=	$(CC)
 AR			=	ar

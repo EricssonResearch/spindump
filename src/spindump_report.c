@@ -197,9 +197,13 @@ spindump_report_update_comparetwoconnections(const void* data1,
   unsigned long packets1 = connection1->packetsFromSide1 + connection1->packetsFromSide2;
   unsigned long packets2 = connection2->packetsFromSide1 + connection2->packetsFromSide2;
   //spindump_deepdebugf("comparetwoconnections %u (%lu) vs. %u (%lu)", connection1->id, packets1, connection2->id, packets2);
-  if (packets1 < packets2) return(1);
-  else if (packets1 > packets2) return(-1);
-  else return(0);
+  if (packets1 < packets2) {
+    return(1);
+  } else if (packets1 > packets2) {
+    return(-1);
+  } else {
+    return(0);
+  }
 }
 
 //

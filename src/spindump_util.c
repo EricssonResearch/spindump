@@ -140,10 +140,15 @@ spindump_isearliertime(const struct timeval* later,
   spindump_assert(earlier != 0);
   spindump_assert(later->tv_usec < 1000 * 1000);
   spindump_assert(earlier->tv_usec < 1000 * 1000);
-  if (earlier->tv_sec < later->tv_sec) return(1);
-  else if (earlier->tv_sec == later->tv_sec &&
-	   earlier->tv_usec < later->tv_usec) return(1);
-  else return(0);
+  
+  if (earlier->tv_sec < later->tv_sec) {
+    return(1);
+  } else if (earlier->tv_sec == later->tv_sec &&
+	     earlier->tv_usec < later->tv_usec) {
+    return(1);
+  } else {
+    return(0);
+  }
 }
 
 //

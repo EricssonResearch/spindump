@@ -17,7 +17,7 @@ clean:
 	-rm -f spindump.debug
 	-rm -f spindump.error
 
-spindump.tar.gz:
+spindump.tar.gz:	src/*.h	src/*.c src/Makefile README.md Makefile LICENSE.txt
 	-rm -f spindump.tar.gz
 	tar czf spindump.tar.gz Makefile README.md LICENSE.txt \
 				images/*.jpg images/*.png \
