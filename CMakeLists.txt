@@ -34,7 +34,7 @@ foreach(FLAG -pipe -Wextra -Wpedantic -Weverything -Werror
   string(REGEX REPLACE "[-=+]" "_" F ${FLAG})
   check_c_compiler_flag(${FLAG} ${F})
   if(${F})
-    add_compile_options(${FLAG})
+    string(APPEND CMAKE_C_FLAGS " ${FLAG}")
   endif()
 endforeach()
 
