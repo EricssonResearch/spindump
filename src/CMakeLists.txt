@@ -1,9 +1,13 @@
 # for libpcap installed on on MacOS via homebrew
 list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libpcap")
 
-find_package(PkgConfig)
 find_package(Curses)
-pkg_check_modules(PCAP REQUIRED libpcap)
+find_package(Threads)
+
+find_path(PCAP_INCLUDE_DIR NAMES pcap/pcap.h pcap.h)
+find_library(PCAP_LIBRARY NAMES pcap)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_INCLUDE_DIR PCAP_LIBRARY)
 
 add_library(libspindump
   spindump_analyze.c
@@ -44,8 +48,10 @@ target_include_directories(libspindump
 
 target_link_libraries(libspindump
   PRIVATE
-    ${PCAP_LIBRARIES}
+    ${PCAP_LIBRARY}
     ${CURSES_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+    m
 )
 
 add_executable(spindump spindump_main.c)
