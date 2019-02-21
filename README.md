@@ -12,6 +12,14 @@ The software is under development, and subject to research on best algorithms.
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
 
+# News!!!
+
+With the help of Lars Eggert, Spindump has switched to the use of cmake! Your compilations will be affected, so next time you get a new version, please install the necessary software (cmake and pkg-config). No Makefiles are provided in the repo anymore, they will be created by cmake. So do this for your next compilation:
+
+    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev
+    cmake .
+    make
+
 # Use Cases
 
 Spindump can be used to observe latency in ongoing connections for debugging purposes, as shown in the below figure:
@@ -115,15 +123,16 @@ The easiest installation method is to retrieve the software from GitHub. Start w
 
 Make sure you have the necessary tools to compile; you'll need the gmake, gcc, and libpcap packages at least. On a Mac OS X, you can install these with the
 
-    sudo port install gmake gcc libpcap ncurses
+    sudo port install cmake gmake gcc libpcap ncurses
 
 command. And on linux, do:
 
-    sudo apt-get install make gcc libpcap-dev libncurses5-dev
+    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev
 
 Then do:
 
     cd spindump
+    cmake .
     make
     sudo make install
 

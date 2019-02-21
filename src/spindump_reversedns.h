@@ -42,6 +42,9 @@ struct spindump_reverse_dns_entry {
   char padding[4];                             // unused
 };
 
+struct spindump_reverse_dns;
+typedef void (*spindump_reverse_dns_cleanupfn)(struct spindump_reverse_dns* service);
+
 struct spindump_reverse_dns {
   int noop;                                    // written and read by main thread only
   uint8_t padding1[4];                         // unused padding to align the next field properly
@@ -50,6 +53,7 @@ struct spindump_reverse_dns {
   uint8_t padding2[3];                         // unused padding to align the next field properly
   atomic_uint nextEntryIndex;                  // written by main thread, read by background thread
   struct spindump_reverse_dns_entry entries[spindump_reverse_dns_maxnentries];
+  spindump_reverse_dns_cleanupfn cleanupfn;    // written and read by main thread only
 };
 
 //

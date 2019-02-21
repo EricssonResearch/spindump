@@ -7,3 +7,8 @@ spindump.debug
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
+DartConfiguration.tcl
+Testing
+CTestTestfile.cmake
+spindump_test.out
+install_manifest.txt
