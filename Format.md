@@ -6,6 +6,11 @@ This description specifies what measurement data Spindump produces to describe t
 
 ## Protocol for sending data
 
+The Spindump protocol for transmitting measurement data is web-based; data is sent around over HTTP or HTTPS connections. Data transmission is push-based, i.e., initiated by whoever has the data attempting to submit it to the designated data collector. Data collectors can be other Spindump instances, but there's nothing that requires this. A standard web server will be able to receive data sent by Spindump. A website owner could setup a server to record all data submissions for later analysis, for instance.
+
+Each data submission is a HTTP POST to an URL. By default, in Spindump those URLs have the host, port 5040, and no path, but command line arguments in Spindump can be used to control these settings.
+
+Each data submission comes with a HTTP body part, formatted in a given way. Two formats are currently supported, application/text for the textual format and application/json for the JSON format. These are described in the next sections.
 
 ## Textual format
 
