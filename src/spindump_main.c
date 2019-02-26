@@ -556,7 +556,7 @@ spindump_main_operation(void) {
 						   anonymizeLeft,
 						   anonymizeRight);
   }
-
+  
   //
   // Main operation
   //

@@ -20,7 +20,7 @@ With the help of Lars Eggert, Spindump has switched to the use of cmake! Your co
     cmake .
     make
 
-Also, a long-awaited upgrade is in the work: Spindump will be able to collect information and submit it to another Spindump instance elsewhere. As the protocol used to submit measurement data is web-based, this can also be used to submit data to any suitable web server, for instance, in the convenient JSON format. See [description](../blob/master/Format.md) for more information. Note also that the new JSON format includes an array at the top level, rather than merely records following each other without an array.
+Also, a long-awaited upgrade is in the work: Spindump will be able to collect information and submit it to another Spindump instance elsewhere. As the protocol used to submit measurement data is web-based, this can also be used to submit data to any suitable web server, for instance, in the convenient JSON format. See the [format description](https://raw.githubusercontent.com/EricssonResearch/spindump/master/Format.md) for more information. Note also that the new JSON format includes an array at the top level, rather than merely records following each other without an array.
 
 # Use Cases
 
@@ -114,7 +114,7 @@ The --interface option sets the local interface to listen on. The default is wha
 
 The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the address h. Currently, only one instance can run in one machine, using port 5040. However, a given Spindump instance running as a collector can accept connections from multiple other instances.
 
-Finally,  the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the data format [description](../blob/master/Format.md)
+Finally,  the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the [data format description](https://raw.githubusercontent.com/EricssonResearch/spindump/master/Format.md)
 
     --help
 
