@@ -1,5 +1,7 @@
 *.o
 *.a
+Makefile
+src/Makefile
 spindump.tar.gz
 spindump
 spindump_test

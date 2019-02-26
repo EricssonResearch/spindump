@@ -53,6 +53,9 @@ add_library(spindumplib
   spindump_connections_search.c
   spindump_connections_set.c
   spindump_connections_set_iterator.c
+  spindump_eventformatter.c 
+  spindump_eventformatter_text.c 
+  spindump_eventformatter_json.c 
   spindump_mid.c
   spindump_packet.c
   spindump_protocols.c

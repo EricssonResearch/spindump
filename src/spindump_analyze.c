@@ -201,6 +201,75 @@ spindump_analyze_registerhandler(struct spindump_analyze* state,
 }
 
 //
+// De-register a handler
+//
+
+void
+spindump_analyze_unregisterhandler(struct spindump_analyze* state,
+				   spindump_analyze_event eventmask,
+				   spindump_analyze_handler handler,
+				   void* handlerData) {
+  
+  //
+  // Checks
+  //
+  
+  spindump_assert(state != 0);
+  spindump_assert(eventmask != 0);
+  spindump_assert((eventmask & spindump_analyze_event_alllegal) == eventmask);
+  spindump_assert(handler != 0);
+  
+  //
+  // Find the registration from earlier
+  //
+
+  for (unsigned int i = 0; i < state->nHandlers; i++) {
+
+    struct spindump_analyze_handler* handlerPtr = &state->handlers[i];
+    if (handlerPtr->eventmask == eventmask &&
+	handlerPtr->function == handler &&
+	handlerPtr->handlerData == handlerData) {
+
+      //
+      // Found the matching registration. Delete it.
+      //
+      
+      handlerPtr->eventmask = 0;
+      handlerPtr->function = 0;
+      handlerPtr->handlerData = 0;
+
+      //
+      // Also decrease nHandlers if this was the last item in the array
+      //
+      
+      while (i == state->nHandlers - 1 &&
+	     state->nHandlers > 0 &&
+	     handlerPtr->eventmask == 0 &&
+	     handlerPtr->function == 0 &&
+	     handlerPtr->handlerData == 0) {
+	state->nHandlers--;
+	if  (state->nHandlers > 0) {
+	  i = state->nHandlers - 1;
+	  handlerPtr = &state->handlers[i];
+	}
+      }
+      
+      //
+      // Done. Return.
+      //
+      
+      return;
+    }
+  }
+
+  //
+  // Not found. Signal an error, but we can recover.
+  //
+  
+  spindump_errorf("de-registering a non-registered handler");
+}
+
+//
 // Run all the handlers for a specific event
 //
 

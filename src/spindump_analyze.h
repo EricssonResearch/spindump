@@ -94,6 +94,11 @@ spindump_analyze_registerhandler(struct spindump_analyze* state,
 				 spindump_analyze_event eventmask,
 				 spindump_analyze_handler handler,
 				 void* handlerData);
+void
+spindump_analyze_unregisterhandler(struct spindump_analyze* state,
+				   spindump_analyze_event eventmask,
+				   spindump_analyze_handler handler,
+				   void* handlerData);
 struct spindump_stats*
 spindump_analyze_getstats(struct spindump_analyze* state);
 void

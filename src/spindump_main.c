@@ -31,6 +31,7 @@
 #include "spindump_analyze.h"
 #include "spindump_report.h"
 #include "spindump_remote.h"
+#include "spindump_eventformatter.h"
 #include "spindump_main.h"
 
 //
@@ -46,11 +47,7 @@ enum spindump_toolmode {
   spindump_toolmode_visual
 };
 static enum spindump_toolmode toolmode = spindump_toolmode_visual;
-enum spindump_outputformat {
-  spindump_outputformat_text,
-  spindump_outputformat_json
-};
-static enum spindump_outputformat format = spindump_outputformat_text;
+static enum spindump_eventformatter_outputformat format = spindump_eventformatter_outputformat_text;
 static unsigned int maxReceive = 0;
 static int showStats = 0;
 static int reverseDns = 0;
@@ -69,6 +66,7 @@ static struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
 static int interrupt = 0;
 static unsigned int nRemotes = 0;
 static struct spindump_remote_client* remotes[SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS];
+static int collector = 0;
 static FILE* debugfile = 0;
 
 //
@@ -81,29 +79,8 @@ static void
 spindump_main_processargs(int argc,char** argv);
 static void
 spindump_main_operation(void);
-static enum spindump_outputformat
+static enum spindump_eventformatter_outputformat
 spindump_main_parseformat(const char* string);
-static void
-spindump_main_textualmeasurement(struct spindump_analyze* state,
-				 void* handlerData,
-				 void** handlerConnectionData,
-				 spindump_analyze_event event,
-				 struct spindump_packet* packet,
-				 struct spindump_connection* connection);
-static void
-spindump_main_textualmeasurement_text(spindump_analyze_event event,
-				      struct spindump_connection* connection,
-				      const char* type,
-				      const char* addrs,
-				      const char* session,
-				      const struct timeval* timestamp);
-static void
-spindump_main_textualmeasurement_json(spindump_analyze_event event,
-				      struct spindump_connection* connection,
-				      const char* type,
-				      const char* addrs,
-				      const char* session,
-				      const struct timeval* timestamp);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -252,6 +229,14 @@ spindump_main_processargs(int argc,char** argv) {
       remotes[nRemotes++] = spindump_remote_client_init(argv[1]);
       argc--; argv++;
 
+    } else if (strcmp(argv[0],"--collector") == 0) {
+      
+      collector = 1;
+      
+    } else if (strcmp(argv[0],"--no-collector") == 0) {
+      
+      collector = 0;
+      
     } else if (strcmp(argv[0],"--max-receive") == 0 && argc > 1) {
 
       if (!isdigit(*(argv[1]))) {
@@ -437,279 +422,6 @@ spindump_main_processargs(int argc,char** argv) {
 }
 
 //
-// Function that gets called whenever a new RTT data has come in for
-// any connection.  This is activated when the --textual mode is on.
-//
-
-static void
-spindump_main_textualmeasurement(struct spindump_analyze* state,
-				 void* handlerData,
-				 void** handlerConnectionData,
-				 spindump_analyze_event event,
-				 struct spindump_packet* packet,
-				 struct spindump_connection* connection) {
-
-  if (toolmode != spindump_toolmode_textual) return;
-
-  struct spindump_reverse_dns* querier = (struct spindump_reverse_dns*)handlerData;
-  const char* type = spindump_connection_type_to_string(connection->type);
-  const char* addrs = spindump_connection_addresses(connection,70,anonymizeLeft,anonymizeRight,querier);
-  const char* session = spindump_connection_sessionstring(connection,70);
-
-  switch (format) {
-  case spindump_outputformat_text:
-    spindump_main_textualmeasurement_text(event,connection,type,addrs,session,&packet->timestamp);
-    break;
-  case spindump_outputformat_json:
-    spindump_main_textualmeasurement_json(event,connection,type,addrs,session,&packet->timestamp);
-    break;
-  default:
-    spindump_errorf("invalid output format in internal variable");
-    exit(1);
-  }
-}
-
-//
-// Print out one --textual measurement event, when the format is set
-// to --format text
-//
-
-static void
-spindump_main_textualmeasurement_text(spindump_analyze_event event,
-				      struct spindump_connection* connection,
-				      const char* type,
-				      const char* addrs,
-				      const char* session,
-				      const struct timeval* timestamp) {
-
-  char buf[250];
-  char what[100];
-  char rttbuf1[20];
-  char rttbuf2[20];
-
-  //
-  // Construct the time stamp
-  //
-
-  const char* when = spindump_timetostring(timestamp);
-
-  //
-  // Get the (variable) data related to the specific event (such as a
-  // spin flip in a QUIC connection).
-  //
-
-  memset(what,0,sizeof(what));
-  switch (event) {
-
-  case spindump_analyze_event_newconnection:
-    spindump_strlcpy(what,"new connection",sizeof(what));
-    break;
-
-  case spindump_analyze_event_connectiondelete:
-    spindump_strlcpy(what,"connection deleted",sizeof(what));
-    break;
-
-  case spindump_analyze_event_newleftrttmeasurement:
-  case spindump_analyze_event_newrightrttmeasurement:
-    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));
-    spindump_strlcpy(rttbuf2,spindump_rtt_tostring(connection->rightRTT.lastRTT),sizeof(rttbuf2));
-    memset(what,0,sizeof(what));
-    snprintf(what,sizeof(what)-1,"left %s right %s",
-	     rttbuf1, rttbuf2);
-    break;
-
-  case spindump_analyze_event_newinitrespfullrttmeasurement:
-    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->initToRespFullRTT.lastRTT),sizeof(rttbuf1));
-    memset(what,0,sizeof(what));
-    snprintf(what,sizeof(what)-1,"full RTT, init to resp %s", rttbuf1);
-    break;
-
-  case spindump_analyze_event_newrespinitfullrttmeasurement:
-    spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->respToInitFullRTT.lastRTT),sizeof(rttbuf1));
-    memset(what,0,sizeof(what));
-    snprintf(what,sizeof(what)-1,"full RTT, resp to init %s", rttbuf1);
-    break;
-
-  case spindump_analyze_event_initiatorspinflip:
-    spindump_strlcpy(what,"initiator spin flip",sizeof(what));
-    break;
-
-  case spindump_analyze_event_responderspinflip:
-    spindump_strlcpy(what,"responder spin flip",sizeof(what));
-    break;
-
-  case spindump_analyze_event_initiatorspinvalue:
-    snprintf(what,sizeof(what)-1,"initiator spin %u",
-	     connection->u.quic.spinFromPeer1to2.lastSpin);
-    break;
-
-  case spindump_analyze_event_responderspinvalue:
-    snprintf(what,sizeof(what)-1,"responder spin %u",
-	     connection->u.quic.spinFromPeer2to1.lastSpin);
-    break;
-
-  case spindump_analyze_event_initiatorecnce:
-    snprintf(what,sizeof(what)-1,"ECN CE Initiator");
-    break;
-
-  case spindump_analyze_event_responderecnce:
-    snprintf(what,sizeof(what)-1,"ECN CE Responder");
-    break;
-
-  default:
-    return;
-  }
-
-  //
-  // With all the information collected, put that now in final text
-  // format, hold it in "buf"
-  //
-
-  memset(buf,0,sizeof(buf));
-  snprintf(buf,sizeof(buf)-1,"%s %s %s at %s %s",
-	   type, addrs, session, when, what);
-
-  //
-  // Print the buffer out
-  //
-
-  printf("%s\n", buf);
-}
-
-//
-// Print out one --textual measurement event, when the format is set
-// to --format json
-//
-
-static void
-spindump_main_textualmeasurement_json(spindump_analyze_event event,
-				      struct spindump_connection* connection,
-				      const char* type,
-				      const char* addrs,
-				      const char* session,
-				      const struct timeval* timestamp) {
-
-  char buf[250];
-  char what[100];
-  char when[40];
-
-  //
-  // Construct the time stamp
-  //
-
-  snprintf(when,sizeof(when)-1,"%llu",
-	   ((unsigned long long)timestamp->tv_sec) * 1000 * 1000 + (unsigned long long)timestamp->tv_usec);
-
-  //
-  // Get the (variable) data related to the specific event (such as a
-  // spin flip in a QUIC connection).
-  //
-
-  memset(what,0,sizeof(what));
-
-  switch (event) {
-
-  case spindump_analyze_event_newconnection:
-    spindump_strlcpy(what,"\"event\": \"new\",",sizeof(what));
-    break;
-
-  case spindump_analyze_event_connectiondelete:
-    spindump_strlcpy(what,"\"event\": \"delete\",",sizeof(what));
-    break;
-
-  case spindump_analyze_event_newleftrttmeasurement:
-  case spindump_analyze_event_newrightrttmeasurement:
-    if (connection->leftRTT.lastRTT != spindump_rtt_infinite &&
-	connection->rightRTT.lastRTT != spindump_rtt_infinite) {
-      unsigned long sumRtt = connection->leftRTT.lastRTT + connection->rightRTT.lastRTT;
-      snprintf(what+strlen(what),sizeof(what)-strlen(what)-1," \"sum_rtt\": %lu,",
-	       sumRtt);
-    }
-    if (connection->leftRTT.lastRTT != spindump_rtt_infinite) {
-      snprintf(what+strlen(what),sizeof(what)-strlen(what)-1," \"left_rtt\": %lu,",
-	       connection->leftRTT.lastRTT);
-    }
-    if (connection->rightRTT.lastRTT != spindump_rtt_infinite) {
-      snprintf(what+strlen(what),sizeof(what)-strlen(what)-1," \"right_rtt\": %lu,",
-	       connection->rightRTT.lastRTT);
-    }
-    break;
-
-  case spindump_analyze_event_newinitrespfullrttmeasurement:
-    snprintf(what,sizeof(what)-1,"\"full_rtt_initiator\": %lu", connection->initToRespFullRTT.lastRTT);
-    break;
-
-  case spindump_analyze_event_newrespinitfullrttmeasurement:
-    snprintf(what,sizeof(what)-1,"\"full_rtt_responder\": %lu", connection->respToInitFullRTT.lastRTT);
-    break;
-
-  case spindump_analyze_event_initiatorspinflip:
-    spindump_assert(connection->type == spindump_connection_transport_quic);
-    snprintf(what,sizeof(what)-1,"\"event\": \"spinflip\", \"transition\": \"%s\", \"who\": \"%s\",",
-	     connection->u.quic.spinFromPeer1to2.lastSpin ? "0-1" : "1-0",
-	     "initiator");
-    break;
-
-  case spindump_analyze_event_responderspinflip:
-    spindump_assert(connection->type == spindump_connection_transport_quic);
-    snprintf(what,sizeof(what)-1,"\"event\": \"spinflip\", \"transition\": \"%s\", \"who\": \"%s\",",
-	     connection->u.quic.spinFromPeer2to1.lastSpin ? "0-1" : "1-0",
-	     "responder");
-    break;
-
-  case spindump_analyze_event_initiatorspinvalue:
-    spindump_assert(connection->type == spindump_connection_transport_quic);
-    snprintf(what,sizeof(what)-1,"\"event\": \"spin\", \"value\": \"%u\", \"who\": \"%s\",",
-	     connection->u.quic.spinFromPeer1to2.lastSpin,
-	     "initiator");
-    break;
-
-  case spindump_analyze_event_responderspinvalue:
-    spindump_assert(connection->type == spindump_connection_transport_quic);
-    snprintf(what,sizeof(what)-1,"\"event\": \"spin\", \"value\": \"%u\", \"who\": \"%s\",",
-	     connection->u.quic.spinFromPeer2to1.lastSpin,
-	     "responder");
-    break;
-
-  case spindump_analyze_event_initiatorecnce:
-    snprintf(what,sizeof(what)-1,"\"event\": \"ECN CE initiator\"");
-    break;
-
-  case spindump_analyze_event_responderecnce:
-    snprintf(what,sizeof(what)-1,"\"event\": \"ECN CE responder\"");
-    break;
-
-  default:
-    return;
-
-  }
-
-  //
-  // With all the information collected, put that now in final text
-  // format, hold it in "buf"
-  //
-
-  memset(buf,0,sizeof(buf));
-  snprintf(buf,sizeof(buf)-1,"{ \"type\": \"%s\", \"addrs\": \"%s\", \"session\": \"%s\", \"ts\": %s,%s \"packets\": %u, \"ECT(0)\": %u, \"ECT(1)\": %u, \"CE\": %u }",
-	   type,
-	   addrs,
-	   session,
-	   when,
-	   what,
-	   connection->packetsFromSide1 + connection->packetsFromSide2,
-     connection->ect0FromInitiator + connection->ect0FromResponder,
-     connection->ect1FromInitiator + connection->ect1FromResponder,
-     connection->ceFromInitiator + connection->ceFromResponder);
-
-  //
-  // Print the buffer out
-  //
-
-  printf("%s\n", buf);
-
-}
-
-//
 // Spindump main operation
 //
 
@@ -815,10 +527,10 @@ spindump_main_operation(void) {
   //
 
   struct spindump_remote_server* server = 0;
-  if (toolmode == spindump_toolmode_silent) {
+  if (collector) {
     server = spindump_remote_server_init();
   }
-
+  
   //
   // Draw screen once before waiting for packets
   //
@@ -835,11 +547,14 @@ spindump_main_operation(void) {
   // track new RTT measurements.
   //
 
+  struct spindump_eventformatter* formatter = 0;
   if (toolmode == spindump_toolmode_textual) {
-    spindump_analyze_registerhandler(analyzer,
-				     spindump_analyze_event_alllegal,
-				     spindump_main_textualmeasurement,
-				     querier);
+    formatter = spindump_eventformatter_initialize(analyzer,
+						   format,
+						   stdout,
+						   querier,
+						   anonymizeLeft,
+						   anonymizeRight);
   }
 
   //
@@ -977,6 +692,10 @@ spindump_main_operation(void) {
   // Done
   //
 
+  if (formatter != 0) {
+    spindump_eventformatter_uninitialize(formatter);
+  }
+
   if (showStats || debug) {
     spindump_stats_report(spindump_analyze_getstats(analyzer),
 			  stdout);
@@ -1099,15 +818,15 @@ help(void) {
 // the input is invalid.
 //
 
-static enum spindump_outputformat
+static enum spindump_eventformatter_outputformat
 spindump_main_parseformat(const char* string) {
   spindump_assert(string != 0);
   if (strcmp(string,"text") == 0) {
-    return(spindump_outputformat_text);
+    return(spindump_eventformatter_outputformat_text);
   } else if (strcmp(string,"json") == 0) {
-    return(spindump_outputformat_json);
+    return(spindump_eventformatter_outputformat_json);
   } else {
     spindump_errorf("invalid output format (%s) specified, expected text or json", string);
-    return(spindump_outputformat_text);
+    return(spindump_eventformatter_outputformat_text);
   }
 }

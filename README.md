@@ -20,6 +20,8 @@ With the help of Lars Eggert, Spindump has switched to the use of cmake! Your co
     cmake .
     make
 
+Also, a long-awaited upgrade is in the work: Spindump will be able to collect information and submit it to another Spindump instance elsewhere. As the protocol used to submit measurement data is web-based, this can also be used to submit data to any suitable web server, for instance, in the convenient JSON format. See [description](../blob/master/Format.md) for more information. Note also that the new JSON format includes an array at the top level, rather than merely records following each other without an array.
+
 # Use Cases
 
 Spindump can be used to observe latency in ongoing connections for debugging purposes, as shown in the below figure:
@@ -103,9 +105,16 @@ Sets a limit of how many packets the tool accepts before finishing. The default 
 
     --interface i
     --input-file f
-    --remote h 
+    --remote h
+	--remote-block-size n
+	--collector 
+	--no-collector 
 
-The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. The --input-file option sets the packets to be read from a PCAP-format file. PCAP-format files can be stored, e.g., with the tcpdump option "-w". The --remote option sets software to listen to connection information collected by other spindump instances running elsewhere in silent mode. The machine where the other instance runs in is specified by the address h. Currently, only one instance can run in one machine, using port 5040. However, a given Spindump instance can connect to multiple other instances when multiple -remote options are used.
+The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. The --input-file option sets the packets to be read from a PCAP-format file. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
+
+The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the address h. Currently, only one instance can run in one machine, using port 5040. However, a given Spindump instance running as a collector can accept connections from multiple other instances.
+
+Finally,  the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the data format [description](../blob/master/Format.md)
 
     --help
 
