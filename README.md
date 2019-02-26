@@ -105,14 +105,15 @@ Sets a limit of how many packets the tool accepts before finishing. The default 
 
     --interface i
     --input-file f
-    --remote h
+    --remote u
 	--remote-block-size n
+	--collector-port p
 	--collector 
 	--no-collector 
 
 The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. The --input-file option sets the packets to be read from a PCAP-format file. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
 
-The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the address h. Currently, only one instance can run in one machine, using port 5040. However, a given Spindump instance running as a collector can accept connections from multiple other instances.
+The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040". By default, Spindump uses the port 5040, which is reflected in the URL. On the collector side the port can be changed with the --collector-port option. Also, a given Spindump instance running as a collector can accept connections from multiple other instances.
 
 Finally,  the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the [data format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md)
 

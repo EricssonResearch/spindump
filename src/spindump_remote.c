@@ -44,7 +44,7 @@
 //
 
 struct spindump_remote_server*
-spindump_remote_server_init(void) {
+spindump_remote_server_init(spindump_port port) {
   unsigned int size = sizeof(struct spindump_remote_server);
   struct spindump_remote_server* server = (struct spindump_remote_server*)malloc(size);
   if (server == 0) {
@@ -54,7 +54,7 @@ spindump_remote_server_init(void) {
   
   memset(server,0,sizeof(*server));
   server->listenfd = -1;
-  server->listenport = SPINDUMP_PORT_NUMBER;
+  server->listenport = port;
   
   // ...
   

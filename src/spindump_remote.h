@@ -63,7 +63,7 @@ struct spindump_remote_client {
 //
 
 struct spindump_remote_server*
-spindump_remote_server_init(void);
+spindump_remote_server_init(spindump_port port);
 
 void
 spindump_remote_server_update(struct spindump_remote_server* server,

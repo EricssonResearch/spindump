@@ -66,7 +66,9 @@ static struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
 static int interrupt = 0;
 static unsigned int nRemotes = 0;
 static struct spindump_remote_client* remotes[SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS];
+static unsigned int remoteBlockSize = 16 * 1024;
 static int collector = 0;
+static spindump_port collectorPort = SPINDUMP_PORT_NUMBER;
 static FILE* debugfile = 0;
 
 //
@@ -236,6 +238,29 @@ spindump_main_processargs(int argc,char** argv) {
     } else if (strcmp(argv[0],"--no-collector") == 0) {
       
       collector = 0;
+      
+    } else if (strcmp(argv[0],"--collector-port") == 0 && argc > 1) {
+
+      if (!isdigit(*(argv[1]))) {
+	spindump_errorf("expected a numeric argument for --collector-port, got %s", argv[1]);
+	exit(1);
+      }
+      int input = atoi(argv[1]);
+      if (input <= 1 || input > 65535) {
+	spindump_errorf("expected argument for --collector-port to be between 1 and 65535, got %s", argv[1]);
+	exit(1);
+      }
+      collectorPort = (spindump_port)input;
+      argc--; argv++;
+      
+    } else if (strcmp(argv[0],"--remote-block-size") == 0 && argc > 1) {
+
+      if (!isdigit(*(argv[1]))) {
+	spindump_errorf("expected a numeric argument for --remote-block-size, got %s", argv[1]);
+	exit(1);
+      }
+      remoteBlockSize = 1024 * (unsigned int)atoi(argv[1]);
+      argc--; argv++;
       
     } else if (strcmp(argv[0],"--max-receive") == 0 && argc > 1) {
 
@@ -528,7 +553,7 @@ spindump_main_operation(void) {
 
   struct spindump_remote_server* server = 0;
   if (collector) {
-    server = spindump_remote_server_init();
+    server = spindump_remote_server_init(collectorPort);
   }
   
   //
@@ -799,7 +824,13 @@ help(void) {
   printf("\n");
   printf("    --interface i         Set the interface to listen on, or the capture\n");
   printf("    --input-file f        file to read from.\n");
-  printf("    --remote h            Get connections information from spindump running at host h\n");
+  printf("    --remote u            Send connections information to spindump running elsewhere, at URL u\n");
+  printf("    --remote-block-size n When sending information, collect as much as n bytes of information\n");
+  printf("                          in each batch\n");
+  printf("    --collector-port p    Use the port p for listening for other spindump instances sending this\n");
+  printf("                          instance information\n");
+  printf("    --collector           Listen for other spindump instances for information.\n");
+  printf("    --no-collector        Do not listen.\n");
   printf("  \n");
   printf("    --debug               Sets the debugging output on/off.\n");
   printf("    --no-debug\n");
