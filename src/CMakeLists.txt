@@ -26,10 +26,17 @@ list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libpcap")
 find_package(Curses)
 find_package(Threads)
 
+# find_package(Curl)
+
 find_path(PCAP_INCLUDE_DIR NAMES pcap/pcap.h pcap.h)
 find_library(PCAP_LIBRARY NAMES pcap)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_INCLUDE_DIR PCAP_LIBRARY)
+
+find_path(CURL_INCLUDE_DIR NAMES curl/curl.h curl.h)
+find_library(CURL_LIBRARY NAMES curl)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(CURL DEFAULT_MSG CURL_INCLUDE_DIR CURL_LIBRARY)
 
 #
 # Main spindump library that we create
@@ -78,6 +85,7 @@ target_include_directories(spindumplib
 
 target_link_libraries(spindumplib
   PRIVATE
+    ${CURL_LIBRARY}
     ${PCAP_LIBRARY}
     ${CURSES_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}

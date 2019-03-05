@@ -258,6 +258,7 @@ spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
       if (connection != 0) spindump_connectionstable_periodiccheck_aux(connection,now,table,analyzer);
     }
     spindump_connectionstable_compresstable(table);
+    table->lastPeriodicCheck = *now;
     return(1);
   } else {
     return(0);

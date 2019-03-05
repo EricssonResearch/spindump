@@ -20,7 +20,11 @@ With the help of Lars Eggert, Spindump has switched to the use of cmake! Your co
     cmake .
     make
 
-Also, a long-awaited upgrade is in the work: Spindump will be able to collect information and submit it to another Spindump instance elsewhere. As the protocol used to submit measurement data is web-based, this can also be used to submit data to any suitable web server, for instance, in the convenient JSON format. See the [format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) for more information. Note also that the new JSON format includes an array at the top level, rather than merely records following each other without an array.
+Also, a long-awaited upgrade is in the work: Spindump will be able to collect information and submit it to another Spindump instance elsewhere. As the protocol used to submit measurement data is web-based, this can also be used to submit data to any suitable web server, for instance, in the convenient JSON format. See the [format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) for more information. Note also that the new JSON format includes an array at the top level, rather than merely records following each other without an array. For now, the sending side works but we're still working on the server. To send data from a Spindump instance to a web server, give the command like this:
+
+    spindump --remote-block-size 0 --silent --format json --remote https://httpbin.org/post
+
+This will send every event in JSON format to the webserver in httpbin.org, and make a POST for each of those events.
 
 # Use Cases
 
@@ -115,7 +119,7 @@ The --interface option sets the local interface to listen on. The default is wha
 
 The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040". By default, Spindump uses the port 5040, which is reflected in the URL. On the collector side the port can be changed with the --collector-port option. Also, a given Spindump instance running as a collector can accept connections from multiple other instances.
 
-Finally,  the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the [data format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md)
+Finally, the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update, but if the block size is set to 0, there will be no pooling. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the [data format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md)
 
     --help
 
@@ -133,11 +137,11 @@ The easiest installation method is to retrieve the software from GitHub. Start w
 
 Make sure you have the necessary tools to compile; you'll need the gmake, gcc, and libpcap packages at least. On a Mac OS X, you can install these with the
 
-    sudo port install cmake gmake gcc libpcap ncurses
+    sudo port install cmake gmake gcc libpcap ncurses curl
 
 command. And on linux, do:
 
-    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev
+    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev libcurl4-openssl-dev
 
 Then do:
 

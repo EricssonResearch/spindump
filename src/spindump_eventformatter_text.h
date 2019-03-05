@@ -36,7 +36,9 @@
 // External API interface to this module ------------------------------------------------------
 //
 
-void
+unsigned long
+spindump_eventformatter_measurement_beginlength_text(struct spindump_eventformatter* formatter);
+const uint8_t*
 spindump_eventformatter_measurement_begin_text(struct spindump_eventformatter* formatter);
 void
 spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* formatter,
@@ -46,7 +48,9 @@ spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* for
 					     const char* addrs,
 					     const char* session,
 					     const struct timeval* timestamp);
-void
+unsigned long
+spindump_eventformatter_measurement_endlength_text(struct spindump_eventformatter* formatter);
+const uint8_t*
 spindump_eventformatter_measurement_end_text(struct spindump_eventformatter* formatter);
 
 #endif // SPINDUMP_EVENTFORMATTER_TEXT_H

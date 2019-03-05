@@ -35,6 +35,9 @@ enum spindump_eventformatter_outputformat {
   spindump_eventformatter_outputformat_json
 };
 
+#define spindump_eventformatter_maxpreamble  10
+#define spindump_eventformatter_maxpostamble 10
+
 //
 // Parameters ---------------------------------------------------------------------------------
 //
@@ -43,14 +46,24 @@ enum spindump_eventformatter_outputformat {
 // Data structures ----------------------------------------------------------------------------
 //
 
+struct spindump_analyze;
+struct spindump_reverse_dns;
+struct spindump_remote_client;
+
 struct spindump_eventformatter {
   FILE* file;
+  unsigned long blockSize;
+  uint8_t padding1[4]; // unused padding to align the size of the structure correctly
+  unsigned int nRemotes;
+  struct spindump_remote_client** remotes;
+  uint8_t* block;
+  unsigned long bytesInBlock;
   struct spindump_analyze* analyzer;
   struct spindump_reverse_dns* querier;
   int anonymizeLeft;
   int anonymizeRight;
   enum spindump_eventformatter_outputformat format;
-  uint8_t padding[4]; // unused padding to align the size of the structure correctly
+  uint8_t padding2[4]; // unused padding to align the size of the structure correctly
 };
 
 //
@@ -58,13 +71,31 @@ struct spindump_eventformatter {
 //
 
 struct spindump_eventformatter*
-spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
-				   enum spindump_eventformatter_outputformat format,
-				   FILE* file,
-				   struct spindump_reverse_dns* querier,
-				   int anonymizeLeft,
-				   int anonymizeRight);
+spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
+					enum spindump_eventformatter_outputformat format,
+					FILE* file,
+					struct spindump_reverse_dns* querier,
+					int anonymizeLeft,
+					int anonymizeRight);
+struct spindump_eventformatter*
+spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
+					  enum spindump_eventformatter_outputformat format,
+					  unsigned int nRemotes,
+					  struct spindump_remote_client** remotes,
+					  unsigned long blockSize,
+					  struct spindump_reverse_dns* querier,
+					  int anonymizeLeft,
+					  int anonymizeRight);
 void
 spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter);
+
+//
+// Internal API interface to this module ------------------------------------------------------
+//
+
+void
+spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
+				    unsigned long length,
+				    const uint8_t* data);
 
 #endif // SPINDUMP_EVENTFORMATTER_H

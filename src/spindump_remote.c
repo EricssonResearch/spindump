@@ -31,6 +31,13 @@
 #include "spindump_remote.h"
 
 //
+// Function prototypes ------------------------------------------------------------------------
+//
+
+static size_t
+spindump_remote_client_answer(void *buffer, size_t size, size_t nmemb, void *userp);
+  
+//
 // Actual code --------------------------------------------------------------------------------
 //
 
@@ -106,38 +113,100 @@ spindump_remote_server_close(struct spindump_remote_server* server) {
 //
 
 struct spindump_remote_client*
-spindump_remote_client_init(const char* name) {
+spindump_remote_client_init(const char* url) {
+
+  //
+  // Allocate
+  //
+  
   unsigned int size = sizeof(struct spindump_remote_client);
   struct spindump_remote_client* client = (struct spindump_remote_client*)malloc(size);
   if (client == 0) {
     spindump_errorf("cannot allocate client of %u bytes", size);
     return(0);
   }
-  memset(client,0,sizeof(*client));
+
+  //
+  // Set the contents of the object
+  //
   
-  // ...
-  spindump_errorf("client not implemented yet");
-  return(0);
+  memset(client,0,sizeof(*client));
+  client->url = url;
+  client->curl = curl_easy_init();
+
+  //
+  // Done
+  //
+  
+  return(client);
 }
 
 //
-// Retrieve an update from the server
+// Send an update to the server
 //
 
 void
-spindump_remote_client_update(struct spindump_remote_client* client,
-			      struct spindump_connectionstable* table) {
+spindump_remote_client_update_periodic(struct spindump_remote_client* client,
+				       struct spindump_connectionstable* table) {
   // ...
+  spindump_errorf("periodic updates not implemented");
+}
+
+void
+spindump_remote_client_update_event(struct spindump_remote_client* client,
+				    const char* mediaType,
+				    unsigned long length,
+				    const uint8_t* data) {
+
+  //
+  // Configure the request
+  //
+
+  curl_easy_setopt(client->curl, CURLOPT_URL, client->url);
+  curl_easy_setopt(client->curl, CURLOPT_POSTFIELDS, data);
+  curl_easy_setopt(client->curl, CURLOPT_POSTFIELDSIZE, length);
+  curl_easy_setopt(client->curl, CURLOPT_WRITEFUNCTION, spindump_remote_client_answer);
+  spindump_debugf("performing a post on %s...", client->url);
+  if (length > 0 && (data[0] == '[' || data[0] == '{')) {
+    spindump_deepdebugf("data: %s", data);
+  }
+
+  //
+  // Perform the request, res will get the return code
+  //
+  
+  CURLcode res = curl_easy_perform(client->curl);
+  
+  //
+  // Check for errors
+  //
+  
+  if (res != CURLE_OK) {
+    spindump_debugf("failed");
+    spindump_errorf("remote request to %s failed: %s",
+		    client->url,
+		    curl_easy_strerror(res));
+  }
+  spindump_debugf("Ok");
 }
 
 //
-// Close the client to no longer receive updates from the server.
+// Close the client, i.e., no longer send updates to the server.
 //
 
 void
 spindump_remote_client_close(struct spindump_remote_client* client) {
   spindump_assert(client != 0);
-  close(client->fd);
+  curl_easy_cleanup(client->curl);
   free(client);
 }
 
+//
+// By default, CURL writes any answer from a HTTP POST to stdout. This
+// function will not do this.
+//
+
+static size_t
+spindump_remote_client_answer(void *buffer, size_t size, size_t nmemb, void *userp) {
+  return(size * nmemb);
+}

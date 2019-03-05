@@ -24,21 +24,39 @@
 #include "spindump_eventformatter_json.h"
 
 //
+// Return the length of the preamble
+//
+
+unsigned long
+spindump_eventformatter_measurement_beginlength_json(struct spindump_eventformatter* formatter) {
+  return(2);
+}
+
+//
 // Print what is needed as a preface to the actual records
 //
 
-void
+const uint8_t*
 spindump_eventformatter_measurement_begin_json(struct spindump_eventformatter* formatter) {
-  fprintf(formatter->file,"[\n");
+  return((uint8_t*)"[\n");
+}
+
+//
+// Return the length of the postamble
+//
+
+unsigned long
+spindump_eventformatter_measurement_endlength_json(struct spindump_eventformatter* formatter) {
+  return(2);
 }
 
 //
 // Print what is needed as an end after the actual records
 //
 
-void
+const uint8_t*
 spindump_eventformatter_measurement_end_json(struct spindump_eventformatter* formatter) {
-  fprintf(formatter->file,"]\n");
+  return((uint8_t*)"]\n");
 }
 
 //
@@ -159,7 +177,7 @@ spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* for
   //
 
   memset(buf,0,sizeof(buf));
-  snprintf(buf,sizeof(buf)-1,"{ \"type\": \"%s\", \"addrs\": \"%s\", \"session\": \"%s\", \"ts\": %s,%s \"packets\": %u, \"ECT(0)\": %u, \"ECT(1)\": %u, \"CE\": %u }",
+  snprintf(buf,sizeof(buf)-1,"{ \"type\": \"%s\", \"addrs\": \"%s\", \"session\": \"%s\", \"ts\": %s,%s \"packets\": %u, \"ECT(0)\": %u, \"ECT(1)\": %u, \"CE\": %u }\n",
 	   type,
 	   addrs,
 	   session,
@@ -173,8 +191,8 @@ spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* for
   //
   // Print the buffer out
   //
-
-  fprintf(formatter->file,"%s\n", buf);
-
+  
+  spindump_eventformatter_deliverdata(formatter,strlen(buf),(uint8_t*)buf);
+  
 }
 

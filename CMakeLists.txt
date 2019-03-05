@@ -53,7 +53,8 @@ foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
     -fno-omit-frame-pointer
     -fno-optimize-sibling-calls -fno-common
     -Wno-covered-switch-default
-    -Wno-unused-parameter
+    -Wno-unused-parameter 
+    -Wno-disabled-macro-expansion
   )
   string(REGEX REPLACE "[-=+]" "_" F ${FLAG})
   check_c_compiler_flag(${FLAG} ${F})

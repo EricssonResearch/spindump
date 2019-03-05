@@ -66,7 +66,7 @@ static struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
 static int interrupt = 0;
 static unsigned int nRemotes = 0;
 static struct spindump_remote_client* remotes[SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS];
-static unsigned int remoteBlockSize = 16 * 1024;
+static unsigned long remoteBlockSize = 16 * 1024;
 static int collector = 0;
 static spindump_port collectorPort = SPINDUMP_PORT_NUMBER;
 static FILE* debugfile = 0;
@@ -83,6 +83,8 @@ static void
 spindump_main_operation(void);
 static enum spindump_eventformatter_outputformat
 spindump_main_parseformat(const char* string);
+static void
+spindump_main_initialize_aggregates(struct spindump_analyze* analyzer);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -259,7 +261,7 @@ spindump_main_processargs(int argc,char** argv) {
 	spindump_errorf("expected a numeric argument for --remote-block-size, got %s", argv[1]);
 	exit(1);
       }
-      remoteBlockSize = 1024 * (unsigned int)atoi(argv[1]);
+      remoteBlockSize = 1024 * (unsigned long)atoi(argv[1]);
       argc--; argv++;
       
     } else if (strcmp(argv[0],"--max-receive") == 0 && argc > 1) {
@@ -473,49 +475,8 @@ spindump_main_operation(void) {
   // Initialize aggregate collection, as specifie earlier
   //
 
-  struct timeval startTime;
-  spindump_getcurrenttime(&startTime);
-  for (unsigned int i = 0; i < nAggregates; i++) {
-    struct spindump_main_aggregate* aggregate = &aggregates[i];
-    spindump_assert(spindump_isbool(aggregate->ismulticastgroup));
-    spindump_assert(spindump_isbool(aggregate->side1ishost));
-    spindump_assert(spindump_isbool(aggregate->side2ishost));
-    struct spindump_connection* aggregateConnection = 0;
-    if (aggregate->ismulticastgroup) {
-      aggregateConnection = spindump_connections_newconnection_aggregate_multicastgroup(&aggregate->side1address,
-											&startTime,
-											1,
-											analyzer->table);
-    } else if (aggregate->side1ishost && aggregate->side2ishost) {
-      aggregateConnection = spindump_connections_newconnection_aggregate_hostpair(&aggregate->side1address,
-										  &aggregate->side2address,
-										  &startTime,
-										  1,
-										  analyzer->table);
-    } else if (aggregate->side1ishost && !aggregate->side2ishost) {
-      aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side1address,
-										     &aggregate->side2network,
-										     &startTime,
-										     1,
-										     analyzer->table);
-    } else if (!aggregate->side1ishost && aggregate->side2ishost) {
-      aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side2address,
-										     &aggregate->side1network,
-										     &startTime,
-										     1,
-										     analyzer->table);
-    } else if (!aggregate->side1ishost && !aggregate->side2ishost) {
-      aggregateConnection = spindump_connections_newconnection_aggregate_networknetwork(&aggregate->side1network,
-											&aggregate->side2network,
-											&startTime,
-											1,
-											analyzer->table);
-    }
-    if (aggregateConnection != 0) {
-      spindump_deepdebugf("created a manually configured aggregate connection %u", aggregateConnection->id);
-    }
-  }
-
+  spindump_main_initialize_aggregates(analyzer);
+  
   //
   // Initialize the capture interface
   //
@@ -573,13 +534,25 @@ spindump_main_operation(void) {
   //
 
   struct spindump_eventformatter* formatter = 0;
+  struct spindump_eventformatter* remoteFormatter = 0;
   if (toolmode == spindump_toolmode_textual) {
-    formatter = spindump_eventformatter_initialize(analyzer,
-						   format,
-						   stdout,
-						   querier,
-						   anonymizeLeft,
-						   anonymizeRight);
+    formatter = spindump_eventformatter_initialize_file(analyzer,
+							format,
+							stdout,
+							querier,
+							anonymizeLeft,
+							anonymizeRight);
+  }
+
+  if (nRemotes > 0) {
+    remoteFormatter = spindump_eventformatter_initialize_remote(analyzer,
+								format,
+								nRemotes,
+								remotes,
+								remoteBlockSize,
+								querier,
+								anonymizeLeft,
+								anonymizeRight);
   }
   
   //
@@ -642,8 +615,8 @@ spindump_main_operation(void) {
 						&now,
 						analyzer)) {
       if (server != 0) spindump_remote_server_update(server,analyzer->table);
-      for (unsigned int i = 0; i < nRemotes; i++) {
-	spindump_remote_client_update(remotes[i],analyzer->table);
+      for (unsigned int i = 0; remoteBlockSize > 0 && i < nRemotes; i++) {
+	spindump_remote_client_update_periodic(remotes[i],analyzer->table);
       }
     }
 
@@ -720,7 +693,11 @@ spindump_main_operation(void) {
   if (formatter != 0) {
     spindump_eventformatter_uninitialize(formatter);
   }
-
+  
+  if (remoteFormatter != 0) {
+    spindump_eventformatter_uninitialize(remoteFormatter);
+  }
+  
   if (showStats || debug) {
     spindump_stats_report(spindump_analyze_getstats(analyzer),
 			  stdout);
@@ -859,5 +836,51 @@ spindump_main_parseformat(const char* string) {
   } else {
     spindump_errorf("invalid output format (%s) specified, expected text or json", string);
     return(spindump_eventformatter_outputformat_text);
+  }
+}
+
+static void
+spindump_main_initialize_aggregates(struct spindump_analyze* analyzer) {
+  struct timeval startTime;
+  spindump_getcurrenttime(&startTime);
+  for (unsigned int i = 0; i < nAggregates; i++) {
+    struct spindump_main_aggregate* aggregate = &aggregates[i];
+    spindump_assert(spindump_isbool(aggregate->ismulticastgroup));
+    spindump_assert(spindump_isbool(aggregate->side1ishost));
+    spindump_assert(spindump_isbool(aggregate->side2ishost));
+    struct spindump_connection* aggregateConnection = 0;
+    if (aggregate->ismulticastgroup) {
+      aggregateConnection = spindump_connections_newconnection_aggregate_multicastgroup(&aggregate->side1address,
+											&startTime,
+											1,
+											analyzer->table);
+    } else if (aggregate->side1ishost && aggregate->side2ishost) {
+      aggregateConnection = spindump_connections_newconnection_aggregate_hostpair(&aggregate->side1address,
+										  &aggregate->side2address,
+										  &startTime,
+										  1,
+										  analyzer->table);
+    } else if (aggregate->side1ishost && !aggregate->side2ishost) {
+      aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side1address,
+										     &aggregate->side2network,
+										     &startTime,
+										     1,
+										     analyzer->table);
+    } else if (!aggregate->side1ishost && aggregate->side2ishost) {
+      aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side2address,
+										     &aggregate->side1network,
+										     &startTime,
+										     1,
+										     analyzer->table);
+    } else if (!aggregate->side1ishost && !aggregate->side2ishost) {
+      aggregateConnection = spindump_connections_newconnection_aggregate_networknetwork(&aggregate->side1network,
+											&aggregate->side2network,
+											&startTime,
+											1,
+											analyzer->table);
+    }
+    if (aggregateConnection != 0) {
+      spindump_deepdebugf("created a manually configured aggregate connection %u", aggregateConnection->id);
+    }
   }
 }

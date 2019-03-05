@@ -24,19 +24,39 @@
 #include "spindump_eventformatter_text.h"
 
 //
+// Return the length of the preamble
+//
+
+unsigned long
+spindump_eventformatter_measurement_beginlength_text(struct spindump_eventformatter* formatter) {
+  return(0);
+}
+
+//
 // Print what is needed as a preface to the actual records
 //
 
-void
+const uint8_t*
 spindump_eventformatter_measurement_begin_text(struct spindump_eventformatter* formatter) {
+  return((uint8_t*)"");
+}
+
+//
+// Return the length of the postamble
+//
+
+unsigned long
+spindump_eventformatter_measurement_endlength_text(struct spindump_eventformatter* formatter) {
+  return(0);
 }
 
 //
 // Print what is needed as an end after the actual records
 //
 
-void
+const uint8_t*
 spindump_eventformatter_measurement_end_text(struct spindump_eventformatter* formatter) {
+  return((uint8_t*)"");
 }
 
 //
@@ -137,12 +157,12 @@ spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* for
   //
 
   memset(buf,0,sizeof(buf));
-  snprintf(buf,sizeof(buf)-1,"%s %s %s at %s %s",
+  snprintf(buf,sizeof(buf)-1,"%s %s %s at %s %s\n",
 	   type, addrs, session, when, what);
 
   //
   // Print the buffer out
   //
-
-  fprintf(formatter->file,"%s\n", buf);
+  
+  spindump_eventformatter_deliverdata(formatter,strlen(buf),(uint8_t*)buf);
 }
