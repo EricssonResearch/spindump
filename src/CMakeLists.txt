@@ -132,7 +132,7 @@ add_test( spindump_test spindump_test )
 add_custom_command(OUTPUT ../spindump.tar.gz
                    COMMAND rm ARGS -f spindump.tar.gz
                    COMMAND tar
-		   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c
+		   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh
 		   WORKING_DIRECTORY ..
 )
 

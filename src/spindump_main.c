@@ -26,6 +26,8 @@
 #include <signal.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "spindump_util.h"
 #include "spindump_capture.h"
 #include "spindump_analyze.h"
@@ -493,6 +495,39 @@ spindump_main_operation(void) {
   }
   
   if (capturer == 0) exit(1);
+  
+  //
+  // Now is the time to drop privileges, as the capture interface has
+  // been opened, so no longer need for root privileges (if we are
+  // running root).
+  //
+
+  uid_t euid = geteuid();
+  if (euid == 0) {
+
+    uid_t uid = getuid();
+    
+    if (setgid(getgid()) != 0) {
+      spindump_fatalf("Unable to drop group privileges");
+    }
+    
+    if (setuid(getuid()) != 0) {
+      spindump_fatalf("setuid: Unable to drop user privileges");
+    }
+
+    if (euid != uid) {
+
+      //
+      // Since we are paranoid... we will try to get our root privileges
+      // back, which should fail. If it doesn't fail, we exit!
+      //
+      
+      if (setuid(0) != -1) {
+	spindump_fatalf("Managed to regain root privileges, this should not happen");
+      }
+
+    }
+  }
   
   //
   // Initialize the user interface
