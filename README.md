@@ -14,17 +14,19 @@ The tool builds on the Spindump Library, which is a small, simple, and extensibl
 
 # News!!!
 
-With the help of Lars Eggert, Spindump has switched to the use of cmake! Your compilations will be affected, so next time you get a new version, please install the necessary software (cmake and pkg-config). No Makefiles are provided in the repo anymore, they will be created by cmake. So do this for your next compilation:
-
-    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev
-    cmake .
-    make
+Spindump is now performing a privilege downgrade as soon as it has opened the PCAP interface. Since on Linux, spindump runs as suid root, reduces the risk of impacts from accidental issues or bugs in the analyzer code that previously run  root. Thank you Loganaden for this contribution!
 
 Also, a long-awaited upgrade is in the work: Spindump will be able to collect information and submit it to another Spindump instance elsewhere. As the protocol used to submit measurement data is web-based, this can also be used to submit data to any suitable web server, for instance, in the convenient JSON format. See the [format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) for more information. Note also that the new JSON format includes an array at the top level, rather than merely records following each other without an array. For now, the sending side works but we're still working on the server. To send data from a Spindump instance to a web server, give the command like this:
 
     spindump --remote-block-size 0 --silent --format json --remote https://httpbin.org/post
 
 This will send every event in JSON format to the webserver in httpbin.org, and make a POST for each of those events.
+
+With the help of Lars Eggert, Spindump has switched to the use of cmake! Your compilations will be affected, so next time you get a new version, please install the necessary software (cmake and pkg-config). No Makefiles are provided in the repo anymore, they will be created by cmake. So do this for your next compilation:
+
+    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev
+    cmake .
+    make
 
 # Use Cases
 
