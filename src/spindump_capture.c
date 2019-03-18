@@ -60,10 +60,11 @@ spindump_capture_defaultinterface(void) {
   // Look up default device from PCAP
   // 
   
-  char *dev;
   char errbuf[PCAP_ERRBUF_SIZE];
-  dev = pcap_lookupdev(errbuf);
-  if (dev == 0) {
+  pcap_if_t* alldevs = 0;
+  
+  memset(errbuf,0,sizeof(errbuf));
+  if (pcap_findalldevs(&alldevs,errbuf) != 0) {
     spindump_errorf("couldn't find default device: %s", errbuf);
     return(0);
   }
@@ -72,9 +73,10 @@ spindump_capture_defaultinterface(void) {
   // Get the interface name and substitute our own allocated string for it
   // 
   
-  char* result = strdup(dev);
+  char* result = strdup(alldevs->name);
+  pcap_freealldevs(alldevs);
   if (result == 0) {
-    spindump_errorf("cannot allocate memory for string of %u bytes", strlen(dev));
+    spindump_errorf("cannot allocate memory for string representing a device");
     return(0);
   }
 
@@ -119,27 +121,49 @@ spindump_capture_initialize_aux(const char* interface,
   memset(state,0,sizeof(*state));
 
   //
-  // Open the PCAP interface
-  // 
+  // Determine what if anything we need to listen on
+  //
   
   char errbuf[PCAP_ERRBUF_SIZE];
   int promisc = 0;
-  if (interface != 0) {
+  if (interface == 0 && file == 0) {
+    
+    //
+    // If this is a null capture that never returns packets, then just
+    // set the contents of the object to indicate that, and return.
+    //
+    
+    state->handle = 0;
+    state->linktype = spindump_capture_linktype_null;
+    state->ourAddress = 0x7f000001;
+    state->ourNetmask = 0xff000000;
+    state->ourLocalBroadcastAddress = 0x7fffffff;
+    return(state);
+    
+  } else if (interface != 0) {
+  
+    //
+    // Open the PCAP interface
+    // 
+    
     state->handle = pcap_open_live(interface, spindump_capture_snaplen, promisc, spindump_capture_wait, errbuf);
     if (state->handle == 0) {
       spindump_errorf("couldn't open device %s: %s", interface, errbuf);
       free(state);
       return(0);
     }
-  } else {
+    
+  } else if (file != 0) {
+    
     state->handle = pcap_open_offline(file, errbuf);
     if (state->handle == 0) {
       spindump_errorf("couldn't open file %s: %s", file, errbuf);
       free(state);
       return(0);
     }
+    
   }
-
+  
   int linktype = pcap_datalink(state->handle);
   switch (linktype) {
   case DLT_NULL:
@@ -230,11 +254,22 @@ spindump_capture_initialize_file(const char* file,
 //
 
 struct spindump_capture_state*
-spindump_capture_initialize(const char* interface,
-			    const char* filter) {
+spindump_capture_initialize_live(const char* interface,
+				 const char* filter) {
 
   spindump_debugf("opening capture on interface %s...", interface);
   return(spindump_capture_initialize_aux(interface,0,filter));
+  
+}
+
+//
+// Initialize a capture object to capture nothing
+//
+
+struct spindump_capture_state*
+spindump_capture_initialize_null(void) {
+  spindump_debugf("opening null capture...");
+  return(spindump_capture_initialize_aux(0,0,""));
   
 }
 
@@ -254,11 +289,25 @@ spindump_capture_nextpacket(struct spindump_capture_state* state,
   
   spindump_assert(state != 0);
   spindump_assert(p_packet != 0);
+  spindump_assert(p_more != 0);
+  spindump_assert(stats != 0);
+
+  //
+  // Check if we have a capture object created by
+  // spindump_capture_initialize_null, in that case we're not supposed
+  // to return any packets.
+  //
+
+  if (state->handle == 0) {
+    *p_packet = 0;
+    *p_more = 1;
+    return;
+  }
   
   //
-  // Wait for the next packet
+  // Otherwise. ait for the next packet
   // 
-
+  
   struct spindump_packet* packet = &state->currentPacket;
   memset(packet,0,sizeof(*packet));
 
@@ -331,8 +380,10 @@ spindump_capture_uninitialize(struct spindump_capture_state* state) {
   //
   // Close and cleanup
   // 
-  
-  pcap_close(state->handle);
+
+  if (state->handle != 0) {
+    pcap_close(state->handle);
+  }
   memset(state,0,sizeof(*state));
   
   //

@@ -25,8 +25,7 @@ list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libpcap")
 
 find_package(Curses)
 find_package(Threads)
-
-# find_package(Curl)
+#find_package(Microhttpd)
 
 find_path(PCAP_INCLUDE_DIR NAMES pcap/pcap.h pcap.h)
 find_library(PCAP_LIBRARY NAMES pcap)
@@ -37,6 +36,11 @@ find_path(CURL_INCLUDE_DIR NAMES curl/curl.h curl.h)
 find_library(CURL_LIBRARY NAMES curl)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(CURL DEFAULT_MSG CURL_INCLUDE_DIR CURL_LIBRARY)
+
+find_path(MICROHTTPD_INCLUDE_DIR NAMES microhttpd.h)
+find_library(MICROHTTPD_LIBRARY NAMES microhttpd)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(MICROHTTPD DEFAULT_MSG MICROHTTPD_INCLUDE_DIR MICROHTTPD_LIBRARY)
 
 #
 # Main spindump library that we create
@@ -66,7 +70,8 @@ add_library(spindumplib
   spindump_mid.c
   spindump_packet.c
   spindump_protocols.c
-  spindump_remote.c
+  spindump_remote_client.c
+  spindump_remote_server.c
   spindump_report.c
   spindump_reversedns.c
   spindump_reversedns_full.c
@@ -85,6 +90,7 @@ target_include_directories(spindumplib
 
 target_link_libraries(spindumplib
   PRIVATE
+    ${MICROHTTPD_LIBRARY}
     ${CURL_LIBRARY}
     ${PCAP_LIBRARY}
     ${CURSES_LIBRARIES}

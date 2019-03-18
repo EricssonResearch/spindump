@@ -55,7 +55,7 @@ enum spindump_report_destination {
 
 struct spindump_report_state {
   enum spindump_report_destination destination;
-  unsigned int inputlineposition;
+  int inputlineposition;
   int anonymizeLeft;
   int anonymizeRight;
   struct spindump_reverse_dns* querier;

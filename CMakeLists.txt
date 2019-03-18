@@ -48,6 +48,7 @@ endif()
 
 include(CheckCCompilerFlag)
 foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
+    -I/opt/local/include
     -Wall -Wextra -Wpedantic -Weverything -Werror
     -fno-diagnostics-color
     -fno-omit-frame-pointer
@@ -55,6 +56,12 @@ foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
     -Wno-covered-switch-default
     -Wno-unused-parameter 
     -Wno-disabled-macro-expansion
+    # need to include the following to make PCAP compile
+    -Wno-padded
+    # need to the include the following to make Libmicrohttpd compile
+    -Wno-documentation-deprecated-sync
+    -Wno-reserved-id-macro
+    -Wno-documentation
   )
   string(REGEX REPLACE "[-=+]" "_" F ${FLAG})
   check_c_compiler_flag(${FLAG} ${F})

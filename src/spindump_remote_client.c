@@ -28,7 +28,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include "spindump_util.h"
-#include "spindump_remote.h"
+#include "spindump_remote_client.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -36,72 +36,10 @@
 
 static size_t
 spindump_remote_client_answer(void *buffer, size_t size, size_t nmemb, void *userp);
-  
+
 //
 // Actual code --------------------------------------------------------------------------------
 //
-
-//
-// Server API
-//
-
-//
-// Create an object to represent perform a server function to listen
-// for requests for Spindump data.
-//
-
-struct spindump_remote_server*
-spindump_remote_server_init(spindump_port port) {
-  unsigned int size = sizeof(struct spindump_remote_server);
-  struct spindump_remote_server* server = (struct spindump_remote_server*)malloc(size);
-  if (server == 0) {
-    spindump_errorf("cannot allocate server of %u bytes", size);
-    return(0);
-  }
-  
-  memset(server,0,sizeof(*server));
-  server->listenfd = -1;
-  server->listenport = port;
-  
-  // ...
-  
-  spindump_warnf("server not implemented yet");
-  return(server);
-}
-
-//
-// Send an update to all clients of the server that are connected.
-//
-
-void
-spindump_remote_server_update(struct spindump_remote_server* server,
-			      struct spindump_connectionstable* table) {
-  spindump_assert(server != 0);
-  for (unsigned int i = 0; i < SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONS; i++) {
-    struct spindump_remote_connection* client = &server->clients[i];
-    if (client->active) {
-      // ...
-    }
-  }
-}
-
-//
-// Close the server object and all connections associated with it.
-//
-
-void
-spindump_remote_server_close(struct spindump_remote_server* server) {
-  spindump_assert(server != 0);
-  for (unsigned int i = 0; i < SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONS; i++) {
-    struct spindump_remote_connection* client = &server->clients[i];
-    if (client->active) {
-      client->active = 0;
-      close(client->fd);
-    }
-  }
-  close(server->listenfd);
-  free(server);
-}
 
 //
 // Client API
@@ -148,7 +86,8 @@ spindump_remote_client_init(const char* url) {
 void
 spindump_remote_client_update_periodic(struct spindump_remote_client* client,
 				       struct spindump_connectionstable* table) {
-  // ...
+  // ..
+  spindump_deepdebugf("spindump_remote_client_update_periodic, data: ");
   spindump_errorf("periodic updates not implemented");
 }
 

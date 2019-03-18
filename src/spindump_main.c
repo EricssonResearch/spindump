@@ -30,7 +30,8 @@
 #include "spindump_capture.h"
 #include "spindump_analyze.h"
 #include "spindump_report.h"
-#include "spindump_remote.h"
+#include "spindump_remote_client.h"
+#include "spindump_remote_server.h"
 #include "spindump_eventformatter.h"
 #include "spindump_main.h"
 
@@ -481,13 +482,18 @@ spindump_main_operation(void) {
   // Initialize the capture interface
   //
 
-  struct spindump_capture_state* capturer =
-    (inputFile == 0 ?
-     spindump_capture_initialize(interface,filter) :
-     spindump_capture_initialize_file(inputFile,filter));
+  struct spindump_capture_state* capturer = 0;
 
+  if (inputFile != 0) {
+    capturer = spindump_capture_initialize_file(inputFile,filter);
+  } else if (collector) {
+    capturer = spindump_capture_initialize_null();
+  } else {
+    capturer = spindump_capture_initialize_live(interface,filter);
+  }
+  
   if (capturer == 0) exit(1);
-
+  
   //
   // Initialize the user interface
   //
@@ -607,6 +613,17 @@ spindump_main_operation(void) {
     spindump_assert(now.tv_usec <= 1000 * 1000);
 
     //
+    // Check if there's any report from clients to our server, and
+    // take those updates into account in our connection/analyzer
+    // tables.
+    //
+    
+    if (server != 0) {
+      while (spindump_remote_server_getupdate(server)) {
+      }
+    }
+    
+    //
     // See if we need to do any periodic maintenance (timeouts etc) of
     // the set of connections we have.
     //
@@ -614,7 +631,6 @@ spindump_main_operation(void) {
     if (spindump_connectionstable_periodiccheck(analyzer->table,
 						&now,
 						analyzer)) {
-      if (server != 0) spindump_remote_server_update(server,analyzer->table);
       for (unsigned int i = 0; remoteBlockSize > 0 && i < nRemotes; i++) {
 	spindump_remote_client_update_periodic(remotes[i],analyzer->table);
       }

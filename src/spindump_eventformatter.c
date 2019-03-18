@@ -25,7 +25,7 @@
 #include "spindump_util.h"
 #include "spindump_analyze.h"
 #include "spindump_connections.h"
-#include "spindump_remote.h"
+#include "spindump_remote_client.h"
 #include "spindump_eventformatter.h"
 #include "spindump_eventformatter_text.h"
 #include "spindump_eventformatter_json.h"

@@ -61,11 +61,13 @@ struct spindump_capture_state {
 const char*
 spindump_capture_defaultinterface(void);
 struct spindump_capture_state*
-spindump_capture_initialize(const char* interface,
-			    const char* filter);
+spindump_capture_initialize_live(const char* interface,
+				 const char* filter);
 struct spindump_capture_state*
 spindump_capture_initialize_file(const char* file,
 				 const char* filter);
+struct spindump_capture_state*
+spindump_capture_initialize_null(void);
 enum spindump_capture_linktype
 spindump_capture_getlinktype(struct spindump_capture_state* state);
 void

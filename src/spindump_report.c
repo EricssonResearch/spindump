@@ -230,7 +230,7 @@ spindump_report_update(struct spindump_report_state* reporter,
   if (reporter->destination == spindump_report_destination_terminal) {
 
     char connectionsstatus[300];
-    unsigned int y = 0;
+    int y = 0;
     unsigned int i;
     
     snprintf(connectionsstatus,sizeof(connectionsstatus)-1,"%u connections %s packets %s bytes",
@@ -279,7 +279,7 @@ spindump_report_update(struct spindump_report_state* reporter,
       // one connection for each line in the screen).
       // 
 
-      unsigned int actualConnections = 0;
+      int actualConnections = 0;
 #     define maxActualConnections 200
       struct spindump_connection* actualTable[maxActualConnections];
       
@@ -287,7 +287,7 @@ spindump_report_update(struct spindump_report_state* reporter,
       for (i = 0;
 	   (i < table->nConnections &&
 	    actualConnections < maxActualConnections &&
-	    actualConnections < ((unsigned int)LINES) - y);
+	    actualConnections < (LINES - y));
 	   i++) {
 	struct spindump_connection* connection = table->connections[i];
 	if (connection != 0 &&
@@ -306,7 +306,7 @@ spindump_report_update(struct spindump_report_state* reporter,
 
       spindump_deepdebugf("report sorting");
       qsort(&actualTable[0],
-	    actualConnections,
+	    (size_t)actualConnections,
 	    sizeof(struct spindump_connection*),
 	    spindump_report_update_comparetwoconnections);
 	
@@ -315,11 +315,12 @@ spindump_report_update(struct spindump_report_state* reporter,
       // 
       
       spindump_deepdebugf("report displaying");
-      for (i = 0; i < actualConnections; i++) {
+      int j;
+      for (j = 0; j < actualConnections; j++) {
 	char connectionbuf[spindump_report_maxlinelen];
-	spindump_assert(actualTable[i] != 0);
-	spindump_deepdebugf("report displaying connection %u", actualTable[i]->id);
-	spindump_connection_report_brief(actualTable[i],
+	spindump_assert(actualTable[j] != 0);
+	spindump_deepdebugf("report displaying connection %u", actualTable[j]->id);
+	spindump_connection_report_brief(actualTable[j],
 					 connectionbuf,
 					 sizeof(connectionbuf),
 					 average,
@@ -347,9 +348,13 @@ static
 void spindump_report_putcurrentinputonscreen(struct spindump_report_state* reporter,
 					     const char* string,
 					     const char* value) {
-  for (unsigned int i = 0; i < (unsigned int)COLS; i++) mvaddstr(reporter->inputlineposition, i, " ");
+  for (int i = 0;
+       i < COLS;
+       i++) {
+    mvaddstr(reporter->inputlineposition, i, " ");
+  }
   mvaddstr(reporter->inputlineposition, 0, string);
-  mvaddstr(reporter->inputlineposition, strlen(string), value);
+  mvaddstr(reporter->inputlineposition, (int)(strlen(string)), value);
   refresh();
 }
 
@@ -450,7 +455,7 @@ spindump_report_checkinput(struct spindump_report_state* reporter,
 void
 spindump_report_showhelp(struct spindump_report_state* reporter) {
   
-  unsigned int y = 0;
+  int y = 0;
   int ch;
   
   clear();

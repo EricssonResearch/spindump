@@ -117,7 +117,9 @@ Sets a limit of how many packets the tool accepts before finishing. The default 
 
 The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. The --input-file option sets the packets to be read from a PCAP-format file. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
 
-The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040". By default, Spindump uses the port 5040, which is reflected in the URL. On the collector side the port can be changed with the --collector-port option. Also, a given Spindump instance running as a collector can accept connections from multiple other instances.
+The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040/data/1". By default, Spindump uses the port 5040, which is reflected in the URL. The path component "data" is required when submitting data to another Spindump instance, and the path component "1" is simply an identifier that distinguishes different submitters from each other.
+
+As noted, the collector is turned on by using the --collector option. On the collector side the port can be changed with the --collector-port option. Also, a given Spindump instance running as a collector can accept connections from multiple other instances. The Spindump instance that is running as a collector will not listen to the local interfaces at all, only the collector port.
 
 Finally, the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update, but if the block size is set to 0, there will be no pooling. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the [data format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md)
 
@@ -137,11 +139,11 @@ The easiest installation method is to retrieve the software from GitHub. Start w
 
 Make sure you have the necessary tools to compile; you'll need the gmake, gcc, and libpcap packages at least. On a Mac OS X, you can install these with the
 
-    sudo port install cmake gmake gcc libpcap ncurses curl
+    sudo port install cmake gmake gcc libpcap ncurses curl libmicrohttpd
 
 command. And on linux, do:
 
-    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev libcurl4-openssl-dev
+    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev libcurl4-openssl-dev libmicrohttpd-dev
 
 Then do:
 
@@ -263,6 +265,10 @@ The currently defined events that can be caught are:
     #define spindump_analyze_event_responderecnce                    16384
 
 These can be mixed together in one handler by ORing them together. The pseudo-event "spindump_analyze_event_alllegal" represents all of the events.
+
+# Dependencies 
+
+The Spindump command depends on the basic OS libraries (such as libc) as well as libpcap, ncurses, curl, and microhttpd. The Spindump library depends only on libc, unless you use the features that would require libpcap or other libraries.
 
 # Things to do
 
