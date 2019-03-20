@@ -16,12 +16,20 @@
 //
 // 
 
+//
+// Includes -----------------------------------------------------------------------------------
+//
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "spindump_util.h"
 #include "spindump_eventformatter.h"
 #include "spindump_eventformatter_json.h"
+
+//
+// Actual code --------------------------------------------------------------------------------
+//
 
 //
 // Return the length of the preamble
@@ -83,7 +91,7 @@ spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* for
 
   snprintf(when,sizeof(when)-1,"%llu",
 	   ((unsigned long long)timestamp->tv_sec) * 1000 * 1000 + (unsigned long long)timestamp->tv_usec);
-
+  
   //
   // Get the (variable) data related to the specific event (such as a
   // spin flip in a QUIC connection).
@@ -184,9 +192,9 @@ spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* for
 	   when,
 	   what,
 	   connection->packetsFromSide1 + connection->packetsFromSide2,
-     connection->ect0FromInitiator + connection->ect0FromResponder,
-     connection->ect1FromInitiator + connection->ect1FromResponder,
-     connection->ceFromInitiator + connection->ceFromResponder);
+	   connection->ect0FromInitiator + connection->ect0FromResponder,
+	   connection->ect1FromInitiator + connection->ect1FromResponder,
+	   connection->ceFromInitiator + connection->ceFromResponder);
 
   //
   // Print the buffer out
