@@ -44,10 +44,13 @@
 
 int
 spindump_event_parser_json_parse(const char* buffer,
-				 const struct spindump_event* event);
+				 size_t length,
+				 struct spindump_event* event,
+				 size_t* consumed);
 int
 spindump_event_parser_json_print(const struct spindump_event* event,
 				 char* buffer,
-				 size_t length);
+				 size_t length,
+				 size_t* consumed);
 
 #endif // SPINDUMP_EVENT_PARSER_JSON_H
