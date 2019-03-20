@@ -194,12 +194,16 @@ But beyond this basic functionality, the analyzer is also extensible. You can re
     spindump_analyze_register(analyzer,
                               // what event(s) to trigger on (OR the event bits together):
                               spindump_analyze_event_newrightrttmeasurement,
+                              // whether this handler is specific for a particular connection or all (0):
+                              0,
                               // function to call for this event:
                               myhandler,
                               // pass 0 as private data to myhandler later:
                               0);
 
-This registration registers the function "myhandler" to be called when there's a new RTT measurement. This function could be implemented, for instance, like this:
+This registration registers the function "myhandler" to be called when there's a new RTT measurement. Handlers can be added and removed dynamically, and even be registered for specific connections.
+
+But in the end, when a handler has been registered, if the noted event occurs then a user-specified function gets called. In the case of our new RTT measurement handler, the function to be called can be implemented, for instance, like this:
 
     void myhandler(struct spindump_analyze* state,
                    void* handlerData,

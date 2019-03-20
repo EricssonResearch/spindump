@@ -111,6 +111,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   
   spindump_analyze_registerhandler(analyzer,
 				   spindump_analyze_event_alllegal,
+				   0,
 				   spindump_eventformatter_measurement_one,
 				   formatter);
 
@@ -266,6 +267,7 @@ spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter) 
 
   spindump_analyze_unregisterhandler(formatter->analyzer,
 				     spindump_analyze_event_alllegal,
+				     0,
 				     spindump_eventformatter_measurement_one,
 				     formatter);
   

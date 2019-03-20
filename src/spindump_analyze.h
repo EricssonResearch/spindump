@@ -31,7 +31,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_analyze_max_handlers 10
+#define spindump_analyze_max_handlers 32
 
 //
 // Data types ---------------------------------------------------------------------------------
@@ -66,18 +66,23 @@ typedef void (*spindump_analyze_handler)(struct spindump_analyze* state,
 					 struct spindump_connection* connection);
 
 struct spindump_analyze_handler {
-  spindump_analyze_handler function;
-  void* handlerData;
-  spindump_analyze_event eventmask;
-  char padding[6]; // unused
+  spindump_analyze_handler function;               // function to call when the handler matches
+  void* handlerData;                               // data to pass to the function
+  spindump_analyze_event eventmask;                // what events does the handler match on?
+  int connectionSpecific;                          // does the handler match for all connections or only some?
+                                                   // (for connection-specific handlers, there's a bit mask in
+                                                   // each connection object that shows which handlers should be run,
+                                                   // where the bit mask is the index in the analyzer's table of handlers)
+  char padding[2];                                 // unused
 };
 
 struct spindump_analyze {
-  struct spindump_connectionstable* table;
-  struct spindump_stats* stats;
-  unsigned int nHandlers;
-  unsigned int padding; // unused
-  struct spindump_analyze_handler handlers[spindump_analyze_max_handlers];
+  struct spindump_connectionstable* table;         // a table of all current connections 
+  struct spindump_stats* stats;                    // pointer to statistics object
+  unsigned int nHandlers;                          // the number of slots used in the handler table
+  unsigned int padding;                            // unused
+  struct spindump_analyze_handler
+    handlers[spindump_analyze_max_handlers];       // the registered handlers
 };
 
 //
@@ -92,11 +97,13 @@ spindump_analyze_uninitialize(struct spindump_analyze* state);
 void
 spindump_analyze_registerhandler(struct spindump_analyze* state,
 				 spindump_analyze_event eventmask,
+				 struct spindump_connection* connection,
 				 spindump_analyze_handler handler,
 				 void* handlerData);
 void
 spindump_analyze_unregisterhandler(struct spindump_analyze* state,
 				   spindump_analyze_event eventmask,
+				   struct spindump_connection* connection,
 				   spindump_analyze_handler handler,
 				   void* handlerData);
 struct spindump_stats*

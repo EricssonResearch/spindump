@@ -38,7 +38,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_connection_max_handlers 10         // should be equivalent to spindump_analyze_max_handlers
+#define spindump_connection_max_handlers 32         // should be equivalent to spindump_analyze_max_handlers
 
 //
 // Data structures ----------------------------------------------------------------------------
@@ -81,6 +81,8 @@ struct spindump_connection_set {
   struct spindump_connection** set;
 };
 
+typedef uint64_t spindump_handler_mask;
+
 struct spindump_connection {
 
   unsigned int id;                                  // sequentially allocated descriptive id for the connection
@@ -107,6 +109,7 @@ struct spindump_connection {
   struct spindump_rtt respToInitFullRTT;            // end-to-end RTT calculations observed from responder
   struct spindump_rtt initToRespFullRTT;            // end-to-end RTT calculations observed from initiator
   struct spindump_connection_set aggregates;        // aggregate connection sets where this connection belongs to
+  spindump_handler_mask handlerMask;                // handler bit mask for connection-specific handlers
   void* handlerConnectionDatas
         [spindump_connection_max_handlers];         // data store for registered handlers to add data to a connection
 

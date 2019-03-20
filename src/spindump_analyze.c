@@ -77,6 +77,9 @@ spindump_analyze_otherippayload(struct spindump_analyze* state,
 				uint8_t ecnFlags,
 				unsigned int ipPacketLength,
 				struct spindump_connection** p_connection);
+static int
+spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
+						     spindump_handler_mask mask);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -174,6 +177,7 @@ spindump_analyze_uninitialize(struct spindump_analyze* state) {
 void
 spindump_analyze_registerhandler(struct spindump_analyze* state,
 				 spindump_analyze_event eventmask,
+				 struct spindump_connection* connection,
 				 spindump_analyze_handler handler,
 				 void* handlerData) {
   //
@@ -207,6 +211,7 @@ spindump_analyze_registerhandler(struct spindump_analyze* state,
 void
 spindump_analyze_unregisterhandler(struct spindump_analyze* state,
 				   spindump_analyze_event eventmask,
+				   struct spindump_connection* connection,
 				   spindump_analyze_handler handler,
 				   void* handlerData) {
   
@@ -227,14 +232,53 @@ spindump_analyze_unregisterhandler(struct spindump_analyze* state,
 
     struct spindump_analyze_handler* handlerPtr = &state->handlers[i];
     if (handlerPtr->eventmask == eventmask &&
+	((!handlerPtr->connectionSpecific && connection == 0) ||
+	 (handlerPtr->connectionSpecific && connection != 0)) &&
 	handlerPtr->function == handler &&
 	handlerPtr->handlerData == handlerData) {
 
+      //
+      // If this was a connection-specific handler, deregister the
+      // handler from the bitmask in the connection object.
+      //
+
+      if (connection != 0) {
+	
+	spindump_handler_mask mask = (1 << i);
+	
+	//
+	// Check that the mask was on
+	//
+	
+	if ((connection->handlerMask & mask) == 0) {
+	  spindump_errorf("unregistering a handler for a connection for which it was not registered");
+	}
+
+	//
+	// Zero the bit in the mask
+	//
+	
+	connection->handlerMask &= (~mask);
+	spindump_assert((connection->handlerMask & mask) == 0);
+
+	//
+	// Finally, if the handler is still registered in some other
+	// connection objects, we cannot entirely delete it, but
+	// rather just the deletion from the bit mask is enough.
+	//
+	
+	if (spindump_analyze_connectionspecifichandlerstillinuse(state,mask)) {
+	  spindump_deepdebugf("connection-specific handler is still in use by some other connections");
+	  return;
+	}
+      }
+      
       //
       // Found the matching registration. Delete it.
       //
       
       handlerPtr->eventmask = 0;
+      handlerPtr->connectionSpecific = 0;
       handlerPtr->function = 0;
       handlerPtr->handlerData = 0;
 
@@ -269,6 +313,33 @@ spindump_analyze_unregisterhandler(struct spindump_analyze* state,
   spindump_errorf("de-registering a non-registered handler");
 }
 
+static int
+spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
+						     spindump_handler_mask mask) {
+  for (unsigned int i = 0; i < state->table->nConnections; i++) {
+    
+    struct spindump_connection* connection = state->table->connections[i];
+    
+    if (connection != 0 &&
+	(connection->handlerMask & mask) != 0) {
+      
+      //
+      // Found. Return 1.
+      //
+      
+      return(1);
+      
+    }
+    
+  }
+  
+  //
+  // Not found
+  //
+  
+  return(0);
+}
+				   
 //
 // Run all the handlers for a specific event
 //
