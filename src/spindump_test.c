@@ -35,6 +35,9 @@
 #include "spindump_test.h"
 #include "spindump_protocols.h"
 #include "spindump_connections.h"
+#include "spindump_event.h"
+#include "spindump_event_parser_json.h"
+#include "spindump_event_parser_text.h"
 #include "spindump_analyze.h"
 
 //
@@ -44,6 +47,8 @@
 static void unittests(void);
 static void unittests_util(void);
 static void unittests_table(void);
+static void unittests_textparser(void);
+static void unittests_jsonparser(void);
 static void systemtests(void);
 
 //
@@ -58,6 +63,8 @@ static void
 unittests(void) {
   unittests_util();
   unittests_table();
+  unittests_textparser();
+  unittests_jsonparser();
 }
 
 //
@@ -288,6 +295,51 @@ unittests_table(void) {
   spindump_checktest(fromResponder == 0);
   spindump_checktest(connection8 == connection6);
   
+}
+
+//
+// Unittests -- spindump_event_parser_text
+//
+
+static void
+unittests_textparser(void) {
+  struct spindump_event event;
+  unsigned long long million = 1000 * 1000;
+  unsigned long long timestamp =
+    ((unsigned long long)(60 * 365 * 24 * 3600 + 8 * 3600)) *
+    million +
+    (unsigned long long)1234;
+  spindump_network network1;
+  spindump_network network2;
+  spindump_network_fromstring(&network1,"1.2.3.4/32");
+  spindump_network_fromstring(&network2,"5.6.7.8/32");
+  spindump_event_initialize(spindump_event_type_new_connection,
+			    spindump_connection_transport_tcp,
+			    &network1,
+			    &network2,
+			    "123:456",
+			    timestamp,
+			    &event);
+  char buf[200];
+  int ret;
+  size_t consumed;
+  ret = spindump_event_parser_text_print(&event,buf,1,&consumed);
+  spindump_assert(ret == 0);
+  ret = spindump_event_parser_text_print(&event,buf,sizeof(buf),&consumed);
+  if (0) {
+    // TODO ...
+    
+    spindump_assert(ret == 1);
+    spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
+  }
+}
+
+//
+// Unittests -- spindump_event_parser_json
+//
+
+static void
+unittests_jsonparser(void) {
 }
 
 //
