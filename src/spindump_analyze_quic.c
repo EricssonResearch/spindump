@@ -105,7 +105,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   // Attempt to parse the packet
   //
 
-  int longForm;
+  int hasVersion = 0;
+  int mayHaveSpinBit = 0;
   uint32_t quicVersion;
   int destinationCidLengthKnown;
   struct spindump_quic_connectionid destinationCid;
@@ -116,8 +117,9 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   if (!spindump_analyze_quic_parser_parse(udpPayload,
 					  size_udppayload,
 					  remainingCaplen - spindump_udp_header_size,
-					  &longForm,
+					  &hasVersion,
 					  &quicVersion,
+					  &mayHaveSpinBit,
 					  &destinationCidLengthKnown,
 					  &destinationCid,
 					  &sourceCidPresent,
@@ -227,7 +229,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   // Look at the version. Update if different.
   //
 
-  if (longForm && connection->u.quic.version != quicVersion) {
+  if (hasVersion && connection->u.quic.version != quicVersion) {
     spindump_debugf("re-setting QUIC connection %u version to %08x", connection->id, quicVersion);
     connection->u.quic.version = quicVersion;
   }
@@ -351,7 +353,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   spindump_deepdebugf("checking for the spin bit");
   if (spindump_analyze_quic_parser_getspinbit(udpPayload,
 					      size_udppayload,
-					      longForm,
+					      mayHaveSpinBit,
 					      connection->u.quic.version,
 					      fromResponder,
 					      &spin)) {

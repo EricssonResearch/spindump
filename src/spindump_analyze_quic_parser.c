@@ -317,8 +317,9 @@ int
 spindump_analyze_quic_parser_parse(const unsigned char* payload,
 				   unsigned int payload_len,
 				   unsigned int remainingCaplen,
-				   int* p_longform,
+				   int* p_hasVersion,
 				   uint32_t* p_version,
+				   int* p_mayHaveSpinBit,
 				   int* p_destinationCidLengthKnown,
 				   struct spindump_quic_connectionid* p_destinationCid,
 				   int* p_sourceCidPresent,
@@ -331,8 +332,9 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // 
   
   spindump_assert(payload != 0);
-  spindump_assert(p_longform != 0);
+  spindump_assert(p_hasVersion != 0);
   spindump_assert(p_version != 0);
+  spindump_assert(p_mayHaveSpinBit != 0);
   spindump_assert(p_destinationCid != 0);
   spindump_assert(p_sourceCid != 0);
 
@@ -340,7 +342,8 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // Initialize output parameters
   // 
   
-  *p_longform = 0;
+  *p_version = 0;
+  *p_mayHaveSpinBit = 0;
   *p_destinationCidLengthKnown = 0;
   memset(p_destinationCid,0,sizeof(*p_destinationCid));
   *p_sourceCidPresent = 0;
@@ -576,7 +579,8 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // All seems ok.
   // 
   
-  *p_longform = longForm;
+  *p_hasVersion = longForm;
+  *p_mayHaveSpinBit = !longForm;
   *p_version = originalVersion;
   *p_type = type;
   spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %lx, type = %s",
@@ -605,14 +609,16 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
 int
 spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
 					unsigned int payload_len,
-					int longform,
+					int mayHaveSpinBit,
 					uint32_t version,
 					int fromResponder,
 					int* p_spin) {
   spindump_assert(payload != 0);
+  spindump_assert(spindump_isbool(mayHaveSpinBit));
+  
   if (payload_len < 1) return(0);
   uint8_t firstByte = payload[0];
-  if (longform != 0) {
+  if (mayHaveSpinBit != 0) {
     spindump_deepdebugf("SPIN not parseable for the long version header");
     return(0);
   } else if (version == spindump_quic_version_rfc ||
