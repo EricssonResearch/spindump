@@ -370,6 +370,27 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   
   uint8_t headerByte;
   spindump_protocols_quic_header_decode(payload,&headerByte);
+
+  if ((headerByte & spindump_quic_byte_header_alwaysunset) == 0) {
+	  //This is Google QUIC, likely Q043 or below
+	  //Google will use the ietf version from Q044
+	  spindump_deepdebugf("QUIC Google QUIC packet first byte = %02x (payload %02x)", headerByte, payload[0]);
+
+	  return
+	  spindump_analyze_quic_parser_parse_google_quic(payload,
+	  				   payload_len,
+	  				   remainingCaplen,
+	  				   p_hasVersion,
+	  				   p_version,
+	  				   p_mayHaveSpinBit,
+	  				   p_destinationCidLengthKnown,
+	  				   p_destinationCid,
+	  				   p_sourceCidPresent,
+	  				   p_sourceCid,
+	  				   p_type,
+	  				   stats);
+  }
+
   if ((headerByte & spindump_quic_byte_header_form_draft16) == spindump_quic_byte_form_long_draft16) {
     longForm = 1;
     spindump_deepdebugf("QUIC long form packet first byte = %02x (payload %02x)", headerByte, payload[0]);
@@ -594,6 +615,173 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
 		      spindump_connection_quicconnectionid_tostring(p_sourceCid),
 		      *p_sourceCidPresent);
   return(1);
+}
+
+//
+// Parser for Google's QUIC version (it is quite different from the ietf quic version)
+// https://docs.google.com/document/d/1WJvyZflAO2pq77yOLbp9NsGjC1CHetAXV8I0fQe-B_U/edit
+//
+// Same input as spindump_analyze_quic_parser_parse.
+// Simplified implementation, it might not work for all Google QUIC versions.
+// tested with Google Chrome Version 73.0.3683.86 (Official Build) (64-bit)
+//
+
+int
+spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
+				   unsigned int payload_len,
+				   unsigned int remainingCaplen,
+				   int* p_hasVersion,
+				   uint32_t* p_version,
+				   int* p_mayHaveSpinBit,
+				   int* p_destinationCidLengthKnown,
+				   struct spindump_quic_connectionid* p_destinationCid,
+				   int* p_sourceCidPresent,
+				   struct spindump_quic_connectionid* p_sourceCid,
+				   enum spindump_quic_message_type* p_type,
+				   struct spindump_stats* stats) {
+	  //Assumes all inits in spindump_analyze_quic_parser_parse has happened
+	  //*p_version = 0;
+	  //*p_mayHaveSpinBit = 0;
+	  //*p_destinationCidLengthKnown = 0;
+	  //memset(p_destinationCid,0,sizeof(*p_destinationCid));
+	  //*p_sourceCidPresent = 0;
+	  //memset(p_sourceCid,0,sizeof(*p_sourceCid));
+	  //*p_type = spindump_quic_message_type_other;
+
+	  uint32_t version = spindump_quic_version_unknown;
+	  uint32_t googleVersion = spindump_quic_version_unknown;
+
+	  //
+	  // Parse initial byte
+	  //
+
+	  uint8_t publicFlags; //It is called publicFlags in GQUIC
+	  spindump_protocols_quic_header_decode(payload,&publicFlags);
+
+	  //at this point we are "pretty sure" it is Google QUIC
+	  int hasVersion = (publicFlags & 0x01) ? 1 : 0;
+	  //internal only to determine the position of version
+	  //will not return CID to avoid issues
+	  int hasCid = (publicFlags & 0x08) ? 1 : 0;
+	  // Indicates the presence of a 32 byte diversification nonce in the header.
+	  int hasDiversificationNonce = (publicFlags & 0x04) ? 1 : 0;
+
+	  //
+	  // Parse version number first
+	  // Even though it is not the first header field, the rest might not be valid if the version is not
+	  //
+
+	  if (hasVersion) {
+	    unsigned int versionPosition = hasCid ? 9 : 1; //cid is 8 bytes
+	    if (payload_len < versionPosition + 4 || remainingCaplen < versionPosition + 4) { //version is 4 bytes ASCII
+              stats->notEnoughPacketForQuicHdr++;
+              return(0);
+	    }
+            version =
+                     ((((uint32_t)payload[versionPosition+0]) << 24) +
+                     (((uint32_t)payload[versionPosition+1]) << 16) +
+                     (((uint32_t)payload[versionPosition+2]) << 8) +
+                     (((uint32_t)payload[versionPosition+3]) << 0));
+            spindump_deepdebugf("QUIC Google QUIC packet version = %lx", version);
+
+            const unsigned char mask = 0x30;
+            uint32_t v100= (payload[versionPosition+1]) ^ mask;
+            uint32_t v10= (payload[versionPosition+2]) ^ mask;
+            uint32_t v1= (payload[versionPosition+3]) ^ mask;
+
+            // this part makes sure that the Google version number is Q followed by 3 digits in ASCII
+            if ( v100>9 || v10>9 || v1>9 || payload[versionPosition+0] != 'Q') {
+              spindump_deepdebugf("QUIC Google version number !ok");
+              version = spindump_quic_version_unknown;
+              stats->unsupportedQuicVersion++;
+              return(0);
+            }
+            googleVersion = 100*v100+10*v10+v1;
+            spindump_deepdebugf("QUIC Google QUIC packet numeral version = %u", (unsigned int)googleVersion);
+	  }
+
+	  //set p_sourceCid to Google CID
+	  if (hasCid) {
+            if (payload_len < 9 || remainingCaplen < 9) {
+              stats->notEnoughPacketForQuicHdr++;
+              return(0);
+            }
+
+	    *p_sourceCidPresent = 1;
+	    p_sourceCid->len = 8;
+	    memcpy(p_sourceCid->id,&(payload[1]),p_sourceCid->len);
+
+	    //p_destinationCid set to 0 (1 byte long) only if source cid is present
+	    *p_destinationCidLengthKnown = 1;
+	    p_destinationCid->len = 1;
+	    p_destinationCid->id[0] = 0;
+	  }
+
+	  uint32_t sequenceNumber = 0;
+	  if ((publicFlags & 0x30) == 0 ) { //only determine SN for 1 byte encoding, we only check SN=1, which is anyway 1 byte (normally)
+            unsigned int snPosition = 1;
+            if (hasVersion) snPosition +=4;
+            if (hasCid) snPosition+=8;
+            if (hasDiversificationNonce) snPosition+=32;
+            const unsigned int snLength=1; // (publicFlags & 0x30) == 0
+            if (payload_len < snPosition + snLength || remainingCaplen < snPosition + snLength) {
+              stats->notEnoughPacketForQuicHdr++;
+              return(0);
+            }
+            //After Q039, Integers and floating numbers are written in big endian (before little endian)
+            //as this is a single byte that does not matter however, has to be updated if multi-byte SNs are to be supported
+            sequenceNumber = ((uint32_t)payload[snPosition]);
+	  }
+
+	  enum spindump_quic_message_type type = spindump_quic_message_type_data;
+          //A simple hack: spindump_quic_message_type_initial if SN==1
+	  if (sequenceNumber == 1) {
+	    type = spindump_quic_message_type_initial;
+	    spindump_deepdebugf("QUIC Google QUIC packet with SN=1, treated as initial message");
+	  }
+
+	  //
+	  // All seems ok.
+	  //
+
+	  *p_hasVersion = hasVersion;
+	  *p_mayHaveSpinBit = 0;
+	  *p_version = version;
+	  *p_type = type;
+	  spindump_deepdebugf("successfully parsed the Google QUIC packet, version = %lx, sn = %lx, type = %s",
+			      version,
+			      sequenceNumber,
+			      spindump_analyze_quic_parser_typetostring(type));
+	  return(1);
+}
+
+//
+// Checks whether this version number likely belongs to Google
+// They look like Qddd, e.g. Q043 in ASCII
+//
+
+int spindump_analyze_quic_parser_isgoogleversion(uint32_t version) {
+  return ((version & spindump_quic_version_googlemask) == spindump_quic_version_google);
+}
+
+//
+// Determines the google numeric version from the version data
+// returns spindump_quic_version_unknown if the version data is a non-valid google version number
+//
+
+uint32_t
+spindump_analyze_quic_parser_getgoogleversion(uint32_t version) {
+  const unsigned char mask = 0x30;
+  unsigned char versionArray[4];
+  memcpy(versionArray,&version,4);
+  uint32_t d100= (versionArray[1]) ^ mask;
+  uint32_t d10= (versionArray[2]) ^ mask;
+  uint32_t d1= (versionArray[3]) ^ mask;
+
+  // this part makes sure that the Google version number is Q followed by 3 digits in ASCII
+  if ( d100>9 || d10>9 || d1>9 || versionArray[0] != 'Q') return(spindump_quic_version_unknown);
+
+  return 100*d100+10*d10+d1;
 }
 
 //

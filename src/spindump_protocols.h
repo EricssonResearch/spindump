@@ -792,7 +792,7 @@ enum spindump_quic_message_type {
 #define spindump_quic_version_draft00          0xff000000
 #define spindump_quic_version_huitema          0x50435131
 #define spindump_quic_version_mozilla          0xf123f0c5
-#define spindump_quic_version_googlemask       0xfffff0f0
+#define spindump_quic_version_googlemask       0xfff0f0f0
 #define spindump_quic_version_google           0x51303030
 #define spindump_quic_version_forcenegotmask   0x0f0f0f0f
 #define spindump_quic_version_forcenegotiation 0x0a0a0a0a
