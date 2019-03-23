@@ -772,6 +772,7 @@ enum spindump_quic_message_type {
 
 #define spindump_quic_version_negotiation      0x00000000
 #define spindump_quic_version_rfc              0x00000001
+#define spindump_quic_version_draft18          0xff000012
 #define spindump_quic_version_draft17          0xff000011
 #define spindump_quic_version_draft16          0xff000010
 #define spindump_quic_version_draft15          0xff00000f
