@@ -684,19 +684,13 @@ spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
                      (((uint32_t)payload[versionPosition+3]) << 0));
             spindump_deepdebugf("QUIC Google QUIC packet version = %lx", version);
 
-            const unsigned char mask = 0x30;
-            uint32_t v100= (payload[versionPosition+1]) ^ mask;
-            uint32_t v10= (payload[versionPosition+2]) ^ mask;
-            uint32_t v1= (payload[versionPosition+3]) ^ mask;
-
-            // this part makes sure that the Google version number is Q followed by 3 digits in ASCII
-            if ( v100>9 || v10>9 || v1>9 || payload[versionPosition+0] != 'Q') {
+            googleVersion=spindump_analyze_quic_parser_getgoogleversion(version);
+            if (googleVersion == spindump_quic_version_unknown) {
               spindump_deepdebugf("QUIC Google version number !ok");
               version = spindump_quic_version_unknown;
               stats->unsupportedQuicVersion++;
               return(0);
             }
-            googleVersion = 100*v100+10*v10+v1;
             spindump_deepdebugf("QUIC Google QUIC packet numeral version = %u", (unsigned int)googleVersion);
 	  }
 
@@ -772,14 +766,12 @@ int spindump_analyze_quic_parser_isgoogleversion(uint32_t version) {
 uint32_t
 spindump_analyze_quic_parser_getgoogleversion(uint32_t version) {
   const unsigned char mask = 0x30;
-  unsigned char versionArray[4];
-  memcpy(versionArray,&version,4);
-  uint32_t d100= (versionArray[1]) ^ mask;
-  uint32_t d10= (versionArray[2]) ^ mask;
-  uint32_t d1= (versionArray[3]) ^ mask;
+  uint32_t d100= ((version >> 16) & 0xff) ^ mask;
+  uint32_t d10= ((version >> 8) & 0xff) ^ mask;
+  uint32_t d1= ((version >> 0) & 0xff) ^ mask;
 
   // this part makes sure that the Google version number is Q followed by 3 digits in ASCII
-  if ( d100>9 || d10>9 || d1>9 || versionArray[0] != 'Q') return(spindump_quic_version_unknown);
+  if ( d100>9 || d10>9 || d1>9 || ((version >> 24) & 0xff) != 'Q') return(spindump_quic_version_unknown);
 
   return 100*d100+10*d10+d1;
 }
@@ -845,6 +837,14 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
 
 const char*
 spindump_analyze_quic_parser_versiontostring(uint32_t version) {
+  //check first if it is a google version
+  if (spindump_analyze_quic_parser_isgoogleversion(version)) {
+    static char buf[20];
+    memset(buf,0,sizeof(buf));
+    snprintf(buf,sizeof(buf)-1,"v.g%u", (unsigned int)spindump_analyze_quic_parser_getgoogleversion(version) );
+    return(buf);
+  }
+
   switch (version) {
   case spindump_quic_version_rfc:
     return("rfc");
