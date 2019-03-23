@@ -80,7 +80,7 @@ spindump_remote_client_init(const char* url) {
 }
 
 //
-// Send an update to the server
+// Send a periodic update to the server
 //
 
 void
@@ -90,6 +90,11 @@ spindump_remote_client_update_periodic(struct spindump_remote_client* client,
   spindump_deepdebugf("spindump_remote_client_update_periodic, data: ");
   spindump_errorf("periodic updates not implemented");
 }
+
+//
+// Send an update for a specific event to the server (or pool updates,
+// if so requested).
+//
 
 void
 spindump_remote_client_update_event(struct spindump_remote_client* client,

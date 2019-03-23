@@ -83,7 +83,8 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   //
   // Allocate an object
   //
-  
+
+  spindump_deepdebugf("eventformatter_initialize");
   unsigned int siz = sizeof(struct spindump_eventformatter);
   struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)malloc(siz);
   if (formatter == 0) {
@@ -95,6 +96,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   // Fill in the contents
   //
 
+  spindump_deepdebugf("eventformatter_initialize pt. 2");
   memset(formatter,0,sizeof(*formatter));
   formatter->analyzer = analyzer;
   formatter->format = format;
@@ -120,6 +122,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   // Done. Return the object.
   //
 
+  spindump_deepdebugf("eventformatter_initialize pt.3");
   return(formatter);
 }
 
@@ -177,6 +180,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
   // Call the basic eventformatter initialization
   //
 
+  spindump_deepdebugf("eventformatter_initialize_remote");
   struct spindump_eventformatter* formatter = spindump_eventformatter_initialize(analyzer,
 										 format,
 										 querier,
@@ -190,6 +194,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
   // Do the remote-specific setup
   //
 
+  spindump_deepdebugf("eventformatter_initialize_remote pt. 2");
   formatter->nRemotes = nRemotes;
   formatter->remotes = remotes;
   formatter->blockSize = blockSize;
@@ -212,6 +217,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
   // Check the preamble and postamble lengths
   //
 
+  spindump_deepdebugf("eventformatter_initialize_remote pt.3");
   if (formatter->blockSize > 0 &&
       (spindump_eventformatter_measurement_beginlength(formatter) +
        spindump_eventformatter_measurement_endlength(formatter) >= formatter->blockSize ||
@@ -230,6 +236,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
   // Start the format by adding whatever prefix is needed in the output stream
   //
   
+  spindump_deepdebugf("eventformatter_initialize_remote pt.4");
   if (formatter->blockSize > 0) {
     spindump_eventformatter_measurement_begin(formatter);
   }
@@ -238,6 +245,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
   // Done. Return the object.
   //
   
+  spindump_deepdebugf("eventformatter_initialize_remote pt.5");
   return(formatter);
 }
 
@@ -261,6 +269,7 @@ spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter) 
   //
   
   spindump_eventformatter_measurement_end(formatter);
+  spindump_eventformatter_sendpooled(formatter);
   
   //
   // Unregister whatever we registered as handlers in the analyzer
@@ -298,9 +307,9 @@ spindump_eventformatter_measurement_beginlength(struct spindump_eventformatter* 
 
 static void
 spindump_eventformatter_measurement_begin(struct spindump_eventformatter* formatter) {
-  unsigned long length;
-  const uint8_t* data = spindump_eventformatter_measurement_beginaux(formatter,&length);
-  spindump_eventformatter_deliverdata(formatter,length,data);
+  spindump_deepdebugf("eventformatter_measurement_begin");
+  const uint8_t* data = spindump_eventformatter_measurement_beginaux(formatter,&formatter->preambleLength);
+  spindump_eventformatter_deliverdata(formatter,formatter->preambleLength,data);
 }
  
 static const uint8_t*
@@ -566,6 +575,27 @@ spindump_eventformatter_mediatype(enum spindump_eventformatter_outputformat form
   default:
     spindump_errorf("invalid format");
     return("application/text");
+  }
+}
+
+//
+// If a number of updates have been pooled to a server, send them now.
+//
+
+void
+spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter) {
+  spindump_assert(formatter != 0);
+  if (formatter->bytesInBlock > formatter->preambleLength) {
+    spindump_deepdebugf("sendpooled bytes %u", formatter->bytesInBlock);
+    unsigned long postambleLength;
+    const uint8_t* postamble = spindump_eventformatter_measurement_endaux(formatter,&postambleLength);
+    memcpy(formatter->block + formatter->bytesInBlock,postamble,postambleLength);
+    formatter->bytesInBlock += postambleLength;
+    spindump_eventformatter_deliverdata_remoteblock(formatter,
+						    formatter->bytesInBlock,
+						    formatter->block);
+    formatter->bytesInBlock = 0;
+    spindump_eventformatter_measurement_begin(formatter);
   }
 }
 

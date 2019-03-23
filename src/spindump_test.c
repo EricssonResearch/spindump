@@ -326,12 +326,8 @@ unittests_textparser(void) {
   ret = spindump_event_parser_text_print(&event,buf,1,&consumed);
   spindump_assert(ret == 0);
   ret = spindump_event_parser_text_print(&event,buf,sizeof(buf),&consumed);
-  if (0) {
-    // TODO ...
-    
-    spindump_assert(ret == 1);
-    spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
-  }
+  spindump_assert(ret == 1);
+  spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
 }
 
 //

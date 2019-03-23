@@ -63,7 +63,7 @@ struct spindump_eventformatter {
   int anonymizeLeft;
   int anonymizeRight;
   enum spindump_eventformatter_outputformat format;
-  uint8_t padding2[4]; // unused padding to align the size of the structure correctly
+  size_t preambleLength;
 };
 
 //
@@ -86,6 +86,8 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
 					  struct spindump_reverse_dns* querier,
 					  int anonymizeLeft,
 					  int anonymizeRight);
+void
+spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter);
 void
 spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter);
 

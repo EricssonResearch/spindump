@@ -584,7 +584,7 @@ spindump_main_operation(void) {
 							anonymizeLeft,
 							anonymizeRight);
   }
-
+  
   if (nRemotes > 0) {
     remoteFormatter = spindump_eventformatter_initialize_remote(analyzer,
 								format,
@@ -608,6 +608,7 @@ spindump_main_operation(void) {
   struct spindump_packet* packet = 0;
   int more = 1;
 
+  spindump_deepdebugf("main loop");
   while (!interrupt &&
 	 more &&
 	 (maxReceive == 0 ||
@@ -666,8 +667,9 @@ spindump_main_operation(void) {
     if (spindump_connectionstable_periodiccheck(analyzer->table,
 						&now,
 						analyzer)) {
-      for (unsigned int i = 0; remoteBlockSize > 0 && i < nRemotes; i++) {
-	spindump_remote_client_update_periodic(remotes[i],analyzer->table);
+      if (remoteBlockSize > 0 && nRemotes > 0) {
+	spindump_assert(remoteFormatter != 0);
+	spindump_eventformatter_sendpooled(remoteFormatter);
       }
     }
 
