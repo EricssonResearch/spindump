@@ -53,3 +53,18 @@ spindump_event_initialize(enum spindump_event_type eventType,
   event->timestamp = timestamp;
 }
 
+const char*
+spindump_event_type_tostring(enum spindump_event_type type) {
+  switch (type) {
+  case spindump_event_type_new_connection: return("new");
+  case spindump_event_type_connection_delete: return("delete");
+  case spindump_event_type_new_rtt_measurement: return("measurement");
+  case spindump_event_type_spin_flip: return("spinflip");
+  case spindump_event_type_spin_value: return("spinvalue");
+  case spindump_event_type_ecn_congestion_event: return("ecnce");
+  default:
+    spindump_errorf("invalid event type");
+    return("UNKNOWN");
+  }
+}
+

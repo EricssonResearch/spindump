@@ -22,6 +22,7 @@
 #include "spindump_util.h"
 #include "spindump_event.h"
 #include "spindump_event_parser_json.h"
+#include "spindump_connections.h"
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -62,5 +63,97 @@ spindump_event_parser_json_print(const struct spindump_event* event,
 				 char* buffer,
 				 size_t length,
 				 size_t* consumed) {
-  return(0); // ...
+
+  //
+  // Check length
+  //
+  
+  if (length < 2) return(0);
+  memset(buffer,0,length);
+
+  //
+  // Some utilities to put strings onto the buffer
+  //
+  
+#define addtobuffer1(x)     snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x)
+#define addtobuffer2(x,y)   snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y)
+#define addtobuffer3(x,y,z) snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z)
+
+  //
+  // Basic information about the connection
+  //
+  
+  addtobuffer3("{ \"Event\": \"%s\", \"Type\": \"%s\", ",
+	       spindump_event_type_tostring(event->eventType),
+	       spindump_connection_type_to_string(event->connectionType));
+  addtobuffer2("\"Addrs\": [\"%s\",",
+	       spindump_network_tostringoraddr(&event->initiatorAddress));
+  addtobuffer2("\"%s\"], ",
+	       spindump_network_tostringoraddr(&event->responderAddress));
+  addtobuffer2("\"Session\": \"%s\", ",
+	       event->session);
+  addtobuffer2("\"Ts\": \"%llu\"",
+	       event->timestamp);
+
+  //
+  // The variable part that depends on which event we have
+  //
+
+  switch (event->eventType) {
+    
+  case spindump_event_type_new_connection:
+    break;
+    
+  case spindump_event_type_connection_delete:
+    break;
+    
+  case spindump_event_type_new_rtt_measurement:
+    if (event->u.newRttMeasurement.measurement == spindump_measurement_type_bidirectional) {
+      if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
+	addtobuffer2(", \"Left_rtt\": \"%lu\"", event->u.newRttMeasurement.rtt);
+      } else {
+	addtobuffer2(", \"Right_rtt\": \"%lu\"", event->u.newRttMeasurement.rtt);
+      }
+    } else {
+      if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
+	addtobuffer2(", \"Full_rtt_initiator\": \"%lu\"", event->u.newRttMeasurement.rtt);
+      } else {
+	addtobuffer2(", \"Full_rtt_responder\": \"%lu\"", event->u.newRttMeasurement.rtt);
+      }
+    }
+    break;
+    
+  case spindump_event_type_spin_flip:
+    addtobuffer3(", \"Transition\": \"%s\", \"Who\": \"%s\"",
+		 event->u.spinFlip.spin0to1 ? "0-1" : "1-0",
+		 event->u.spinFlip.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+    break;
+    
+  case spindump_event_type_spin_value:
+    addtobuffer3(", \"Value\": \"%u\", \"Who\": \"%s\"",
+		 event->u.spinValue.value,
+		 event->u.spinValue.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+    break;
+    
+  case spindump_event_type_ecn_congestion_event:
+    addtobuffer2(", \"Who\": \"%s\"",
+		 event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+    break;
+    
+  default:
+    spindump_errorf("invalid event type");
+  }
+  
+  //
+  // The end of the record
+  //
+  
+  addtobuffer1(" }\n");
+
+  //
+  // Done.
+  //
+  
+  *consumed = strlen(buffer);
+  return(strlen(buffer) < length - 1);
 }

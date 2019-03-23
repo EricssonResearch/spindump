@@ -218,7 +218,7 @@ spindump_address_equal(spindump_address* address1,
 //
 
 unsigned int
-spindump_address_length(spindump_address* address) {
+spindump_address_length(const spindump_address* address) {
   switch (address->ss_family) {
     
   case AF_INET: return(32);
@@ -529,6 +529,17 @@ spindump_address_fromstring(spindump_address* address,
 }
 
 //
+// Initialize an address as empty (0.0.0.0 or ::)
+//
+
+void
+spindump_address_fromempty(sa_family_t af,
+			   spindump_address* address) {
+  memset(address,0,sizeof(*address));
+  address->ss_family = af;
+}
+
+//
 // Read address from packet
 // 
 
@@ -561,7 +572,7 @@ spindump_address_frombytes(spindump_address* address,
 //
 
 const char*
-spindump_address_tostring(spindump_address* address) {
+spindump_address_tostring(const spindump_address* address) {
   spindump_assert(address != 0);
   spindump_assert(address->ss_family != 0);
   static char buf[100];
@@ -569,13 +580,13 @@ spindump_address_tostring(spindump_address* address) {
   switch (address->ss_family) {
   case AF_INET:
     {
-      struct sockaddr_in* actual = (struct sockaddr_in*)address;
+      const struct sockaddr_in* actual = (const struct sockaddr_in*)address;
       inet_ntop(AF_INET,&actual->sin_addr,buf,sizeof(buf)-1);
     }
     break;
   case AF_INET6:
     {
-      struct sockaddr_in6* actual = (struct sockaddr_in6*)address;
+      const struct sockaddr_in6* actual = (const struct sockaddr_in6*)address;
       inet_ntop(AF_INET6,&actual->sin6_addr,buf,sizeof(buf)-1);
     }
     break;
@@ -712,13 +723,54 @@ spindump_network_fromstring(spindump_network* network,
 //
 
 const char*
-spindump_network_tostring(spindump_network* network) {
+spindump_network_tostring(const  spindump_network* network) {
   static char buf[100];
   memset(buf,0,sizeof(buf));
   snprintf(buf, sizeof(buf)-1, "%s/%u",
 	   spindump_address_tostring(&network->address),
 	   network->length);
   return(buf);
+}
+
+//
+// Print a network to a string, or, if it is a host, just an
+// address string
+//
+
+const char*
+spindump_network_tostringoraddr(const spindump_network* network) {
+  if (network->address.ss_family == AF_INET && network->length == 32) {
+    return(spindump_address_tostring(&network->address));
+  } else if (network->address.ss_family == AF_INET6 && network->length == 128) {
+    return(spindump_address_tostring(&network->address));
+  } else {
+    return(spindump_network_tostring(network));
+  }
+}
+
+//
+// Create a network based on an address, i.e., a.b.c.d/32 or
+// foo::bar/128.
+//
+
+void
+spindump_network_fromaddress(const spindump_address* address,
+			     spindump_network* network) {
+  spindump_assert(address != 0);
+  spindump_assert(network != 0);
+  network->address = *address;
+  network->length = spindump_address_length(address);
+}
+
+//
+// Create an empty network (0.0.0.0/0 or ::/0)
+//
+
+void
+spindump_network_fromempty(sa_family_t af,
+			   spindump_network* network) {
+  spindump_address_fromempty(af,&network->address);
+  network->length = 0;
 }
 
 //

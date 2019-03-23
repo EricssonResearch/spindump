@@ -246,6 +246,10 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
 				  spindump_address** p_side1address,
 				  spindump_address** p_side2address);
 void
+spindump_connections_getnetworks(struct spindump_connection* connection,
+				 spindump_network* p_side1network,
+				 spindump_network* p_side2network);
+void
 spindump_connections_getports(struct spindump_connection* connection,
 			      spindump_port* p_side1port,
 			      spindump_port* p_side2port);
@@ -292,6 +296,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
 			      unsigned int maxlen,
 			      int anonymizeLeft,
 			      int anonymizeRight,
+			      int json,
 			      struct spindump_reverse_dns* querier);
 unsigned int
 spindump_connection_report_brief_fixedsize(unsigned int linelen);

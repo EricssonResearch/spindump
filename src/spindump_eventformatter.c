@@ -29,6 +29,7 @@
 #include "spindump_eventformatter.h"
 #include "spindump_eventformatter_text.h"
 #include "spindump_eventformatter_json.h"
+#include "spindump_event.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -378,14 +379,161 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   //
   
   struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)handlerData;
-  struct spindump_reverse_dns* querier = formatter->querier;
-  const char* type = spindump_connection_type_to_string(connection->type);
-  const char* addrs = spindump_connection_addresses(connection,
-						    70,
-						    formatter->anonymizeLeft,
-						    formatter->anonymizeRight,
-						    querier);
   const char* session = spindump_connection_sessionstring(connection,70);
+
+  //
+  // Construct the time stamp
+  //
+  
+  unsigned long long timestamplonglong = ((unsigned long long)packet->timestamp.tv_sec) * 1000 * 1000 + (unsigned long long)packet->timestamp.tv_usec;
+  
+  //
+  // Determine event type
+  //
+  
+  enum spindump_event_type eventType;
+  switch (event) {
+
+  case spindump_analyze_event_newconnection:
+    eventType = spindump_event_type_new_connection;
+    break;
+
+  case spindump_analyze_event_connectiondelete:
+    eventType = spindump_event_type_connection_delete;
+    break;
+
+  case spindump_analyze_event_newleftrttmeasurement:
+  case spindump_analyze_event_newrightrttmeasurement:
+    eventType = spindump_event_type_new_rtt_measurement;
+    break;
+
+  case spindump_analyze_event_newinitrespfullrttmeasurement:
+    eventType = spindump_event_type_new_rtt_measurement;
+    break;
+
+  case spindump_analyze_event_newrespinitfullrttmeasurement:
+    eventType = spindump_event_type_new_rtt_measurement;
+
+    break;
+
+  case spindump_analyze_event_initiatorspinflip:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventType = spindump_event_type_spin_flip;
+    break;
+
+  case spindump_analyze_event_responderspinflip:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventType = spindump_event_type_spin_flip;
+    break;
+
+  case spindump_analyze_event_initiatorspinvalue:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventType = spindump_event_type_spin_value;
+    break;
+
+  case spindump_analyze_event_responderspinvalue:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventType = spindump_event_type_spin_value;
+    break;
+
+  case spindump_analyze_event_initiatorecnce:
+    eventType = spindump_event_type_ecn_congestion_event;
+    break;
+
+  case spindump_analyze_event_responderecnce:
+    eventType = spindump_event_type_ecn_congestion_event;
+    break;
+
+  default:
+    return;
+
+  }
+  
+  //
+  // Create an event object
+  //
+
+  struct spindump_event eventobj;
+  spindump_network initiatorAddress;
+  spindump_network responderAddress;
+  spindump_connections_getnetworks(connection,&initiatorAddress,&responderAddress);
+  spindump_event_initialize(eventType,
+			    connection->type,
+			    &initiatorAddress,
+			    &responderAddress,
+			    session,
+			    timestamplonglong,
+			    &eventobj);
+
+
+  switch (event) {
+
+  case spindump_analyze_event_newconnection:
+    break;
+
+  case spindump_analyze_event_connectiondelete:
+    break;
+
+  case spindump_analyze_event_newleftrttmeasurement:
+    eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
+    eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
+    eventobj.u.newRttMeasurement.rtt = connection->leftRTT.lastRTT;
+    break;
+    
+  case spindump_analyze_event_newrightrttmeasurement:
+    eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
+    eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
+    eventobj.u.newRttMeasurement.rtt = connection->rightRTT.lastRTT;
+    break;
+    
+  case spindump_analyze_event_newinitrespfullrttmeasurement:
+    eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
+    eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
+    eventobj.u.newRttMeasurement.rtt = connection->initToRespFullRTT.lastRTT;
+    break;
+
+  case spindump_analyze_event_newrespinitfullrttmeasurement:
+    eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
+    eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
+    eventobj.u.newRttMeasurement.rtt = connection->respToInitFullRTT.lastRTT;
+    break;
+
+  case spindump_analyze_event_initiatorspinflip:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventobj.u.spinFlip.direction = spindump_direction_frominitiator;
+    eventobj.u.spinFlip.spin0to1 = connection->u.quic.spinFromPeer1to2.lastSpin;
+    break;
+
+  case spindump_analyze_event_responderspinflip:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventobj.u.spinFlip.direction = spindump_direction_fromresponder;
+    eventobj.u.spinFlip.spin0to1 = connection->u.quic.spinFromPeer2to1.lastSpin;
+    break;
+    
+  case spindump_analyze_event_initiatorspinvalue:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventobj.u.spinValue.direction = spindump_direction_frominitiator;
+    eventobj.u.spinValue.value = (uint8_t)connection->u.quic.spinFromPeer1to2.lastSpin;
+    break;
+
+  case spindump_analyze_event_responderspinvalue:
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventobj.u.spinValue.direction = spindump_direction_fromresponder;
+    eventobj.u.spinValue.value = (uint8_t)connection->u.quic.spinFromPeer2to1.lastSpin;
+    break;
+
+  case spindump_analyze_event_initiatorecnce:
+    eventobj.u.ecnCongestionEvent.direction = spindump_direction_frominitiator;
+    break;
+
+  case spindump_analyze_event_responderecnce:
+    eventobj.u.ecnCongestionEvent.direction = spindump_direction_fromresponder;
+    break;
+
+  default:
+    return;
+
+  }
 
   //
   // Based on the format type, provide different kinds of output
@@ -393,10 +541,10 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   
   switch (formatter->format) {
   case spindump_eventformatter_outputformat_text:
-    spindump_eventformatter_measurement_one_text(formatter,event,connection,type,addrs,session,&packet->timestamp);
+    spindump_eventformatter_measurement_one_text(formatter,event,&eventobj,connection);
     break;
   case spindump_eventformatter_outputformat_json:
-    spindump_eventformatter_measurement_one_json(formatter,event,connection,type,addrs,session,&packet->timestamp);
+    spindump_eventformatter_measurement_one_json(formatter,event,&eventobj,connection);
     break;
   default:
     spindump_errorf("invalid output format in internal variable");

@@ -172,6 +172,70 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
 }
 
 //
+// Determine the networks (or individual addresses) associated with
+// the connection. The outputs are in the two output parameters.
+//
+
+void
+spindump_connections_getnetworks(struct spindump_connection* connection,
+				 spindump_network* p_side1network,
+				 spindump_network* p_side2network) {
+
+  spindump_assert(connection != 0);
+  spindump_assert(p_side1network != 0);
+  spindump_assert(p_side2network != 0);
+  
+  switch (connection->type) {
+  case spindump_connection_transport_tcp:
+    spindump_network_fromaddress(&connection->u.tcp.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.tcp.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_transport_udp:
+    spindump_network_fromaddress(&connection->u.udp.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.udp.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_transport_dns:
+    spindump_network_fromaddress(&connection->u.dns.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.dns.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_transport_coap:
+    spindump_network_fromaddress(&connection->u.coap.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.coap.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_transport_quic:
+    spindump_network_fromaddress(&connection->u.quic.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.quic.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_transport_icmp:
+    spindump_network_fromaddress(&connection->u.icmp.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.icmp.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_aggregate_hostpair:
+    spindump_network_fromaddress(&connection->u.aggregatehostpair.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.aggregatehostpair.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_aggregate_hostnetwork:
+    spindump_network_fromaddress(&connection->u.aggregatehostnetwork.side1peerAddress,p_side1network);
+    *p_side2network = connection->u.aggregatehostnetwork.side2Network;
+    break;
+  case spindump_connection_aggregate_networknetwork:
+    *p_side1network = connection->u.aggregatenetworknetwork.side1Network;
+    *p_side2network = connection->u.aggregatenetworknetwork.side2Network;
+    break;
+  case spindump_connection_aggregate_multicastgroup:
+    spindump_network_fromempty(AF_INET,p_side1network);
+    spindump_network_fromaddress(&connection->u.aggregatemulticastgroup.group,p_side2network);
+    break;
+  default:
+    spindump_errorf("invalid connection type %u in spindump_connections_getaddresses",
+		    connection->type);
+    spindump_network_fromempty(AF_INET,p_side1network);
+    spindump_network_fromempty(AF_INET,p_side2network);
+    break;
+  }
+}
+
+//
 // Determine the ports associated with the connection. The outputs
 // are in the two output parameters. There are no ports associated
 // with all connections, of course. In those cases the

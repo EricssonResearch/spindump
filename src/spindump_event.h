@@ -69,6 +69,7 @@ struct spindump_event_connection_delete {
 struct spindump_event_new_rtt_measurement {
   enum spindump_measurement_type measurement;
   enum spindump_direction direction;
+  unsigned long rtt;
 };
 
 struct spindump_event_spin_flip {
@@ -101,7 +102,7 @@ struct spindump_event {
     struct spindump_event_spin_flip spinFlip;
     struct spindump_event_spin_value spinValue;
     struct spindump_event_ecn_congestion_event ecnCongestionEvent;
-  };
+  } u;
 };
 
 //
@@ -116,12 +117,7 @@ spindump_event_initialize(enum spindump_event_type eventType,
 			  const char* session,
 			  unsigned long long timestamp,
 			  struct spindump_event* event);
-int
-spindump_event_parse_json(const char* buffer,
-			  const struct spindump_event* event);
-int
-spindump_event_print_json(const struct spindump_event* event,
-			  char* buffer,
-			  size_t length);
+const char*
+spindump_event_type_tostring(enum spindump_event_type type);
 
 #endif // SPINDUMP_EVENT_H

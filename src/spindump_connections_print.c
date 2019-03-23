@@ -488,6 +488,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
 			      unsigned int maxlen,
 			      int anonymizeLeft,
 			      int anonymizeRight,
+			      int json,
 			      struct spindump_reverse_dns* querier) {
 
   //
@@ -498,6 +499,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
   spindump_assert(maxlen > 2);
   spindump_assert(spindump_isbool(anonymizeLeft));
   spindump_assert(spindump_isbool(anonymizeRight));
+  spindump_assert(spindump_isbool(json));
   spindump_assert(querier != 0);
   
   //
@@ -506,17 +508,21 @@ spindump_connection_addresses(struct spindump_connection* connection,
   
   static char buf[200];
   memset(buf,0,sizeof(buf));
+  const char* middle = json ? "\",\"" : " <-> ";
+  if (json) {
+    spindump_strlcat(buf,"[",sizeof(buf));
+  }
   
   //
   // Branch based on connection type
   //
-  
+
   switch (connection->type) {
   case spindump_connection_transport_tcp:
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.tcp.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,
 		     spindump_connection_address_tostring(anonymizeRight,&connection->u.tcp.side2peerAddress,querier),
 		     sizeof(buf));
@@ -525,7 +531,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.udp.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,
 		     spindump_connection_address_tostring(anonymizeRight,&connection->u.udp.side2peerAddress,querier),
 		     sizeof(buf));
@@ -534,7 +540,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.dns.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,
 		     spindump_connection_address_tostring(anonymizeRight,&connection->u.dns.side2peerAddress,querier),
 		     sizeof(buf));
@@ -543,7 +549,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.coap.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,
 		     spindump_connection_address_tostring(anonymizeRight,&connection->u.coap.side2peerAddress,querier),
 		     sizeof(buf));
@@ -552,7 +558,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.quic.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,
 		     spindump_connection_address_tostring(anonymizeRight,&connection->u.quic.side2peerAddress,querier),
 		     sizeof(buf));
@@ -561,7 +567,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.icmp.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,
 		     spindump_connection_address_tostring(anonymizeRight,&connection->u.icmp.side2peerAddress,querier),
 		     sizeof(buf));
@@ -570,7 +576,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostpair.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,
 		     spindump_connection_address_tostring(anonymizeRight,&connection->u.aggregatehostpair.side2peerAddress,querier),
 		     sizeof(buf));
@@ -579,12 +585,12 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcpy(buf,
 		     spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostnetwork.side1peerAddress,querier),
 		     sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,spindump_network_tostring(&connection->u.aggregatehostnetwork.side2Network),sizeof(buf));
     break;
   case spindump_connection_aggregate_networknetwork:
     spindump_strlcpy(buf,spindump_network_tostring(&connection->u.aggregatenetworknetwork.side1Network),sizeof(buf));
-    spindump_strlcat(buf," <-> ",sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,spindump_network_tostring(&connection->u.aggregatenetworknetwork.side2Network),sizeof(buf));
     break;
   case spindump_connection_aggregate_multicastgroup:
@@ -593,6 +599,10 @@ spindump_connection_addresses(struct spindump_connection* connection,
   default:
     spindump_errorf("invalid connection type");
     spindump_strlcpy(buf,"invalid",sizeof(buf));
+  }
+  
+  if (json) {
+    spindump_strlcat(buf,"]",sizeof(buf));
   }
   
   if (strlen(buf) > maxlen) {
@@ -963,7 +973,7 @@ spindump_connection_report_brief(struct spindump_connection* connection,
   snprintf(buf,bufsiz,"%-7s %-*s %-*s %8s %6s %10s %10s",
 	   spindump_connection_type_to_string(connection->type),
 	   addrsiz,
-	   spindump_connection_addresses(connection,addrsiz,anonymizeLeft,anonymizeRight,querier),
+	   spindump_connection_addresses(connection,addrsiz,anonymizeLeft,anonymizeRight,0,querier),
 	   maxsessionlen,
 	   spindump_connection_sessionstring(connection,maxsessionlen),
 	   spindump_connection_statestring(connection),

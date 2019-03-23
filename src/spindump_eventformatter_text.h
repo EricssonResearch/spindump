@@ -27,6 +27,7 @@
 #include "spindump_analyze.h"
 #include "spindump_connections.h"
 #include "spindump_eventformatter.h"
+#include "spindump_event.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -43,11 +44,8 @@ spindump_eventformatter_measurement_begin_text(struct spindump_eventformatter* f
 void
 spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* formatter,
 					     spindump_analyze_event event,
-					     struct spindump_connection* connection,
-					     const char* type,
-					     const char* addrs,
-					     const char* session,
-					     const struct timeval* timestamp);
+					     const struct spindump_event* eventobj,
+					     struct spindump_connection* connection);
 unsigned long
 spindump_eventformatter_measurement_endlength_text(struct spindump_eventformatter* formatter);
 const uint8_t*
