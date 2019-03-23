@@ -688,13 +688,14 @@ struct spindump_tcp {
 };
 
 //
-// Draft 17 high order bits
+// Draft 17 (and later) high order bits
 //
 
 #define spindump_quic_byte_header_form         0xC0
 #define spindump_quic_byte_form_short          0x40
 #define spindump_quic_byte_form_long           0xC0
 #define spindump_quic_byte_spin                0x20
+#define spindump_quic_byte_alwaysset           0x40
 
 //
 // Draft 16 high order bits
@@ -704,6 +705,12 @@ struct spindump_tcp {
 #define spindump_quic_byte_form_long_draft16   0x80
 #define spindump_quic_byte_form_short_draft16  0x00
 #define spindump_quic_byte_spin_draft16        0x04
+
+//
+// Google QUIC higher order bits
+//
+
+#define spindump_quic_byte_header_alwaysunset  0xC0
 
 //
 // Draft 17 message types
@@ -785,6 +792,8 @@ enum spindump_quic_message_type {
 #define spindump_quic_version_draft00          0xff000000
 #define spindump_quic_version_huitema          0x50435131
 #define spindump_quic_version_mozilla          0xf123f0c5
+#define spindump_quic_version_googlemask       0xfffff0f0
+#define spindump_quic_version_google           0x51303030
 #define spindump_quic_version_forcenegotmask   0x0f0f0f0f
 #define spindump_quic_version_forcenegotiation 0x0a0a0a0a
 #define spindump_quic_version_unknown          0xffffffff
