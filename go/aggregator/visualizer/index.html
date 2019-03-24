@@ -14,7 +14,8 @@
          var chart = c3.generate({
            data: {
              url: 'http://127.0.0.1:3000/json_data',
-    	       mimeType: 'json'
+    	       mimeType: 'json',
+             x:'TS'
            }
          });
 
@@ -24,7 +25,8 @@
             setTimeout(function () {
     	  chart.load({
                 url: 'http://127.0.0.1:3000/json_data',
-    	    mimeType: 'json'
+    	          mimeType: 'json',
+                x:'TS'
     	  });
             }, 1000);
           }   	
