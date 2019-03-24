@@ -606,6 +606,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   
   *p_hasVersion = longForm;
   *p_mayHaveSpinBit = !longForm;
+  spindump_deepdebugf("setting may have spin bit to %u based on long form being %u", *p_mayHaveSpinBit, longForm);
   *p_version = originalVersion;
   *p_type = type;
   spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %lx, type = %s",
@@ -802,7 +803,7 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
   
   if (payload_len < 1) return(0);
   uint8_t firstByte = payload[0];
-  if (mayHaveSpinBit != 0) {
+  if (mayHaveSpinBit == 0) {
     spindump_deepdebugf("SPIN not parseable for the long version header");
     return(0);
   } else if (version == spindump_quic_version_rfc ||

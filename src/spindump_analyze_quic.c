@@ -345,12 +345,20 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   }
 
   //
+  // Call some handlers based on what happened here, if needed
+  //
+
+  if (new) {
+    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+  }
+
+  //
   // Determine if there's a spin bit in the packet, and record its
   // value.
   //
 
   int spin;
-  spindump_deepdebugf("checking for the spin bit");
+  spindump_deepdebugf("checking for the spin bit (may have = %u)", mayHaveSpinBit);
   if (spindump_analyze_quic_parser_getspinbit(udpPayload,
 					      size_udppayload,
 					      mayHaveSpinBit,
@@ -376,14 +384,6 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 						      spin,
 						      fromResponder);
     }
-  }
-
-  //
-  // Call some handlers based on what happened here, if needed
-  //
-
-  if (new) {
-    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
   }
 
   //

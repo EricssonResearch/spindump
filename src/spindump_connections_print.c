@@ -253,7 +253,7 @@ spindump_connection_report_quic(struct spindump_connection* connection,
 	  spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
   fprintf(file,"  initial right RTT:     %40s\n",
 	  spindump_rtt_tostring(connection->u.quic.initialRightRTT));
-  fprintf(file,"  initial left RTT:     %40s\n",
+  fprintf(file,"  initial left RTT:      %40s\n",
 	  spindump_rtt_tostring(connection->u.quic.initialLeftRTT));
 }
 

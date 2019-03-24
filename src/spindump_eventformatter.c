@@ -485,13 +485,13 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_newleftrttmeasurement:
     eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
-    eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
+    eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
     eventobj.u.newRttMeasurement.rtt = connection->leftRTT.lastRTT;
     break;
     
   case spindump_analyze_event_newrightrttmeasurement:
     eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
-    eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
+    eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
     eventobj.u.newRttMeasurement.rtt = connection->rightRTT.lastRTT;
     break;
     
