@@ -1,0 +1,4 @@
+Taken with "tcpdump -n udp -w capture.pcap" on 2019-03-24 on Ubuntu 16.04.
+Using Google Chrome Version 73.0.3683.86 (Official Build) (64-bit) (at that time the stable version at deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main)
+In Chrome I started 2 youtube videos and did a Google Search.
+It uses GQUIC version Q043.
