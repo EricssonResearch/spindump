@@ -145,6 +145,15 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   }
   
   //
+  // Additional information about the connection
+  //
+  
+  addtobuffer2(", \"Packets\": %u",
+	       event->packets);
+  addtobuffer2(", \"Bytes\": %u",
+	       event->bytes);
+  
+  //
   // The end of the record
   //
   

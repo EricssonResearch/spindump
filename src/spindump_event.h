@@ -95,6 +95,8 @@ struct spindump_event {
   spindump_network responderAddress;
   char session[spindump_event_sessioidmaxlength];
   unsigned long long timestamp;
+  unsigned int packets;
+  unsigned int bytes;
   union {
     struct spindump_event_new_connection newConnection;
     struct spindump_event_connection_delete connectionDelete;
@@ -116,6 +118,8 @@ spindump_event_initialize(enum spindump_event_type eventType,
 			  const spindump_network* responderAddress,
 			  const char* session,
 			  unsigned long long timestamp,
+			  unsigned int packets,
+			  unsigned int bytes,
 			  struct spindump_event* event);
 const char*
 spindump_event_type_tostring(enum spindump_event_type type);

@@ -131,7 +131,7 @@ spindump_event_parser_text_print(const struct spindump_event* event,
     break;
     
   case spindump_event_type_spin_value:
-    addtobuffer3("value %u %s ",
+    addtobuffer3("%u %s ",
 		 event->u.spinValue.value,
 		 event->u.spinValue.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
@@ -144,6 +144,15 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   default:
     spindump_errorf("invalid event type");
   }
+  
+  //
+  // Additional information about the connection
+  //
+  
+  addtobuffer2("packets %u ",
+	       event->packets);
+  addtobuffer2("bytes %u",
+	       event->bytes);
   
   //
   // The end of the record

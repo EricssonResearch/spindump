@@ -469,7 +469,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
       break;
       
     default:
-      spindump_deepdebugf("QUIC version just not recognised !ok");
+      spindump_deepdebugf("QUIC version just not recognised !ok (ver = %lx)", version);
       version = spindump_quic_version_unknown;
       stats->unrecognisedQuicVersion++;
       return(0);

@@ -14,3 +14,5 @@ Testing
 CTestTestfile.cmake
 spindump_test.out
 install_manifest.txt
+test/*.out
+src/*.out

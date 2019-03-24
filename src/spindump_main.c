@@ -115,7 +115,7 @@ spindump_main_processargs(int argc,char** argv) {
 
     if (strcmp(argv[0],"--version") == 0) {
 
-      printf("version 0.20 February 15, 2019\n");
+      printf("version 0.30 March 23, 2019\n");
       exit(0);
 
     } else if (strcmp(argv[0],"--help") == 0) {
