@@ -35,10 +35,10 @@
 //
 
 #ifdef SPINDUMP_DEBUG
-#define spindump_assert(cond)	if (!(cond)) {                                      \
+#define spindump_assert(cond)	do { if (!(cond)) {                                      \
                                   spindump_fatalf("Assertion failed on %s line %u", \
                                                   __FILE__, __LINE__);		    \
-                                }
+                                } } while(0)
 #else
 #define spindump_assert(cond)
 #endif
