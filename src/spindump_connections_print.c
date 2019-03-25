@@ -496,18 +496,26 @@ spindump_connection_addresses(struct spindump_connection* connection,
   //
 
   spindump_assert(connection != 0);
-  spindump_assert(maxlen > 2);
   spindump_assert(spindump_isbool(anonymizeLeft));
   spindump_assert(spindump_isbool(anonymizeRight));
   spindump_assert(spindump_isbool(json));
   spindump_assert(querier != 0);
   
   //
-  // Reserve buffer space
+  // Reserve buffer space, check there's enough space to print
   //
   
   static char buf[200];
   memset(buf,0,sizeof(buf));
+  if (maxlen <= 2) {
+    buf[0] = 0;
+    return(buf);
+  }
+      
+  //
+  // Add the start of the JSON as needed
+  //
+  
   const char* middle = json ? "\",\"" : " <-> ";
   if (json) {
     spindump_strlcat(buf,"[",sizeof(buf));

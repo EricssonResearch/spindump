@@ -157,7 +157,7 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   // The end of the record
   //
   
-  addtobuffer1(" }\n");
+  addtobuffer1(" }");
 
   //
   // Done.
