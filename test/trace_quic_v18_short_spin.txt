@@ -1,0 +1,1 @@
+A short trace between Quant client and server using a draft 18 version of Quant. Not enough packets to get full spin bit measurement in effect.

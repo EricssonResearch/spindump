@@ -319,6 +319,8 @@ unittests_textparser(void) {
 			    &network2,
 			    "123:456",
 			    timestamp,
+			    1,
+			    2,
 			    &event);
   char buf[200];
   int ret;

@@ -472,6 +472,8 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 			    &responderAddress,
 			    session,
 			    timestamplonglong,
+			    connection->packetsFromSide1 + connection->packetsFromSide2,
+			    connection->bytesFromSide1 + connection->bytesFromSide2,
 			    &eventobj);
 
 

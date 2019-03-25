@@ -33,6 +33,8 @@ spindump_event_initialize(enum spindump_event_type eventType,
 			  const spindump_network* responderAddress,
 			  const char* session,
 			  unsigned long long timestamp,
+			  unsigned int packets,
+			  unsigned int bytes,
 			  struct spindump_event* event) {
 
   //
@@ -51,6 +53,8 @@ spindump_event_initialize(enum spindump_event_type eventType,
   event->responderAddress = *responderAddress;
   strncpy(&event->session[0],session,sizeof(event->session));
   event->timestamp = timestamp;
+  event->packets = packets;
+  event->bytes = bytes;
 }
 
 const char*
