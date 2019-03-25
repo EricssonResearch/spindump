@@ -56,7 +56,7 @@ spindump_eventformatter_measurement_begin_json(struct spindump_eventformatter* f
 //
 
 unsigned long
-spindump_eventformatter_measurement_endlength_json(struct spindump_eventformatter* formatter) {
+spindump_eventformatter_measurement_midlength_json(struct spindump_eventformatter* formatter) {
   return(2);
 }
 
@@ -65,8 +65,26 @@ spindump_eventformatter_measurement_endlength_json(struct spindump_eventformatte
 //
 
 const uint8_t*
+spindump_eventformatter_measurement_mid_json(struct spindump_eventformatter* formatter) {
+  return((uint8_t*)",\n");
+}
+
+//
+// Return the length of the postamble
+//
+
+unsigned long
+spindump_eventformatter_measurement_endlength_json(struct spindump_eventformatter* formatter) {
+  return(3);
+}
+
+//
+// Print what is needed as an end after the actual records
+//
+
+const uint8_t*
 spindump_eventformatter_measurement_end_json(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"]\n");
+  return((uint8_t*)"\n]\n");
 }
 
 //

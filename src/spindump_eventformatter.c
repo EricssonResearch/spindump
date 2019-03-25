@@ -42,6 +42,9 @@ spindump_eventformatter_measurement_begin(struct spindump_eventformatter* format
 static const uint8_t*
 spindump_eventformatter_measurement_beginaux(struct spindump_eventformatter* formatter,
 					     unsigned long* length);
+static const uint8_t*
+spindump_eventformatter_measurement_midaux(struct spindump_eventformatter* formatter,
+					   unsigned long* length);
 static unsigned long
 spindump_eventformatter_measurement_endlength(struct spindump_eventformatter* formatter);
 static void
@@ -305,13 +308,27 @@ spindump_eventformatter_measurement_beginlength(struct spindump_eventformatter* 
   }
 }
 
+//
+// Print the begin part
+//
+
 static void
 spindump_eventformatter_measurement_begin(struct spindump_eventformatter* formatter) {
   spindump_deepdebugf("eventformatter_measurement_begin");
   const uint8_t* data = spindump_eventformatter_measurement_beginaux(formatter,&formatter->preambleLength);
+  spindump_deepdebugf("preamble = %s (length %u)", data, formatter->preambleLength);
+  const uint8_t* data2 = spindump_eventformatter_measurement_endaux(formatter,&formatter->postambleLength);
+  spindump_deepdebugf("postamble = %s (length %u)", data2, formatter->postambleLength);
+  size_t midambleLength;
+  const uint8_t* data3 = spindump_eventformatter_measurement_midaux(formatter,&midambleLength);
+  spindump_deepdebugf("midamble = %s (length %u)", data3, midambleLength);
   spindump_eventformatter_deliverdata(formatter,formatter->preambleLength,data);
 }
- 
+
+//
+// Call the specific format function for the begin part
+//
+
 static const uint8_t*
 spindump_eventformatter_measurement_beginaux(struct spindump_eventformatter* formatter,
 					     unsigned long* length) {
@@ -327,6 +344,46 @@ spindump_eventformatter_measurement_beginaux(struct spindump_eventformatter* for
   }
 }
 
+//
+// What is the length of the text between records?
+//
+
+static unsigned long
+spindump_eventformatter_measurement_midlength(struct spindump_eventformatter* formatter) {
+  switch (formatter->format) {
+  case spindump_eventformatter_outputformat_text:
+    return(spindump_eventformatter_measurement_midlength_text(formatter));
+  case spindump_eventformatter_outputformat_json:
+    return(spindump_eventformatter_measurement_midlength_json(formatter));
+  default:
+    spindump_errorf("invalid output format in internal variable");
+    return(0);
+  }
+}
+
+//
+// Call the format-specific function for the text between records
+//
+
+static const uint8_t*
+spindump_eventformatter_measurement_midaux(struct spindump_eventformatter* formatter,
+					   unsigned long* length) {
+  *length = spindump_eventformatter_measurement_midlength(formatter);
+  switch (formatter->format) {
+  case spindump_eventformatter_outputformat_text:
+    return(spindump_eventformatter_measurement_mid_text(formatter));
+  case spindump_eventformatter_outputformat_json:
+    return(spindump_eventformatter_measurement_mid_json(formatter));
+  default:
+    spindump_errorf("invalid output format in internal variable");
+    return((uint8_t*)"");
+  }
+}
+
+//
+// What is the length of the postamble?
+//
+
 static unsigned long
 spindump_eventformatter_measurement_endlength(struct spindump_eventformatter* formatter) {
   switch (formatter->format) {
@@ -341,7 +398,7 @@ spindump_eventformatter_measurement_endlength(struct spindump_eventformatter* fo
 }
 
 //
-// Return the length of the postamble
+// Print the postamble
 //
 
 static void
@@ -350,7 +407,11 @@ spindump_eventformatter_measurement_end(struct spindump_eventformatter* formatte
   const uint8_t* data = spindump_eventformatter_measurement_endaux(formatter,&length);
   spindump_eventformatter_deliverdata(formatter,length,data);
 }
- 
+
+//
+// Call the format-specific function for the postamble
+//
+
 static const uint8_t*
 spindump_eventformatter_measurement_endaux(struct spindump_eventformatter* formatter,
 					   unsigned long* length) {
@@ -614,15 +675,32 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
 				    unsigned long length,
 				    const uint8_t* data) {
   if (formatter->file != 0) {
+    
+    //
+    // Check first if there's a need to add a "midamble" between records. 
+    //
+
+    spindump_deepdebugf("deliverdata midamble check length %u postambleLength %u entries %u",
+			length, formatter->postambleLength, formatter->nEntries);
+    if (length > spindump_eventformatter_maxamble) {
+      if (formatter->nEntries > 0) {
+	size_t midlength;
+	const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
+	fwrite(mid,midlength,1,formatter->file);
+	spindump_deepdebugf("adding the midamble %s", mid);
+      }
+      formatter->nEntries++;
+    }
 
     //
-    // We're just outputting data to stdout; print it out
+    // Write the actual entry out. We're just outputting data to
+    // stdout; print it out
     //
     
     fwrite(data,length,1,formatter->file);
     
   } else if (formatter->nRemotes > 0) {
-
+    
     //
     // We need to send data to remote collector point(s). If blockSize
     // is zero, then we simply send right away.
@@ -638,21 +716,41 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
       // Otherwise, keep pooling data in a buffer until block size is filled
       //
       
-      if (formatter->bytesInBlock + length + spindump_eventformatter_maxpostamble < formatter->blockSize) {
+      if (formatter->bytesInBlock + spindump_eventformatter_maxmidamble + length + spindump_eventformatter_maxpostamble <
+	  formatter->blockSize) {
 	
 	//
 	// All fits in and still some space
 	//
-	
+
+	spindump_deepdebugf("(1) checking to see if need to insert the midamble (%u bytes vs. %u preamble length",
+			    formatter->bytesInBlock, formatter->preambleLength);
+	if (formatter->bytesInBlock > formatter->preambleLength) {
+	  size_t midlength;
+	  const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
+	  spindump_deepdebugf("(1) adding midamble %s of %u bytes", mid, midlength);
+	  memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);
+	  formatter->bytesInBlock += midlength;
+	}
 	memcpy(formatter->block + formatter->bytesInBlock,data,length);
 	formatter->bytesInBlock += length;
 	
-      } else if (formatter->bytesInBlock + length + spindump_eventformatter_maxpostamble == formatter->blockSize) {
-
+      } else if (formatter->bytesInBlock + spindump_eventformatter_maxmidamble + length + spindump_eventformatter_maxpostamble ==
+		 formatter->blockSize) {
+	
 	//
 	// All fits in but exactly
 	//
 	
+	spindump_deepdebugf("(2) checking to see if need to insert the midamble (%u bytes vs. %u preamble length",
+			    formatter->bytesInBlock, formatter->preambleLength);
+	if (formatter->bytesInBlock > formatter->preambleLength) {
+	  size_t midlength;
+	  const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
+	  spindump_deepdebugf("(2) adding midamble %s of %u bytes", mid, midlength);
+	  memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);
+	  formatter->bytesInBlock += midlength;
+	}
 	memcpy(formatter->block + formatter->bytesInBlock,data,length);
 	formatter->bytesInBlock += length;
 	unsigned long postambleLength;

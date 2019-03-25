@@ -47,6 +47,10 @@ spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* for
 					     const struct spindump_event* eventobj,
 					     struct spindump_connection* connection);
 unsigned long
+spindump_eventformatter_measurement_midlength_text(struct spindump_eventformatter* formatter);
+const uint8_t*
+spindump_eventformatter_measurement_mid_text(struct spindump_eventformatter* formatter);
+unsigned long
 spindump_eventformatter_measurement_endlength_text(struct spindump_eventformatter* formatter);
 const uint8_t*
 spindump_eventformatter_measurement_end_text(struct spindump_eventformatter* formatter);
