@@ -20,7 +20,7 @@ traces="trace_icmpv4_short trace_icmpv6_short trace_tcp_short trace_tcp_short_js
 for trace in $traces
 do
     
-    echo -n "Test case $trace... "
+    echo "Test case $trace... "
     pcap=$testdir/$trace.pcap
     descr=$testdir/$trace.txt
     out=$testdir/$trace.out
@@ -33,9 +33,9 @@ do
     fi
     if $spindump --input-file $pcap --textual --format text $opts > $out
     then
-	echo -n run ok...
+	echo "  run ok..."
     else
-	echo run failed -- exit
+	echo "**run failed -- exit"
 	exit 1
     fi
     
@@ -43,15 +43,15 @@ do
     then
 	nop=nop
     else
-	echo expected results file $corr does not exist -- exit
+	echo "**expected results file $corr does not exist -- exit"
 	exit 1
     fi
     
     if diff $out $corr > /dev/null
     then
-	echo results correct
+	echo "  results correct"
     else
-	echo results incorrect -- exit
+	echo "**results incorrect -- exit"
 	exit 1
     fi
     
@@ -59,7 +59,7 @@ do
     then
 	nop=nop
     else
-	echo test description file $descr does not exist -- exit
+	echo "**test description file $descr does not exist -- exit"
 	exit 1
     fi
     
