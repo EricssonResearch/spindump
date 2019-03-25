@@ -9,10 +9,10 @@
 
       <script type="text/javascript">
         //TODO: move all the script to separate folder.
-        
+
         function getSessionInfo () {
 
-          fetch('http://localhost:3000/demo')
+          fetch('http://localhost:5040/demo')
           .then(function(response) {
             return response.json();
           })
@@ -23,7 +23,7 @@
             for (var i = 0; i < jsonRes.length; i++) {
 
               var item = jsonRes[i]['Id'] + '->' + jsonRes[i]['Type'];
-              
+
               ele.innerHTML = ele.innerHTML +
               '<option value="' + jsonRes[i]['Id'] + '">' + item + '</option>';
             }
@@ -32,16 +32,18 @@
         }
 
         function generateCharts(selected_ID){
- 
+
           var id=selected_ID.value;
+
+
 
           console.log("selected ID = " +id);
 
            var chart = c3.generate({
              data: {
-               url: 'http://127.0.0.1:3000/json_data',
+               url: encodeURI('http://127.0.0.1:5040/data/id'),
                mimeType: 'json',
-               x:'TS'
+               x:'Timestamps'
              }
            });
 
@@ -50,12 +52,12 @@
           for (i=0;i<60;i++) {
             setTimeout(function () {
              chart.load({
-              url: 'http://127.0.0.1:3000/json_data',
+              url: encodeURI('http://127.0.0.1:5040/data/id'),
               mimeType: 'json',
-              x:'TS'
+              x:'Timestamps'
             });
            }, 1000);
-          } 
+          }
         }
       </script>
 
@@ -66,7 +68,7 @@
         </select>
 
       </div>
-    
+
       <div id="chart"></div>
 
     </body>
