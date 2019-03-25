@@ -36,17 +36,21 @@ type observer struct {
 type session struct {
   ClientId  string
   ServerId  string
+  Type      string
   Observers map[string]*observer
+}
+
+type session_id struct {
+  Id   string
+  Type string
 }
 
 // Let's do smart things
 func (s *session) newEvent(ev *spindump_event, obs string) {
   _, ok := s.Observers[obs]
   if !ok {
-    log.Printf("New Spindump Observer! %s \n", obs)
     s.Observers[obs] = &observer{}
   }
-
   if ev.Event == "measurement" {
     var rs rtt_sample
     rs.FullRtt = ev.Full_rtt_initiator
@@ -74,10 +78,24 @@ func receiveEvent(w http.ResponseWriter, r *http.Request, sender string, s *map[
   }
   sess, ok := (*s)[event.Session]
   if !ok {
-    sess = session{ClientId: event.Addrs[0], ServerId: event.Addrs[1], Observers: make(map[string]*observer)}
+    sess = session {
+      ClientId: event.Addrs[0],
+      ServerId: event.Addrs[1],
+      Observers: make(map[string]*observer),
+      Type: event.Type,
+    }
+    log.Printf("New session %s", event.Session)
     (*s)[event.Session] = sess
+    http.HandleFunc("/demo/"+event.Session, sndFunc(s, event.Session))
   }
   sess.newEvent(&event, sender)
+}
+
+func sndFunc(sessions *map[string]session, sessId string) func(http.ResponseWriter, *http.Request) {
+  return func(w http.ResponseWriter, r *http.Request) {
+    sess, _ := (*sessions)[sessId]
+    json.NewEncoder(w).Encode(sess.Observers["sd1"].RttSamples)
+  }
 }
 
 func rcvFunc(sessions *map[string]session, senderId string) func(http.ResponseWriter, *http.Request) {
@@ -87,7 +105,7 @@ func rcvFunc(sessions *map[string]session, senderId string) func(http.ResponseWr
 }
 
 // todo: move data store and functionality to appropriate package and files
-func main() {
+  func main() {
   var sessions map[string]session
   sessions = make(map[string]session)
   senders := []string{"sd1", "sd2"} // configure the spindump senders we accept events from
@@ -95,6 +113,17 @@ func main() {
   for _, snd := range senders {
     http.HandleFunc("/data/"+snd, rcvFunc(&sessions, snd))
   }
+
+  sndSessFunc := func(w http.ResponseWriter, _ *http.Request) {
+    var sids []session_id
+    for id, sess := range sessions {
+      sids = append(sids, session_id{Id: id, Type: sess.Type})
+    }
+    json.NewEncoder(w).Encode(sids)
+    //io.WriteString(json.Marshal(sids))
+  }
+  http.HandleFunc("/demo", sndSessFunc)
+
 
   if err := http.ListenAndServe(":5040", nil); err != nil {
     panic(err)

@@ -110,15 +110,15 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   case spindump_event_type_new_rtt_measurement:
     if (event->u.newRttMeasurement.measurement == spindump_measurement_type_bidirectional) {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
-	addtobuffer2(", \"Left_rtt\": \"%lu\"", event->u.newRttMeasurement.rtt);
+	addtobuffer2(", \"Left_rtt\": %lu", event->u.newRttMeasurement.rtt);
       } else {
-	addtobuffer2(", \"Right_rtt\": \"%lu\"", event->u.newRttMeasurement.rtt);
+	addtobuffer2(", \"Right_rtt\": %lu", event->u.newRttMeasurement.rtt);
       }
     } else {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
-	addtobuffer2(", \"Full_rtt_initiator\": \"%lu\"", event->u.newRttMeasurement.rtt);
+	addtobuffer2(", \"Full_rtt_initiator\": %lu", event->u.newRttMeasurement.rtt);
       } else {
-	addtobuffer2(", \"Full_rtt_responder\": \"%lu\"", event->u.newRttMeasurement.rtt);
+	addtobuffer2(", \"Full_rtt_responder\": %lu", event->u.newRttMeasurement.rtt);
       }
     }
     break;
@@ -130,7 +130,7 @@ spindump_event_parser_json_print(const struct spindump_event* event,
     break;
     
   case spindump_event_type_spin_value:
-    addtobuffer3(", \"Value\": \"%u\", \"Who\": \"%s\"",
+    addtobuffer3(", \"Value\": %u, \"Who\": \"%s\"",
 		 event->u.spinValue.value,
 		 event->u.spinValue.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
