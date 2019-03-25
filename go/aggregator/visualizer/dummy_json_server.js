@@ -6,7 +6,7 @@ const router = express.Router()
 const app = express()
 const port = 3000
 
-var scriptPath = path.join(__dirname, 'script');
+//var scriptPath = path.join(__dirname, 'script');
 
 //dummy data
 sesssion_data = [{"Id":"45856","Type":"ICMP"},{"Id":"45857","Type":"ICMP"}]
@@ -25,14 +25,14 @@ function sendMeasurements(req, res){
 
 	//res.header("Content-Type", "appliction/json")
 	res.header("Access-Control-Allow-Origin", "*")
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+	//res.header("Access-Control-Allow-Headers", Content-Type")
 	res.json(json_data)
 
 }
 
 function sendSessionData(req,res){
 	res.header("Access-Control-Allow-Origin", "*")
-	//res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+	//res.header("Access-Control-Allow-Headers", Content-Type")
 	res.json(sesssion_data)
 }
 
@@ -58,7 +58,7 @@ router.get('/rtt_data', function(req, res) {
 });
 
 //static content
-app.use(express.static(scriptPath));
+//app.use(express.static(scriptPath));
 //app.use(express.static('script'));
 //app.use("/script", express.static(__dirname + '/public'));
 
