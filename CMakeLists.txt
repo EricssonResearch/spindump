@@ -48,7 +48,6 @@ endif()
 
 include(CheckCCompilerFlag)
 foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
-    -I/opt/local/include
     -Wall -Wextra -Wpedantic -Weverything -Werror
     -fno-diagnostics-color
     -fno-omit-frame-pointer
