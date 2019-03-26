@@ -29,13 +29,17 @@ addons:
       - llvm-toolchain-xenial-6.0
       - llvm-toolchain-xenial-7
     packages:
-      - g++-4.9
-      - g++-7
-      - g++-8
       - clang-5.0
       - clang-6.0
       - clang-7
       - cmake
+      - g++-4.9
+      - g++-7
+      - g++-8
+      - libcurl4-openssl-dev
+      - libmicrohttpd-dev
+      - libncurses5-dev
+      - libpcap-dev
 
 script:
   - |
