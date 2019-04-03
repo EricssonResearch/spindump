@@ -1,0 +1,73 @@
+  <html>
+    <head>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.13/c3.css" rel="stylesheet" type="text/css">
+    </head>
+    <body onload="getSessionInfo()">
+
+      <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.13/c3.js"></script>
+
+      <script type="text/javascript">
+        //TODO: move all the script to separate folder.
+        
+        function getSessionInfo () {
+
+          fetch('http://localhost:3000/demo')
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(jsonRes) {
+            console.log(JSON.stringify(jsonRes));
+
+            var ele = document.getElementById('session_list');
+            for (var i = 0; i < jsonRes.length; i++) {
+
+              var item = jsonRes[i]['Id'] + '->' + jsonRes[i]['Type'];
+              
+              ele.innerHTML = ele.innerHTML +
+              '<option value="' + jsonRes[i]['Id'] + '">' + item + '</option>';
+            }
+          });
+
+        }
+
+        function generateCharts(selected_ID){
+ 
+          var id=selected_ID.value;
+
+          console.log("selected ID = " +id);
+
+           var chart = c3.generate({
+             data: {
+               url: 'http://127.0.0.1:3000/json_data',
+               mimeType: 'json',
+               x:'TS'
+             }
+           });
+
+          var i;
+
+          for (i=0;i<60;i++) {
+            setTimeout(function () {
+             chart.load({
+              url: 'http://127.0.0.1:3000/json_data',
+              mimeType: 'json',
+              x:'TS'
+            });
+           }, 1000);
+          } 
+        }
+      </script>
+
+      <div id="populator">
+
+        <select id="session_list" onchange="generateCharts(this)">
+          <option value="">-- Select --</option>
+        </select>
+
+      </div>
+    
+      <div id="chart"></div>
+
+    </body>
+  </html>
