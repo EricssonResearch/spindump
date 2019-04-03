@@ -62,8 +62,9 @@ typedef struct {
 // Configuration variables --------------------------------------------------------------------
 //
 
-extern int debug;
-extern int deepdebug;
+extern int spindump_debug;
+extern int spindump_deepdebug;
+extern int spindump_deepdeepdebug;
 
 //
 // External API interface to this module ------------------------------------------------------
@@ -146,6 +147,8 @@ void
 spindump_debugf(const char* format, ...);
 void
 spindump_deepdebugf(const char* format, ...);
+void
+spindump_deepdeepdebugf(const char* format, ...);
 size_t
 spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size);
 size_t

@@ -104,6 +104,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   case spindump_event_type_new_connection:
     break;
     
+  case spindump_event_type_change_connection:
+    break;
+    
   case spindump_event_type_connection_delete:
     break;
     

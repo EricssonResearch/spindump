@@ -1245,6 +1245,8 @@ spindump_analyze_eventtostring(spindump_analyze_event event) {
     return("none");
   } else if (event == spindump_analyze_event_newconnection) {
     return("newconnection");
+  } else if (event == spindump_analyze_event_changeconnection) {
+    return("changeconnection");
   } else if (event == spindump_analyze_event_connectiondelete) {
     return("connectiondelete");
   } else if (event == spindump_analyze_event_newleftrttmeasurement) {

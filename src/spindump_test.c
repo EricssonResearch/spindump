@@ -717,22 +717,34 @@ int main(int argc,char** argv) {
     
     if (strcmp(argv[0],"--debug") == 0) {
       
-      debug = 1;
+      spindump_debug = 1;
       
     } else if (strcmp(argv[0],"--no-debug") == 0) {
       
-      debug = 0;
-      deepdebug = 0;
+      spindump_debug = 0;
+      spindump_deepdebug = 0;
+      spindump_deepdeepdebug = 0;
       
     } else if (strcmp(argv[0],"--deepdebug") == 0) {
       
-      debug = 1;
-      deepdebug = 1;
+      spindump_debug = 1;
+      spindump_deepdebug = 1;
       
     } else if (strcmp(argv[0],"--no-deepdebug") == 0) {
       
-      deepdebug = 0;
+      spindump_deepdebug = 0;
+      spindump_deepdeepdebug = 0;
 
+    } else if (strcmp(argv[0],"--deepdeepdebug") == 0) {
+
+      spindump_debug = 1;
+      spindump_deepdebug = 1;
+      spindump_deepdeepdebug = 1;
+      
+    } else if (strcmp(argv[0],"--no-deepdeepdebug") == 0) {
+      
+      spindump_deepdeepdebug = 0;
+      
     } else {
 
       spindump_errorf("invalid argument: %s", argv[0]);

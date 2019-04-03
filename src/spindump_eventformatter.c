@@ -468,6 +468,10 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventType = spindump_event_type_new_connection;
     break;
 
+  case spindump_analyze_event_changeconnection:
+    eventType = spindump_event_type_change_connection;
+    break;
+
   case spindump_analyze_event_connectiondelete:
     eventType = spindump_event_type_connection_delete;
     break;

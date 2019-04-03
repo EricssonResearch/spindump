@@ -50,6 +50,10 @@ struct spindump_connection_set;
 void
 spindump_connections_markconnectiondeleted(struct spindump_connection* connection);
 void
+spindump_connections_changeidentifiers(struct spindump_analyze* state,
+				       struct spindump_packet* packet,
+				       struct spindump_connection* connection);
+void
 spindump_connections_changestate(struct spindump_analyze* state,
 				 struct spindump_packet* packet,
 				 struct spindump_connection* connection,

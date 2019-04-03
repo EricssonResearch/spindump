@@ -89,7 +89,9 @@ spindump_connections_match(struct spindump_connection* connection,
       return(0);
     }
   }
-
+  
+  spindump_deepdeepdebugf("connection type match ok");
+  
   //
   // ICMP type and ID
   // 
@@ -116,6 +118,9 @@ spindump_connections_match(struct spindump_connection* connection,
   
   spindump_address* side1address = 0;
   spindump_address* side2address = 0;
+  int portOrCidTestsRemain =
+    ((criteria->matchPorts != spindump_connection_searchcriteria_srcdst_none) ||
+     (criteria->matchQuicCids != spindump_connection_searchcriteria_srcdst_none));
   
   switch (criteria->matchAddresses) {
 
@@ -168,12 +173,24 @@ spindump_connections_match(struct spindump_connection* connection,
     }
     if (spindump_address_equal(side1address,&criteria->side1address) &&
 	spindump_address_equal(side2address,&criteria->side2address)) {
-      *fromResponder = 0;
-      fromResponderSet = 1;
+      if (!spindump_address_equal(side1address,side2address) ||
+	  !portOrCidTestsRemain) {
+	*fromResponder = 0;
+	fromResponderSet = 1;
+	spindump_deepdeepdebugf("address srcdst_both_allowreverse ok and not fromResponder");
+      } else {
+	spindump_deepdeepdebugf("address srcdst_both_allowreverse ok but cannot set direction yet");
+      }
     } else if (spindump_address_equal(side2address,&criteria->side1address) &&
 	       spindump_address_equal(side1address,&criteria->side2address)) {
-      *fromResponder = 1;
-      fromResponderSet = 1;
+      if (!spindump_address_equal(side1address,side2address) ||
+	  !portOrCidTestsRemain) {
+	*fromResponder = 1;
+	fromResponderSet = 1;
+	spindump_deepdeepdebugf("address srcdst_both_allowreverse ok and fromResponder");
+      } else {
+	spindump_deepdeepdebugf("address srcdst_both_allowreverse ok but cannot set direction yet");
+      }
     } else {
       spindump_deepdebugf("match fails due to no address match");
       return(0);
@@ -186,6 +203,8 @@ spindump_connections_match(struct spindump_connection* connection,
     
   }
 
+  spindump_deepdeepdebugf("address match ok");
+  
   //
   // Source and destination ports
   // 
@@ -196,10 +215,12 @@ spindump_connections_match(struct spindump_connection* connection,
   switch (criteria->matchPorts) {
 
   case spindump_connection_searchcriteria_srcdst_none:
+    spindump_deepdeepdebugf("no port match needed");
     break;
 
   case spindump_connection_searchcriteria_srcdst_destinationonly:
     spindump_connections_getports(connection,&side1port,&side2port);
+    spindump_deepdeepdebugf("destination port match needed to %u", side2port);
     if (side2port == 0) return(0);
     if (side2port != criteria->side2port) return(0);
     if (fromResponderSet && *fromResponder != 0) return(0);
@@ -209,6 +230,7 @@ spindump_connections_match(struct spindump_connection* connection,
     
   case spindump_connection_searchcriteria_srcdst_both:
     spindump_connections_getports(connection,&side1port,&side2port);
+    spindump_deepdeepdebugf("source and destination port match needed to %u:%u", side1port, side2port);
     if (side1port == 0 || side2port == 0) return(0);
     if (side1port != criteria->side1port) return(0);
     if (side2port != criteria->side2port) return(0);
@@ -219,7 +241,12 @@ spindump_connections_match(struct spindump_connection* connection,
     
   case spindump_connection_searchcriteria_srcdst_both_allowreverse:
     spindump_connections_getports(connection,&side1port,&side2port);
-    if (side1port == 0 || side2port == 0) return(0);
+    spindump_deepdeepdebugf("source and destination port match needed to %u:%u (allow reverse)", side1port, side2port);
+    spindump_deepdeepdebugf("fromResponderSet = %u fromResponder = %u", fromResponderSet, *fromResponder);
+    if (side1port == 0 || side2port == 0) {
+      spindump_deepdeepdebugf("port match fail 1");
+      return(0);
+    }
     if (side1port == criteria->side1port &&
 	side2port == criteria->side2port &&
 	(!fromResponderSet || *fromResponder == 0)) {
@@ -231,6 +258,7 @@ spindump_connections_match(struct spindump_connection* connection,
       *fromResponder = 1;
       fromResponderSet = 1;
     } else {
+      spindump_deepdeepdebugf("port match fail 2");
       return(0);
     }
     break;
@@ -240,7 +268,9 @@ spindump_connections_match(struct spindump_connection* connection,
     return(0);
     
   }
-
+  
+  spindump_deepdeepdebugf("port match ok");
+  
   //
   // QUIC CIDs
   // 
@@ -251,11 +281,14 @@ spindump_connections_match(struct spindump_connection* connection,
   switch (criteria->matchQuicCids) {
 
   case spindump_connection_searchcriteria_srcdst_none:
+    spindump_deepdeepdebugf("no cid match needed");
     break;
 
   case spindump_connection_searchcriteria_srcdst_destinationonly:
     spindump_assert(criteria->matchType && criteria->type == spindump_connection_transport_quic);
     side2connectionId = &connection->u.quic.peer2ConnectionID;
+    spindump_deepdeepdebugf("destination cid match needed to %s",
+			    spindump_connection_quicconnectionid_tostring(side2connectionId));
     if (!spindump_analyze_quic_quicidequal(side2connectionId,&criteria->side2connectionId)) return(0);
     if (fromResponderSet && *fromResponder != 0) return(0);
     *fromResponder = 0;
@@ -266,6 +299,10 @@ spindump_connections_match(struct spindump_connection* connection,
     spindump_assert(criteria->matchType && criteria->type == spindump_connection_transport_quic);
     side1connectionId = &connection->u.quic.peer1ConnectionID;
     side2connectionId = &connection->u.quic.peer2ConnectionID;
+    spindump_deepdeepdebugf("destination and source cid match needed to destination %s",
+			    spindump_connection_quicconnectionid_tostring(side2connectionId));
+    spindump_deepdeepdebugf("destination and source cid match needed to souerce %s",
+			    spindump_connection_quicconnectionid_tostring(side1connectionId));
     if (!spindump_analyze_quic_quicidequal(side1connectionId,&criteria->side1connectionId)) return(0);
     if (!spindump_analyze_quic_quicidequal(side2connectionId,&criteria->side2connectionId)) return(0);
     if (fromResponderSet && *fromResponder != 0) return(0);
@@ -277,6 +314,10 @@ spindump_connections_match(struct spindump_connection* connection,
     spindump_assert(criteria->matchType && criteria->type == spindump_connection_transport_quic);
     side1connectionId = &connection->u.quic.peer1ConnectionID;
     side2connectionId = &connection->u.quic.peer2ConnectionID;
+    spindump_deepdeepdebugf("destination and source cid match needed to destination %s (allow reverse)",
+			    spindump_connection_quicconnectionid_tostring(side2connectionId));
+    spindump_deepdeepdebugf("destination and source cid match needed to souerce %s (allow reverse)",
+			    spindump_connection_quicconnectionid_tostring(side1connectionId));
     if (spindump_analyze_quic_quicidequal(side1connectionId,&criteria->side1connectionId) &&
 	spindump_analyze_quic_quicidequal(side2connectionId,&criteria->side2connectionId) &&
 	(!fromResponderSet || *fromResponder == 0)) {
@@ -298,6 +339,8 @@ spindump_connections_match(struct spindump_connection* connection,
     
   }
 
+  spindump_deepdeepdebugf("cid match ok");
+  
   //
   // Partial QUIC CIDs
   // 
@@ -349,11 +392,11 @@ spindump_connections_search(struct spindump_connection_searchcriteria* criteria,
     struct spindump_connection* connection = table->connections[i];
     if (connection != 0) {
 
-      spindump_deepdebugf("search compares to connection %u", connection->id);
+      spindump_deepdeepdebugf("search compares to connection %u", connection->id);
 
       if (spindump_connections_match(connection,criteria,fromResponder)) {
 	
-	spindump_debugf("found an existing %u connection %u",
+	spindump_debugf("found an existing %s connection %u",
 			spindump_connection_type_to_string(connection->type),
 			connection->id);
 	return(connection);
@@ -717,7 +760,8 @@ spindump_connections_searchconnection_quic_5tuple(spindump_address* side1address
   spindump_assert(side1address != 0);
   spindump_assert(side2address != 0);
   spindump_assert(table != 0);
-
+  
+  spindump_deepdeepdebugf("searchconnection_quic_5tuple port %u:%u", side1port, side2port);
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -752,7 +796,9 @@ spindump_connections_searchconnection_quic_cids(struct spindump_quic_connectioni
   spindump_assert(destinationCid != 0);
   spindump_assert(sourceCid != 0);
   spindump_assert(table != 0);
-  
+
+  spindump_deepdeepdebugf("searchconnection_quic_cids source %s", spindump_connection_quicconnectionid_tostring(sourceCid));
+  spindump_deepdeepdebugf("searchconnection_quic_cids destination %s", spindump_connection_quicconnectionid_tostring(destinationCid));
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -783,6 +829,8 @@ spindump_connections_searchconnection_quic_destcid(struct spindump_quic_connecti
   spindump_assert(destinationCid != 0);
   spindump_assert(table != 0);
   
+  spindump_deepdeepdebugf("searchconnection_quic_destcid %s",
+			  spindump_connection_quicconnectionid_tostring(destinationCid));
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -811,6 +859,7 @@ spindump_connections_searchconnection_quic_partialcid(const unsigned char* desti
   spindump_assert(destinationCid != 0);
   spindump_assert(table != 0);
   
+  spindump_deepdeepdebugf("searchconnection_quic_partialcid");
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -840,6 +889,7 @@ spindump_connections_searchconnection_quic_partialcid_source(const unsigned char
   spindump_assert(destinationCid != 0);
   spindump_assert(table != 0);
   
+  spindump_deepdeepdebugf("searchconnection_quic_partialcid_source");
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -874,6 +924,7 @@ spindump_connections_searchconnection_quic_5tuple_either(spindump_address* side1
   spindump_assert(side2address != 0);
   spindump_assert(table != 0);
 
+  spindump_deepdeepdebugf("searchconnection_quic_5tuple_either port %u:%u", side1port, side2port);
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -908,6 +959,8 @@ spindump_connections_searchconnection_quic_cids_either(struct spindump_quic_conn
   spindump_assert(sourceCid != 0);
   spindump_assert(table != 0);
   
+  spindump_deepdeepdebugf("searchconnection_quic_cids_either source %s", spindump_connection_quicconnectionid_tostring(sourceCid));
+  spindump_deepdeepdebugf("searchconnection_quic_cids_either destination %s", spindump_connection_quicconnectionid_tostring(destinationCid));
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -934,6 +987,7 @@ struct spindump_connection*
 spindump_connections_searchconnection_quic_partialcid_either(const unsigned char* destinationCid,
 							     struct spindump_connectionstable* table,
 							     int* fromResponder) {
+  spindump_deepdeepdebugf("searchconnection_quic_partialcid_either");
   struct spindump_connection* connection =
     spindump_connections_searchconnection_quic_partialcid(destinationCid,
 							  table);

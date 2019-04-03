@@ -39,22 +39,23 @@
 
 typedef uint16_t spindump_analyze_event;
 #define spindump_analyze_event_newconnection		             1
-#define spindump_analyze_event_connectiondelete		             2
-#define spindump_analyze_event_newleftrttmeasurement	             4
-#define spindump_analyze_event_newrightrttmeasurement	             8
-#define spindump_analyze_event_newinitrespfullrttmeasurement        16
-#define spindump_analyze_event_newrespinitfullrttmeasurement        32
-#define spindump_analyze_event_initiatorspinflip	            64
-#define spindump_analyze_event_responderspinflip	           128
-#define spindump_analyze_event_initiatorspinvalue	           256
-#define spindump_analyze_event_responderspinvalue                  512
-#define spindump_analyze_event_newpacket                          1024
-#define spindump_analyze_event_firstresponsepacket                2048
-#define spindump_analyze_event_statechange                        4096
-#define spindump_analyze_event_initiatorecnce                     8192
-#define spindump_analyze_event_responderecnce                    16384
+#define spindump_analyze_event_changeconnection		             2
+#define spindump_analyze_event_connectiondelete		             4
+#define spindump_analyze_event_newleftrttmeasurement	             8
+#define spindump_analyze_event_newrightrttmeasurement	            16
+#define spindump_analyze_event_newinitrespfullrttmeasurement        32
+#define spindump_analyze_event_newrespinitfullrttmeasurement        64
+#define spindump_analyze_event_initiatorspinflip	           128
+#define spindump_analyze_event_responderspinflip	           256
+#define spindump_analyze_event_initiatorspinvalue	           512
+#define spindump_analyze_event_responderspinvalue                 1024
+#define spindump_analyze_event_newpacket                          2048
+#define spindump_analyze_event_firstresponsepacket                4096
+#define spindump_analyze_event_statechange                        8192
+#define spindump_analyze_event_initiatorecnce                    16384
+#define spindump_analyze_event_responderecnce                    32768
 
-#define spindump_analyze_event_alllegal                          32767
+#define spindump_analyze_event_alllegal                          65535
 
 struct spindump_analyze;
 

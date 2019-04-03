@@ -1,5 +1,5 @@
 QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-ba5573c827ffe4e911 at 1553410393050231 new packets 0 bytes 0
-QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-ba5573c827ffe4e911 at 1553410393101193 measurement right 50962 packets 1 bytes 1228
+QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-3f39d101ab09b290 at 1553410393101193 measurement right 50962 packets 1 bytes 1228
 QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-3f39d101ab09b290 at 1553410393101456 spinvalue 0 responder packets 2 bytes 1652
 QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-3f39d101ab09b290 at 1553410393101983 spinvalue 0 responder packets 3 bytes 1982
 QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-3f39d101ab09b290 at 1553410393103467 spinvalue 0 responder packets 4 bytes 3262

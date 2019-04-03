@@ -606,7 +606,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   
   *p_hasVersion = longForm;
   *p_mayHaveSpinBit = !longForm;
-  spindump_deepdebugf("setting may have spin bit to %u based on long form being %u", *p_mayHaveSpinBit, longForm);
+  spindump_deepdebugf("may have spin bit = %u (based on long form being %u)", *p_mayHaveSpinBit, longForm);
   *p_version = originalVersion;
   *p_type = type;
   spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %lx, type = %s",
