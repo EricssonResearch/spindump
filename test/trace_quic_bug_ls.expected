@@ -57,7 +57,7 @@ QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 15536122458593
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859771 spinvalue 0 responder packets 58 bytes 63521
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859771 spinflip 1-0 responder packets 58 bytes 63521
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859771 measurement right 692 packets 58 bytes 63521
-QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859771 measurement full (responder) 951packets 58 bytes 63521
+QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859771 measurement full (responder) 951 packets 58 bytes 63521
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859836 spinvalue 0 responder packets 59 bytes 64801
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859855 spinvalue 0 responder packets 60 bytes 66081
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245859871 spinvalue 0 responder packets 61 bytes 67361
@@ -123,7 +123,7 @@ QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 15536122458609
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862227 spinvalue 1 responder packets 118 bytes 130601
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862227 spinflip 0-1 responder packets 118 bytes 130601
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862227 measurement right 2259 packets 118 bytes 130601
-QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862227 measurement full (responder) 2456packets 118 bytes 130601
+QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862227 measurement full (responder) 2456 packets 118 bytes 130601
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862286 spinvalue 1 responder packets 119 bytes 131881
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862305 spinvalue 1 responder packets 120 bytes 133161
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245862323 spinvalue 1 responder packets 121 bytes 134441
@@ -272,7 +272,7 @@ QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 15536122458664
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869431 spinvalue 0 responder packets 261 bytes 290626
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869431 spinflip 1-0 responder packets 261 bytes 290626
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869431 measurement right 6984 packets 261 bytes 290626
-QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869431 measurement full (responder) 7204packets 261 bytes 290626
+QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869431 measurement full (responder) 7204 packets 261 bytes 290626
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869506 spinvalue 0 responder packets 262 bytes 291906
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869526 spinvalue 0 responder packets 263 bytes 293186
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245869544 spinvalue 0 responder packets 264 bytes 294466
@@ -511,7 +511,7 @@ QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 15536122458747
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878779 spinvalue 1 responder packets 494 bytes 562258
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878779 spinflip 0-1 responder packets 494 bytes 562258
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878779 measurement right 9063 packets 494 bytes 562258
-QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878779 measurement full (responder) 9348packets 494 bytes 562258
+QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878779 measurement full (responder) 9348 packets 494 bytes 562258
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878851 spinvalue 1 responder packets 495 bytes 563538
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878871 spinvalue 1 responder packets 496 bytes 564818
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245878891 spinvalue 1 responder packets 497 bytes 566098
@@ -964,7 +964,7 @@ QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 15536122458887
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245889329 spinvalue 0 responder packets 941 bytes 1112099
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245889329 spinflip 1-0 responder packets 941 bytes 1112099
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245889329 measurement right 10252 packets 941 bytes 1112099
-QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245889329 measurement full (responder) 10550packets 941 bytes 1112099
+QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245889329 measurement full (responder) 10550 packets 941 bytes 1112099
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245889704 spinvalue 0 initiator packets 942 bytes 1112164
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245890201 spinvalue 1 initiator packets 943 bytes 1112235
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d at 1553612245890201 spinflip 0-1 initiator packets 943 bytes 1112235

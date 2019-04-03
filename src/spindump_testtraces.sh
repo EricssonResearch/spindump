@@ -11,7 +11,7 @@ spindump=$srcdir/spindump
 # file (.options).
 #
 
-traces="trace_icmpv4_short trace_icmpv6_short trace_tcp_short trace_tcp_short_json trace_dns trace_quic_v18_short_spin trace_quic_v18_long_spin trace_quic_google trace_quic_bug_ls"
+traces="trace_icmpv4_short trace_icmpv6_short trace_tcp_short trace_tcp_short_json trace_dns trace_quic_v18_short_spin trace_quic_v18_short_spin_all trace_quic_v18_long_spin trace_quic_v18_long_spin_all trace_quic_google trace_quic_bug_ls"
 
 #
 # Loop through test cases

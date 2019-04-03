@@ -604,6 +604,8 @@ spindump_main_operation(void) {
 							format,
 							stdout,
 							querier,
+							reportSpins,
+							reportSpinFlips,
 							anonymizeLeft,
 							anonymizeRight);
   }
@@ -615,6 +617,8 @@ spindump_main_operation(void) {
 								remotes,
 								remoteBlockSize,
 								querier,
+								reportSpins,
+								reportSpinFlips,
 								anonymizeLeft,
 								anonymizeRight);
   }

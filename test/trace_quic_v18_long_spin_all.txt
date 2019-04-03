@@ -1,0 +1,1 @@
+Like trace_quic_v18_long_spin, but with full reporting of spin values

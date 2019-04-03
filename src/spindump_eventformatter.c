@@ -63,6 +63,8 @@ static struct spindump_eventformatter*
 spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
 				   enum spindump_eventformatter_outputformat format,
 				   struct spindump_reverse_dns* querier,
+				   int reportSpins,
+				   int reportSpinFlips,
 				   int anonymizeLeft,
 				   int anonymizeRight);
 static const char*
@@ -80,6 +82,8 @@ static struct spindump_eventformatter*
 spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
 				   enum spindump_eventformatter_outputformat format,
 				   struct spindump_reverse_dns* querier,
+				   int reportSpins,
+				   int reportSpinFlips,
 				   int anonymizeLeft,
 				   int anonymizeRight) {
   
@@ -108,6 +112,8 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   formatter->remotes = 0;
   formatter->blockSize = 0;
   formatter->querier = querier;
+  formatter->reportSpins = reportSpins;
+  formatter->reportSpinFlips = reportSpinFlips;
   formatter->anonymizeLeft = anonymizeLeft;
   formatter->anonymizeRight = anonymizeRight;
 
@@ -134,6 +140,8 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
 					enum spindump_eventformatter_outputformat format,
 					FILE* file,
 					struct spindump_reverse_dns* querier,
+					int reportSpins,
+					int reportSpinFlips,
 					int anonymizeLeft,
 					int anonymizeRight) {
   
@@ -144,6 +152,8 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
   struct spindump_eventformatter* formatter = spindump_eventformatter_initialize(analyzer,
 										 format,
 										 querier,
+										 reportSpins,
+										 reportSpinFlips,
 										 anonymizeLeft,
 										 anonymizeRight);
   if (formatter == 0) {
@@ -176,6 +186,8 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
 					  struct spindump_remote_client** remotes,
 					  unsigned long blockSize,
 					  struct spindump_reverse_dns* querier,
+					  int reportSpins,
+					  int reportSpinFlips,
 					  int anonymizeLeft,
 					  int anonymizeRight) {
   
@@ -187,6 +199,8 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
   struct spindump_eventformatter* formatter = spindump_eventformatter_initialize(analyzer,
 										 format,
 										 querier,
+										 reportSpins,
+										 reportSpinFlips,
 										 anonymizeLeft,
 										 anonymizeRight);
   if (formatter == 0) {
@@ -491,21 +505,25 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     break;
 
   case spindump_analyze_event_initiatorspinflip:
+    if (!formatter->reportSpinFlips) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_flip;
     break;
 
   case spindump_analyze_event_responderspinflip:
+    if (!formatter->reportSpinFlips) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_flip;
     break;
 
   case spindump_analyze_event_initiatorspinvalue:
+    if (!formatter->reportSpins) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_value;
     break;
 
   case spindump_analyze_event_responderspinvalue:
+    if (!formatter->reportSpins) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_value;
     break;

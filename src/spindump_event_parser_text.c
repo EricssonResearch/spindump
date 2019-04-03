@@ -122,7 +122,7 @@ spindump_event_parser_text_print(const struct spindump_event* event,
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
 	addtobuffer2("full (initiator) %lu ", event->u.newRttMeasurement.rtt);
       } else {
-	addtobuffer2("full (responder) %lu", event->u.newRttMeasurement.rtt);
+	addtobuffer2("full (responder) %lu ", event->u.newRttMeasurement.rtt);
       }
     }
     break;

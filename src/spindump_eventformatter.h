@@ -65,6 +65,8 @@ struct spindump_eventformatter {
   unsigned long bytesInBlock;
   struct spindump_analyze* analyzer;
   struct spindump_reverse_dns* querier;
+  int reportSpins;
+  int reportSpinFlips;
   int anonymizeLeft;
   int anonymizeRight;
   enum spindump_eventformatter_outputformat format;
@@ -81,6 +83,8 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
 					enum spindump_eventformatter_outputformat format,
 					FILE* file,
 					struct spindump_reverse_dns* querier,
+					int reportSpins,
+					int reportSpinFlips,
 					int anonymizeLeft,
 					int anonymizeRight);
 struct spindump_eventformatter*
@@ -90,6 +94,8 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
 					  struct spindump_remote_client** remotes,
 					  unsigned long blockSize,
 					  struct spindump_reverse_dns* querier,
+					  int reportSpins,
+					  int reportSpinFlips,
 					  int anonymizeLeft,
 					  int anonymizeRight);
 void
