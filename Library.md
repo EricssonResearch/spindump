@@ -169,6 +169,15 @@ Here "myhandler" is the user's function and it will get as parameters the analyz
 
 This object represents a single connection observed by the analyzer. The full description of that object needs to be added later, but here are some of the key fields that are relevant:
 
+* connection->type indicates the type of the connection (TCP, ICMP, QUIC, etc)
+* connection->creationTime indicates when the first packet for the connection was seen
+* connection->packetsFromSide1 counts the number of packets sent from the initiator to the responder 
+* connection->packetsFromSide2 counts the number of packets sent from the initiator to the initiator 
+* connection->leftRTT is the number of microsends for the RTT part that is between the initiator (client) and the measurement point 
+* connection->rightRTT is the number of microsends for the RTT part that is between the responder (server) and the measurement point 
+
+The description is in src/spindump_connections_structs.h and the most relevant pare are reproduced below:
+
     struct spindump_connection {
       unsigned int id;                                  // sequentially allocated descriptive id for the connection
       enum spindump_connection_type type;               // the type of the connection (tcp, icmp, aggregate, etc)
