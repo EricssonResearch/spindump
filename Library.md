@@ -108,7 +108,52 @@ Note that if the handlers allocate memory on a per-connection basis, they also n
 
 The following is a detailed description of the library functionality.
 
+### API function spindump_analyze_initialize
+
+This function creates an object to represent an analyzer. It allocates memory as needed. It returns a non-NULL object pointer if the creation was successful, and NULL otherwise.
+
+The prototype:
+
+    struct spindump_analyze*
+    spindump_analyze_initialize(void);
+
+### API function spindump_analyze_uninitialize
+
+Destroy the analyzer resources and memory object.
+
+The prototype:
+
+    void
+    spindump_analyze_uninitialize(struct spindump_analyze* state);
+
+### API function spindump_analyze_registerhandler
+
+This function should be called to register a handler as discussed above. 
+
+The prototype: 
+
+    void
+    spindump_analyze_registerhandler(struct spindump_analyze* state,
+    				 spindump_analyze_event eventmask,
+    				 struct spindump_connection* connection,
+    				 spindump_analyze_handler handler,
+    				 void* handlerData);
+
+### API function spindump_analyze_unregisterhandler
+
+This function should be called to de-register a handler that was previously registered.
+
+The prototype: 
+
+    void
+    spindump_analyze_unregisterhandler(struct spindump_analyze* state,
+    				   spindump_analyze_event eventmask,
+    				   struct spindump_connection* connection,
+    				   spindump_analyze_handler handler,
+    				   void* handlerData);
+
 ### Events
+
 The currently defined events that can be caught are:
 
     #define spindump_analyze_event_newconnection		             1
