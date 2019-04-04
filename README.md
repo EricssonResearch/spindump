@@ -12,7 +12,7 @@ The software is under development, and subject to research on best algorithms.
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
 
-# News!!!
+## News!!!
 
 Spindump now supports Google QUIC as implemented in Chrome, has improved documentation, and its security has improved with a privilege downgrade on Linux. Spindump is also now able to send collected information to a selected web server or another Spindump instance. And finally, Spindump transitioned to the use of cmake with the help of Lars Eggert.
 
@@ -28,11 +28,11 @@ But Spindump could also be used to record information from experiments related t
 
 Spindump can also be used to measure latencies on a more ongoing basis. It can feed information to management and other systems, and could for instance enable alarms to be raised when the circumstances demand that, configurations to be optimized, and so on. 
 
-# Spindump Command Usage
+## Spindump Command Usage
 
 The software is packaged as the "spindump" utility, and simply typing
 
-    # spindump  
+    # spindump
  
 should show the most active sessions and their current round-trip times (RTTs). The top of the screen shows some status information, while the rest is dedicated to showing connections and their RTTs. You can exit from the tool by pressing Control-C or "Q". In addition, you can use "C" to toggle whether to show closed connections, "U" to whether to show UDP connections, or "A" to show either individual connections or aggregated connections. Pressing "H" shows help information and pressing "S" enables you to set the screen update frequency.
 
@@ -54,8 +54,7 @@ would only look udp port 443 traffic (likely QUIC).
 
 See the [usage description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) for the full description of all options!
 
-
-# Installation
+## Installation
 
 The easiest installation method is to retrieve the software from GitHub. Start with this:
 
@@ -76,22 +75,31 @@ Then do:
     make
     sudo make install
 
-# Spindump Library
+## Spindump Library
 
 The Spindump software builds on the Spindump Library, a simple but extensibile packet analysis package. The makefile builds a library, libspindump.a that can be linked to a program, used to provide the same statistics as the spindump command does, or even extended to build more advanced functionality. The Spindump command itself is built using this library.
 
-The library can also be used in other ways, e.g., by integrating it to other tools or network devices, to collect some information that is necessary to optimize the device or the network in some fashion, for instance.
+The library can also be used in other ways, e.g., by integrating it to other tools or network devices, to collect some information that is necessary to optimize the device or the network in some fashion, for inst.ance.
 
 ![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/architecture2s.jpg)
 
 See the [library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md) page for all the details.
 
-# Dependencies 
+## Dependencies 
 
 The Spindump command depends on the basic OS libraries (such as libc) as well as libpcap, ncurses, curl, and microhttpd. The Spindump library depends only on libc, unless you use the features that would require libpcap or other libraries.
 
-# Things to do
+## Things to do
 
 The software is being worked on, and as of yet seems to be working but definitely needs more testing. IP packet fragmentation is recognised but no packet reassembly is performed; an optional reassembly process would be a useful new feature. The beginnings of connection data anonymization are in the software, but more work is needed on that front as well.
 
 The full list of known bugs and new feature requests can be found from [GitHub](https://github.com/EricssonResearch/spindump/issues).
+
+## Full documentation
+
+The full documentation of Spindump consists of the following:
+
+* [README](https://github.com/EricssonResearch/spindump/blob/master/Library.md) (this file) contains the introduction and installation instructions
+* The command [usage description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) describes how to use the Spindump command-line tool
+* [Library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md) contains the definition of the Spindump library API, and an explanation of how and when to use the library
+* [News](https://github.com/EricssonResearch/spindump/blob/master/Format.md) describes recent additions
