@@ -16,7 +16,7 @@ The tool builds on the Spindump Library, which is a small, simple, and extensibl
 
 Spindump now supports Google QUIC as implemented in Chrome, has improved documentation, and its security has improved with a privilege downgrade on Linux. Spindump is also now able to send collected information to a selected web server or another Spindump instance. And finally, Spindump transitioned to the use of cmake with the help of Lars Eggert.
 
-See the [news](https://github.com/EricssonResearch/spindump/blob/master/Format.md) page for more details!
+See the [news](https://github.com/EricssonResearch/spindump/blob/master/News.md) page for more details!
 
 # Use Cases
 
@@ -52,7 +52,7 @@ To look at specific connections, you can enter a filter specification. For insta
 
 would only look udp port 443 traffic (likely QUIC).
 
-See the [usage description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) for the full description of all options!
+See the [usage description](https://github.com/EricssonResearch/spindump/blob/master/Usage.md) for the full description of all options!
 
 ## Installation
 
@@ -99,7 +99,8 @@ The full list of known bugs and new feature requests can be found from [GitHub](
 
 The full documentation of Spindump consists of the following:
 
-* [README](https://github.com/EricssonResearch/spindump/blob/master/Library.md) (this file) contains the introduction and installation instructions
-* The command [usage description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) describes how to use the Spindump command-line tool
+* [README](https://github.com/EricssonResearch/spindump/blob/master/README.md) (this file) contains the introduction and installation instructions.
+* The command [usage description](https://github.com/EricssonResearch/spindump/blob/master/Usage.md) describes how to use the Spindump command-line tool.
+* The command [format description](https://github.com/EricssonResearch/spindump/blob/master/Usage.md) explains what format Spindump measurement data can be carried in, if it is sent to a collection point rather than shown visually to the user.
 * [Library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md) contains the definition of the Spindump library API, and an explanation of how and when to use the library
-* [News](https://github.com/EricssonResearch/spindump/blob/master/Format.md) describes recent additions
+* [News](https://github.com/EricssonResearch/spindump/blob/master/News.md) describes recent additions.
