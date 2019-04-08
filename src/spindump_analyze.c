@@ -540,6 +540,13 @@ spindump_analyze_process_null(struct spindump_analyze* state,
 
   uint32_t nullInt;
   memcpy(&nullInt,packet->contents,sizeof(nullInt));
+
+  //
+  // Convert to correct byte-order, as per description above...
+  //
+  
+  nullInt = ntohl(nullInt);
+  
   switch (nullInt) {
   case 2:
     spindump_analyze_decodeiphdr(state,
