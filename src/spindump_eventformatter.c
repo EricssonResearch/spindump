@@ -93,7 +93,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
 
   spindump_deepdebugf("eventformatter_initialize");
   unsigned int siz = sizeof(struct spindump_eventformatter);
-  struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)malloc(siz);
+  struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)spindump_malloc(siz);
   if (formatter == 0) {
     spindump_errorf("cannot allocate memory for the event formatter (%u bytes)", siz);
     return(0);
@@ -221,10 +221,10 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
   //
 
   if (formatter->blockSize > 0) {
-    formatter->block = (uint8_t*)malloc(formatter->blockSize);
+    formatter->block = (uint8_t*)spindump_malloc(formatter->blockSize);
     if (formatter->block == 0) {
       spindump_errorf("cannot allocate memory for the event formatter (%u bytes)", formatter->blockSize);
-      free(formatter);
+      spindump_free(formatter);
       return(0);
     }
     formatter->bytesInBlock = 0;
@@ -244,8 +244,8 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
 		    spindump_eventformatter_measurement_beginlength(formatter),
 		    spindump_eventformatter_measurement_endlength(formatter),
 		    formatter->blockSize);
-    free(formatter->block);
-    free(formatter);
+    spindump_free(formatter->block);
+    spindump_free(formatter);
     return(0);
   }
   
@@ -302,7 +302,7 @@ spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter) 
   // Free the memory
   //
   
-  free(formatter);
+  spindump_free(formatter);
 }
 
 //

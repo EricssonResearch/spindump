@@ -453,7 +453,7 @@ spindump_main_processargs(int argc,char** argv) {
 	spindump_deepdebugf("additional filter components...");
 	char* prevfilter = filter;
 	unsigned long n = strlen(prevfilter) + 1 + strlen(argv[0]) + 1;
-	filter = malloc(n);
+	filter = spindump_malloc(n);
 
 	if (filter == 0) {
 	  spindump_errorf("Cannot allocate %u bytes", n);
@@ -462,7 +462,7 @@ spindump_main_processargs(int argc,char** argv) {
 	  spindump_strlcpy(filter,prevfilter,n);
 	  spindump_strlcat(filter," ",n);
 	  spindump_strlcat(filter,argv[0],n);
-	  free(prevfilter);
+	  spindump_free(prevfilter);
 	}
       }
 

@@ -65,7 +65,7 @@ spindump_connectionstable_initialize(void) {
   // Allocate the main table
   // 
   
-  struct spindump_connectionstable* table = (struct spindump_connectionstable*)malloc(maintabsize);
+  struct spindump_connectionstable* table = (struct spindump_connectionstable*)spindump_malloc(maintabsize);
   if (table == 0) {
     spindump_errorf("cannot allocate connection table for %u bytes", maintabsize);
     return(0);
@@ -83,11 +83,11 @@ spindump_connectionstable_initialize(void) {
   // Allocate the actual table of connections
   // 
   
-  table->connections = (struct spindump_connection**)malloc(variabletabsize);
+  table->connections = (struct spindump_connection**)spindump_malloc(variabletabsize);
   if (table->connections == 0) {
     spindump_errorf("cannot allocate the variable-size connection table for %u bytes", variabletabsize);
     spindump_deepdebugf("free table after an error");
-    free(table);
+    spindump_free(table);
     return(0);
   }
   
@@ -139,10 +139,10 @@ spindump_connectionstable_uninitialize(struct spindump_connectionstable* table) 
   
   memset(table->connections,0xFF,table->maxNConnections * sizeof(struct spindump_connection*));
   spindump_deepdebugf("free table->connections %lx in spindump_connections_freetable", table->connections);
-  free(table->connections);
+  spindump_free(table->connections);
   memset(table,0xFF,sizeof(*table));
   spindump_deepdebugf("free table in spindump_connections_freetable");
-  free(table);
+  spindump_free(table);
 
   //
   // Done

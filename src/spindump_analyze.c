@@ -110,7 +110,7 @@ spindump_analyze_initialize(void) {
   //
 
   unsigned int size = sizeof(struct spindump_analyze);
-  struct spindump_analyze* state = (struct spindump_analyze*)malloc(size);
+  struct spindump_analyze* state = (struct spindump_analyze*)spindump_malloc(size);
   if (state == 0) {
     spindump_errorf("cannot allocate analyzer state of %u bytes", size);
     return(0);
@@ -123,13 +123,13 @@ spindump_analyze_initialize(void) {
   memset(state,0,size);
   state->table = spindump_connectionstable_initialize();
   if (state->table == 0) {
-    free(state);
+    spindump_free(state);
     return(0);
   }
   state->stats = spindump_stats_initialize();
   if (state->stats == 0) {
     spindump_connectionstable_uninitialize(state->table);
-    free(state);
+    spindump_free(state);
     return(0);
   }
 
@@ -167,7 +167,7 @@ spindump_analyze_uninitialize(struct spindump_analyze* state) {
   // Actually free up the space
   //
 
-  free(state);
+  spindump_free(state);
 }
 
 //

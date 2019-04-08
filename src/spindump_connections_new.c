@@ -249,7 +249,7 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
   // 
   
   unsigned int size = sizeof(struct spindump_connection);
-  struct spindump_connection* connection = (struct spindump_connection*)malloc(size);
+  struct spindump_connection* connection = (struct spindump_connection*)spindump_malloc(size);
   if (connection == 0) {
     spindump_errorf("cannot allocate memory for a connection of size %u", size);
     return(0);
@@ -289,11 +289,11 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
   table->maxNConnections *= 2;
   unsigned int newtabsize = table->maxNConnections * sizeof(struct spindump_connection*);
   struct spindump_connection** oldtable = table->connections;
-  struct spindump_connection** newtable = (struct spindump_connection**)malloc(newtabsize);
+  struct spindump_connection** newtable = (struct spindump_connection**)spindump_malloc(newtabsize);
   if (newtable == 0) {
     spindump_errorf("cannot allocate memory for a connection table of size %u", newtabsize);
     spindump_deepdebugf("free connection after an error");
-    free(connection);
+    spindump_free(connection);
     return(0);
   }
   table->connections = newtable;
@@ -302,7 +302,7 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
     table->connections[i] = oldtable[i];
   }
   spindump_deepdebugf("free oldtable after a growth");
-  free(oldtable);
+  spindump_free(oldtable);
   table->connections[table->nConnections++] = connection;
   spindump_assert(table->nConnections < table->maxNConnections);
   return(connection);
@@ -713,5 +713,5 @@ spindump_connections_delete(struct spindump_connection* connection) {
   
   spindump_connections_set_uninitialize(&connection->aggregates,connection);
   memset(connection,0x93,sizeof(*connection));
-  free(connection);
+  spindump_free(connection);
 }

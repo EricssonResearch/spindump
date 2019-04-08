@@ -29,6 +29,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <netinet/in.h>
+#include "spindump_memdebug.h"
 
 //
 // Some helper macros -------------------------------------------------------------------------
@@ -46,6 +47,14 @@
 #define spindump_min(a,b)       ((a) < (b) ? (a) : (b))
 #define spindump_isbool(x)      ((x) == 0 || (x) == 1)
 #define spindump_iszerotime(x)  ((x)->tv_sec == 0)
+
+#ifdef SPINDUMP_MEMDEBUG
+#define spindump_malloc(x) spindump_memdebug_malloc(x)
+#define spindump_free(x) spindump_memdebug_free(x)
+#else
+#define spindump_malloc(x) malloc(x)
+#define spindump_free(x) free(x)
+#endif
 
 //
 // Types --------------------------------------------------------------------------------------

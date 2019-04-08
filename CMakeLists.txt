@@ -47,7 +47,7 @@ if(CPPCHECK)
 endif()
 
 include(CheckCCompilerFlag)
-foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
+foreach(FLAG -pipe
     -I/opt/local/include
     -Wall -Wextra -Wpedantic -Weverything -Werror
     -fno-diagnostics-color
@@ -62,6 +62,9 @@ foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
     -Wno-documentation-deprecated-sync
     -Wno-reserved-id-macro
     -Wno-documentation
+    # comment one of the following lines out to switch between optimized and debug versions
+     -g -DSPINDUMP_DEBUG -DSPINDUMP_MEMDEBUG -Wno-cast-align
+    # -O4
   )
   string(REGEX REPLACE "[-=+]" "_" F ${FLAG})
   check_c_compiler_flag(${FLAG} ${F})

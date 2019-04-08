@@ -47,7 +47,7 @@ spindump_reverse_dns_initialize_noop(void) {
   //
 
   unsigned int size = sizeof(struct spindump_reverse_dns);
-  struct spindump_reverse_dns* service = (struct spindump_reverse_dns*)malloc(size);
+  struct spindump_reverse_dns* service = (struct spindump_reverse_dns*)spindump_malloc(size);
   if (service == 0) {
     spindump_errorf("cannot allocate reverse DNS service object of size %u bytes", size);
     return(0);
@@ -183,6 +183,6 @@ spindump_reverse_dns_uninitialize(struct spindump_reverse_dns* service) {
   // Done. Free the object.
   //
 
-  free(service);
+  spindump_free(service);
 }
 

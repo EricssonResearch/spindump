@@ -70,6 +70,7 @@ add_library(spindumplib
   spindump_event.c
   spindump_event_parser_json.c
   spindump_event_parser_text.c
+  spindump_memdebug.c
   spindump_mid.c
   spindump_packet.c
   spindump_protocols.c
@@ -144,7 +145,7 @@ add_test( spindump_testtraces spindump_testtraces.sh )
 add_custom_command(OUTPUT ../spindump.tar.gz
                    COMMAND rm ARGS -f spindump.tar.gz
                    COMMAND tar
-		   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh
+		   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh test/*.txt test/*.pcap test/*.expected test/*.options
 		   WORKING_DIRECTORY ..
 )
 

@@ -58,7 +58,7 @@ spindump_remote_client_init(const char* url) {
   //
   
   unsigned int size = sizeof(struct spindump_remote_client);
-  struct spindump_remote_client* client = (struct spindump_remote_client*)malloc(size);
+  struct spindump_remote_client* client = (struct spindump_remote_client*)spindump_malloc(size);
   if (client == 0) {
     spindump_errorf("cannot allocate client of %u bytes", size);
     return(0);
@@ -142,7 +142,7 @@ void
 spindump_remote_client_close(struct spindump_remote_client* client) {
   spindump_assert(client != 0);
   curl_easy_cleanup(client->curl);
-  free(client);
+  spindump_free(client);
 }
 
 //
