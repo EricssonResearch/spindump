@@ -760,9 +760,9 @@ spindump_main_packetloop(struct spindump_analyze* analyzer,
     // See if it is time to update the screen periodically
     //
 
-    if (toolmode == spindump_toolmode_visual ||
-	spindump_iszerotime(&previousupdate) ||
-	spindump_timediffinusecs(&now,&previousupdate) >= updateperiod) {
+    if (toolmode == spindump_toolmode_visual &&
+	(spindump_iszerotime(&previousupdate) ||
+	 spindump_timediffinusecs(&now,&previousupdate) >= updateperiod)) {
       
       spindump_report_update(reporter,
 			     averageMode,
