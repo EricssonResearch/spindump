@@ -100,6 +100,10 @@ target_link_libraries(spindumplib
     ${CURSES_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
     m
+# uncomment the following line if you're doing profiling with google-proftools (gproftools)
+    # -L/opt/local/lib profiler
+# uncomment the following line if you're doing profiling with GNU performance tools (gperf)
+    # -pg
 )
 
 #

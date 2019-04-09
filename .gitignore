@@ -1,5 +1,9 @@
 *.o
 *.a
+*.prof
+*.perf
+test/*.prof
+test/*.perf
 Makefile
 src/Makefile
 spindump.tar.gz
