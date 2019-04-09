@@ -32,14 +32,16 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
-static const char*
-spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type);
 static unsigned int
 spindump_analyze_quic_parser_onecidlength(uint8_t value);
 static void
 spindump_analyze_quic_parser_cidlengths(uint8_t lengthsbyte,
 					unsigned int* p_destinationLength,
 					unsigned int* p_sourceLength);
+#ifdef SPINDUMP_DEBUG
+static const char*
+spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type);
+#endif
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -75,6 +77,8 @@ spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
   return(memcmp(id1,id2->id,id2->len) == 0);
 }
 
+#ifdef SPINDUMP_DEBUG
+
 //
 // Return a string describing a particular QUIC message
 //
@@ -92,6 +96,8 @@ spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type) 
     return("invalid");
   }
 }
+
+#endif // SPINDUMP_DEBUG
 
 //
 // Determine the length of a QUIC Connection ID based on the nibble

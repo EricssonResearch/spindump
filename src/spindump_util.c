@@ -962,6 +962,8 @@ spindump_setdebugdestination(FILE* file) {
   debugdestination = file;
 }
 
+#ifdef SPINDUMP_DEBUG
+
 //
 // Print out debug in a manner similar to printf. This function will
 // only have an effect if the variable debug is 1.
@@ -1043,6 +1045,8 @@ spindump_deepdeepdebugf(const char* format, ...) {
   }
   
 }
+
+#endif // SPINDUMP_DEBUG
 
 //
 // A copy of the BSD strlcpy function. As for Linux, as it does not exist

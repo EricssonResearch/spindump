@@ -152,12 +152,18 @@ void
 spindump_warnf(const char* format, ...);
 void
 spindump_setdebugdestination(FILE* file);
+#ifdef SPINDUMP_DEBUG
 void
 spindump_debugf(const char* format, ...);
 void
 spindump_deepdebugf(const char* format, ...);
 void
 spindump_deepdeepdebugf(const char* format, ...);
+#else
+#define spindump_debugf(...)
+#define spindump_deepdebugf(...)
+#define spindump_deepdeepdebugf(...)
+#endif
 size_t
 spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size);
 size_t
