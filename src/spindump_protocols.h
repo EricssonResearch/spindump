@@ -952,8 +952,10 @@ struct spindump_quic {
 #define spindump_decodebyte(field,payload,position)     \
   memcpy(&(field),(payload)+((position)++),1)
 #define spindump_decodebytes(field,payload,n,position)	\
-  memcpy(&(field),(payload)+(position),(n));		\
-  (position) += (n);
+  do { \
+    memcpy(&(field),(payload)+(position),(n));		      \
+    (position) += (n);                                  \
+  } while(0)
 #define spindump_decode2byteint(field,payload,position) \
   memcpy(&(field),(payload)+(position),2);              \
   (position) += 2;                                      \
