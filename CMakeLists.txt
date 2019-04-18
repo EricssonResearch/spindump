@@ -28,6 +28,9 @@ cmake_minimum_required(VERSION 3.1)
 
 project(spindump VERSION 0.2.0 LANGUAGES C)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
 find_program(CLANGTIDY NAMES clang-tidy)
 if(CLANGTIDY)
   message(STATUS "Found clang-tidy: ${CLANGTIDY}")
@@ -47,7 +50,9 @@ if(CPPCHECK)
 endif()
 
 include(CheckCCompilerFlag)
-foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
+foreach(FLAG
+    -pipe
+    -I/opt/local/include
     -Wall -Wextra -Wpedantic -Weverything -Werror
     -fno-diagnostics-color
     -fno-omit-frame-pointer
@@ -61,6 +66,11 @@ foreach(FLAG -pipe -g -DSPINDUMP_DEBUG
     -Wno-documentation-deprecated-sync
     -Wno-reserved-id-macro
     -Wno-documentation
+# comment in/out one of the two following lines out to switch between optimized and debug versions
+    -g -DSPINDUMP_DEBUG -DSPINDUMP_MEMDEBUG -Wno-cast-align
+    # -O3 -Wno-unused-variable
+# uncomment the following line if you're doing profiling with GNU performance tools (gperf)
+    # -pg
   )
   string(REGEX REPLACE "[-=+]" "_" F ${FLAG})
   check_c_compiler_flag(${FLAG} ${F})

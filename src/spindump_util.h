@@ -29,16 +29,17 @@
 #include <time.h>
 #include <sys/time.h>
 #include <netinet/in.h>
+#include "spindump_memdebug.h"
 
 //
 // Some helper macros -------------------------------------------------------------------------
 //
 
 #ifdef SPINDUMP_DEBUG
-#define spindump_assert(cond)	if (!(cond)) {                                      \
+#define spindump_assert(cond)	do { if (!(cond)) {                                      \
                                   spindump_fatalf("Assertion failed on %s line %u", \
                                                   __FILE__, __LINE__);		    \
-                                }
+                                } } while(0)
 #else
 #define spindump_assert(cond)
 #endif
@@ -46,6 +47,14 @@
 #define spindump_min(a,b)       ((a) < (b) ? (a) : (b))
 #define spindump_isbool(x)      ((x) == 0 || (x) == 1)
 #define spindump_iszerotime(x)  ((x)->tv_sec == 0)
+
+#ifdef SPINDUMP_MEMDEBUG
+#define spindump_malloc(x) spindump_memdebug_malloc(x)
+#define spindump_free(x) spindump_memdebug_free(x)
+#else
+#define spindump_malloc(x) malloc(x)
+#define spindump_free(x) free(x)
+#endif
 
 //
 // Types --------------------------------------------------------------------------------------
@@ -62,8 +71,9 @@ typedef struct {
 // Configuration variables --------------------------------------------------------------------
 //
 
-extern int debug;
-extern int deepdebug;
+extern int spindump_debug;
+extern int spindump_deepdebug;
+extern int spindump_deepdeepdebug;
 
 //
 // External API interface to this module ------------------------------------------------------
@@ -142,10 +152,18 @@ void
 spindump_warnf(const char* format, ...);
 void
 spindump_setdebugdestination(FILE* file);
+#ifdef SPINDUMP_DEBUG
 void
 spindump_debugf(const char* format, ...);
 void
 spindump_deepdebugf(const char* format, ...);
+void
+spindump_deepdeepdebugf(const char* format, ...);
+#else
+#define spindump_debugf(...)
+#define spindump_deepdebugf(...)
+#define spindump_deepdeepdebugf(...)
+#endif
 size_t
 spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size);
 size_t

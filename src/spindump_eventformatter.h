@@ -35,8 +35,12 @@ enum spindump_eventformatter_outputformat {
   spindump_eventformatter_outputformat_json
 };
 
-#define spindump_eventformatter_maxpreamble  10
-#define spindump_eventformatter_maxpostamble 10
+#define spindump_eventformatter_maxpreamble  5
+#define spindump_eventformatter_maxmidamble  5
+#define spindump_eventformatter_maxpostamble 5
+#define spindump_eventformatter_maxamble     (spindump_max(spindump_eventformatter_maxpreamble,              \
+                                                           spindump_max(spindump_eventformatter_maxmidamble, \
+									spindump_eventformatter_maxpostamble)))
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -54,16 +58,20 @@ struct spindump_eventformatter {
   FILE* file;
   unsigned long blockSize;
   uint8_t padding1[4]; // unused padding to align the size of the structure correctly
+  unsigned int nEntries;
   unsigned int nRemotes;
   struct spindump_remote_client** remotes;
   uint8_t* block;
   unsigned long bytesInBlock;
   struct spindump_analyze* analyzer;
   struct spindump_reverse_dns* querier;
+  int reportSpins;
+  int reportSpinFlips;
   int anonymizeLeft;
   int anonymizeRight;
   enum spindump_eventformatter_outputformat format;
   size_t preambleLength;
+  size_t postambleLength;
 };
 
 //
@@ -75,6 +83,8 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
 					enum spindump_eventformatter_outputformat format,
 					FILE* file,
 					struct spindump_reverse_dns* querier,
+					int reportSpins,
+					int reportSpinFlips,
 					int anonymizeLeft,
 					int anonymizeRight);
 struct spindump_eventformatter*
@@ -84,6 +94,8 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
 					  struct spindump_remote_client** remotes,
 					  unsigned long blockSize,
 					  struct spindump_reverse_dns* querier,
+					  int reportSpins,
+					  int reportSpinFlips,
 					  int anonymizeLeft,
 					  int anonymizeRight);
 void

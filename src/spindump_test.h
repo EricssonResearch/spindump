@@ -29,7 +29,7 @@
 // Some helper macros -------------------------------------------------------------------------
 //
 
-#define spindump_checktest(cond)  {                             	                 \
+#define spindump_checktest(cond)  do {                             	                 \
                                     spindump_debugf("running check %s on line %u",       \
                                                     #cond, __LINE__);                    \
                                     if (!(cond)) {                             	         \
@@ -37,6 +37,6 @@
                                                       #cond,               	         \
                                                       __FILE__, __LINE__);		 \
                                     }                           	                 \
-                                  }
+                                  } while(0)
 
 #endif // SPIDUMP_TEST_H

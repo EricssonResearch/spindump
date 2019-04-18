@@ -48,10 +48,12 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
   buf[0] = 0;
   
 # define spindump_checkflag(flag,string,val)                    \
-  if (((val) & flag) != 0) {                                    \
-    if (buf[0] != 0) spindump_strlcat(buf," ",sizeof(buf));	\
-    spindump_strlcat(buf,string,sizeof(buf));			\
-   }
+  do {                                                          \
+    if (((val) & flag) != 0) {                                  \
+      if (buf[0] != 0) spindump_strlcat(buf," ",sizeof(buf));	  \
+      spindump_strlcat(buf,string,sizeof(buf));			            \
+    }                                                           \
+  } while(0)
   
   spindump_checkflag(SPINDUMP_TH_FIN,"FIN",flags);
   spindump_checkflag(SPINDUMP_TH_SYN,"SYN",flags);

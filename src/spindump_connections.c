@@ -704,6 +704,33 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
 }
 
 //
+// Report a changed identfier for a connection (e.g., QUIC CIDs). This
+// may involve calling handlers associated with connection change events.
+//
+
+void
+spindump_connections_changeidentifiers(struct spindump_analyze* state,
+				       struct spindump_packet* packet,
+				       struct spindump_connection* connection) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(connection != 0);
+  spindump_deepdeepdebugf("spindump_connections_changeidentifiers");
+  
+  //
+  // Let all interested handlers know about this change
+  //
+
+  spindump_analyze_process_handlers(state,
+				    spindump_analyze_event_changeconnection,
+				    packet,
+				    connection);
+}
+
+//
 // Report a changed state for a connection. This may involve calling
 // handlers associated with state change events.
 //

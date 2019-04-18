@@ -254,6 +254,21 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
     }
 
     //
+    // Check for an updated CID from the responder
+    //
+
+    if (fromResponder && sourceCidPresent &&
+	!spindump_analyze_quic_quicidequal(&sourceCid,&connection->u.quic.peer2ConnectionID)) {
+      spindump_debugf("changing the initial destination connection id to %s",
+		      spindump_connection_quicconnectionid_tostring(&sourceCid));
+      spindump_debugf("(initial destination connection id was %s)",
+		      spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+      connection->u.quic.peer2ConnectionID = sourceCid;
+      spindump_deepdeepdebugf("calling spindump_connections_changeidentifiers");
+      spindump_connections_changeidentifiers(state,packet,connection);
+    }
+    
+    //
     // Check for a state update
     //
 

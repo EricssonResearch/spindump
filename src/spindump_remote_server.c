@@ -96,7 +96,7 @@ spindump_remote_server_adddata(struct spindump_remote_connection* connectionObje
 struct spindump_remote_server*
 spindump_remote_server_init(spindump_port port) {
   unsigned int size = sizeof(struct spindump_remote_server);
-  struct spindump_remote_server* server = (struct spindump_remote_server*)malloc(size);
+  struct spindump_remote_server* server = (struct spindump_remote_server*)spindump_malloc(size);
   if (server == 0) {
     spindump_errorf("cannot allocate server of %u bytes", size);
     return(0);
@@ -111,7 +111,7 @@ spindump_remote_server_init(spindump_port port) {
 				    MHD_OPTION_END);
   if (server->daemon == 0) {
     spindump_errorf("cannot open a server daemon on port %u", server->listenport);
-    free(server);
+    spindump_free(server);
     return(0);
   }
   
@@ -134,7 +134,7 @@ spindump_remote_server_close(struct spindump_remote_server* server) {
   if (server->daemon != 0) {
     MHD_stop_daemon(server->daemon);
   }
-  free(server);
+  spindump_free(server);
 }
 
 //

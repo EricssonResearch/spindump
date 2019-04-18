@@ -34,7 +34,7 @@ Example:
 
 In more detail, the JSON format consists of a bracketed sequence of records in braces. Each record has the following fields:
 
-   * The "Event" field specifies what kind of event is being reported. This field can take on the following values: "new" for newly seen connections, "delete" for connections deleted, "spinflip" for a flip of the QUIC spin bit in a connection, "spin" for any value of a spin bit in a QUIC connection, "measurement" for new RTT measurements, and "ecnce" for ECN-related events.
+   * The "Event" field specifies what kind of event is being reported. This field can take on the following values: "new" for newly seen connections, "change" when the connection's identifying parameters such as port numbers of QUIC connection identifiers change, "delete" for connections deleted, "spinflip" for a flip of the QUIC spin bit in a connection, "spin" for any value of a spin bit in a QUIC connection, "measurement" for new RTT measurements, and "ecnce" for ECN-related events.
    * The "Type" field specifies the type of a connection. This field can take on the following basic values: "UDP", "TCP", "QUIC", "DNS", "COAP", and "ICMP". In addition, it is possible to specify aggregate connections; these take on the following types: "HOSTS" for a host-to-host aggregate, "H2NET" for a host-to-network aggregate, "NET2NET" for a network-to-network aggregate, and "MCAST" for a multicast group aggregate.
    * The "Addrs" field specifies addresses associated with the connection or aggregate.
    * The "Session" field specifies the session identifiers associated with the connection, if any. For TCP and UDP connections these are the port numbers, for QUIC the connection IDs, and for ICMP the identifier field.

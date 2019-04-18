@@ -127,7 +127,7 @@ spindump_connections_set_uninitialize(struct spindump_connection_set* set,
       spindump_connections_set_unlinkfromset(connection,owner);
     }
     spindump_deepdebugf("freeting the set table in spindump_connections_set_uninitialize");
-    free(set->set);
+    spindump_free(set->set);
   }
   memset(set,0,sizeof(*set));
 }
@@ -168,7 +168,7 @@ spindump_connections_set_add(struct spindump_connection_set* set,
     spindump_assert(set->maxNConnections == 0);
     unsigned int defaultN = 10;
     unsigned int size = defaultN * sizeof(struct spindump_connection*);
-    set->set = (struct spindump_connection**)malloc(size);
+    set->set = (struct spindump_connection**)spindump_malloc(size);
     if (set->set == 0) {
       spindump_fatalf("cannot allocate connection set of %u bytes", size);
     }
@@ -194,7 +194,7 @@ spindump_connections_set_add(struct spindump_connection_set* set,
     spindump_assert(set->maxNConnections > 0);
     unsigned int newN = 2 * set->maxNConnections;
     unsigned int size = newN * sizeof(struct spindump_connection*);
-    struct spindump_connection** newSet = (struct spindump_connection**)malloc(size);
+    struct spindump_connection** newSet = (struct spindump_connection**)spindump_malloc(size);
     if (newSet == 0) {
       spindump_fatalf("cannot expand connection set to %u bytes", size);
     }

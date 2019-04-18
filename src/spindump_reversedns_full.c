@@ -60,7 +60,7 @@ spindump_reverse_dns_initialize_full(void) {
   //
 
   unsigned int size = sizeof(struct spindump_reverse_dns);
-  struct spindump_reverse_dns* service = (struct spindump_reverse_dns*)malloc(size);
+  struct spindump_reverse_dns* service = (struct spindump_reverse_dns*)spindump_malloc(size);
   if (service == 0) {
     spindump_errorf("cannot allocate reverse DNS service object of size %u bytes", size);
     return(0);
@@ -93,7 +93,7 @@ spindump_reverse_dns_initialize_full(void) {
 
   if (pthread_create(&service->thread,0,spindump_reverse_dns_backgroundfunction,(void*)service) != 0) {
     spindump_errorf("cannot create a thread for reverse DNS process");
-    free(service);
+    spindump_free(service);
     return(0);
   }
 

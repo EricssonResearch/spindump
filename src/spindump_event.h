@@ -33,11 +33,12 @@
 
 enum spindump_event_type {
   spindump_event_type_new_connection = 1,
-  spindump_event_type_connection_delete = 2,
-  spindump_event_type_new_rtt_measurement = 3,
-  spindump_event_type_spin_flip = 4,
-  spindump_event_type_spin_value = 5,
-  spindump_event_type_ecn_congestion_event = 6
+  spindump_event_type_change_connection = 2,
+  spindump_event_type_connection_delete = 3,
+  spindump_event_type_new_rtt_measurement = 4,
+  spindump_event_type_spin_flip = 5,
+  spindump_event_type_spin_value = 6,
+  spindump_event_type_ecn_congestion_event = 7
 };
 
 enum spindump_direction {
@@ -59,6 +60,10 @@ enum spindump_measurement_type {
 //
 
 struct spindump_event_new_connection {
+  unsigned char padding;
+};
+
+struct spindump_event_change_connection {
   unsigned char padding;
 };
 
@@ -99,6 +104,7 @@ struct spindump_event {
   unsigned int bytes;
   union {
     struct spindump_event_new_connection newConnection;
+    struct spindump_event_change_connection changeConnection;
     struct spindump_event_connection_delete connectionDelete;
     struct spindump_event_new_rtt_measurement newRttMeasurement;
     struct spindump_event_spin_flip spinFlip;

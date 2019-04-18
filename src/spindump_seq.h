@@ -31,7 +31,9 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
+#ifndef spindump_seqtracker_nstored
 #define spindump_seqtracker_nstored		50
+#endif
 
 //
 // Data structures ----------------------------------------------------------------------------

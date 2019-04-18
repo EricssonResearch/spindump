@@ -61,6 +61,7 @@ const char*
 spindump_event_type_tostring(enum spindump_event_type type) {
   switch (type) {
   case spindump_event_type_new_connection: return("new");
+  case spindump_event_type_change_connection: return("change");
   case spindump_event_type_connection_delete: return("delete");
   case spindump_event_type_new_rtt_measurement: return("measurement");
   case spindump_event_type_spin_flip: return("spinflip");

@@ -48,8 +48,9 @@ spindump_anon_aux(unsigned long seed,
 //
 
 static FILE* errordestination = 0;
-int debug = 0;
-int deepdebug = 0;
+int spindump_debug = 0;
+int spindump_deepdebug = 0;
+int spindump_deepdeepdebug = 0;
 static FILE* debugdestination = 0;
 
 //
@@ -961,6 +962,8 @@ spindump_setdebugdestination(FILE* file) {
   debugdestination = file;
 }
 
+#ifdef SPINDUMP_DEBUG
+
 //
 // Print out debug in a manner similar to printf. This function will
 // only have an effect if the variable debug is 1.
@@ -972,7 +975,7 @@ spindump_debugf(const char* format, ...) {
 
   spindump_assert(format != 0);
 
-  if (debug) {
+  if (spindump_debug) {
 
     va_list args;
 
@@ -990,7 +993,7 @@ spindump_debugf(const char* format, ...) {
 }
 
 //
-// Debug helper function
+// Debug helper function, for more extensive debugging
 //
 
 __attribute__((__format__ (__printf__, 1, 0)))
@@ -999,7 +1002,7 @@ spindump_deepdebugf(const char* format, ...) {
 
   spindump_assert(format != 0);
   
-  if (debug && deepdebug) {
+  if (spindump_debug && spindump_deepdebug) {
 
     va_list args;
 
@@ -1015,6 +1018,35 @@ spindump_deepdebugf(const char* format, ...) {
   }
   
 }
+
+//
+// Debug helper function, for very extensive debugging
+//
+
+__attribute__((__format__ (__printf__, 1, 0)))
+void
+spindump_deepdeepdebugf(const char* format, ...) {
+
+  spindump_assert(format != 0);
+  
+  if (spindump_debug && spindump_deepdebug && spindump_deepdeepdebug) {
+
+    va_list args;
+
+    if (debugdestination == 0) debugdestination = stderr;
+    
+    fprintf(debugdestination, "spindump: debug:     ");
+    va_start (args, format);
+    vfprintf(debugdestination,format, args);
+    va_end (args);
+    fprintf(debugdestination, "\n");
+    fflush(debugdestination);
+    
+  }
+  
+}
+
+#endif // SPINDUMP_DEBUG
 
 //
 // A copy of the BSD strlcpy function. As for Linux, as it does not exist

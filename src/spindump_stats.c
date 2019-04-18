@@ -42,7 +42,7 @@ spindump_stats_initialize(void) {
   // 
       
   unsigned int size = sizeof(struct spindump_stats);
-  struct spindump_stats* stats = (struct spindump_stats*)malloc(size);
+  struct spindump_stats* stats = (struct spindump_stats*)spindump_malloc(size);
   if (stats == 0) {
     spindump_errorf("cannot allocate statistics state of %u bytes", size);
     return(0);
@@ -126,5 +126,5 @@ void
 spindump_stats_uninitialize(struct spindump_stats* stats) {
   spindump_assert(stats != 0);
   memset(stats,0xFF,sizeof(*stats));
-  free(stats);
+  spindump_free(stats);
 }

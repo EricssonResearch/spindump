@@ -1,0 +1,1 @@
+A test case based on a PCAP file sent by LightSpeed as part of running Spindump to test their implementation. This trace involves the responder changing its CID (as usual) and the responder and initiator being on the same IP address (unusual).

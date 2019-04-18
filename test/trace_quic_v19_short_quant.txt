@@ -1,0 +1,1 @@
+Simple connection with the Quant implementation using the EGG-19 (v19) version number.

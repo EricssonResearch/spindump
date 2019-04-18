@@ -84,6 +84,17 @@ static void
 spindump_main_processargs(int argc,char** argv);
 static void
 spindump_main_operation(void);
+static void
+spindump_main_packetloop(struct spindump_analyze* analyzer,
+			 struct spindump_capture_state* capturer,
+			 struct spindump_report_state* reporter,
+			 struct spindump_eventformatter* formatter,
+			 struct spindump_eventformatter* remoteFormatter,
+			 struct spindump_remote_server* server,
+			 int averageMode,
+			 int aggregateMode,
+			 int closedMode,
+			 int udpMode);
 static enum spindump_eventformatter_outputformat
 spindump_main_parseformat(const char* string);
 static void
@@ -125,22 +136,34 @@ spindump_main_processargs(int argc,char** argv) {
 
     } else if (strcmp(argv[0],"--debug") == 0) {
 
-      debug = 1;
+      spindump_debug = 1;
 
     } else if (strcmp(argv[0],"--no-debug") == 0) {
 
-      debug = 0;
-      deepdebug = 0;
-
+      spindump_debug = 0;
+      spindump_deepdebug = 0;
+      spindump_deepdeepdebug = 0;
+      
     } else if (strcmp(argv[0],"--deepdebug") == 0) {
 
-      debug = 1;
-      deepdebug = 1;
-
+      spindump_debug = 1;
+      spindump_deepdebug = 1;
+      
     } else if (strcmp(argv[0],"--no-deepdebug") == 0) {
+      
+      spindump_deepdebug = 0;
+      spindump_deepdeepdebug = 0;
 
-      deepdebug = 0;
+    } else if (strcmp(argv[0],"--deepdeepdebug") == 0) {
 
+      spindump_debug = 1;
+      spindump_deepdebug = 1;
+      spindump_deepdeepdebug = 1;
+      
+    } else if (strcmp(argv[0],"--no-deepdeepdebug") == 0) {
+      
+      spindump_deepdeepdebug = 0;
+      
     } else if (strcmp(argv[0],"--stats") == 0) {
 
       showStats = 1;
@@ -430,7 +453,7 @@ spindump_main_processargs(int argc,char** argv) {
 	spindump_deepdebugf("additional filter components...");
 	char* prevfilter = filter;
 	unsigned long n = strlen(prevfilter) + 1 + strlen(argv[0]) + 1;
-	filter = malloc(n);
+	filter = spindump_malloc(n);
 
 	if (filter == 0) {
 	  spindump_errorf("Cannot allocate %u bytes", n);
@@ -439,7 +462,7 @@ spindump_main_processargs(int argc,char** argv) {
 	  spindump_strlcpy(filter,prevfilter,n);
 	  spindump_strlcat(filter," ",n);
 	  spindump_strlcat(filter,argv[0],n);
-	  free(prevfilter);
+	  spindump_free(prevfilter);
 	}
       }
 
@@ -581,6 +604,8 @@ spindump_main_operation(void) {
 							format,
 							stdout,
 							querier,
+							reportSpins,
+							reportSpinFlips,
 							anonymizeLeft,
 							anonymizeRight);
   }
@@ -592,9 +617,60 @@ spindump_main_operation(void) {
 								remotes,
 								remoteBlockSize,
 								querier,
+								reportSpins,
+								reportSpinFlips,
 								anonymizeLeft,
 								anonymizeRight);
   }
+
+  //
+  // Enter the main packet-waiting-loop
+  //
+  
+  spindump_main_packetloop(analyzer,capturer,reporter,formatter,remoteFormatter,server,
+			   averageMode,aggregateMode,closedMode,udpMode);
+  
+  //
+  // Done
+  //
+
+  if (formatter != 0) {
+    spindump_eventformatter_uninitialize(formatter);
+  }
+  
+  if (remoteFormatter != 0) {
+    spindump_eventformatter_uninitialize(remoteFormatter);
+  }
+  
+  if (showStats) {
+    spindump_stats_report(spindump_analyze_getstats(analyzer),
+			  stdout);
+    spindump_connectionstable_report(analyzer->table,
+				     stdout,
+				     anonymizeLeft,
+				     querier);
+  }
+  spindump_report_uninitialize(reporter);
+  spindump_analyze_uninitialize(analyzer);
+  spindump_capture_uninitialize(capturer);
+  spindump_reverse_dns_uninitialize(querier);
+}
+
+//
+// Function to wait for packets in a loop and process them
+//
+
+static void
+spindump_main_packetloop(struct spindump_analyze* analyzer,
+			 struct spindump_capture_state* capturer,
+			 struct spindump_report_state* reporter,
+			 struct spindump_eventformatter* formatter,
+			 struct spindump_eventformatter* remoteFormatter,
+			 struct spindump_remote_server* server,
+			 int averageMode,
+			 int aggregateMode,
+			 int closedMode,
+			 int udpMode) {
   
   //
   // Main operation
@@ -620,7 +696,7 @@ spindump_main_operation(void) {
 
     spindump_capture_nextpacket(capturer,&packet,&more,spindump_analyze_getstats(analyzer));
     spindump_assert(spindump_isbool(more));
-
+    
     if (packet != 0) {
       struct spindump_connection* connection = 0;
       spindump_analyze_process(analyzer,
@@ -628,6 +704,13 @@ spindump_main_operation(void) {
 			       packet,
 			       &connection);
     }
+
+    //
+    // If we are in visual mode, keep the display up even if the
+    // packets come from a PCAP file
+    //
+    
+    if (!more && inputFile != 0 && toolmode == spindump_toolmode_visual) more = 1;
 
     //
     // Get current time, ensure that different timer perceptions in
@@ -677,8 +760,9 @@ spindump_main_operation(void) {
     // See if it is time to update the screen periodically
     //
 
-    if (spindump_iszerotime(&previousupdate) ||
-	spindump_timediffinusecs(&now,&previousupdate) >= updateperiod) {
+    if (toolmode == spindump_toolmode_visual &&
+	(spindump_iszerotime(&previousupdate) ||
+	 spindump_timediffinusecs(&now,&previousupdate) >= updateperiod)) {
       
       spindump_report_update(reporter,
 			     averageMode,
@@ -739,30 +823,6 @@ spindump_main_operation(void) {
     }
   }
 
-  //
-  // Done
-  //
-
-  if (formatter != 0) {
-    spindump_eventformatter_uninitialize(formatter);
-  }
-  
-  if (remoteFormatter != 0) {
-    spindump_eventformatter_uninitialize(remoteFormatter);
-  }
-  
-  if (showStats || debug) {
-    spindump_stats_report(spindump_analyze_getstats(analyzer),
-			  stdout);
-    spindump_connectionstable_report(analyzer->table,
-				     stdout,
-				     anonymizeLeft,
-				     querier);
-  }
-  spindump_report_uninitialize(reporter);
-  spindump_analyze_uninitialize(analyzer);
-  spindump_capture_uninitialize(capturer);
-  spindump_reverse_dns_uninitialize(querier);
 }
 
 //
@@ -789,7 +849,7 @@ int main(int argc,char** argv) {
   // Check where debug printouts should go
   //
 
-  if (toolmode != spindump_toolmode_silent && debug) {
+  if (toolmode != spindump_toolmode_silent && spindump_debug) {
     debugfile = fopen("spindump.debug","w");
     if (debugfile == 0) {
       spindump_errorf("cannot open debug file");

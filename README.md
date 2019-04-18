@@ -12,21 +12,11 @@ The software is under development, and subject to research on best algorithms.
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
 
-# News!!!
+## News!!!
 
-Spindump is now performing a privilege downgrade as soon as it has opened the PCAP interface. Since on Linux, spindump runs as suid root, reduces the risk of impacts from accidental issues or bugs in the analyzer code that previously run  root. Thank you Loganaden for this contribution!
+Spindump now supports Google QUIC as implemented in Chrome, has improved documentation, and its security has improved with a privilege downgrade on Linux. Spindump is also now able to send collected information to a selected web server or another Spindump instance. And finally, Spindump transitioned to the use of cmake with the help of Lars Eggert.
 
-Also, a long-awaited upgrade is in the work: Spindump will be able to collect information and submit it to another Spindump instance elsewhere. As the protocol used to submit measurement data is web-based, this can also be used to submit data to any suitable web server, for instance, in the convenient JSON format. See the [format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md) for more information. Note also that the new JSON format includes an array at the top level, rather than merely records following each other without an array. For now, the sending side works but we're still working on the server. To send data from a Spindump instance to a web server, give the command like this:
-
-    spindump --remote-block-size 0 --silent --format json --remote https://httpbin.org/post
-
-This will send every event in JSON format to the webserver in httpbin.org, and make a POST for each of those events.
-
-With the help of Lars Eggert, Spindump has switched to the use of cmake! Your compilations will be affected, so next time you get a new version, please install the necessary software (cmake and pkg-config). No Makefiles are provided in the repo anymore, they will be created by cmake. So do this for your next compilation:
-
-    sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev
-    cmake .
-    make
+See the [news](https://github.com/EricssonResearch/spindump/blob/master/News.md) page for more details!
 
 # Use Cases
 
@@ -38,102 +28,33 @@ But Spindump could also be used to record information from experiments related t
 
 Spindump can also be used to measure latencies on a more ongoing basis. It can feed information to management and other systems, and could for instance enable alarms to be raised when the circumstances demand that, configurations to be optimized, and so on. 
 
-# Spindump Command Usage
+## Spindump Command Usage
 
 The software is packaged as the "spindump" utility, and simply typing
 
     # spindump
-
+ 
 should show the most active sessions and their current round-trip times (RTTs). The top of the screen shows some status information, while the rest is dedicated to showing connections and their RTTs. You can exit from the tool by pressing Control-C or "Q". In addition, you can use "C" to toggle whether to show closed connections, "U" to whether to show UDP connections, or "A" to show either individual connections or aggregated connections. Pressing "H" shows help information and pressing "S" enables you to set the screen update frequency.
 
 The full command syntax is
 
     spindump [options] [filter]
 
-If no options or filter is specified, Spindump will look at all packets on the default interface. The filter specification is as specified in other PCAP-based tools such as tcpdump. For instance, the expression "icmp" tracks only ICMP packets, and the expression "tcp and host www.example.com" tracks TCP packets where www.example.com appears either as a source or destination address. See the man page for pcap-filter(7) for more details.
+If no options or filter is specified, Spindump will look at all packets on the default interface. The filter specification is as specified in other PCAP-based tools such as tcpdump. See the man page for pcap-filter(7) for more details.
 
-The options are as follows:
+To simply start the Spindump tool on the default user interface is enough for most cases:
 
-    --silent
-    --textual
-    --visual
+    # spindump 
 
-Sets the tool to be quiet as it measures (--silent), listing RTT measurements as they become available (--textual) or continuously update the shell window with information about the current sessions (--visual). The default is --visual. The --silent option also sets the tool to publish information about connections it sees on a local port (5040) that can be connected to by other instances of Spindump.
+To look at specific connections, you can enter a filter specification. For instance, the expression "icmp" tracks only ICMP packets, and the expression "tcp and host www.example.com" tracks TCP packets where www.example.com appears either as a source or destination address. So, for instance:
 
-    --format text
-    --format json
+    # spindump udp and port 443
 
-For the textual mode, the output format is selectable as either readable text or JSON. Each event comes out as one JSON record in the latter case.
+would only look udp port 443 traffic (likely QUIC).
 
-    --anonymize-left
-    --not-anonymize-left
-    --anonymize-right
-    --not-anonymize-right
-    --anonymize
-	--not-anonymize
+See the [usage description](https://github.com/EricssonResearch/spindump/blob/master/Usage.md) for the full description of all options!
 
-These options are used to control the amount of anonymization that spindump does. Anonymization can be turned on or off either for hosts whose traffic is displayed, or for hosts on the "left" or "right" side of the in-network measurement point. "Left" side is defined as the traffic initiating the connection. And the "right" side is defined as the traffic from the responder.
-
-    --names
-    --addresses
-
-Sets the tool to use always addresses (--addresses) or when possible, DNS names (--names) in its output. The use of names is the default.
-
-    --report-spins
-    --not-report-spins
-    --report-spin-flips
-    --not-report-spin-flips
-
-Sets the tool to either report or not report individual spin bit values or spin bit value flips for QUIC connections, when using the --textual mode. The default is to not report either the spin values (as there is one per each packet) or spin value flips.
-
-    --debug
-    --no-debug
-
-Sets the debugging output on/off. Note that in the visual or textual output modes, all debugging information goes to the file spindump.debug in the current working directory.
-
-    --deepdebug
-    --no-deepdebug
-
-Sets the extensive internal debugging output on/off.
-
-    --no-stats
-    --stats
-
-The option --stats makes spindump provide various levels of final statistics once the process completes. The default is --no-stats.
-
-    --aggregate pattern1 pattern2
-
-Track the aggregate traffic statistics from host or network identified by pattern1 to host or network identified by pattern2. These can be individual host addresses such as 198.51.100.1 or networks such as 192.0.2.0/24. Both IPv4 and IPv6 addresses are supported. An easy way to specify any connection to a network is to use a 0-length prefix. For instance, to track all connections to 192.0.2.0/24, use the option setting "--aggregate 0.0.0.0/0 192.0.2.0/24".
-
-    --max-receive n
-
-Sets a limit of how many packets the tool accepts before finishing. The default is 0, which stands for no limit.
-
-    --interface i
-    --input-file f
-    --remote u
-	--remote-block-size n
-	--collector-port p
-	--collector 
-	--no-collector 
-
-The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. The --input-file option sets the packets to be read from a PCAP-format file. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
-
-The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040/data/1". By default, Spindump uses the port 5040, which is reflected in the URL. The path component "data" is required when submitting data to another Spindump instance, and the path component "1" is simply an identifier that distinguishes different submitters from each other.
-
-As noted, the collector is turned on by using the --collector option. On the collector side the port can be changed with the --collector-port option. Also, a given Spindump instance running as a collector can accept connections from multiple other instances. The Spindump instance that is running as a collector will not listen to the local interfaces at all, only the collector port.
-
-Finally, the --remote-block-size option sets the approximate size of submissions, expressed in kilobytes per submission. Multiple individal records are typicallly pooled in one update, but if the block size is set to 0, there will be no pooling. The format of the submissions is governed by the --format option.  Note that only the machine readable formats are actually processed by the Spindump instance running as a collector; --format text will be ignored by the collector. The formats are specified in the [data format description](https://github.com/EricssonResearch/spindump/blob/master/Format.md)
-
-    --help
-
-Outputs information about the command usage and options.
-
-    --version
-
-Outputs the version number
-
-# Installation
+## Installation
 
 The easiest installation method is to retrieve the software from GitHub. Start with this:
 
@@ -154,128 +75,32 @@ Then do:
     make
     sudo make install
 
-# Spindump Library
+## Spindump Library
 
 The Spindump software builds on the Spindump Library, a simple but extensibile packet analysis package. The makefile builds a library, libspindump.a that can be linked to a program, used to provide the same statistics as the spindump command does, or even extended to build more advanced functionality. The Spindump command itself is built using this library.
 
+The library can also be used in other ways, e.g., by integrating it to other tools or network devices, to collect some information that is necessary to optimize the device or the network in some fashion, for inst.ance.
+
 ![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/architecture2s.jpg)
 
-The API definition for this library can be found from spindump_analyze.h. But the main function are analyzer initialization, handing a packet to it, and de-initialization. First, you need to initialize the analyzer, like this:
+See the [library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md) page for all the details.
 
-    struct spindump_analyze* analyzer = spindump_analyze_initialize();
-    if (analyzer == 0) { /* ... handle error */ }
-
-Then, you probably want to feed packets to the analyzer in some kind of loop. The analyzer needs to know the actual Ethernet message frame  received as an octet string, but also a timestamp of when it was received, the length of the frame, and how much of the message was captured if the frame is not stored in its entirety. Here's an example implementation of a packet reception loop that feeds the analyzer:
-
-    while (... /* some condition */) {
-      struct spindump_packet packet;
-      memset(&packet,0,sizeof(packet));
-      packet.timestamp = ...; /* when did the packet arrive? */
-      packet.contents = ...;  /* pointer to the beginning of a packet, starting from Ethernet frame */
-      packet.etherlen = ...;  /* length of that entire frame */
-      packet.caplen = ...;    /* how much of the frame was captured */
-      struct spindump_connection* connection = 0;
-      spindump_analyze_process(analyzer,&packet,&connection);
-      if (connection != 0) { /* ... look inside connection for statistics, etc */ }
-    }
-
-Finally, you need to clean up the resources used by the analyzer. Like this:
-
-    spindump_analyze_uninitialize(analyzer);
-
-That's the basic usage of the analyzer, using the built-in functions of looking at TCP, QUIC, ICMP, UDP, and DNS connections and their roundtrips.
-
-The software does not communicate the results in any fashion at this point; any use of the collected information about connections would be up to the program that calls the analyzer; the information is merely collected in an in-memory data structure about current connections. A simple use of the collected information would be to store the data for later statistical analysis, or to summarize in in some fashion, e.g., by looking at average round-trip times to popular destinations.
-
-The analyzer can be integrated to any equipment or other software quite easily.
-
-But beyond this basic functionality, the analyzer is also extensible. You can register a handler:
-
-    spindump_analyze_register(analyzer,
-                              // what event(s) to trigger on (OR the event bits together):
-                              spindump_analyze_event_newrightrttmeasurement,
-                              // whether this handler is specific for a particular connection or all (0):
-                              0,
-                              // function to call for this event:
-                              myhandler,
-                              // pass 0 as private data to myhandler later:
-                              0);
-
-This registration registers the function "myhandler" to be called when there's a new RTT measurement. Handlers can be added and removed dynamically, and even be registered for specific connections.
-
-But in the end, when a handler has been registered, if the noted event occurs then a user-specified function gets called. In the case of our new RTT measurement handler, the function to be called can be implemented, for instance, like this:
-
-    void myhandler(struct spindump_analyze* state,
-                   void* handlerData,
-                   void** handlerConnectionData,
-                   spindump_analyze_event event,
-                   struct spindump_packet* packet,
-                   struct spindump_connection* connection) {
-       
-       if (connection->type == spindump_connection_transport_quic &&
-           event == spindump_analyze_event_newrightrttmeasurement) {
-       
-           /* ... */
-       
-       }
-       
-    }
-
-In the first part of the code above, a handler is registered to be called upon seeing a new RTT measurement being registered. The second part of the code is the implementation of that handler function. In this case, once a measurement has been made, the function "myhandler" is called. The packet that triggered the event (if any) is given by "packet" and the connection it is associated with is "connection". For the connection delete events (as they can come due to timeouts), the packet structure is otherwise empty except for the timestamp (packet->timestamp) of the deletion.
-
-All RTT measurements and other data that may be useful is stored in the connection object. See spindump_connections_struct.h for more information. For instance, the type of the connection (TCP, UDP, QUIC, DNS, ICMP) can be determined by looking at the connection->type field.
-
-The RTT data can be accessed also via the connection object. For instance, in the above "myhandler" function one could print an RTT measurement as follows:
-
-    printf("observed last RTT is %.2f milliseconds",
-           connection->rightRTT.lastRTT / 1000.0);
-
-The function "myhandler" gets as argument the original data it passed to spindump_analyze_register (here simply "0").
-
-If the handler function needs to store some information on a per-connection basis, it can also do so by using the "handlerConnectionData" pointer. This is a pointer to variable inside the connection object that is dedicated for this handler and this specific connection.
-
-By setting and reading that variable, the handler could (for instance) store its own calculations, e.g., a smoothed RTT value if that's what the handler is there to do.
-
-Typically, for such usage of connection-specific variables, one would likely use the field for a pointer to some new data structure that holds the necessary data. The void* for the connection-specific data is always initialized to zero upon the creation of a new connection, so this can be used to determine when the data structure needs to be allocated. E.g.,
-
-    struct my_datastructure* perConnectionData =
-       (struct my_datastructure*)*handlerConnectionData;
-    
-    if (perConnectionData == 0) {
-      
-      perConnectionData = (struct my_datastructure*)malloc(sizeof(struct my_datastructure));
-      *handlerConnectionData = (void*)perConnectionData;
-      
-    }
-    
-    /* ... use the perConnectionData for whatever purpose is necessary ... */
-
-Note that if the handlers allocate memory on a per-connection basis, they also need to de-allocate it. One way of doing this is to use the deletion events as triggers for that de-allocation.
-
-The currently defined events that can be caught are:
-
-    #define spindump_analyze_event_newconnection                         1
-    #define spindump_analyze_event_connectiondelete                      2
-    #define spindump_analyze_event_newleftrttmeasurement                 4
-    #define spindump_analyze_event_newrightrttmeasurement                8
-    #define spindump_analyze_event_newinitrespfullrttmeasurement        16
-    #define spindump_analyze_event_newrespinitfullrttmeasurement        32
-    #define spindump_analyze_event_initiatorspinflip                    64
-    #define spindump_analyze_event_responderspinflip                   128
-    #define spindump_analyze_event_initiatorspinvalue                  256
-    #define spindump_analyze_event_responderspinvalue                  512
-    #define spindump_analyze_event_newpacket                          1024
-    #define spindump_analyze_event_firstresponsepacket                2048
-    #define spindump_analyze_event_statechange                        4096
-    #define spindump_analyze_event_initiatorecnce                     8192
-    #define spindump_analyze_event_responderecnce                    16384
-
-These can be mixed together in one handler by ORing them together. The pseudo-event "spindump_analyze_event_alllegal" represents all of the events.
-
-# Dependencies 
+## Dependencies 
 
 The Spindump command depends on the basic OS libraries (such as libc) as well as libpcap, ncurses, curl, and microhttpd. The Spindump library depends only on libc, unless you use the features that would require libpcap or other libraries.
 
-# Things to do
+## Things to do
 
-The software is being worked on, and as of yet seems to be working but definitely needs more testing. IP packet fragmentation is not yet supported. Also, the remote connection mode is not yet implemented. The beginnings of connection data anonymization are in the software, but more work is needed on that front as well.
+The software is being worked on, and as of yet seems to be working but definitely needs more testing. IP packet fragmentation is recognised but no packet reassembly is performed; an optional reassembly process would be a useful new feature. The beginnings of connection data anonymization are in the software, but more work is needed on that front as well.
+
+The full list of known bugs and new feature requests can be found from [GitHub](https://github.com/EricssonResearch/spindump/issues).
+
+## Full documentation
+
+The full documentation of Spindump consists of the following:
+
+* [README](https://github.com/EricssonResearch/spindump/blob/master/README.md) (this file) contains the introduction and installation instructions.
+* The command [usage description](https://github.com/EricssonResearch/spindump/blob/master/Usage.md) describes how to use the Spindump command-line tool.
+* The command [format description](https://github.com/EricssonResearch/spindump/blob/master/Usage.md) explains what format Spindump measurement data can be carried in, if it is sent to a collection point rather than shown visually to the user.
+* [Library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md) contains the definition of the Spindump library API, and an explanation of how and when to use the library
+* [News](https://github.com/EricssonResearch/spindump/blob/master/News.md) describes recent additions.

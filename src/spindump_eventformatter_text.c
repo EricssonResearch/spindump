@@ -44,6 +44,24 @@ spindump_eventformatter_measurement_begin_text(struct spindump_eventformatter* f
 }
 
 //
+// Return the length of the middle text between records
+//
+
+unsigned long
+spindump_eventformatter_measurement_midlength_text(struct spindump_eventformatter* formatter) {
+  return(0);
+}
+
+//
+// Print what is needed between the actual records
+//
+
+const uint8_t*
+spindump_eventformatter_measurement_mid_text(struct spindump_eventformatter* formatter) {
+  return((uint8_t*)"");
+}
+
+//
 // Return the length of the postamble
 //
 

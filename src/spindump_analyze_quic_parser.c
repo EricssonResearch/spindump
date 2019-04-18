@@ -32,14 +32,16 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
-static const char*
-spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type);
 static unsigned int
 spindump_analyze_quic_parser_onecidlength(uint8_t value);
 static void
 spindump_analyze_quic_parser_cidlengths(uint8_t lengthsbyte,
 					unsigned int* p_destinationLength,
 					unsigned int* p_sourceLength);
+#ifdef SPINDUMP_DEBUG
+static const char*
+spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type);
+#endif
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -75,6 +77,8 @@ spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
   return(memcmp(id1,id2->id,id2->len) == 0);
 }
 
+#ifdef SPINDUMP_DEBUG
+
 //
 // Return a string describing a particular QUIC message
 //
@@ -92,6 +96,8 @@ spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type) 
     return("invalid");
   }
 }
+
+#endif // SPINDUMP_DEBUG
 
 //
 // Determine the length of a QUIC Connection ID based on the nibble
@@ -202,6 +208,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   }
   switch (version) {
   case spindump_quic_version_rfc:
+  case spindump_quic_version_draft19:
   case spindump_quic_version_draft18:
   case spindump_quic_version_draft17:
   case spindump_quic_version_draft16:
@@ -221,6 +228,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   case spindump_quic_version_draft02:
   case spindump_quic_version_draft01:
   case spindump_quic_version_draft00:
+  case spindump_quic_version_quant19:
   case spindump_quic_version_huitema:
   case spindump_quic_version_mozilla:
   case spindump_quic_version_negotiation:
@@ -238,12 +246,14 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   switch (version) {
     
   case spindump_quic_version_rfc:
+  case spindump_quic_version_draft19:
   case spindump_quic_version_draft18:
   case spindump_quic_version_draft17:
+  case spindump_quic_version_quant19:
   case spindump_quic_version_huitema:
   case spindump_quic_version_mozilla:
     messageType = headerByte & spindump_quic_byte_type;
-    spindump_deepdebugf("looking at v18 message type %02x", messageType);
+    spindump_deepdebugf("looking at v17-19 message type %02x", messageType);
     switch (messageType) {
     case spindump_quic_byte_type_initial:
     case spindump_quic_byte_type_0rttprotected:
@@ -428,9 +438,11 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
       spindump_deepdebugf("QUIC version rfc ok");
       break;
       
+    case spindump_quic_version_draft19:
     case spindump_quic_version_draft18:
     case spindump_quic_version_draft17:
     case spindump_quic_version_draft16:
+    case spindump_quic_version_quant19:
     case spindump_quic_version_huitema:
     case spindump_quic_version_mozilla:
       // OK// 
@@ -487,8 +499,10 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
     switch (version) {
       
     case spindump_quic_version_rfc:
+    case spindump_quic_version_draft19:
     case spindump_quic_version_draft18:
     case spindump_quic_version_draft17:
+    case spindump_quic_version_quant19:
     case spindump_quic_version_huitema:
     case spindump_quic_version_mozilla:
       messageType = headerByte & spindump_quic_byte_type;
@@ -606,7 +620,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   
   *p_hasVersion = longForm;
   *p_mayHaveSpinBit = !longForm;
-  spindump_deepdebugf("setting may have spin bit to %u based on long form being %u", *p_mayHaveSpinBit, longForm);
+  spindump_deepdebugf("may have spin bit = %u (based on long form being %u)", *p_mayHaveSpinBit, longForm);
   *p_version = originalVersion;
   *p_type = type;
   spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %lx, type = %s",
@@ -807,9 +821,11 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
     spindump_deepdebugf("SPIN not parseable for the long version header");
     return(0);
   } else if (version == spindump_quic_version_rfc ||
+	     version == spindump_quic_version_draft19 ||
 	     version == spindump_quic_version_draft18 ||
 	     version == spindump_quic_version_draft17 ||
 	     version == spindump_quic_version_mozilla ||
+	     version == spindump_quic_version_quant19 ||
 	     version == spindump_quic_version_huitema) {
     int altSpin = ((firstByte & spindump_quic_byte_spin_draft16) != 0);
     *p_spin = ((firstByte & spindump_quic_byte_spin) != 0);
@@ -854,6 +870,8 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version) {
   switch (version) {
   case spindump_quic_version_rfc:
     return("rfc");
+  case spindump_quic_version_draft19:
+    return("v19");
   case spindump_quic_version_draft18:
     return("v18");
   case spindump_quic_version_draft17:
@@ -892,6 +910,8 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version) {
     return("v01");
   case spindump_quic_version_draft00:
     return("v00");
+  case spindump_quic_version_quant19:
+    return("v.qn19");
   case spindump_quic_version_huitema:
     return("v.huit");
   case spindump_quic_version_mozilla:

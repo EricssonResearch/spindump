@@ -110,7 +110,7 @@ spindump_analyze_initialize(void) {
   //
 
   unsigned int size = sizeof(struct spindump_analyze);
-  struct spindump_analyze* state = (struct spindump_analyze*)malloc(size);
+  struct spindump_analyze* state = (struct spindump_analyze*)spindump_malloc(size);
   if (state == 0) {
     spindump_errorf("cannot allocate analyzer state of %u bytes", size);
     return(0);
@@ -123,13 +123,13 @@ spindump_analyze_initialize(void) {
   memset(state,0,size);
   state->table = spindump_connectionstable_initialize();
   if (state->table == 0) {
-    free(state);
+    spindump_free(state);
     return(0);
   }
   state->stats = spindump_stats_initialize();
   if (state->stats == 0) {
     spindump_connectionstable_uninitialize(state->table);
-    free(state);
+    spindump_free(state);
     return(0);
   }
 
@@ -167,7 +167,7 @@ spindump_analyze_uninitialize(struct spindump_analyze* state) {
   // Actually free up the space
   //
 
-  free(state);
+  spindump_free(state);
 }
 
 //
@@ -540,6 +540,13 @@ spindump_analyze_process_null(struct spindump_analyze* state,
 
   uint32_t nullInt;
   memcpy(&nullInt,packet->contents,sizeof(nullInt));
+
+  //
+  // Convert to correct byte-order, as per description above...
+  //
+  
+  nullInt = ntohl(nullInt);
+  
   switch (nullInt) {
   case 2:
     spindump_analyze_decodeiphdr(state,
@@ -1245,6 +1252,8 @@ spindump_analyze_eventtostring(spindump_analyze_event event) {
     return("none");
   } else if (event == spindump_analyze_event_newconnection) {
     return("newconnection");
+  } else if (event == spindump_analyze_event_changeconnection) {
+    return("changeconnection");
   } else if (event == spindump_analyze_event_connectiondelete) {
     return("connectiondelete");
   } else if (event == spindump_analyze_event_newleftrttmeasurement) {

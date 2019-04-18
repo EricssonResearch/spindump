@@ -1,18 +1,18 @@
 [
-{ "Event": "new", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418212984046", "Packets": 1, "Bytes": 84 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213017044", "Right_rtt": "32998", "Packets": 2, "Bytes": 164 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213017134", "Left_rtt": "90", "Packets": 2, "Bytes": 164 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213061925", "Right_rtt": "44683", "Packets": 4, "Bytes": 448 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213061986", "Left_rtt": "58", "Packets": 7, "Bytes": 1102 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213061987", "Left_rtt": "59", "Packets": 8, "Bytes": 1174 }
-{ "Event": "new", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213064120", "Packets": 1, "Bytes": 84 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213098429", "Right_rtt": "36443", "Packets": 10, "Bytes": 1318 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213098432", "Right_rtt": "34312", "Packets": 2, "Bytes": 164 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213098549", "Left_rtt": "117", "Packets": 2, "Bytes": 164 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134370", "Right_rtt": "35675", "Packets": 4, "Bytes": 458 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134415", "Left_rtt": "43", "Packets": 7, "Bytes": 3530 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134659", "Left_rtt": "23", "Packets": 11, "Bytes": 8102 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134805", "Left_rtt": "28", "Packets": 14, "Bytes": 8776 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134806", "Left_rtt": "27", "Packets": 15, "Bytes": 8848 }
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213169945", "Right_rtt": "35530", "Packets": 18, "Bytes": 9064 }
+{ "Event": "new", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418212984046", "Packets": 1, "Bytes": 84 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213017044", "Right_rtt": 32998, "Packets": 2, "Bytes": 164 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213017134", "Left_rtt": 90, "Packets": 2, "Bytes": 164 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213061925", "Right_rtt": 44683, "Packets": 4, "Bytes": 448 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213061986", "Left_rtt": 58, "Packets": 7, "Bytes": 1102 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213061987", "Left_rtt": 59, "Packets": 8, "Bytes": 1174 },
+{ "Event": "new", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213064120", "Packets": 1, "Bytes": 84 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59105:80", "Ts": "1553418213098429", "Right_rtt": 36443, "Packets": 10, "Bytes": 1318 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213098432", "Right_rtt": 34312, "Packets": 2, "Bytes": 164 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213098549", "Left_rtt": 117, "Packets": 2, "Bytes": 164 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134370", "Right_rtt": 35675, "Packets": 4, "Bytes": 458 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134415", "Left_rtt": 43, "Packets": 7, "Bytes": 3530 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134659", "Left_rtt": 23, "Packets": 11, "Bytes": 8102 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134805", "Left_rtt": 28, "Packets": 14, "Bytes": 8776 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213134806", "Left_rtt": 27, "Packets": 15, "Bytes": 8848 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["2001:67c:1232:144:9498:6df6:f450:110b","2001:67c:2b0:1c1::198"], "Session": "59106:80", "Ts": "1553418213169945", "Right_rtt": 35530, "Packets": 18, "Bytes": 9064 }
 ]

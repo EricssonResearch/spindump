@@ -1,0 +1,1 @@
+A snaplen 80 tcpdump of an SCP file transfer, using TCP and IPv4. Used for performance measurements
