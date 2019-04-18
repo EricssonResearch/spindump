@@ -1,0 +1,52 @@
+---
+dist: xenial
+sudo: false
+
+language: cpp
+os:
+  - linux
+
+env:
+  matrix:
+    - BUILD=Debug    MYCC=gcc-4.9    MYCXX=g++-4.9
+    - BUILD=Release  MYCC=gcc-4.9    MYCXX=g++-4.9
+    - BUILD=Debug    MYCC=gcc-7      MYCXX=g++-7
+    - BUILD=Release  MYCC=gcc-7      MYCXX=g++-7
+    - BUILD=Debug    MYCC=gcc-8      MYCXX=g++-8
+    - BUILD=Release  MYCC=gcc-8      MYCXX=g++-8
+    - BUILD=Debug    MYCC=clang-5.0  MYCXX=clang++-5.0
+    - BUILD=Release  MYCC=clang-5.0  MYCXX=clang++-5.0
+    - BUILD=Debug    MYCC=clang-6.0  MYCXX=clang++-6.0
+    - BUILD=Release  MYCC=clang-6.0  MYCXX=clang++-6.0
+    - BUILD=Debug    MYCC=clang-7    MYCXX=clang++-7
+    - BUILD=Release  MYCC=clang-7    MYCXX=clang++-7
+
+addons:
+  apt:
+    update: true
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-xenial-6.0
+      - llvm-toolchain-xenial-7
+    packages:
+      - clang-5.0
+      - clang-6.0
+      - clang-7
+      - cmake
+      - g++-4.9
+      - g++-7
+      - g++-8
+      - libcurl4-openssl-dev
+      - libmicrohttpd-dev
+      - libncurses5-dev
+      - libpcap-dev
+
+script:
+  - |
+    cd $TRAVIS_BUILD_DIR
+    rm -rf build
+    mkdir build
+    cd build
+    cmake -DCMAKE_C_COMPILER=$MYCC -DCMAKE_CXX_COMPILER=$MYCXX \
+      -DCMAKE_BUILD_TYPE=$BUILD -DCMAKE_INSTALL_PREFIX:PATH=/tmp ..
+    make
