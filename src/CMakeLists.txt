@@ -21,7 +21,9 @@
 #
 
 # for libpcap installed on on MacOS via homebrew
-list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libpcap")
+if(EXISTS "/usr/local/opt/libpcap")
+  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libpcap")
+endif()
 
 find_package(Curses)
 find_package(Threads)
@@ -146,14 +148,14 @@ add_test( spindump_testtraces spindump_testtraces.sh )
 # Tar file
 #
 
-add_custom_command(OUTPUT ../spindump.tar.gz
-                   COMMAND rm ARGS -f spindump.tar.gz
+add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/spindump.tar.gz
+                   COMMAND rm ARGS -f ${PROJECT_SOURCE_DIR}/spindump.tar.gz
                    COMMAND tar
 		   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh test/*.txt test/*.pcap test/*.expected test/*.options
-		   WORKING_DIRECTORY ..
+		   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
-set_property(SOURCE spindump_main.c APPEND PROPERTY OBJECT_DEPENDS spindump.tar.gz)
+set_property(SOURCE spindump_main.c APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_SOURCE_DIR}/spindump.tar.gz)
 
 #
 # Installations
