@@ -35,6 +35,9 @@
 #include "spindump_analyze_icmp.h"
 #include "spindump_analyze_aggregate.h"
 
+#define MIN_IPV4_HL 20
+#define IPV6_HL     40
+
 //
 // Function prototypes ------------------------------------------------------------------------
 //
@@ -657,9 +660,9 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
   // Parse and verify IP header
   //
 
-  if (packet->caplen < position) {
+  if (packet->caplen < position + MIN_IPV4_HL) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes for the IP header (capture length only %u)", packet->caplen);
+    spindump_warnf("not enough bytes for the IP header (capture length only %u, %u required)", packet->caplen, position + MIN_IPV4_HL);
     *p_connection = 0;
     return;
   }
@@ -667,9 +670,9 @@ spindump_analyze_decodeiphdr(struct spindump_analyze* state,
   struct spindump_ip ip;
   spindump_protocols_ip_header_decode(packet->contents + position,&ip);
   unsigned int ipHeaderSize = SPINDUMP_IP_HL(&ip)*4;
-  if (ipHeaderSize < 20) {
+  if (ipHeaderSize < MIN_IPV4_HL) {
     state->stats->invalidIpHdrSize++;
-    spindump_warnf("packet header length %u less than 20 bytes", ipHeaderSize);
+    spindump_warnf("packet header length %u less than %u bytes", ipHeaderSize, MIN_IPV4_HL);
     *p_connection = 0;
     return;
   }
@@ -765,32 +768,20 @@ spindump_analyze_decodeip6hdr(struct spindump_analyze* state,
   // Parse and verify IP header
   //
 
-  if (packet->caplen < position) {
+  if (packet->caplen < position + IPV6_HL) {
     state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes for the IPv6 header (capture length only %u)", packet->caplen);
+    spindump_warnf("not enough bytes for the IPv6 header (capture length only %u, %u required)", packet->caplen, position + IPV6_HL);
     *p_connection = 0;
     return;
   }
 
   struct spindump_ip6 ip6;
   spindump_protocols_ip6_header_decode(packet->contents + position,&ip6);
-  unsigned int ipHeaderSize = 40;
+  unsigned int ipHeaderSize = IPV6_HL;
   uint8_t ipVersion = SPINDUMP_IP6_V(&ip6);
   if (ipVersion != 6) {
     state->stats->versionMismatch++;
     spindump_warnf("IP versions inconsistent in Ethernet frame and IP packet", SPINDUMP_IP6_V(&ip6));
-    *p_connection = 0;
-    return;
-  }
-
-  //
-  // Verify packet length is appropriate
-  //
-
-  if (packet->caplen < position + ipHeaderSize) {
-    state->stats->notEnoughPacketForIpHdr++;
-    spindump_warnf("not enough bytes for the IPv6 header (capture length only %u, IP header size %u)",
-		   packet->caplen, ipHeaderSize);
     *p_connection = 0;
     return;
   }

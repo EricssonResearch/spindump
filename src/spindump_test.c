@@ -295,6 +295,7 @@ unittests_table(void) {
   spindump_checktest(fromResponder == 0);
   spindump_checktest(connection8 == connection6);
   
+  spindump_connectionstable_uninitialize(table);
 }
 
 //
@@ -659,6 +660,63 @@ systemtests(void) {
   
   spindump_checktest(connection5 == 0);
   spindump_checktest(spindump_analyze_getstats(analyzer)->notEnoughPacketForIpHdr == 1);
+
+  //
+  // Analyzer tests -- check that IP header size is validated before trying accessing the data.
+  // Note that external tool such as valgrind or address sanitizer is required to detect potential
+  // flaws.
+  //
+  const unsigned char shortipv4packetbytes[] = {
+    // Ethernet header
+    0xdc, 0xa9, 0x04, 0x92, 0x22, 0xb4, 0x00, 0x10, 0xdb, 0xff, 0x20, 0x02, 0x08, 0x00,
+    // IPv4 header (too short)
+    0x45, 0x00, 0x00, 0x35, 0x8d
+  };
+
+  // Allocate memory from heap in order to easily detect the error with tools
+  unsigned char* bytesheap = malloc(sizeof(shortipv4packetbytes));
+  spindump_assert(bytesheap != 0);
+  memcpy(bytesheap, shortipv4packetbytes, sizeof(shortipv4packetbytes));
+
+  struct spindump_packet packet10;
+  memset(&packet10, 0, sizeof(packet10));
+  connection5 = 0;
+
+  packet10.timestamp.tv_usec = 0;
+  packet10.contents = bytesheap;
+  packet10.etherlen = sizeof(shortipv4packetbytes);
+  packet10.caplen = packet10.etherlen;
+
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet10,&connection5);
+  // In addition to this test, the program should be run with memory analyzer such as valgrind
+  // to detect possible memory problems
+  spindump_checktest(connection5 == 0);
+  free(bytesheap);
+
+  const unsigned char shortipv6packetbytes[] = {
+    // Ethernet header
+    0x1c, 0x87, 0x2c, 0x5f, 0x28, 0x1b, 0xdc, 0xa9, 0x04, 0x92, 0x22, 0xb4, 0x86, 0xdd,
+    // IPv6 header
+    0x60, 0x08, 0xaf, 0xa7, 0x00, 0x10, 0x3a,
+  };
+
+  // Allocate memory from heap in order to easily detect the error with tools
+  bytesheap = malloc(sizeof(shortipv6packetbytes));
+  spindump_assert(bytesheap != 0);
+  memcpy(bytesheap, shortipv6packetbytes, sizeof(shortipv6packetbytes));
+
+  memset(&packet10, 0, sizeof(packet10));
+  connection5 = 0;
+  packet10.timestamp.tv_usec = 0;
+  packet10.contents = bytesheap;
+  packet10.etherlen = sizeof(shortipv6packetbytes);
+  packet10.caplen = packet10.etherlen;
+
+  spindump_analyze_process(analyzer,spindump_capture_linktype_ethernet,&packet10,&connection5);
+  // In addition to this test, the program should be run with memory analyzer such as valgrind
+  // to detect possible memory problems
+  spindump_checktest(connection5 == 0);
+  free(bytesheap);
 
   //
   // Analyzer tests -- packets too small. Firsttoo small to contain an
