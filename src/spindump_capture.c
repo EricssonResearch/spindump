@@ -73,7 +73,7 @@ spindump_capture_defaultinterface(void) {
   // Get the interface name and substitute our own allocated string for it
   // 
   
-  char* result = strdup(alldevs->name);
+  char* result = spindump_strdup(alldevs->name);
   pcap_freealldevs(alldevs);
   if (result == 0) {
     spindump_errorf("cannot allocate memory for string representing a device");

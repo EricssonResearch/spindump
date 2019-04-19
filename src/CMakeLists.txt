@@ -115,7 +115,7 @@ target_link_libraries(spindumplib
 # Main program of the spindump tool
 #
 
-add_executable(spindump spindump_main.c)
+add_executable(spindump spindump_main.c spindump_main_lib.c spindump_main_loop.c)
 target_link_libraries(spindump spindumplib)
 
 #

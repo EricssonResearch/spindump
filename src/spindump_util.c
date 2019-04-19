@@ -691,7 +691,7 @@ spindump_network_fromstring(spindump_network* network,
     spindump_errorf("network length must be at most 32 or 128 bits, %us given", network->length);
     return(0);
   }
-  char* addressString = strdup(string);
+  char* addressString = spindump_strdup(string);
   if (addressString == 0) {
     spindump_errorf("cannot allocate memory for string of %u bytes", strlen(string));
     return(0);
@@ -701,7 +701,7 @@ spindump_network_fromstring(spindump_network* network,
   *slashPlace = 0;
   int result = spindump_address_fromstring(&network->address,addressString);
   spindump_deepdebugf("freeing addressString");
-  free(addressString);
+  spindump_free(addressString);
   return(result);
 }
 

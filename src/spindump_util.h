@@ -50,9 +50,11 @@
 
 #ifdef SPINDUMP_MEMDEBUG
 #define spindump_malloc(x) spindump_memdebug_malloc(x)
+#define spindump_strdup(x) spindump_memdebug_strdup(x)
 #define spindump_free(x) spindump_memdebug_free(x)
 #else
 #define spindump_malloc(x) malloc(x)
+#define spindump_strdup(x) strdup(x)
 #define spindump_free(x) free(x)
 #endif
 

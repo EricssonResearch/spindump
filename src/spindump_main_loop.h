@@ -16,37 +16,22 @@
 //
 // 
 
-#ifndef SPIDUMP_MEMDEBUG_H
-#define SPIDUMP_MEMDEBUG_H
+#ifndef SPINDUMP_MAIN_LOOP_H
+#define SPINDUMP_MAIN_LOOP_H
 
 //
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-//
-// Parameters ---------------------------------------------------------------------------------
-//
-
-#define spindump_memorytag_tagoverhead                   8
-#define spindump_memorytag_beginoverhead                 (spindump_memorytag_tagoverhead+sizeof(size_t))
-#define spindump_memorytag_endoverhead                   spindump_memorytag_tagoverhead
-#define spindump_memorytag_fulloverhead                  (spindump_memorytag_beginoverhead+spindump_memorytag_endoverhead)
-#define spindump_memorytag_begin                         "firsttag"
-#define spindump_memorytag_end                           "xyzaazbb"
+#include "spindump_util.h"
+#include "spindump_main.h"
+#include "spindump_main_lib.h"
 
 //
 // External API interface to this module ------------------------------------------------------
 //
 
-void*
-spindump_memdebug_malloc(size_t size);
-char*
-spindump_memdebug_strdup(const char* string);
 void
-spindump_memdebug_free(void* ptr);
+spindump_main_loop_operation(struct spindump_main_state* state);
 
-#endif // SPINDUMP_MEMDEBUG_H
+#endif // SPINDUMP_MAIN_LOOP_H
