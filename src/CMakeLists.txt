@@ -53,7 +53,8 @@ add_library(spindumplib
   spindump_analyze_aggregate.c
   spindump_analyze_coap.c
   spindump_analyze_dns.c
-  spindump_analyze_icmp.c
+  spindump_analyze_ip.c 
+  spindump_analyze_icmp.c 
   spindump_analyze_quic.c
   spindump_analyze_quic_parser.c
   spindump_analyze_tcp.c
@@ -86,7 +87,9 @@ add_library(spindumplib
   spindump_spin.c
   spindump_stats.c
   spindump_table.c
-  spindump_util.c
+  spindump_util.c 
+  spindump_utildebug.c 
+  spindump_utilerror.c 
 )
 
 target_include_directories(spindumplib

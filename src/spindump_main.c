@@ -72,7 +72,6 @@ static struct spindump_remote_client* remotes[SPINDUMP_REMOTE_CLIENT_MAX_CONNECT
 static unsigned long remoteBlockSize = 16 * 1024;
 static int collector = 0;
 static spindump_port collectorPort = SPINDUMP_PORT_NUMBER;
-static FILE* debugfile = 0;
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -556,7 +555,6 @@ spindump_main_operation(void) {
   // Initialize the user interface
   //
 
-  spindump_seterrordestination(debugfile);
   int averageMode = 0;
   int aggregateMode = 0;
   int closedMode = 1;
@@ -837,8 +835,8 @@ int main(int argc,char** argv) {
 
   signal(SIGINT, spindump_main_interrupt);
   srand((unsigned int)time(0));
-  debugfile = stderr;
-
+  FILE* debugfile = stderr;
+  
   //
   // Process arguments
   //
@@ -846,7 +844,7 @@ int main(int argc,char** argv) {
   spindump_main_processargs(argc, argv);
 
   //
-  // Check where debug printouts should go
+  // Check where error and debug printouts should go
   //
 
   if (toolmode != spindump_toolmode_silent && spindump_debug) {
@@ -857,7 +855,8 @@ int main(int argc,char** argv) {
     }
     spindump_setdebugdestination(debugfile);
   }
-
+  spindump_seterrordestination(debugfile);
+  
   //
   // Main operation
   //
