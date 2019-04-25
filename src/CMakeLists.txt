@@ -73,6 +73,7 @@ add_library(spindumplib
   spindump_event.c
   spindump_event_parser_json.c
   spindump_event_parser_text.c
+  spindump_json.c
   spindump_memdebug.c
   spindump_mid.c
   spindump_packet.c
