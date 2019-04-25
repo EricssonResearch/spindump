@@ -48,3 +48,4 @@ spindump_json_parse(struct spindump_json_typedef* type,
                     void* data) {
   return(0);
 }
+
