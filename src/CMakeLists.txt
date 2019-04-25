@@ -124,9 +124,16 @@ target_link_libraries(spindump spindumplib)
 #
 
 add_custom_command(
+  OUTPUT spindump_test0.out
+  COMMAND bash spindump_checksource.sh
+  ARGS  2> spindump_test0.out
+  DEPENDS spindump_checksource.sh
+)
+
+add_custom_command(
   OUTPUT spindump_test1.out
   COMMAND spindump_test
-  ARGS  2> spindump_test1.out
+  ARGS  > spindump_test1.out
   DEPENDS spindump_test
 )
 
@@ -138,14 +145,15 @@ add_custom_command(
   WORKING_DIRECTORY .
 )
 
-set_property(SOURCE spindump_main.c APPEND PROPERTY OBJECT_DEPENDS src/spindump_test1.out)
+set_property(SOURCE spindump_main.c APPEND PROPERTY OBJECT_DEPENDS src/spindump_test0.out src/spindump_test1.out)
 
 add_executable(spindump_test spindump_test.c)
 target_link_libraries(spindump_test spindumplib)
 
 include( CTest )
 
-add_test( spindump_test spindump_test )
+add_test( spindump_checksource spindump_checksource.sh )  
+add_test( spindump_test spindump_test )  
 add_test( spindump_testtraces spindump_testtraces.sh )
 
 #

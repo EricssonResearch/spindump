@@ -1,5 +1,11 @@
 # Spindump News
 
+## Spaces not tabs (April 2019)
+
+Spindump code now uses spaces, not tabs for indents. Please configure your editor appropriately! For instance, on emacs I added the following line to my .emacs file:
+
+    (setq-default indent-tabs-mode nil)
+
 ## Improved documentation (April 2019)
 
 The documentation and READMEs were improved.
