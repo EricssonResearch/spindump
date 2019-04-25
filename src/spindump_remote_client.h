@@ -53,12 +53,12 @@ struct spindump_remote_client*
 spindump_remote_client_init(const char* url);
 void
 spindump_remote_client_update_periodic(struct spindump_remote_client* client,
-				       struct spindump_connectionstable* table);
+                                       struct spindump_connectionstable* table);
 void
 spindump_remote_client_update_event(struct spindump_remote_client* client,
-				    const char* mediaType,
-				    unsigned long length,
-				    const uint8_t* data);
+                                    const char* mediaType,
+                                    unsigned long length,
+                                    const uint8_t* data);
 void
 spindump_remote_client_close(struct spindump_remote_client* client);
 

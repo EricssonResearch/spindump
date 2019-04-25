@@ -49,24 +49,24 @@
 
 static void
 spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
-				    struct spindump_packet* packet,
-				    unsigned int ipHeaderPosition,
-				    unsigned int ipHeaderSize,
-				    uint8_t ipVersion,
-				    uint8_t ecnFlags,
-				    unsigned int ipPacketLength,
-				    unsigned char proto,
-				    unsigned int payloadPosition,
-				    struct spindump_connection** p_connection);
+                                    struct spindump_packet* packet,
+                                    unsigned int ipHeaderPosition,
+                                    unsigned int ipHeaderSize,
+                                    uint8_t ipVersion,
+                                    uint8_t ecnFlags,
+                                    unsigned int ipPacketLength,
+                                    unsigned char proto,
+                                    unsigned int payloadPosition,
+                                    struct spindump_connection** p_connection);
 static void
 spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
-				   struct spindump_packet* packet,
-				   unsigned int ipHeaderPosition,
-				   unsigned int ipHeaderSize,
-				   uint8_t ipVersion,
-				   uint8_t ecnFlags,
-				   unsigned int ipPacketLength,
-				   struct spindump_connection** p_connection);
+                                   struct spindump_packet* packet,
+                                   unsigned int ipHeaderPosition,
+                                   unsigned int ipHeaderSize,
+                                   uint8_t ipVersion,
+                                   uint8_t ecnFlags,
+                                   unsigned int ipPacketLength,
+                                   struct spindump_connection** p_connection);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -80,9 +80,9 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
 
 void
 spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
-				  struct spindump_packet* packet,
-				  unsigned int position,
-				  struct spindump_connection** p_connection) {
+                                  struct spindump_packet* packet,
+                                  unsigned int position,
+                                  struct spindump_connection** p_connection) {
 
   //
   // Some sanity checks
@@ -134,7 +134,7 @@ spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
   if (packet->caplen < position + ipHeaderSize) {
     state->stats->notEnoughPacketForIpHdr++;
     spindump_warnf("not enough bytes for the IP header (capture length only %u, IP header size %u)",
-		   packet->caplen, ipHeaderSize);
+                   packet->caplen, ipHeaderSize);
     *p_connection = 0;
     return;
   }
@@ -143,8 +143,8 @@ spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
   if (ipPacketLength > packet->etherlen - position) {
     state->stats->invalidIpLength++;
     spindump_warnf("IP packet length is invalid (%u vs. %u)",
-		   ipPacketLength,
-		   packet->etherlen - position);
+                   ipPacketLength,
+                   packet->etherlen - position);
     *p_connection = 0;
     return;
   }
@@ -169,15 +169,15 @@ spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
   //
 
   spindump_analyze_ip_decodeippayload(state,
-				   packet,
-				   position,
-				   ipHeaderSize,
-				   ipVersion,
-				   ecnFlags,
-				   ipPacketLength,
-				   ip.ip_proto,
-				   position + ipHeaderSize,
-				   p_connection);
+                                   packet,
+                                   position,
+                                   ipHeaderSize,
+                                   ipVersion,
+                                   ecnFlags,
+                                   ipPacketLength,
+                                   ip.ip_proto,
+                                   position + ipHeaderSize,
+                                   p_connection);
 }
 
 //
@@ -188,9 +188,9 @@ spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
 
 void
 spindump_analyze_ip_decodeip6hdr(struct spindump_analyze* state,
-				 struct spindump_packet* packet,
-				 unsigned int position,
-				 struct spindump_connection** p_connection) {
+                                 struct spindump_packet* packet,
+                                 unsigned int position,
+                                 struct spindump_connection** p_connection) {
 
   //
   // Some sanity checks
@@ -232,8 +232,8 @@ spindump_analyze_ip_decodeip6hdr(struct spindump_analyze* state,
   if (ipPacketLength > packet->etherlen - position) {
     state->stats->invalidIpLength++;
     spindump_warnf("IP packet length is invalid (%u vs. %u)",
-		   ipPacketLength,
-		   packet->etherlen - position);
+                   ipPacketLength,
+                   packet->etherlen - position);
     *p_connection = 0;
     return;
   }
@@ -277,15 +277,15 @@ spindump_analyze_ip_decodeip6hdr(struct spindump_analyze* state,
   //
 
   spindump_analyze_ip_decodeippayload(state,
-				      packet,
-				      position,
-				      ipHeaderSize,
-				      ipVersion,
-				      ecnFlags,
-				      ipPacketLength,
-				      proto,
-				      position + ipHeaderSize + passFh,
-				      p_connection);
+                                      packet,
+                                      position,
+                                      ipHeaderSize,
+                                      ipVersion,
+                                      ecnFlags,
+                                      ipPacketLength,
+                                      proto,
+                                      position + ipHeaderSize + passFh,
+                                      p_connection);
 }
 
 //
@@ -296,15 +296,15 @@ spindump_analyze_ip_decodeip6hdr(struct spindump_analyze* state,
 
 static void
 spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
-				    struct spindump_packet* packet,
-				    unsigned int ipHeaderPosition,
-				    unsigned int ipHeaderSize,
-				    uint8_t ipVersion,
-				    uint8_t ecnFlags,
-				    unsigned int ipPacketLength,
-				    unsigned char proto,
-				    unsigned int payloadPosition,
-				    struct spindump_connection** p_connection) {
+                                    struct spindump_packet* packet,
+                                    unsigned int ipHeaderPosition,
+                                    unsigned int ipHeaderSize,
+                                    uint8_t ipVersion,
+                                    uint8_t ecnFlags,
+                                    unsigned int ipPacketLength,
+                                    unsigned char proto,
+                                    unsigned int payloadPosition,
+                                    struct spindump_connection** p_connection) {
   
   //
   // Sanity checks
@@ -328,8 +328,8 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
       packet->caplen < payloadPosition) {
     state->stats->notEnoughPacketForIpHdr++;
     spindump_warnf("not enough bytes for the IPv%u header (only %u bytes remain after Ethernet header)",
-		   ipVersion,
-		   iplen);
+                   ipVersion,
+                   iplen);
     *p_connection = 0;
     return;
   }
@@ -340,11 +340,11 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
 
   unsigned int protolen = packet->etherlen - ipHeaderPosition - ipHeaderSize;
   spindump_deepdebugf("packet received with %u bytes, %u to ethernet, %u to ip (IPv%u), %u remains",
-		      packet->etherlen,
-		      ipHeaderPosition,
-		      ipHeaderSize,
-		      ipVersion,
-		      protolen);
+                      packet->etherlen,
+                      ipHeaderPosition,
+                      ipHeaderSize,
+                      ipVersion,
+                      protolen);
   spindump_assert(ipHeaderPosition + ipHeaderSize <= packet->caplen);
   unsigned int remainingCaplen = packet->caplen - ipHeaderPosition - ipHeaderSize;
 
@@ -370,58 +370,58 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
 
   case IPPROTO_TCP:
     spindump_analyze_process_tcp(state,
-				 packet,
-				 ipHeaderPosition,
-				 ipHeaderSize,
-				 ipVersion,
-				 ecnFlags,
-				 ipPacketLength,
-				 ipHeaderPosition + ipHeaderSize,
-				 protolen,
-				 remainingCaplen,
-				 p_connection);
+                                 packet,
+                                 ipHeaderPosition,
+                                 ipHeaderSize,
+                                 ipVersion,
+                                 ecnFlags,
+                                 ipPacketLength,
+                                 ipHeaderPosition + ipHeaderSize,
+                                 protolen,
+                                 remainingCaplen,
+                                 p_connection);
     break;
 
   case IPPROTO_UDP:
     spindump_analyze_process_udp(state,
-				 packet,
-				 ipHeaderPosition,
-				 ipHeaderSize,
-				 ipVersion,
-				 ecnFlags,
-				 ipPacketLength,
-				 ipHeaderPosition + ipHeaderSize,
-				 protolen,
-				 remainingCaplen,
-				 p_connection);
+                                 packet,
+                                 ipHeaderPosition,
+                                 ipHeaderSize,
+                                 ipVersion,
+                                 ecnFlags,
+                                 ipPacketLength,
+                                 ipHeaderPosition + ipHeaderSize,
+                                 protolen,
+                                 remainingCaplen,
+                                 p_connection);
     break;
 
   case IPPROTO_ICMP:
     spindump_analyze_process_icmp(state,
-				  packet,
-				  ipHeaderPosition,
-				  ipHeaderSize,
-				  ipVersion,
-					ecnFlags,
-				  ipPacketLength,
-				  ipHeaderPosition + ipHeaderSize,
-				  protolen,
-				  remainingCaplen,
-				  p_connection);
+                                  packet,
+                                  ipHeaderPosition,
+                                  ipHeaderSize,
+                                  ipVersion,
+                                        ecnFlags,
+                                  ipPacketLength,
+                                  ipHeaderPosition + ipHeaderSize,
+                                  protolen,
+                                  remainingCaplen,
+                                  p_connection);
     break;
 
   case IPPROTO_ICMPV6:
     spindump_analyze_process_icmp6(state,
-				   packet,
-				   ipHeaderPosition,
-				   ipHeaderSize,
-				   ipVersion,
-					 ecnFlags,
-				   ipPacketLength,
-				   ipHeaderPosition + ipHeaderSize,
-				   protolen,
-				   remainingCaplen,
-				   p_connection);
+                                   packet,
+                                   ipHeaderPosition,
+                                   ipHeaderSize,
+                                   ipVersion,
+                                   ecnFlags,
+                                   ipPacketLength,
+                                   ipHeaderPosition + ipHeaderSize,
+                                   protolen,
+                                   remainingCaplen,
+                                   p_connection);
     break;
 
   default:
@@ -451,13 +451,13 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
 
   if (*p_connection == 0) {
     spindump_analyze_ip_otherippayload(state,
-				       packet,
-				       ipHeaderPosition,
-				       ipHeaderSize,
-				       ipVersion,
-				       ecnFlags,
-				       ipPacketLength,
-				       p_connection);
+                                       packet,
+                                       ipHeaderPosition,
+                                       ipHeaderSize,
+                                       ipVersion,
+                                       ecnFlags,
+                                       ipPacketLength,
+                                       p_connection);
   }
 }
 
@@ -475,13 +475,13 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
 
 static void
 spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
-				   struct spindump_packet* packet,
-				   unsigned int ipHeaderPosition,
-				   unsigned int ipHeaderSize,
-				   uint8_t ipVersion,
-				   uint8_t ecnFlags,
-				   unsigned int ipPacketLength,
-				   struct spindump_connection** p_connection) {
+                                   struct spindump_packet* packet,
+                                   unsigned int ipHeaderPosition,
+                                   unsigned int ipHeaderSize,
+                                   uint8_t ipVersion,
+                                   uint8_t ecnFlags,
+                                   unsigned int ipPacketLength,
+                                   struct spindump_connection** p_connection) {
   //
   // Make some sanity checks on the input
   //
@@ -511,22 +511,22 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
 
     struct spindump_connection* connection = state->table->connections[i];
     if (connection != 0 &&
-	spindump_connections_isaggregate(connection) &&
-	spindump_connections_matches_aggregate_srcdst(&source,&destination,connection)) {
+        spindump_connections_isaggregate(connection) &&
+        spindump_connections_matches_aggregate_srcdst(&source,&destination,connection)) {
 
       //
       // Found a matching connection! Report it there.
       //
       
       spindump_analyze_process_aggregate(state,
-					 connection,
-					 packet,
-					 ipHeaderPosition,
-					 ipHeaderSize,
-					 ipVersion,
-					 ecnFlags,
-					 ipPacketLength,
-					 state->stats);
+                                         connection,
+                                         packet,
+                                         ipHeaderPosition,
+                                         ipHeaderSize,
+                                         ipVersion,
+                                         ecnFlags,
+                                         ipPacketLength,
+                                         state->stats);
       
       //
       // Return the first matching connection to the caller; note that
@@ -534,7 +534,7 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
       //
 
       if (*p_connection == 0) {
-	*p_connection = connection;
+        *p_connection = connection;
       }
 
     }
@@ -552,4 +552,3 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
 
   spindump_debugf("non-matching packet...");
 }
-

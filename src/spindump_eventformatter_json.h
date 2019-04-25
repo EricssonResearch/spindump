@@ -43,9 +43,9 @@ const uint8_t*
 spindump_eventformatter_measurement_begin_json(struct spindump_eventformatter* formatter);
 void
 spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* formatter,
-					     spindump_analyze_event event,
-					     const struct spindump_event* eventobj,
-					     struct spindump_connection* connection);
+                                             spindump_analyze_event event,
+                                             const struct spindump_event* eventobj,
+                                             struct spindump_connection* connection);
 const uint8_t*
 spindump_eventformatter_measurement_mid_json(struct spindump_eventformatter* formatter);
 unsigned long

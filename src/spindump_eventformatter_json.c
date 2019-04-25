@@ -94,9 +94,9 @@ spindump_eventformatter_measurement_end_json(struct spindump_eventformatter* for
 
 void
 spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* formatter,
-					     spindump_analyze_event event,
-					     const struct spindump_event* eventobj,
-					     struct spindump_connection* connection) {
+                                             spindump_analyze_event event,
+                                             const struct spindump_event* eventobj,
+                                             struct spindump_connection* connection) {
   
   char buf[250];
   size_t consumed;
@@ -111,4 +111,3 @@ spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* for
   spindump_eventformatter_deliverdata(formatter,strlen(buf),(uint8_t*)buf);
   
 }
-

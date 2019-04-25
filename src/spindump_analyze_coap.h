@@ -29,8 +29,8 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define SPINDUMP_COAP_PORT1	    5683
-#define SPINDUMP_COAP_PORT2	    5684
+#define SPINDUMP_COAP_PORT1         5683
+#define SPINDUMP_COAP_PORT2         5684
 
 //
 // External API interface to this module ------------------------------------------------------
@@ -38,22 +38,22 @@
 
 int
 spindump_analyze_coap_isprobablecoappacket(const unsigned char* payload,
-					   unsigned int payload_len,
-					   uint16_t sourcePort,
-					   uint16_t destPort,
-					   int* p_isDtls);
+                                           unsigned int payload_len,
+                                           uint16_t sourcePort,
+                                           uint16_t destPort,
+                                           int* p_isDtls);
 void
 spindump_analyze_process_coap(struct spindump_analyze* state,
-			      struct spindump_packet* packet,
-			      unsigned int ipHeaderPosition,
-			      unsigned int ipHeaderSize,
-			      uint8_t ipVersion,
-						uint8_t ecnFlags,
-			      unsigned int ipPacketLength,
-			      unsigned int udpHeaderPosition,
-			      unsigned int udpLength,
-			      unsigned int remainingCaplen,
-			      int isDtls,
-			      struct spindump_connection** p_connection);
+                              struct spindump_packet* packet,
+                              unsigned int ipHeaderPosition,
+                              unsigned int ipHeaderSize,
+                              uint8_t ipVersion,
+                              uint8_t ecnFlags,
+                              unsigned int ipPacketLength,
+                              unsigned int udpHeaderPosition,
+                              unsigned int udpLength,
+                              unsigned int remainingCaplen,
+                              int isDtls,
+                              struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_COAP_H

@@ -30,16 +30,16 @@ const char*
 spindump_analyze_tls_parser_versiontostring(const spindump_tls_version version);
 int
 spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
-						unsigned int payload_len,
-						int isDatagram);
+                                                unsigned int payload_len,
+                                                int isDatagram);
 int
 spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
-					unsigned int payload_len,
-					unsigned int remainingCaplen,
-					int isDatagram,
-					int* p_isHandshake,
-					int* p_isInitialHandshake,
-					spindump_tls_version* p_tlsVersion,
-					int* p_isResponse);
+                                        unsigned int payload_len,
+                                        unsigned int remainingCaplen,
+                                        int isDatagram,
+                                        int* p_isHandshake,
+                                        int* p_isInitialHandshake,
+                                        spindump_tls_version* p_tlsVersion,
+                                        int* p_isResponse);
 
 #endif // SPINDUMP_ANALYZE_COAP_H

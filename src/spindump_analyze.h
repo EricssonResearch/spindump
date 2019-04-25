@@ -12,7 +12,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
-//  AUTHOR: JARI ARKKO
+//  AUTHOR: JARI ARKKO AND MARCUS IHLAR
 //
 //
 
@@ -38,16 +38,16 @@
 //
 
 typedef uint16_t spindump_analyze_event;
-#define spindump_analyze_event_newconnection		             1
-#define spindump_analyze_event_changeconnection		             2
-#define spindump_analyze_event_connectiondelete		             4
-#define spindump_analyze_event_newleftrttmeasurement	             8
-#define spindump_analyze_event_newrightrttmeasurement	            16
+#define spindump_analyze_event_newconnection                         1
+#define spindump_analyze_event_changeconnection                      2
+#define spindump_analyze_event_connectiondelete                      4
+#define spindump_analyze_event_newleftrttmeasurement                 8
+#define spindump_analyze_event_newrightrttmeasurement               16
 #define spindump_analyze_event_newinitrespfullrttmeasurement        32
 #define spindump_analyze_event_newrespinitfullrttmeasurement        64
-#define spindump_analyze_event_initiatorspinflip	           128
-#define spindump_analyze_event_responderspinflip	           256
-#define spindump_analyze_event_initiatorspinvalue	           512
+#define spindump_analyze_event_initiatorspinflip                   128
+#define spindump_analyze_event_responderspinflip                   256
+#define spindump_analyze_event_initiatorspinvalue                  512
 #define spindump_analyze_event_responderspinvalue                 1024
 #define spindump_analyze_event_newpacket                          2048
 #define spindump_analyze_event_firstresponsepacket                4096
@@ -60,11 +60,11 @@ typedef uint16_t spindump_analyze_event;
 struct spindump_analyze;
 
 typedef void (*spindump_analyze_handler)(struct spindump_analyze* state,
-					 void* handlerData,
-					 void** handlerConnectionData,
-					 spindump_analyze_event event,
-					 struct spindump_packet* packet,
-					 struct spindump_connection* connection);
+                                         void* handlerData,
+                                         void** handlerConnectionData,
+                                         spindump_analyze_event event,
+                                         struct spindump_packet* packet,
+                                         struct spindump_connection* connection);
 
 struct spindump_analyze_handler {
   spindump_analyze_handler function;               // function to call when the handler matches
@@ -97,33 +97,33 @@ void
 spindump_analyze_uninitialize(struct spindump_analyze* state);
 void
 spindump_analyze_registerhandler(struct spindump_analyze* state,
-				 spindump_analyze_event eventmask,
-				 struct spindump_connection* connection,
-				 spindump_analyze_handler handler,
-				 void* handlerData);
+                                 spindump_analyze_event eventmask,
+                                 struct spindump_connection* connection,
+                                 spindump_analyze_handler handler,
+                                 void* handlerData);
 void
 spindump_analyze_unregisterhandler(struct spindump_analyze* state,
-				   spindump_analyze_event eventmask,
-				   struct spindump_connection* connection,
-				   spindump_analyze_handler handler,
-				   void* handlerData);
+                                   spindump_analyze_event eventmask,
+                                   struct spindump_connection* connection,
+                                   spindump_analyze_handler handler,
+                                   void* handlerData);
 struct spindump_stats*
 spindump_analyze_getstats(struct spindump_analyze* state);
 void
 spindump_analyze_process(struct spindump_analyze* state,
-			 enum spindump_capture_linktype linktype,
-			 struct spindump_packet* packet,
-			 struct spindump_connection** p_connection);
+                         enum spindump_capture_linktype linktype,
+                         struct spindump_packet* packet,
+                         struct spindump_connection** p_connection);
 void
 spindump_analyze_getsource(struct spindump_packet* packet,
-			   uint8_t ipVersion,
-			   unsigned int ipHeaderPosition,
-			   spindump_address *address);
+                           uint8_t ipVersion,
+                           unsigned int ipHeaderPosition,
+                           spindump_address *address);
 void
 spindump_analyze_getdestination(struct spindump_packet* packet,
-				uint8_t ipVersion,
-				unsigned int ipHeaderPosition,
-				spindump_address *address);
+                                uint8_t ipVersion,
+                                unsigned int ipHeaderPosition,
+                                spindump_address *address);
 const char*
 spindump_analyze_eventtostring(spindump_analyze_event event);
 
@@ -133,15 +133,15 @@ spindump_analyze_eventtostring(spindump_analyze_event event);
 
 void
 spindump_analyze_process_pakstats(struct spindump_analyze* state,
-				  struct spindump_connection* connection,
-				  int fromResponder,
-				  struct spindump_packet* packet,
-				  unsigned int ipPacketLength,
-					uint8_t ecnFlags);
+                                  struct spindump_connection* connection,
+                                  int fromResponder,
+                                  struct spindump_packet* packet,
+                                  unsigned int ipPacketLength,
+                                        uint8_t ecnFlags);
 void
 spindump_analyze_process_handlers(struct spindump_analyze* state,
-				  spindump_analyze_event event,
-				  struct spindump_packet* packet,
-				  struct spindump_connection* connection);
+                                  spindump_analyze_event event,
+                                  struct spindump_packet* packet,
+                                  struct spindump_connection* connection);
 
 #endif // SPINDUMP_ANALYZE_H

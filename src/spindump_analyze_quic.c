@@ -12,7 +12,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
-//  AUTHOR: JARI ARKKO
+//  AUTHOR: JARI ARKKO AND MARCUS IHLAR AND SZILVESZTER NADAS
 //
 //
 
@@ -46,16 +46,16 @@
 
 void
 spindump_analyze_process_quic(struct spindump_analyze* state,
-			      struct spindump_packet* packet,
-			      unsigned int ipHeaderPosition,
-			      unsigned int ipHeaderSize,
-			      uint8_t ipVersion,
-						uint8_t ecnFlags,
-			      unsigned int ipPacketLength,
-			      unsigned int udpHeaderPosition,
-			      unsigned int udpLength,
-			      unsigned int remainingCaplen,
-			      struct spindump_connection** p_connection) {
+                              struct spindump_packet* packet,
+                              unsigned int ipHeaderPosition,
+                              unsigned int ipHeaderSize,
+                              uint8_t ipVersion,
+                                                uint8_t ecnFlags,
+                              unsigned int ipPacketLength,
+                              unsigned int udpHeaderPosition,
+                              unsigned int udpLength,
+                              unsigned int remainingCaplen,
+                              struct spindump_connection** p_connection) {
 
   //
   // Some checks first
@@ -98,8 +98,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   //
 
   spindump_debugf("saw QUIC packet from %s (ports %u:%u) payload = %02x%02x%02x",
-		  spindump_address_tostring(&source), side1port, side2port,
-		  udpPayload[0], udpPayload[1], udpPayload[2]);
+                  spindump_address_tostring(&source), side1port, side2port,
+                  udpPayload[0], udpPayload[1], udpPayload[2]);
 
   //
   // Attempt to parse the packet
@@ -115,17 +115,17 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   enum spindump_quic_message_type type;
 
   if (!spindump_analyze_quic_parser_parse(udpPayload,
-					  size_udppayload,
-					  remainingCaplen - spindump_udp_header_size,
-					  &hasVersion,
-					  &quicVersion,
-					  &mayHaveSpinBit,
-					  &destinationCidLengthKnown,
-					  &destinationCid,
-					  &sourceCidPresent,
-					  &sourceCid,
-					  &type,
-					  state->stats)) {
+                                          size_udppayload,
+                                          remainingCaplen - spindump_udp_header_size,
+                                          &hasVersion,
+                                          &quicVersion,
+                                          &mayHaveSpinBit,
+                                          &destinationCidLengthKnown,
+                                          &destinationCid,
+                                          &sourceCidPresent,
+                                          &sourceCid,
+                                          &type,
+                                          state->stats)) {
 
     //
     // Parsing failed. Bail out.
@@ -143,11 +143,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   //
 
   connection = spindump_connections_searchconnection_quic_5tuple_either(&source,
-									&destination,
-									side1port,
-									side2port,
-									state->table,
-									&fromResponder);
+                                                                        &destination,
+                                                                        side1port,
+                                                                        side2port,
+                                                                        state->table,
+                                                                        &fromResponder);
 
   //
   // If not found, and we know the CIDs, search based on them instead.
@@ -156,9 +156,9 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   if (connection == 0 && destinationCidLengthKnown && sourceCidPresent) {
 
     connection = spindump_connections_searchconnection_quic_cids_either(&destinationCid,
-									&sourceCid,
-									state->table,
-									&fromResponder);
+                                                                        &sourceCid,
+                                                                        state->table,
+                                                                        &fromResponder);
   }
 
   //
@@ -170,7 +170,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   if (connection == 0 && destinationCidLengthKnown) {
 
     connection = spindump_connections_searchconnection_quic_destcid(&destinationCid,
-								    state->table);
+                                                                    state->table);
     if (connection != 0) fromResponder = 1;
   }
 
@@ -181,8 +181,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   if (connection == 0 && !destinationCidLengthKnown) {
 
     connection = spindump_connections_searchconnection_quic_partialcid_either(&destinationCid.id[0],
-									      state->table,
-									      &fromResponder);
+                                                                              state->table,
+                                                                              &fromResponder);
   }
 
   //
@@ -193,20 +193,20 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
     if (destinationCidLengthKnown && sourceCidPresent) {
       connection = spindump_connections_newconnection_quic_5tupleandcids(&source,
-									 &destination,
-									 side1port,
-									 side2port,
-									 &destinationCid,
-									 &sourceCid,
-									 &packet->timestamp,
-									 state->table);
+                                                                         &destination,
+                                                                         side1port,
+                                                                         side2port,
+                                                                         &destinationCid,
+                                                                         &sourceCid,
+                                                                         &packet->timestamp,
+                                                                         state->table);
     } else {
       connection = spindump_connections_newconnection_quic_5tuple(&source,
-								  &destination,
-								  side1port,
-								  side2port,
-								  &packet->timestamp,
-								  state->table);
+                                                                  &destination,
+                                                                  side1port,
+                                                                  side2port,
+                                                                  &packet->timestamp,
+                                                                  state->table);
     }
 
     if (connection == 0) {
@@ -258,11 +258,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
     //
 
     if (fromResponder && sourceCidPresent &&
-	!spindump_analyze_quic_quicidequal(&sourceCid,&connection->u.quic.peer2ConnectionID)) {
+        !spindump_analyze_quic_quicidequal(&sourceCid,&connection->u.quic.peer2ConnectionID)) {
       spindump_debugf("changing the initial destination connection id to %s",
-		      spindump_connection_quicconnectionid_tostring(&sourceCid));
+                      spindump_connection_quicconnectionid_tostring(&sourceCid));
       spindump_debugf("(initial destination connection id was %s)",
-		      spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+                      spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
       connection->u.quic.peer2ConnectionID = sourceCid;
       spindump_deepdeepdebugf("calling spindump_connections_changeidentifiers");
       spindump_connections_changeidentifiers(state,packet,connection);
@@ -289,34 +289,34 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
     //
 
     if (fromResponder &&
-	(type == spindump_quic_message_type_initial ||
-	 type == spindump_quic_message_type_versionnegotiation)) {
+        (type == spindump_quic_message_type_initial ||
+         type == spindump_quic_message_type_versionnegotiation)) {
 
       connection->u.quic.initialRightRTT =
-	spindump_connections_newrttmeasurement(state,
-					       packet,
-					       connection,
-					       1,
-								 0,
-					       &connection->u.quic.side1initialPacket,
-					       &connection->u.quic.side2initialResponsePacket,
-					       "initial QUIC message from responder");
+        spindump_connections_newrttmeasurement(state,
+                                               packet,
+                                               connection,
+                                               1,
+                                                                 0,
+                                               &connection->u.quic.side1initialPacket,
+                                               &connection->u.quic.side2initialResponsePacket,
+                                               "initial QUIC message from responder");
 
     }
 
     if (!fromResponder &&
-	!spindump_iszerotime(&connection->u.quic.side2initialResponsePacket) &&
-	type == spindump_quic_message_type_initial) {
+        !spindump_iszerotime(&connection->u.quic.side2initialResponsePacket) &&
+        type == spindump_quic_message_type_initial) {
 
       connection->u.quic.initialLeftRTT =
-	spindump_connections_newrttmeasurement(state,
-					       packet,
-					       connection,
-					       0,
-								 0,
-					       &connection->u.quic.side2initialResponsePacket,
-					       &connection->u.quic.side1initialPacket,
-					       "initial QUIC message re-send from initiator");
+        spindump_connections_newrttmeasurement(state,
+                                               packet,
+                                               connection,
+                                               0,
+                                                                 0,
+                                               &connection->u.quic.side2initialResponsePacket,
+                                               &connection->u.quic.side1initialPacket,
+                                               "initial QUIC message re-send from initiator");
 
     }
 
@@ -333,9 +333,9 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
       if (!spindump_analyze_quic_quicidequal(&destinationCid,&connection->u.quic.peer1ConnectionID)) {
 
-	connection->u.quic.peer1ConnectionID = destinationCid;
-	spindump_deepdebugf("changed peer 1 connection id to %s",
-			    spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
+        connection->u.quic.peer1ConnectionID = destinationCid;
+        spindump_deepdebugf("changed peer 1 connection id to %s",
+                            spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
 
       }
 
@@ -349,9 +349,9 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
       if (!spindump_analyze_quic_quicidequal(&sourceCid,&connection->u.quic.peer2ConnectionID)) {
 
-	connection->u.quic.peer2ConnectionID = sourceCid;
-	spindump_deepdebugf("changed peer 2 connection id to %s",
-			    spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+        connection->u.quic.peer2ConnectionID = sourceCid;
+        spindump_deepdebugf("changed peer 2 connection id to %s",
+                            spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
 
       }
 
@@ -375,29 +375,29 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   int spin;
   spindump_deepdebugf("checking for the spin bit (may have = %u)", mayHaveSpinBit);
   if (spindump_analyze_quic_parser_getspinbit(udpPayload,
-					      size_udppayload,
-					      mayHaveSpinBit,
-					      connection->u.quic.version,
-					      fromResponder,
-					      &spin)) {
+                                              size_udppayload,
+                                              mayHaveSpinBit,
+                                              connection->u.quic.version,
+                                              fromResponder,
+                                              &spin)) {
     if (fromResponder) {
       spindump_spintracker_observespinandcalculatertt(state,
-						      packet,
-						      connection,
-						      &connection->u.quic.spinFromPeer2to1,
-						      &connection->u.quic.spinFromPeer1to2,
-						      &packet->timestamp,
-						      spin,
-						      fromResponder);
+                                                      packet,
+                                                      connection,
+                                                      &connection->u.quic.spinFromPeer2to1,
+                                                      &connection->u.quic.spinFromPeer1to2,
+                                                      &packet->timestamp,
+                                                      spin,
+                                                      fromResponder);
     } else {
       spindump_spintracker_observespinandcalculatertt(state,
-						      packet,
-						      connection,
-						      &connection->u.quic.spinFromPeer1to2,
-						      &connection->u.quic.spinFromPeer2to1,
-						      &packet->timestamp,
-						      spin,
-						      fromResponder);
+                                                      packet,
+                                                      connection,
+                                                      &connection->u.quic.spinFromPeer1to2,
+                                                      &connection->u.quic.spinFromPeer2to1,
+                                                      &packet->timestamp,
+                                                      spin,
+                                                      fromResponder);
     }
   }
 

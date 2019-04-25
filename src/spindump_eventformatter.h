@@ -40,7 +40,7 @@ enum spindump_eventformatter_outputformat {
 #define spindump_eventformatter_maxpostamble 5
 #define spindump_eventformatter_maxamble     (spindump_max(spindump_eventformatter_maxpreamble,              \
                                                            spindump_max(spindump_eventformatter_maxmidamble, \
-									spindump_eventformatter_maxpostamble)))
+                                                                        spindump_eventformatter_maxpostamble)))
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -80,24 +80,24 @@ struct spindump_eventformatter {
 
 struct spindump_eventformatter*
 spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
-					enum spindump_eventformatter_outputformat format,
-					FILE* file,
-					struct spindump_reverse_dns* querier,
-					int reportSpins,
-					int reportSpinFlips,
-					int anonymizeLeft,
-					int anonymizeRight);
+                                        enum spindump_eventformatter_outputformat format,
+                                        FILE* file,
+                                        struct spindump_reverse_dns* querier,
+                                        int reportSpins,
+                                        int reportSpinFlips,
+                                        int anonymizeLeft,
+                                        int anonymizeRight);
 struct spindump_eventformatter*
 spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
-					  enum spindump_eventformatter_outputformat format,
-					  unsigned int nRemotes,
-					  struct spindump_remote_client** remotes,
-					  unsigned long blockSize,
-					  struct spindump_reverse_dns* querier,
-					  int reportSpins,
-					  int reportSpinFlips,
-					  int anonymizeLeft,
-					  int anonymizeRight);
+                                          enum spindump_eventformatter_outputformat format,
+                                          unsigned int nRemotes,
+                                          struct spindump_remote_client** remotes,
+                                          unsigned long blockSize,
+                                          struct spindump_reverse_dns* querier,
+                                          int reportSpins,
+                                          int reportSpinFlips,
+                                          int anonymizeLeft,
+                                          int anonymizeRight);
 void
 spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter);
 void
@@ -109,7 +109,7 @@ spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter);
 
 void
 spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
-				    unsigned long length,
-				    const uint8_t* data);
+                                    unsigned long length,
+                                    const uint8_t* data);
 
 #endif // SPINDUMP_EVENTFORMATTER_H

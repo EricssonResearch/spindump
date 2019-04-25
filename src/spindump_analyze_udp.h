@@ -31,15 +31,15 @@
 
 void
 spindump_analyze_process_udp(struct spindump_analyze* state,
-			     struct spindump_packet* packet,
-			     unsigned int ipHeaderPosition,
-			     unsigned int ipHeaderSize,
-			     uint8_t ipVersion,
-					 uint8_t ecnFlags,
-			     unsigned int ipPacketLength,
-			     unsigned int udpHeaderPosition,
-			     unsigned int udpLength,
-			     unsigned int remainingCaplen,
-			     struct spindump_connection** p_connection);
+                             struct spindump_packet* packet,
+                             unsigned int ipHeaderPosition,
+                             unsigned int ipHeaderSize,
+                             uint8_t ipVersion,
+                             uint8_t ecnFlags,
+                             unsigned int ipPacketLength,
+                             unsigned int udpHeaderPosition,
+                             unsigned int udpLength,
+                             unsigned int remainingCaplen,
+                             struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_UDP_H

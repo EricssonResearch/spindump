@@ -50,8 +50,8 @@ spindump_messageidtracker_initialize(struct spindump_messageidtracker* tracker) 
 
 void
 spindump_messageidtracker_add(struct spindump_messageidtracker* tracker,
-			      const struct timeval* ts,
-			      const uint16_t messageid) {
+                              const struct timeval* ts,
+                              const uint16_t messageid) {
   spindump_assert(tracker != 0);
   spindump_assert(tracker->messageidindex < spindump_messageidtracker_nstored);
   tracker->stored[tracker->messageidindex].outstanding = 1;
@@ -70,7 +70,7 @@ spindump_messageidtracker_add(struct spindump_messageidtracker* tracker,
 
 const struct timeval*
 spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
-				const uint16_t messageid) {
+                                const uint16_t messageid) {
   
   //
   // Find the earliest sent packet that this could be an
@@ -100,9 +100,9 @@ spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
       // 
       
       if (chosen == 0)
-	chosen = candidate;
+        chosen = candidate;
       else if (spindump_isearliertime(&chosen->received,&candidate->received))
-	chosen = candidate;
+        chosen = candidate;
     }
   }
   
@@ -118,7 +118,7 @@ spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
     for (unsigned int j = 0; j < spindump_messageidtracker_nstored; j++) {
       struct spindump_messageidstore* other = &tracker->stored[j];
       if (other->outstanding && spindump_isearliertime(&chosen->received,&other->received)) {
-	other->outstanding = 0;
+        other->outstanding = 0;
       }
     }
     

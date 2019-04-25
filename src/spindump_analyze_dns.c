@@ -33,19 +33,19 @@
 
 static void
 spindump_analyzer_dns_markmidsent(struct spindump_connection* connection,
-				  int fromResponder,
-				  const uint16_t mid,
-				  const struct timeval* t);
+                                  int fromResponder,
+                                  const uint16_t mid,
+                                  const struct timeval* t);
 static int
 spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
-				      struct spindump_packet* packet,
-				      struct spindump_connection* connection,
-				      int fromResponder,
-				      const uint16_t mid,
-				      const struct timeval* t);
+                                      struct spindump_packet* packet,
+                                      struct spindump_connection* connection,
+                                      int fromResponder,
+                                      const uint16_t mid,
+                                      const struct timeval* t);
 static const char*
 spindump_analyzer_dns_parsename(const char* dnspayload,
-				unsigned int dnspayloadsize);
+                                unsigned int dnspayloadsize);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -60,9 +60,9 @@ spindump_analyzer_dns_parsename(const char* dnspayload,
 
 int
 spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
-					 unsigned int payload_len,
-					 uint16_t sourcePort,
-					 uint16_t destPort) {
+                                         unsigned int payload_len,
+                                         uint16_t sourcePort,
+                                         uint16_t destPort) {
 
   //
   // Sanity checks
@@ -104,7 +104,7 @@ spindump_analyze_dns_isprobablednspacket(const unsigned char* payload,
 
 static const char*
 spindump_analyzer_dns_parsename(const char* dnspayload,
-				unsigned int dnspayloadsize) {
+                                unsigned int dnspayloadsize) {
   static char buf[200];
   memset(buf,0,sizeof(buf));
   if (dnspayloadsize == 0) {
@@ -142,9 +142,9 @@ spindump_analyzer_dns_parsename(const char* dnspayload,
 
 static void
 spindump_analyzer_dns_markmidsent(struct spindump_connection* connection,
-				  int fromResponder,
-				  const uint16_t mid,
-				  const struct timeval* t) {
+                                  int fromResponder,
+                                  const uint16_t mid,
+                                  const struct timeval* t) {
 
   spindump_assert(connection != 0);
   spindump_assert(fromResponder == 0 || fromResponder == 1);
@@ -170,11 +170,11 @@ spindump_analyzer_dns_markmidsent(struct spindump_connection* connection,
 
 static int
 spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
-				      struct spindump_packet* packet,
-				      struct spindump_connection* connection,
-				      int fromResponder,
-				      const uint16_t mid,
-				      const struct timeval* t) {
+                                      struct spindump_packet* packet,
+                                      struct spindump_connection* connection,
+                                      int fromResponder,
+                                      const uint16_t mid,
+                                      const struct timeval* t) {
 
   const struct timeval* ackto;
 
@@ -191,16 +191,16 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
       spindump_deepdebugf("the responder DNS response %u refers to initiator DNS message that came %llu ms earlier",
-			  mid,
-			  diff / 1000);
+                          mid,
+                          diff / 1000);
       spindump_connections_newrttmeasurement(state,
-					     packet,
-					     connection,
-					     1,
-							 0,
-					     ackto,
-					     t,
-					     "DNS response");
+                                             packet,
+                                             connection,
+                                             1,
+                                                         0,
+                                             ackto,
+                                             t,
+                                             "DNS response");
       return(1);
 
     } else {
@@ -218,16 +218,16 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
       spindump_deepdebugf("the initiator response MID %u refers to responder DNS message that came %llu ms earlier",
-			  mid,
-			  diff / 1000);
+                          mid,
+                          diff / 1000);
       spindump_connections_newrttmeasurement(state,
-					     packet,
-					     connection,
-					     0,
-							 0,
-					     ackto,
-					     t,
-					     "DNS response");
+                                             packet,
+                                             connection,
+                                             0,
+                                                         0,
+                                             ackto,
+                                             t,
+                                             "DNS response");
       return(1);
 
     } else {
@@ -259,16 +259,16 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
 
 void
 spindump_analyze_process_dns(struct spindump_analyze* state,
-			     struct spindump_packet* packet,
-			     unsigned int ipHeaderPosition,
-			     unsigned int ipHeaderSize,
-			     uint8_t ipVersion,
-			     uint8_t ecnFlags,
-			     unsigned int ipPacketLength,
-			     unsigned int udpHeaderPosition,
-			     unsigned int udpLength,
-			     unsigned int remainingCaplen,
-			     struct spindump_connection** p_connection) {
+                             struct spindump_packet* packet,
+                             unsigned int ipHeaderPosition,
+                             unsigned int ipHeaderSize,
+                             uint8_t ipVersion,
+                             uint8_t ecnFlags,
+                             unsigned int ipPacketLength,
+                             unsigned int udpHeaderPosition,
+                             unsigned int udpLength,
+                             unsigned int remainingCaplen,
+                             struct spindump_connection** p_connection) {
 
   //
   // Some checks first
@@ -318,7 +318,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   struct spindump_dns dns;
   const unsigned char* dnsHeader = packet->contents + udpHeaderPosition + spindump_udp_header_size;
   spindump_protocols_dns_header_decode(dnsHeader,
-				       &dns);
+                                       &dns);
   uint16_t mid = dns.id;
   int qr = ((dns.flagsOpcode & spindump_dns_flagsopcode_qr) >> spindump_dns_flagsopcode_qr_shift);
   uint8_t opcode = ((dns.flagsOpcode & spindump_dns_flagsopcode_opcode) >> spindump_dns_flagsopcode_opcode_shift);
@@ -331,23 +331,23 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   //
 
   spindump_debugf("saw DNS packet from %s (ports %u:%u) QR=%u MID=%04x OP=%u QD=%u payload = %02x%02x%02x...",
-		  spindump_address_tostring(&source), side1port, side2port,
-		  mid,
-		  qr,
-		  opcode,
-		  qdcount,
-		  dnspayload[0], dnspayload[1], dnspayload[2]);
+                  spindump_address_tostring(&source), side1port, side2port,
+                  mid,
+                  qr,
+                  opcode,
+                  qdcount,
+                  dnspayload[0], dnspayload[1], dnspayload[2]);
 
   //
   // Then, look for existing connection
   //
 
   connection = spindump_connections_searchconnection_dns_either(&source,
-								&destination,
-								side1port,
-								side2port,
-								state->table,
-								&fromResponder);
+                                                                &destination,
+                                                                side1port,
+                                                                side2port,
+                                                                state->table,
+                                                                &fromResponder);
 
   //
   // If not found, create a new one
@@ -356,11 +356,11 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   if (connection == 0) {
 
     connection = spindump_connections_newconnection_dns(&source,
-							&destination,
-							side1port,
-							side2port,
-							&packet->timestamp,
-							state->table);
+                                                        &destination,
+                                                        side1port,
+                                                        side2port,
+                                                        &packet->timestamp,
+                                                        state->table);
 
     fromResponder = 0;
     new = 1;
@@ -398,16 +398,16 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   int foundmid = 0;
   if (qr == 0) {
     spindump_analyzer_dns_markmidsent(connection,
-				      fromResponder,
-				      mid,
-				      &packet->timestamp);
+                                      fromResponder,
+                                      mid,
+                                      &packet->timestamp);
   } else {
     foundmid = spindump_analyzer_dns_markmidreceived(state,
-						     packet,
-						     connection,
-						     fromResponder,
-						     mid,
-						     &packet->timestamp);
+                                                     packet,
+                                                     connection,
+                                                     fromResponder,
+                                                     mid,
+                                                     &packet->timestamp);
   }
 
   //

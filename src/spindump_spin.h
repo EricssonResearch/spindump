@@ -12,7 +12,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
-//  AUTHOR: JARI ARKKO
+//  AUTHOR: JARI ARKKO AND MARCUS IHLAR
 //
 // 
 
@@ -37,17 +37,17 @@ void
 spindump_spintracker_initialize(struct spindump_spintracker* tracker);
 void
 spindump_spintracker_add(struct spindump_spintracker* tracker,
-			 struct timeval* ts,
-			 int spin0to1);
+                         struct timeval* ts,
+                         int spin0to1);
 void
 spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
-						struct spindump_packet* packet,
-						struct spindump_connection* connection,
-						struct spindump_spintracker* tracker,
-						struct spindump_spintracker* otherDirectionTracker,
-						struct timeval* ts,
-						int spin,
-						int fromResponder);
+                                                struct spindump_packet* packet,
+                                                struct spindump_connection* connection,
+                                                struct spindump_spintracker* tracker,
+                                                struct spindump_spintracker* otherDirectionTracker,
+                                                struct timeval* ts,
+                                                int spin,
+                                                int fromResponder);
 void
 spindump_spintracker_uninitialize(struct spindump_spintracker* tracker);
 

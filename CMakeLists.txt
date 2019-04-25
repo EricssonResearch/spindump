@@ -12,7 +12,7 @@
 ###  ######################################################################
 ###
 ###  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
-###  AUTHOR: JARI ARKKO
+###  AUTHOR: JARI ARKKO AND LARS EGGERT
 ###
 ###
 
@@ -90,5 +90,3 @@ add_subdirectory(src)
 #
 
 include( CTest )
-
-

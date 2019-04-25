@@ -50,10 +50,10 @@ spindump_seqtracker_initialize(struct spindump_seqtracker* tracker) {
 
 void
 spindump_seqtracker_add(struct spindump_seqtracker* tracker,
-			struct timeval* ts,
-			tcp_seq seq,
-			unsigned int payloadlen,
-			int finset) {
+                        struct timeval* ts,
+                        tcp_seq seq,
+                        unsigned int payloadlen,
+                        int finset) {
   spindump_assert(tracker != 0);
   spindump_assert(tracker->seqindex < spindump_seqtracker_nstored);
   spindump_assert(finset == 0 || finset == 1);
@@ -75,9 +75,9 @@ spindump_seqtracker_add(struct spindump_seqtracker* tracker,
 
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
-			  tcp_seq seq,
-			  tcp_seq* sentSeq,
-			  int* sentFin) {
+                          tcp_seq seq,
+                          tcp_seq* sentSeq,
+                          int* sentFin) {
   
   tcp_seq highestacked = seq - 1;
   spindump_assert(sentSeq != 0);
@@ -104,21 +104,21 @@ spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
     // 
     
     spindump_deepdebugf("compare received ACK %u (%u) to candidate SEQ %u..%u",
-			highestacked, seq,
-			candidate->seq, candidate->seq + candidate->len);
+                        highestacked, seq,
+                        candidate->seq, candidate->seq + candidate->len);
     
     if (candidate->seq == highestacked ||
-	(candidate->seq <= highestacked &&
-	 highestacked < candidate->seq + candidate->len)) {
+        (candidate->seq <= highestacked &&
+         highestacked < candidate->seq + candidate->len)) {
       
       //
       // It is. Now see if this is the earliest one.
       // 
       
       if (chosen == 0)
-	chosen = candidate;
+        chosen = candidate;
       else if (spindump_isearliertime(&chosen->received,&candidate->received))
-	chosen = candidate;
+        chosen = candidate;
     }
   }
   
@@ -134,7 +134,7 @@ spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
     for (unsigned int j = 0; j < spindump_seqtracker_nstored; j++) {
       struct spindump_seqstore* other = &tracker->stored[j];
       if (other->outstanding && spindump_isearliertime(&chosen->received,&other->received)) {
-	other->outstanding = 0;
+        other->outstanding = 0;
       }
     }
     

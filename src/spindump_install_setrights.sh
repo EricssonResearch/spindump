@@ -41,25 +41,25 @@ if [ `uname` = "Linux" ]
 then
     if chown root:root $PROG
     then
-	nop=ok
+        nop=ok
     else
-	echo cannot chown
-	exit 1
+        echo cannot chown
+        exit 1
     fi
     if chmod 04755 $PROG
     then
-	nop=ok
+        nop=ok
     else
-	echo cannot chmod
-	exit 1
+        echo cannot chmod
+        exit 1
     fi
 else
     if chmod 0755 $PROG
     then
-	nop=ok
+        nop=ok
     else
-	echo cannot chmod
-	exit 1
+        echo cannot chmod
+        exit 1
     fi
 fi
 

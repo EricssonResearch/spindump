@@ -76,7 +76,7 @@ spindump_reverse_dns_initialize_noop(void) {
 
 const char*
 spindump_reverse_dns_query(spindump_address* address,
-			   struct spindump_reverse_dns* service) {
+                           struct spindump_reverse_dns* service) {
 
   //
   // Checks
@@ -100,17 +100,17 @@ spindump_reverse_dns_query(spindump_address* address,
   for (unsigned int i = 0; i < spindump_reverse_dns_maxnentries; i++) {
     struct spindump_reverse_dns_entry* entry = &service->entries[i];
     if (entry->requestMade &&
-	entry->responseGotten &&
-	spindump_address_equal(address,&entry->address)) {
+        entry->responseGotten &&
+        spindump_address_equal(address,&entry->address)) {
 
       //
       // Found an entry in the cache. Use it. Just need to check if there's an answer or not.
       //
 
       if (entry->responseName[0] != 0) {
-	return(&entry->responseName[0]);
+        return(&entry->responseName[0]);
       } else {
-	return(0);
+        return(0);
       }
 
     }
@@ -144,7 +144,7 @@ spindump_reverse_dns_query(spindump_address* address,
 
 const char*
 spindump_reverse_dns_address_tostring(spindump_address* address,
-				      struct spindump_reverse_dns* service) {
+                                      struct spindump_reverse_dns* service) {
   const char* name = spindump_reverse_dns_query(address,service);
   if (name != 0) {
     return(name);

@@ -121,4 +121,3 @@ int main(int argc,char** argv) {
   spindump_main_uninitialize(state);
   exit(0);
 }
-

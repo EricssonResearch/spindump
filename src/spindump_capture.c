@@ -42,8 +42,8 @@
 
 static struct spindump_capture_state*
 spindump_capture_initialize_aux(const char* interface,
-				const char* file,
-				const char* filter);
+                                const char* file,
+                                const char* filter);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -95,8 +95,8 @@ spindump_capture_defaultinterface(void) {
 
 static struct spindump_capture_state*
 spindump_capture_initialize_aux(const char* interface,
-				const char* file,
-				const char* filter) {
+                                const char* file,
+                                const char* filter) {
   //
   // Debugs
   // 
@@ -174,7 +174,7 @@ spindump_capture_initialize_aux(const char* interface,
     break;
   default:
     spindump_errorf("device %s doesn't provide Ethernet headers - value %u not supported",
-		    interface, linktype);
+                    interface, linktype);
     pcap_close(state->handle);
     spindump_free(state);
     return(0);
@@ -198,9 +198,9 @@ spindump_capture_initialize_aux(const char* interface,
   }
   state->ourLocalBroadcastAddress = (state->ourAddress & state->ourNetmask) | (~(state->ourNetmask));
   spindump_deepdebugf("our local address %08x netmask %08x broadcast %08x",
-		      state->ourAddress,
-		      state->ourNetmask,
-		      state->ourLocalBroadcastAddress);
+                      state->ourAddress,
+                      state->ourNetmask,
+                      state->ourLocalBroadcastAddress);
   
   //
   // Compile and apply the filter, if any
@@ -243,7 +243,7 @@ spindump_capture_initialize_aux(const char* interface,
 
 struct spindump_capture_state*
 spindump_capture_initialize_file(const char* file,
-				 const char* filter) {
+                                 const char* filter) {
   spindump_debugf("opening capture file %s...", file);
   return(spindump_capture_initialize_aux(0,file,filter));
 }
@@ -255,7 +255,7 @@ spindump_capture_initialize_file(const char* file,
 
 struct spindump_capture_state*
 spindump_capture_initialize_live(const char* interface,
-				 const char* filter) {
+                                 const char* filter) {
 
   spindump_debugf("opening capture on interface %s...", interface);
   return(spindump_capture_initialize_aux(interface,0,filter));
@@ -279,9 +279,9 @@ spindump_capture_initialize_null(void) {
 
 void
 spindump_capture_nextpacket(struct spindump_capture_state* state,
-			    struct spindump_packet** p_packet,
-			    int* p_more,
-			    struct spindump_stats* stats) {
+                            struct spindump_packet** p_packet,
+                            int* p_more,
+                            struct spindump_stats* stats) {
   
   //
   // Check

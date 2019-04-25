@@ -36,9 +36,9 @@
 //
 
 #ifdef SPINDUMP_DEBUG
-#define spindump_assert(cond)	do { if (!(cond)) {                                      \
+#define spindump_assert(cond)   do { if (!(cond)) {                                      \
                                   spindump_fatalf("Assertion failed on %s line %u", \
-                                                  __FILE__, __LINE__);		    \
+                                                  __FILE__, __LINE__);              \
                                 } } while(0)
 #else
 #define spindump_assert(cond)
@@ -85,57 +85,57 @@ void
 spindump_getcurrenttime(struct timeval* result);
 unsigned long long
 spindump_timediffinusecs(const struct timeval* later,
-			 const struct timeval* earlier);
+                         const struct timeval* earlier);
 int
 spindump_isearliertime(const struct timeval* later,
-		       const struct timeval* earlier);
+                       const struct timeval* earlier);
 void
 spindump_zerotime(struct timeval* result);
 const char*
 spindump_timetostring(const struct timeval* result);
 void
 spindump_address_fromempty(sa_family_t af,
-			   spindump_address* address);
+                           spindump_address* address);
 int
 spindump_address_fromstring(spindump_address* address,
-			    const char* string);
+                            const char* string);
 void
 spindump_address_frombytes(spindump_address* address,
-			   sa_family_t af,
-			   const unsigned char* string);
+                           sa_family_t af,
+                           const unsigned char* string);
 const char*
 spindump_address_tostring(const spindump_address* address);
 const char*
 spindump_address_tostring_anon(int anonymize,
-			       spindump_address* address);
+                               spindump_address* address);
 unsigned int
 spindump_address_length(const spindump_address* address);
 int
 spindump_network_fromstring(spindump_network* network,
-			    const char* string);
+                            const char* string);
 const char*
 spindump_network_tostring(const spindump_network* network);
 const char*
 spindump_network_tostringoraddr(const spindump_network* network);
 int
 spindump_address_equal(spindump_address* address1,
-		       spindump_address* address2);
+                       spindump_address* address2);
 int
 spindump_address_innetwork(spindump_address* address,
-			   spindump_network* network);
+                           spindump_network* network);
 int
 spindump_address_ismulticast(spindump_address* address);
 int
 spindump_network_equal(spindump_network* network1,
-		       spindump_network* network2);
+                       spindump_network* network2);
 int
 spindump_network_ismulticast(spindump_network* network);
 void
 spindump_network_fromaddress(const spindump_address* address,
-			     spindump_network* network);
+                             spindump_network* network);
 void
 spindump_network_fromempty(sa_family_t af,
-			   spindump_network* network);
+                           spindump_network* network);
 const char*
 spindump_meganumber_tostring(unsigned long x);
 const char*

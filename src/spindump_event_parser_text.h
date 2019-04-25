@@ -44,13 +44,13 @@
 
 int
 spindump_event_parser_text_parse(const char* buffer,
-				 size_t length,
-				 struct spindump_event* event,
-				 size_t* consumed);
+                                 size_t length,
+                                 struct spindump_event* event,
+                                 size_t* consumed);
 int
 spindump_event_parser_text_print(const struct spindump_event* event,
-				 char* buffer,
-				 size_t length,
-				 size_t* consumed);
+                                 char* buffer,
+                                 size_t length,
+                                 size_t* consumed);
 
 #endif // SPINDUMP_EVENT_PARSER_TEXT_H

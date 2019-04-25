@@ -1,5 +1,22 @@
 #!/bin/bash
 
+###
+###
+###  ######################################################################
+###  #######                                                      #########
+###  ####      SSS   PPPP   I  N    N  DDDD   U   U  M   M  PPPP       ####
+###  #        S      P   P  I  NN   N  D   D  U   U  MM MM  P   P         #
+###  #         SSS   PPPP   I  N NN N  D   D  U   U  M M M  PPPP          #
+###  #            S  P      I  N   NN  D   D  U   U  M   M  P             #
+###  ####      SSS   P      I  N    N  DDDD    UUU   M   M  P          ####
+###  #######                                                      #########
+###  ######################################################################
+###
+###  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+###  AUTHOR: JARI ARKKO
+###
+###
+
 srcdir=`dirname $0`
 testdir=$srcdir/../test
 spindump=$srcdir/spindump
@@ -38,7 +55,7 @@ do
     opts=""
     if [ -f $optsfile ]
     then
-	opts=`cat $optsfile`
+        opts=`cat $optsfile`
     fi
 
     #
@@ -47,10 +64,10 @@ do
     
     if $spindump --input-file $pcap --textual --format text $opts > $out
     then
-	echo "  run ok..."
+        echo "  run ok..."
     else
-	echo "**run failed -- exit"
-	exit 1
+        echo "**run failed -- exit"
+        exit 1
     fi
 
     #
@@ -59,26 +76,26 @@ do
     
     if [ -f $corr ]
     then
-	nop=nop
+        nop=nop
     else
-	echo "**expected results file $corr does not exist -- exit"
-	exit 1
+        echo "**expected results file $corr does not exist -- exit"
+        exit 1
     fi
     
     if diff $out $corr > /dev/null
     then
-	echo "  results correct"
+        echo "  results correct"
     else
-	echo "**results incorrect -- exit"
-	exit 1
+        echo "**results incorrect -- exit"
+        exit 1
     fi
     
     if [ -f $descr ]
     then
-	nop=nop
+        nop=nop
     else
-	echo "**test description file $descr does not exist -- exit"
-	exit 1
+        echo "**test description file $descr does not exist -- exit"
+        exit 1
     fi
 
     #
@@ -87,16 +104,16 @@ do
     
     if [ -f $perfoptsfile ]
     then
-	CPUPROFILE=$profilefile
-	export CPUPROFILE
-	echo "  running performance tests..."
+        CPUPROFILE=$profilefile
+        export CPUPROFILE
+        echo "  running performance tests..."
         if $spindump --input-file $pcap --silent $opts > /dev/null
         then
-	    echo "  run ok..."
-	else
-	    echo "**run failed -- exit"
-	    exit 1
-	fi
-	unset CPUPROFILE
+            echo "  run ok..."
+        else
+            echo "**run failed -- exit"
+            exit 1
+        fi
+        unset CPUPROFILE
     fi
 done

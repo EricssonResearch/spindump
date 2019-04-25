@@ -45,14 +45,14 @@
 
 void
 spindump_analyze_process_aggregate(struct spindump_analyze* state,
-				   struct spindump_connection* connection,
-				   struct spindump_packet* packet,
-				   unsigned int ipHeaderPosition,
-				   unsigned int ipHeaderSize,
-				   uint8_t ipVersion,
-				   uint8_t ecnFlags,
-				   unsigned int ipPacketLength,
-				   struct spindump_stats* stats) {
+                                   struct spindump_connection* connection,
+                                   struct spindump_packet* packet,
+                                   unsigned int ipHeaderPosition,
+                                   unsigned int ipHeaderSize,
+                                   uint8_t ipVersion,
+                                   uint8_t ecnFlags,
+                                   unsigned int ipPacketLength,
+                                   struct spindump_stats* stats) {
   
   //
   // Some sanity checks
@@ -74,19 +74,19 @@ spindump_analyze_process_aggregate(struct spindump_analyze* state,
   switch (connection->type) {
   case spindump_connection_aggregate_hostpair:
     fromResponder = spindump_address_equal(&source,
-					   &connection->u.aggregatehostpair.side1peerAddress);
+                                           &connection->u.aggregatehostpair.side1peerAddress);
     break;
   case spindump_connection_aggregate_hostnetwork:
     fromResponder = spindump_address_equal(&source,
-					   &connection->u.aggregatehostnetwork.side1peerAddress);
+                                           &connection->u.aggregatehostnetwork.side1peerAddress);
     break;
   case spindump_connection_aggregate_networknetwork:
     fromResponder = spindump_address_innetwork(&source,
-					       &connection->u.aggregatenetworknetwork.side1Network);
+                                               &connection->u.aggregatenetworknetwork.side1Network);
     break;
   case spindump_connection_aggregate_multicastgroup:
     fromResponder = spindump_address_equal(&source,
-					   &connection->u.aggregatemulticastgroup.group);
+                                           &connection->u.aggregatemulticastgroup.group);
     break;
   case spindump_connection_transport_udp:
   case spindump_connection_transport_tcp:
@@ -108,11 +108,11 @@ spindump_analyze_process_aggregate(struct spindump_analyze* state,
   //
   
   spindump_analyze_process_pakstats(state,
-				    connection,
-				    fromResponder,
-				    packet,
-				    ipPacketLength,
-				    ecnFlags);
+                                    connection,
+                                    fromResponder,
+                                    packet,
+                                    ipPacketLength,
+                                    ecnFlags);
   
   //
   // Done.

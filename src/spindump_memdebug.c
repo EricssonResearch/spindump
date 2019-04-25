@@ -87,4 +87,3 @@ spindump_memdebug_free(void* ptr) {
 }
 
 #endif // SPINDUMP_MEMDEBUG
-

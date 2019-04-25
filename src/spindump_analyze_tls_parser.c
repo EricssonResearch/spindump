@@ -33,28 +33,28 @@
 
 static int
 spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payload,
-						     unsigned int payload_len,
-						     unsigned int record_layer_payload_len,
-						     int isDatagram,
-						     int* p_isInitialHandshake,
-						     spindump_tls_version* p_tlsVersion,
-						     int* p_isResponse);
+                                                     unsigned int payload_len,
+                                                     unsigned int record_layer_payload_len,
+                                                     int isDatagram,
+                                                     int* p_isInitialHandshake,
+                                                     spindump_tls_version* p_tlsVersion,
+                                                     int* p_isResponse);
 static int
 spindump_analyze_tls_isvalid_recordlayer_content_type(uint8_t type);
 static void
 spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valueInPacket,
-					     int isDatagram,
-					     spindump_tls_version* result);
+                                             int isDatagram,
+                                             spindump_tls_version* result);
 static void
 spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct spindump_dtls_handshake* handshake,
-									int* p_isInitialHandshake,
-									spindump_tls_version* p_tlsVersion,
-									int* p_isResponse);
+                                                                        int* p_isInitialHandshake,
+                                                                        spindump_tls_version* p_tlsVersion,
+                                                                        int* p_isResponse);
 static void
 spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(struct spindump_tls_handshake* handshake,
-								       int* p_isInitialHandshake,
-								       spindump_tls_version* p_tlsVersion,
-								       int* p_isResponse);
+                                                                       int* p_isInitialHandshake,
+                                                                       spindump_tls_version* p_tlsVersion,
+                                                                       int* p_isResponse);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -107,8 +107,8 @@ spindump_analyze_tls_parser_versiontostring(const spindump_tls_version version) 
 
 static void
 spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valueInPacket,
-					     int isDatagram,
-					     spindump_tls_version* result) {
+                                             int isDatagram,
+                                             spindump_tls_version* result) {
   
   //
   // Input checks
@@ -144,8 +144,8 @@ spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valu
 
 int
 spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
-						unsigned int payload_len,
-						int isDatagram) {
+                                                unsigned int payload_len,
+                                                int isDatagram) {
 
   //
   // Input checks
@@ -182,21 +182,21 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
     spindump_protocols_dtls_recordlayerheader_decode(payload,&record);
     
     spindump_deepdebugf("spindump TLS analyzer precheck datagram content type %u",
-			record.type);
+                        record.type);
     if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record.type)) {
       spindump_deepdebugf("spindump TLS analyzer content type %u is invalid",
-			  record.type);
+                          record.type);
       return(0);
     }
 
     spindump_tls_version version;
     spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer precheck datagram version %04x (in the packet %04x)",
-			version,
-			spindump_tls_2bytenum2touint16(record.version));
+                        version,
+                        spindump_tls_2bytenum2touint16(record.version));
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %04x is invalid",
-			  version);
+                          version);
       return(0);
     }
 
@@ -208,21 +208,21 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
     spindump_protocols_tls_recordlayerheader_decode(payload,&record);
     
     spindump_deepdebugf("spindump TLS analyzer precheck content type %u",
-			record.type);
+                        record.type);
     if (!spindump_analyze_tls_isvalid_recordlayer_content_type(record.type)) {
       spindump_deepdebugf("spindump TLS analyzer content type %u is invalid",
-			  record.type);
+                          record.type);
       return(0);
     }
     
     spindump_tls_version version;
     spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer precheck version %04x (in the packet %04x)",
-			version,
-			spindump_tls_2bytenum2touint16(record.version));
+                        version,
+                        spindump_tls_2bytenum2touint16(record.version));
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %x is invalid",
-			  version);
+                          version);
       return(0);
     }
     
@@ -236,10 +236,10 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
   // 
   
   spindump_deepdebugf("spindump TLS analyzer precheck internal size %u",
-		      carriesLength);
+                      carriesLength);
   if (carriesLength > 16384) {
       spindump_deepdebugf("spindump TLS analyzer carried length %u is invalid",
-			  carriesLength);
+                          carriesLength);
     return(0);
   }
   
@@ -275,13 +275,13 @@ spindump_analyze_tls_parser_isprobabletlspacket(const unsigned char* payload,
 
 int
 spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
-					unsigned int payload_len,
-					unsigned int remainingCaplen,
-					int isDatagram,
-					int* p_isHandshake,
-					int* p_isInitialHandshake,
-					spindump_tls_version* p_tlsVersion,
-					int* p_isResponse) {
+                                        unsigned int payload_len,
+                                        unsigned int remainingCaplen,
+                                        int isDatagram,
+                                        int* p_isHandshake,
+                                        int* p_isInitialHandshake,
+                                        spindump_tls_version* p_tlsVersion,
+                                        int* p_isResponse) {
   
   //
   // Input checks
@@ -335,8 +335,8 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
     spindump_tls_version version;
     spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer datagram version in the packet %04x, converted as %04x",
-			spindump_tls_2bytenum2touint16(record.version),
-			version);
+                        spindump_tls_2bytenum2touint16(record.version),
+                        version);
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %x is invalid", version);
       return(0);
@@ -357,8 +357,8 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
     spindump_tls_version version;
     spindump_analyze_tls_parse_versionconversion(&record.version,isDatagram,&version);
     spindump_deepdebugf("spindump TLS analyzer version in the packet %04x, converted as %04x",
-			spindump_tls_2bytenum2touint16(record.version),
-			version);
+                        spindump_tls_2bytenum2touint16(record.version),
+                        version);
     if (!spindump_tls_tls_version_is_valid(version)) {
       spindump_deepdebugf("spindump TLS analyzer version %x is invalid", version);
       return(0);
@@ -383,14 +383,14 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
   // 
 
   if (spindump_analyze_tls_parser_parse_tlshandshakepacket(payload + recordLayerSize,
-							   payload_len - recordLayerSize,
-							   carriesLength,
-							   isDatagram,
-							   p_isInitialHandshake,
-							   p_tlsVersion,
-							   p_isResponse)) {
+                                                           payload_len - recordLayerSize,
+                                                           carriesLength,
+                                                           isDatagram,
+                                                           p_isInitialHandshake,
+                                                           p_tlsVersion,
+                                                           p_isResponse)) {
     spindump_deepdebugf("spindump TLS analyzer detects handshake packet initial %u version %04x response %u",
-			*p_isInitialHandshake, *p_tlsVersion, *p_isResponse);
+                        *p_isInitialHandshake, *p_tlsVersion, *p_isResponse);
     *p_isHandshake = 1;
   } else {
     spindump_deepdebugf("spindump TLS analyzer detects non-handshake packet");
@@ -413,12 +413,12 @@ spindump_analyze_tls_parser_parsepacket(const unsigned char* payload,
 
 static int
 spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payload,
-						     unsigned int payload_len,
-						     unsigned int record_layer_payload_len,
-						     int isDatagram,
-						     int* p_isInitialHandshake,
-						     spindump_tls_version* p_tlsVersion,
-						     int* p_isResponse) {
+                                                     unsigned int payload_len,
+                                                     unsigned int record_layer_payload_len,
+                                                     int isDatagram,
+                                                     int* p_isInitialHandshake,
+                                                     spindump_tls_version* p_tlsVersion,
+                                                     int* p_isResponse) {
   
   //
   // Input checks
@@ -437,7 +437,7 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
   if (payload_len < spindump_tls_handshake_header_size ||
       record_layer_payload_len < spindump_tls_handshake_header_size) {
     spindump_deepdebugf("spindump TLS analyzer too small payload lengths %u %u",
-			payload_len, record_layer_payload_len);
+                        payload_len, record_layer_payload_len);
     return(0);
   }
   
@@ -488,17 +488,17 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
     struct spindump_dtls_handshake dtlsHandshake;
     spindump_protocols_dtls_handshakeheader_decode(payload,&dtlsHandshake);
     spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(&dtlsHandshake,
-									    p_isInitialHandshake,
-									    p_tlsVersion,
-									    p_isResponse);
+                                                                            p_isInitialHandshake,
+                                                                            p_tlsVersion,
+                                                                            p_isResponse);
     return(1);
     
   } else {
     
     spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(&handshake,
-									   p_isInitialHandshake,
-									   p_tlsVersion,
-									   p_isResponse);
+                                                                           p_isInitialHandshake,
+                                                                           p_tlsVersion,
+                                                                           p_isResponse);
     return(1);
     
   }
@@ -511,22 +511,22 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket(const unsigned char* payloa
 
 static void
 spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct spindump_dtls_handshake* handshake,
-									int* p_isInitialHandshake,
-									spindump_tls_version* p_tlsVersion,
-									int* p_isResponse) {
+                                                                        int* p_isInitialHandshake,
+                                                                        spindump_tls_version* p_tlsVersion,
+                                                                        int* p_isResponse) {
   
   switch (handshake->handshakeType) {
     
   case spindump_tls_handshake_client_hello:
     {
       struct spindump_dtls_handshake_clienthello* hello =
-	(struct spindump_dtls_handshake_clienthello*)handshake;
+        (struct spindump_dtls_handshake_clienthello*)handshake;
       *p_isInitialHandshake = 1;
       spindump_analyze_tls_parse_versionconversion(&hello->version,1,p_tlsVersion);
       spindump_deepdebugf("spindump DTLS analyzer setting version from client DTLS hello packet to %04x (originally %02x.%02x)",
-			  *p_tlsVersion,
-			  hello->version[0],
-			  hello->version[1]);
+                          *p_tlsVersion,
+                          hello->version[0],
+                          hello->version[1]);
       *p_isResponse = 0;
     }
     break;
@@ -534,13 +534,13 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct s
   case spindump_tls_handshake_server_hello:
     {
       struct spindump_dtls_handshake_serverhello* hello =
-	(struct spindump_dtls_handshake_serverhello*)handshake;
+        (struct spindump_dtls_handshake_serverhello*)handshake;
       *p_isInitialHandshake = 1;
       spindump_analyze_tls_parse_versionconversion(&hello->version,1,p_tlsVersion);
       spindump_deepdebugf("spindump DTLS analyzer setting version from server DTLS hello packet to %04x (originally %02x.%02x)",
-			  *p_tlsVersion,
-			  hello->version[0],
-			  hello->version[1]);
+                          *p_tlsVersion,
+                          hello->version[0],
+                          hello->version[1]);
       *p_isResponse = 1;
     }
     break;
@@ -548,13 +548,13 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct s
   case spindump_tls_handshake_hello_verify_request:
     {
       struct spindump_dtls_handshake_helloverifyrequest* verify =
-	(struct spindump_dtls_handshake_helloverifyrequest*)handshake;
+        (struct spindump_dtls_handshake_helloverifyrequest*)handshake;
       *p_isInitialHandshake = 1;
       spindump_analyze_tls_parse_versionconversion(&verify->version,1,p_tlsVersion);
       spindump_deepdebugf("spindump DTLS analyzer setting version from server DTLS hello verify request packet to %04x (originally %02x.%02x)",
-			  *p_tlsVersion,
-			  verify->version[0],
-			  verify->version[1]);
+                          *p_tlsVersion,
+                          verify->version[0],
+                          verify->version[1]);
       *p_isResponse = 1;
     }
     break;
@@ -575,22 +575,22 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_dtls(struct s
 
 static void
 spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(struct spindump_tls_handshake* handshake,
-								       int* p_isInitialHandshake,
-								       spindump_tls_version* p_tlsVersion,
-								       int* p_isResponse) {
+                                                                       int* p_isInitialHandshake,
+                                                                       spindump_tls_version* p_tlsVersion,
+                                                                       int* p_isResponse) {
   
   switch (handshake->handshakeType) {
     
   case spindump_tls_handshake_client_hello:
     {
       struct spindump_tls_handshake_clienthello* hello =
-	(struct spindump_tls_handshake_clienthello*)handshake;
+        (struct spindump_tls_handshake_clienthello*)handshake;
       *p_isInitialHandshake = 1;
       spindump_analyze_tls_parse_versionconversion(&hello->version,0,p_tlsVersion);
       spindump_deepdebugf("spindump TLS analyzer setting version from client TLS hello packet to %04x (originally %02x.%02x)",
-			  *p_tlsVersion,
-			  hello->version[0],
-			  hello->version[1]);
+                          *p_tlsVersion,
+                          hello->version[0],
+                          hello->version[1]);
       *p_isResponse = 0;
     }
     break;
@@ -598,13 +598,13 @@ spindump_analyze_tls_parser_parse_tlshandshakepacket_finalperhtype_tls(struct sp
   case spindump_tls_handshake_server_hello:
     {
       struct spindump_tls_handshake_serverhello* hello =
-	(struct spindump_tls_handshake_serverhello*)handshake;
+        (struct spindump_tls_handshake_serverhello*)handshake;
       *p_isInitialHandshake = 1;
       spindump_analyze_tls_parse_versionconversion(&hello->version,0,p_tlsVersion);
       spindump_deepdebugf("spindump TLS analyzer setting version from server TLS hello packet to %04x (originally %02x.%02x)",
-			  *p_tlsVersion,
-			  hello->version[0],
-			  hello->version[1]);
+                          *p_tlsVersion,
+                          hello->version[0],
+                          hello->version[1]);
       *p_isResponse = 1;
     }
     break;
@@ -636,4 +636,3 @@ spindump_analyze_tls_isvalid_recordlayer_content_type(uint8_t type) {
     return(0);
   }
 }
-  

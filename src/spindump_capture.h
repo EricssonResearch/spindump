@@ -32,8 +32,8 @@
 // Capture parameters -------------------------------------------------------------------------
 //
 
-#define spindump_capture_snaplen	128  // bytes
-#define spindump_capture_wait    	1    // ms
+#define spindump_capture_snaplen        128  // bytes
+#define spindump_capture_wait           1    // ms
 
 //
 // Capture data structures --------------------------------------------------------------------
@@ -62,19 +62,19 @@ const char*
 spindump_capture_defaultinterface(void);
 struct spindump_capture_state*
 spindump_capture_initialize_live(const char* interface,
-				 const char* filter);
+                                 const char* filter);
 struct spindump_capture_state*
 spindump_capture_initialize_file(const char* file,
-				 const char* filter);
+                                 const char* filter);
 struct spindump_capture_state*
 spindump_capture_initialize_null(void);
 enum spindump_capture_linktype
 spindump_capture_getlinktype(struct spindump_capture_state* state);
 void
 spindump_capture_nextpacket(struct spindump_capture_state* state,
-			    struct spindump_packet** p_packet,
-			    int* p_more,
-			    struct spindump_stats* stats);
+                            struct spindump_packet** p_packet,
+                            int* p_more,
+                            struct spindump_stats* stats);
 void
 spindump_capture_uninitialize(struct spindump_capture_state* state);
 

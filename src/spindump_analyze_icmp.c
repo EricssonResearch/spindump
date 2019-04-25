@@ -52,16 +52,16 @@
 
 void
 spindump_analyze_process_icmp(struct spindump_analyze* state,
-			      struct spindump_packet* packet,
-			      unsigned int ipHeaderPosition,
-			      unsigned int ipHeaderSize,
-			      uint8_t ipVersion,
-			      uint8_t ecnFlags,
-			      unsigned int ipPacketLength,
-			      unsigned int icmpHeaderPosition,
-			      unsigned int icmpLength,
-			      unsigned int remainingCaplen,
-			      struct spindump_connection** p_connection) {
+                              struct spindump_packet* packet,
+                              unsigned int ipHeaderPosition,
+                              unsigned int ipHeaderSize,
+                              uint8_t ipVersion,
+                              uint8_t ecnFlags,
+                              unsigned int ipPacketLength,
+                              unsigned int icmpHeaderPosition,
+                              unsigned int icmpLength,
+                              unsigned int remainingCaplen,
+                              struct spindump_connection** p_connection) {
 
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
@@ -92,15 +92,15 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   struct spindump_icmp icmp;
   spindump_protocols_icmp_header_decode(packet->contents + icmpHeaderPosition,&icmp);
   spindump_debugf("received an IPv%u ICMP packet of %u bytes",
-		  ipVersion,
-		  packet->etherlen);
+                  ipVersion,
+                  packet->etherlen);
 
   uint8_t peerType = icmp.ih_type;
 
   switch (peerType) {
   case ICMP_ECHO:
     if (icmpLength < spindump_icmp_echo_header_size ||
-	remainingCaplen < spindump_icmp_echo_header_size) {
+        remainingCaplen < spindump_icmp_echo_header_size) {
       state->stats->notEnoughPacketForIcmpHdr++;
       spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
       *p_connection = 0;
@@ -113,13 +113,13 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO request for id=%u seq=%u",
-			icmp.ih_u.ih_echo.ih_id,
-			icmp.ih_u.ih_echo.ih_seq);
+                        icmp.ih_u.ih_echo.ih_id,
+                        icmp.ih_u.ih_echo.ih_seq);
     break;
 
   case ICMP_ECHOREPLY:
     if (icmpLength < spindump_icmp_echo_header_size ||
-	remainingCaplen < spindump_icmp_echo_header_size) {
+        remainingCaplen < spindump_icmp_echo_header_size) {
       state->stats->notEnoughPacketForIcmpHdr++;
       spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
       *p_connection = 0;
@@ -132,8 +132,8 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO reply for id=%u seq=%u",
-			icmp.ih_u.ih_echo.ih_id,
-			icmp.ih_u.ih_echo.ih_seq);
+                        icmp.ih_u.ih_echo.ih_id,
+                        icmp.ih_u.ih_echo.ih_seq);
     break;
 
   default:
@@ -171,10 +171,10 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 
     struct spindump_connection* connection =
       spindump_connections_searchconnection_icmp(&source,
-						 &destination,
-						 ICMP_ECHO,
-						 peerId,
-						 state->table);
+                                                 &destination,
+                                                 ICMP_ECHO,
+                                                 peerId,
+                                                 state->table);
 
     //
     // If not found, create a new one
@@ -184,31 +184,31 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 
       if (peerType == ICMP_ECHOREPLY) {
 
-	//
-	// We're only seeing a REPLY without corresponding REQUEST, so
-	// we will drop this packet and not deal with the connection;
-	// it packet may of course still be counted within some
-	// aggregate statistics.
-	//
+        //
+        // We're only seeing a REPLY without corresponding REQUEST, so
+        // we will drop this packet and not deal with the connection;
+        // it packet may of course still be counted within some
+        // aggregate statistics.
+        //
 
-	*p_connection = 0;
-	return;
+        *p_connection = 0;
+        return;
 
       } else {
 
-	connection = spindump_connections_newconnection_icmp(&source,
-							     &destination,
-							     peerType,
-							     peerId,
-							     &packet->timestamp,
-							     state->table);
-	if (connection == 0) {
-	  *p_connection = 0;
-	  return;
-	}
-	new = 1;
-	state->stats->connections++;
-	state->stats->connectionsIcmp++;
+        connection = spindump_connections_newconnection_icmp(&source,
+                                                             &destination,
+                                                             peerType,
+                                                             peerId,
+                                                             &packet->timestamp,
+                                                             state->table);
+        if (connection == 0) {
+          *p_connection = 0;
+          return;
+        }
+        new = 1;
+        state->stats->connections++;
+        state->stats->connectionsIcmp++;
 
       }
     }
@@ -220,18 +220,18 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     if (peerType == ICMP_ECHOREPLY) {
 
       if (connection->state == spindump_connection_state_establishing) {
-	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+        spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
 
       if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
-	spindump_connections_newrttmeasurement(state,
-					       packet,
-					       connection,
-					       1,
-								 0,
-					       &connection->latestPacketFromSide1,
-					       &packet->timestamp,
-					       "ICMP echo reply");
+        spindump_connections_newrttmeasurement(state,
+                                               packet,
+                                               connection,
+                                               1,
+                                                                 0,
+                                               &connection->latestPacketFromSide1,
+                                               &packet->timestamp,
+                                               "ICMP echo reply");
       }
 
       fromResponder = 1;
@@ -290,16 +290,16 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
 
 void
 spindump_analyze_process_icmp6(struct spindump_analyze* state,
-			       struct spindump_packet* packet,
-			       unsigned int ipHeaderPosition,
-			       unsigned int ipHeaderSize,
-			       uint8_t ipVersion,
-			       uint8_t ecnFlags,
-			       unsigned int ipPacketLength,
-			       unsigned int icmpHeaderPosition,
-			       unsigned int icmpLength,
-			       unsigned int remainingCaplen,
-			       struct spindump_connection** p_connection) {
+                               struct spindump_packet* packet,
+                               unsigned int ipHeaderPosition,
+                               unsigned int ipHeaderSize,
+                               uint8_t ipVersion,
+                               uint8_t ecnFlags,
+                               unsigned int ipPacketLength,
+                               unsigned int icmpHeaderPosition,
+                               unsigned int icmpLength,
+                               unsigned int remainingCaplen,
+                               struct spindump_connection** p_connection) {
 
   spindump_assert(state != 0);
   spindump_assert(packet != 0);
@@ -330,8 +330,8 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     return;
   }
   spindump_debugf("received an IPv%u ICMP packet of %u bytes",
-		  ipVersion,
-		  packet->etherlen);
+                  ipVersion,
+                  packet->etherlen);
 
   uint8_t peerType = icmp6.ih6_type;
   int new = 0;
@@ -340,9 +340,9 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
   switch (peerType) {
   case ICMP6_ECHO_REQUEST:
     spindump_deepdebugf("ICMP6_ECHO_REQUEST sizes %u vs. %u",
-			icmpLength, spindump_icmp_echo_header_size);
+                        icmpLength, spindump_icmp_echo_header_size);
     if (icmpLength < spindump_icmp_echo_header_size ||
-	remainingCaplen < spindump_icmp_echo_header_size) {
+        remainingCaplen < spindump_icmp_echo_header_size) {
       state->stats->notEnoughPacketForIcmpHdr++;
       spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
       *p_connection = 0;
@@ -355,13 +355,13 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO request for id=%u seq=%u",
-			icmp6.ih6_u.ih6_echo.ih6_id,
-			icmp6.ih6_u.ih6_echo.ih6_seq);
+                        icmp6.ih6_u.ih6_echo.ih6_id,
+                        icmp6.ih6_u.ih6_echo.ih6_seq);
     break;
 
   case ICMP6_ECHO_REPLY:
     if (icmpLength < spindump_icmp_echo_header_size ||
-	remainingCaplen < spindump_icmp_echo_header_size) {
+        remainingCaplen < spindump_icmp_echo_header_size) {
       state->stats->notEnoughPacketForIcmpHdr++;
       spindump_warnf("not enough payload bytes for an ICMP echo header", icmpLength);
       *p_connection = 0;
@@ -374,8 +374,8 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     }
     state->stats->receivedIcmpEcho++;
     spindump_deepdebugf("received ICMP ECHO reply for id=%u seq=%u",
-			icmp6.ih6_u.ih6_echo.ih6_id,
-			icmp6.ih6_u.ih6_echo.ih6_seq);
+                        icmp6.ih6_u.ih6_echo.ih6_id,
+                        icmp6.ih6_u.ih6_echo.ih6_seq);
     break;
 
   default:
@@ -410,10 +410,10 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 
     struct spindump_connection* connection =
       spindump_connections_searchconnection_icmp(&source,
-						 &destination,
-						 ICMP6_ECHO_REQUEST,
-						 peerId,
-						 state->table);
+                                                 &destination,
+                                                 ICMP6_ECHO_REQUEST,
+                                                 peerId,
+                                                 state->table);
 
     //
     // If not found, create a new one
@@ -421,22 +421,22 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
 
     if (connection == 0) {
       if (peerType == ICMP6_ECHO_REPLY) {
-	*p_connection = 0;
-	return;
+        *p_connection = 0;
+        return;
       } else {
-	connection = spindump_connections_newconnection_icmp(&source,
-							     &destination,
-							     peerType,
-							     peerId,
-							     &packet->timestamp,
-							     state->table);
-	if (connection == 0) {
-	  *p_connection = 0;
-	  return;
-	}
-	new = 1;
-	state->stats->connections++;
-	state->stats->connectionsIcmp++;
+        connection = spindump_connections_newconnection_icmp(&source,
+                                                             &destination,
+                                                             peerType,
+                                                             peerId,
+                                                             &packet->timestamp,
+                                                             state->table);
+        if (connection == 0) {
+          *p_connection = 0;
+          return;
+        }
+        new = 1;
+        state->stats->connections++;
+        state->stats->connectionsIcmp++;
       }
     }
 
@@ -447,17 +447,17 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     if (peerType == ICMP6_ECHO_REPLY) {
 
       if (connection->state == spindump_connection_state_establishing) {
-	spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+        spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
       if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
-	spindump_connections_newrttmeasurement(state,
-					       packet,
-					       connection,
-					       1,
-								 0,
-					       &connection->latestPacketFromSide1,
-					       &packet->timestamp,
-					       "ICMPv6 ECHO reply");
+        spindump_connections_newrttmeasurement(state,
+                                               packet,
+                                               connection,
+                                               1,
+                                                                 0,
+                                               &connection->latestPacketFromSide1,
+                                               &packet->timestamp,
+                                               "ICMPv6 ECHO reply");
       }
 
       fromResponder = 1;

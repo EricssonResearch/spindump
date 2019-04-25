@@ -41,7 +41,7 @@ struct spindump_connection_set_iterator {
 
 void
 spindump_connection_set_iterator_initialize(struct spindump_connection_set* set,
-					    struct spindump_connection_set_iterator* iter);
+                                            struct spindump_connection_set_iterator* iter);
 int
 spindump_connection_set_iterator_end(struct spindump_connection_set_iterator* iter);
 struct spindump_connection*

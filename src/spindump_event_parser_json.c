@@ -42,9 +42,9 @@
 
 int
 spindump_event_parser_json_parse(const char* buffer,
-				 size_t length,
-				 struct spindump_event* event,
-				 size_t* consumed) {
+                                 size_t length,
+                                 struct spindump_event* event,
+                                 size_t* consumed) {
   return(0); // ...
 }
 
@@ -60,9 +60,9 @@ spindump_event_parser_json_parse(const char* buffer,
 
 int
 spindump_event_parser_json_print(const struct spindump_event* event,
-				 char* buffer,
-				 size_t length,
-				 size_t* consumed) {
+                                 char* buffer,
+                                 size_t length,
+                                 size_t* consumed) {
 
   //
   // Check length
@@ -84,16 +84,16 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   //
   
   addtobuffer3("{ \"Event\": \"%s\", \"Type\": \"%s\", ",
-	       spindump_event_type_tostring(event->eventType),
-	       spindump_connection_type_to_string(event->connectionType));
+               spindump_event_type_tostring(event->eventType),
+               spindump_connection_type_to_string(event->connectionType));
   addtobuffer2("\"Addrs\": [\"%s\",",
-	       spindump_network_tostringoraddr(&event->initiatorAddress));
+               spindump_network_tostringoraddr(&event->initiatorAddress));
   addtobuffer2("\"%s\"], ",
-	       spindump_network_tostringoraddr(&event->responderAddress));
+               spindump_network_tostringoraddr(&event->responderAddress));
   addtobuffer2("\"Session\": \"%s\", ",
-	       event->session);
+               event->session);
   addtobuffer2("\"Ts\": \"%llu\"",
-	       event->timestamp);
+               event->timestamp);
 
   //
   // The variable part that depends on which event we have
@@ -113,34 +113,34 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   case spindump_event_type_new_rtt_measurement:
     if (event->u.newRttMeasurement.measurement == spindump_measurement_type_bidirectional) {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
-	addtobuffer2(", \"Left_rtt\": %lu", event->u.newRttMeasurement.rtt);
+        addtobuffer2(", \"Left_rtt\": %lu", event->u.newRttMeasurement.rtt);
       } else {
-	addtobuffer2(", \"Right_rtt\": %lu", event->u.newRttMeasurement.rtt);
+        addtobuffer2(", \"Right_rtt\": %lu", event->u.newRttMeasurement.rtt);
       }
     } else {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
-	addtobuffer2(", \"Full_rtt_initiator\": %lu", event->u.newRttMeasurement.rtt);
+        addtobuffer2(", \"Full_rtt_initiator\": %lu", event->u.newRttMeasurement.rtt);
       } else {
-	addtobuffer2(", \"Full_rtt_responder\": %lu", event->u.newRttMeasurement.rtt);
+        addtobuffer2(", \"Full_rtt_responder\": %lu", event->u.newRttMeasurement.rtt);
       }
     }
     break;
     
   case spindump_event_type_spin_flip:
     addtobuffer3(", \"Transition\": \"%s\", \"Who\": \"%s\"",
-		 event->u.spinFlip.spin0to1 ? "0-1" : "1-0",
-		 event->u.spinFlip.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+                 event->u.spinFlip.spin0to1 ? "0-1" : "1-0",
+                 event->u.spinFlip.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
     
   case spindump_event_type_spin_value:
     addtobuffer3(", \"Value\": %u, \"Who\": \"%s\"",
-		 event->u.spinValue.value,
-		 event->u.spinValue.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+                 event->u.spinValue.value,
+                 event->u.spinValue.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
     
   case spindump_event_type_ecn_congestion_event:
     addtobuffer2(", \"Who\": \"%s\"",
-		 event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+                 event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
     
   default:
@@ -152,9 +152,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   //
   
   addtobuffer2(", \"Packets\": %u",
-	       event->packets);
+               event->packets);
   addtobuffer2(", \"Bytes\": %u",
-	       event->bytes);
+               event->bytes);
   
   //
   // The end of the record

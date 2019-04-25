@@ -45,19 +45,19 @@
 
 static void
 spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* config,
-					 struct spindump_analyze* analyzer);
+                                         struct spindump_analyze* analyzer);
 static void
 spindump_main_loop_packetloop(struct spindump_main_state* state,
-			      struct spindump_analyze* analyzer,
-			      struct spindump_capture_state* capturer,
-			      struct spindump_report_state* reporter,
-			      struct spindump_eventformatter* formatter,
-			      struct spindump_eventformatter* remoteFormatter,
-			      struct spindump_remote_server* server,
-			      int averageMode,
-			      int aggregateMode,
-			      int closedMode,
-			      int udpMode);
+                              struct spindump_analyze* analyzer,
+                              struct spindump_capture_state* capturer,
+                              struct spindump_report_state* reporter,
+                              struct spindump_eventformatter* formatter,
+                              struct spindump_eventformatter* remoteFormatter,
+                              struct spindump_remote_server* server,
+                              int averageMode,
+                              int aggregateMode,
+                              int closedMode,
+                              int udpMode);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
       //
       
       if (setuid(0) != -1) {
-	spindump_fatalf("Managed to regain root privileges, this should not happen");
+        spindump_fatalf("Managed to regain root privileges, this should not happen");
       }
 
     }
@@ -166,8 +166,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
      spindump_report_initialize_terminal(querier));
   if (reporter == 0) exit(1);
   spindump_report_setanonymization(reporter,
-				   config->anonymizeLeft,
-				   config->anonymizeRight);
+                                   config->anonymizeLeft,
+                                   config->anonymizeRight);
 
   //
   // Initialize the spindump server, if running silent
@@ -183,12 +183,12 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   //
 
   spindump_report_update(reporter,
-			 averageMode,
-			 aggregateMode,
-			 closedMode,
-			 udpMode,
-			 analyzer->table,
-			 spindump_analyze_getstats(analyzer));
+                         averageMode,
+                         aggregateMode,
+                         closedMode,
+                         udpMode,
+                         analyzer->table,
+                         spindump_analyze_getstats(analyzer));
 
   //
   // If we are in the textual output mode, setup handlers to
@@ -199,26 +199,26 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   struct spindump_eventformatter* remoteFormatter = 0;
   if (config->toolmode == spindump_toolmode_textual) {
     formatter = spindump_eventformatter_initialize_file(analyzer,
-							config->format,
-							stdout,
-							querier,
-							config->reportSpins,
-							config->reportSpinFlips,
-							config->anonymizeLeft,
-							config->anonymizeRight);
+                                                        config->format,
+                                                        stdout,
+                                                        querier,
+                                                        config->reportSpins,
+                                                        config->reportSpinFlips,
+                                                        config->anonymizeLeft,
+                                                        config->anonymizeRight);
   }
   
   if (config->nRemotes > 0) {
     remoteFormatter = spindump_eventformatter_initialize_remote(analyzer,
-								config->format,
-								config->nRemotes,
-								config->remotes,
-								config->remoteBlockSize,
-								querier,
-								config->reportSpins,
-								config->reportSpinFlips,
-								config->anonymizeLeft,
-								config->anonymizeRight);
+                                                                config->format,
+                                                                config->nRemotes,
+                                                                config->remotes,
+                                                                config->remoteBlockSize,
+                                                                querier,
+                                                                config->reportSpins,
+                                                                config->reportSpinFlips,
+                                                                config->anonymizeLeft,
+                                                                config->anonymizeRight);
   }
 
   //
@@ -226,16 +226,16 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   //
   
   spindump_main_loop_packetloop(state,
-				analyzer,
-				capturer,
-				reporter,
-				formatter,
-				remoteFormatter,
-				server,
-				averageMode,
-				aggregateMode,
-				closedMode,
-				udpMode);
+                                analyzer,
+                                capturer,
+                                reporter,
+                                formatter,
+                                remoteFormatter,
+                                server,
+                                averageMode,
+                                aggregateMode,
+                                closedMode,
+                                udpMode);
   
   //
   // Done
@@ -251,11 +251,11 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   
   if (config->showStats) {
     spindump_stats_report(spindump_analyze_getstats(analyzer),
-			  stdout);
+                          stdout);
     spindump_connectionstable_report(analyzer->table,
-				     stdout,
-				     config->anonymizeLeft,
-				     querier);
+                                     stdout,
+                                     config->anonymizeLeft,
+                                     querier);
   }
   
   spindump_report_uninitialize(reporter);
@@ -270,16 +270,16 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
 
 static void
 spindump_main_loop_packetloop(struct spindump_main_state* state,
-			      struct spindump_analyze* analyzer,
-			      struct spindump_capture_state* capturer,
-			      struct spindump_report_state* reporter,
-			      struct spindump_eventformatter* formatter,
-			      struct spindump_eventformatter* remoteFormatter,
-			      struct spindump_remote_server* server,
-			      int averageMode,
-			      int aggregateMode,
-			      int closedMode,
-			      int udpMode) {
+                              struct spindump_analyze* analyzer,
+                              struct spindump_capture_state* capturer,
+                              struct spindump_report_state* reporter,
+                              struct spindump_eventformatter* formatter,
+                              struct spindump_eventformatter* remoteFormatter,
+                              struct spindump_remote_server* server,
+                              int averageMode,
+                              int aggregateMode,
+                              int closedMode,
+                              int udpMode) {
   
   //
   // Main operation
@@ -296,9 +296,9 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
   
   spindump_deepdebugf("main loop");
   while (!state->interrupt &&
-	 more &&
-	 (config->maxReceive == 0 ||
-	  spindump_analyze_getstats(analyzer)->receivedFrames < config->maxReceive)) {
+         more &&
+         (config->maxReceive == 0 ||
+          spindump_analyze_getstats(analyzer)->receivedFrames < config->maxReceive)) {
     
     //
     // Get a packet, if any. Analyze it.
@@ -310,9 +310,9 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     if (packet != 0) {
       struct spindump_connection* connection = 0;
       spindump_analyze_process(analyzer,
-			       spindump_capture_getlinktype(capturer),
-			       packet,
-			       &connection);
+                               spindump_capture_getlinktype(capturer),
+                               packet,
+                               &connection);
     }
 
     //
@@ -321,8 +321,8 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     //
     
     if (!more &&
-	config->inputFile != 0 &&
-	config->toolmode == spindump_toolmode_visual) more = 1;
+        config->inputFile != 0 &&
+        config->toolmode == spindump_toolmode_visual) more = 1;
     
     //
     // Get current time, ensure that different timer perceptions in
@@ -332,9 +332,9 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
 
     if (config->inputFile != 0) {
       if (packet != 0) {
-	       now = previousPacketTimestamp = packet->timestamp;
+               now = previousPacketTimestamp = packet->timestamp;
       } else {
-	       now = previousPacketTimestamp;
+               now = previousPacketTimestamp;
       }
     } else {
       spindump_getcurrenttime(&now);
@@ -360,11 +360,11 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     //
 
     if (spindump_connectionstable_periodiccheck(analyzer->table,
-						&now,
-						analyzer)) {
+                                                &now,
+                                                analyzer)) {
       if (config->remoteBlockSize > 0 && config->nRemotes > 0) {
-	spindump_assert(remoteFormatter != 0);
-	spindump_eventformatter_sendpooled(remoteFormatter);
+        spindump_assert(remoteFormatter != 0);
+        spindump_eventformatter_sendpooled(remoteFormatter);
       }
     }
 
@@ -373,16 +373,16 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     //
 
     if (config->toolmode == spindump_toolmode_visual &&
-	(spindump_iszerotime(&previousupdate) ||
-	 spindump_timediffinusecs(&now,&previousupdate) >= config->updatePeriod)) {
+        (spindump_iszerotime(&previousupdate) ||
+         spindump_timediffinusecs(&now,&previousupdate) >= config->updatePeriod)) {
       
       spindump_report_update(reporter,
-			     averageMode,
-			     aggregateMode,
-			     closedMode,
-			     udpMode,
-			     analyzer->table,
-			     spindump_analyze_getstats(analyzer));
+                             averageMode,
+                             aggregateMode,
+                             closedMode,
+                             udpMode,
+                             analyzer->table,
+                             spindump_analyze_getstats(analyzer));
       if (spindump_isearliertime(&now,&previousupdate)) previousupdate = now;
       
     }
@@ -414,8 +414,8 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
       break;
     case spindump_report_command_update_interval:
       {
-	double result = floor(commandArgument * 1000 * 1000);
-	config->updatePeriod = (unsigned long long)result;
+        double result = floor(commandArgument * 1000 * 1000);
+        config->updatePeriod = (unsigned long long)result;
       }
       break;
     case spindump_report_command_none:
@@ -426,12 +426,12 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     }
     if (command != spindump_report_command_none) {
       spindump_report_update(reporter,
-			     averageMode,
-			     aggregateMode,
-			     closedMode,
-			     udpMode,
-			     analyzer->table,
-			     spindump_analyze_getstats(analyzer));
+                             averageMode,
+                             aggregateMode,
+                             closedMode,
+                             udpMode,
+                             analyzer->table,
+                             spindump_analyze_getstats(analyzer));
     }
   }
 
@@ -444,7 +444,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
 
 static void
 spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* config,
-					 struct spindump_analyze* analyzer) {
+                                         struct spindump_analyze* analyzer) {
   struct timeval startTime;
   spindump_getcurrenttime(&startTime);
   for (unsigned int i = 0; i < config->nAggregates; i++) {
@@ -455,33 +455,33 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
     struct spindump_connection* aggregateConnection = 0;
     if (aggregate->ismulticastgroup) {
       aggregateConnection = spindump_connections_newconnection_aggregate_multicastgroup(&aggregate->side1address,
-											&startTime,
-											1,
-											analyzer->table);
+                                                                                        &startTime,
+                                                                                        1,
+                                                                                        analyzer->table);
     } else if (aggregate->side1ishost && aggregate->side2ishost) {
       aggregateConnection = spindump_connections_newconnection_aggregate_hostpair(&aggregate->side1address,
-										  &aggregate->side2address,
-										  &startTime,
-										  1,
-										  analyzer->table);
+                                                                                  &aggregate->side2address,
+                                                                                  &startTime,
+                                                                                  1,
+                                                                                  analyzer->table);
     } else if (aggregate->side1ishost && !aggregate->side2ishost) {
       aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side1address,
-										     &aggregate->side2network,
-										     &startTime,
-										     1,
-										     analyzer->table);
+                                                                                     &aggregate->side2network,
+                                                                                     &startTime,
+                                                                                     1,
+                                                                                     analyzer->table);
     } else if (!aggregate->side1ishost && aggregate->side2ishost) {
       aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side2address,
-										     &aggregate->side1network,
-										     &startTime,
-										     1,
-										     analyzer->table);
+                                                                                     &aggregate->side1network,
+                                                                                     &startTime,
+                                                                                     1,
+                                                                                     analyzer->table);
     } else if (!aggregate->side1ishost && !aggregate->side2ishost) {
       aggregateConnection = spindump_connections_newconnection_aggregate_networknetwork(&aggregate->side1network,
-											&aggregate->side2network,
-											&startTime,
-											1,
-											analyzer->table);
+                                                                                        &aggregate->side2network,
+                                                                                        &startTime,
+                                                                                        1,
+                                                                                        analyzer->table);
     }
     if (aggregateConnection != 0) {
       spindump_deepdebugf("created a manually configured aggregate connection %u", aggregateConnection->id);

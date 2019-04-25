@@ -31,7 +31,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_spintracker_nstored		10
+#define spindump_spintracker_nstored            10
 
 //
 // Spinstore flags ----------------------------------------------------------------------------

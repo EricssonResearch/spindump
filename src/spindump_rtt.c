@@ -50,7 +50,7 @@ spindump_rtt_initialize(struct spindump_rtt* rtt) {
 
 unsigned long
 spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
-			    unsigned long long timediff) {
+                            unsigned long long timediff) {
   
   //
   // Update the base measurement
@@ -118,7 +118,7 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt) {
   }
   
   spindump_debugf("new calculated avg RTT = %lu us (n = %u)",
-		  lastMovingAvgRTT, n);
+                  lastMovingAvgRTT, n);
   
   return(lastMovingAvgRTT);
 }

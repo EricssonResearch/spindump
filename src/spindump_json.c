@@ -44,7 +44,7 @@
 
 int
 spindump_json_parse(struct spindump_json_typedef* type,
-		    const char* input,
-		    void* data) {
+                    const char* input,
+                    void* data) {
   return(0);
 }

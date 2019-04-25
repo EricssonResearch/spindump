@@ -38,7 +38,7 @@ static void
 spindump_report_cursesfinish(void);
 static int
 spindump_report_update_comparetwoconnections(const void* data1,
-					     const void* data2);
+                                             const void* data2);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -171,8 +171,8 @@ spindump_report_initialize_terminal(struct spindump_reverse_dns* querier) {
 
 void
 spindump_report_setanonymization(struct spindump_report_state* reporter,
-				 int anonymizeLeft,
-				 int anonymizeRight) {
+                                 int anonymizeLeft,
+                                 int anonymizeRight) {
   spindump_assert(reporter != 0);
   spindump_assert(spindump_isbool(anonymizeLeft));
   spindump_assert(spindump_isbool(anonymizeRight));
@@ -189,7 +189,7 @@ spindump_report_setanonymization(struct spindump_report_state* reporter,
 typedef const struct spindump_connection* spindump_connection_constptr;
 static int
 spindump_report_update_comparetwoconnections(const void* data1,
-					     const void* data2) {
+                                             const void* data2) {
   const spindump_connection_constptr* elem1 = (const spindump_connection_constptr*)data1;
   const spindump_connection_constptr* elem2 = (const spindump_connection_constptr*)data2;
   const struct spindump_connection* connection1 = *elem1;
@@ -212,12 +212,12 @@ spindump_report_update_comparetwoconnections(const void* data1,
 
 void
 spindump_report_update(struct spindump_report_state* reporter,
-		       int average,
-		       int aggregate,
-		       int closed,
-		       int udp,
-		       struct spindump_connectionstable* table,
-		       struct spindump_stats* stats) {
+                       int average,
+                       int aggregate,
+                       int closed,
+                       int udp,
+                       struct spindump_connectionstable* table,
+                       struct spindump_stats* stats) {
   
   spindump_assert(reporter != 0);
   spindump_assert(average == 0 || average == 1);
@@ -234,16 +234,16 @@ spindump_report_update(struct spindump_report_state* reporter,
     unsigned int i;
     
     snprintf(connectionsstatus,sizeof(connectionsstatus)-1,"%u connections %s packets %s bytes",
-	     table->nConnections,
-	     spindump_meganumber_tostring(stats->receivedIp + stats->receivedIpv6),
-	     spindump_meganumberll_tostring(stats->receivedIpBytes + stats->receivedIpv6Bytes));
+             table->nConnections,
+             spindump_meganumber_tostring(stats->receivedIp + stats->receivedIpv6),
+             spindump_meganumberll_tostring(stats->receivedIpBytes + stats->receivedIpv6Bytes));
     snprintf(connectionsstatus+strlen(connectionsstatus),
-	     sizeof(connectionsstatus)-strlen(connectionsstatus)-1,
-	     " (showing %s%s%s%s)",
-	     average ? "avg RTTs" : "latest RTTs",
-	     aggregate ? ", aggregated connections" : "",
-	     udp ? "" : ", not showing UDP",
-	     closed ? "" : (udp ? ", not showing closed" : " or closed"));
+             sizeof(connectionsstatus)-strlen(connectionsstatus)-1,
+             " (showing %s%s%s%s)",
+             average ? "avg RTTs" : "latest RTTs",
+             aggregate ? ", aggregated connections" : "",
+             udp ? "" : ", not showing UDP",
+             closed ? "" : (udp ? ", not showing closed" : " or closed"));
     
     clear();
     
@@ -263,12 +263,12 @@ spindump_report_update(struct spindump_report_state* reporter,
       unsigned int addrsiz = spindump_connection_report_brief_variablesize((unsigned int)COLS);
       unsigned int maxsessionlen = spindump_connection_report_brief_sessionsize((unsigned int)COLS);
       snprintf(columnsbuf,sizeof(columnsbuf)-1,
-	       "%-7s %-*s %-*s %8s %6s %10s %10s",
-	       "TYPE",addrsiz,"ADDRESSES",maxsessionlen,"SESSION","STATE","PAKS","LEFT RTT","RIGHT RTT");
+               "%-7s %-*s %-*s %8s %6s %10s %10s",
+               "TYPE",addrsiz,"ADDRESSES",maxsessionlen,"SESSION","STATE","PAKS","LEFT RTT","RIGHT RTT");
       if (spindump_connection_report_brief_isnotefield((unsigned int)COLS)) {
-	snprintf(columnsbuf+strlen(columnsbuf),sizeof(columnsbuf)-1-strlen(columnsbuf),"  %-*s",
-		 spindump_connection_report_brief_notefieldval_length(),
-		 "NOTE");
+        snprintf(columnsbuf+strlen(columnsbuf),sizeof(columnsbuf)-1-strlen(columnsbuf),"  %-*s",
+                 spindump_connection_report_brief_notefieldval_length(),
+                 "NOTE");
       }
       mvaddstr(y++, 0, columnsbuf);
       mvaddstr(y++, 0, "");
@@ -285,19 +285,19 @@ spindump_report_update(struct spindump_report_state* reporter,
       
       spindump_deepdebugf("report gathering");
       for (i = 0;
-	   (i < table->nConnections &&
-	    actualConnections < maxActualConnections &&
-	    actualConnections < (LINES - y));
-	   i++) {
-	struct spindump_connection* connection = table->connections[i];
-	if (connection != 0 &&
-	    ((connection->type != spindump_connection_transport_udp &&
-	      connection->type != spindump_connection_transport_dns) ||
-	     udp) &&
-	    (!spindump_connections_isclosed(connection) || closed) &&
-	    spindump_connections_isaggregate(connection) == aggregate) {
-	  actualTable[actualConnections++] = connection;
-	}
+           (i < table->nConnections &&
+            actualConnections < maxActualConnections &&
+            actualConnections < (LINES - y));
+           i++) {
+        struct spindump_connection* connection = table->connections[i];
+        if (connection != 0 &&
+            ((connection->type != spindump_connection_transport_udp &&
+              connection->type != spindump_connection_transport_dns) ||
+             udp) &&
+            (!spindump_connections_isclosed(connection) || closed) &&
+            spindump_connections_isaggregate(connection) == aggregate) {
+          actualTable[actualConnections++] = connection;
+        }
       }
       
       //
@@ -306,10 +306,10 @@ spindump_report_update(struct spindump_report_state* reporter,
 
       spindump_deepdebugf("report sorting");
       qsort(&actualTable[0],
-	    (size_t)actualConnections,
-	    sizeof(struct spindump_connection*),
-	    spindump_report_update_comparetwoconnections);
-	
+            (size_t)actualConnections,
+            sizeof(struct spindump_connection*),
+            spindump_report_update_comparetwoconnections);
+        
       //
       // Now display the resulting table
       // 
@@ -317,19 +317,19 @@ spindump_report_update(struct spindump_report_state* reporter,
       spindump_deepdebugf("report displaying");
       int j;
       for (j = 0; j < actualConnections; j++) {
-	char connectionbuf[spindump_report_maxlinelen];
-	spindump_assert(actualTable[j] != 0);
-	spindump_deepdebugf("report displaying connection %u", actualTable[j]->id);
-	spindump_connection_report_brief(actualTable[j],
-					 connectionbuf,
-					 sizeof(connectionbuf),
-					 average,
-					 (unsigned int)COLS,
-					 reporter->anonymizeLeft,
-					 reporter->anonymizeRight,
-					 reporter->querier);
-	mvaddstr(y++, 0, connectionbuf);
-	
+        char connectionbuf[spindump_report_maxlinelen];
+        spindump_assert(actualTable[j] != 0);
+        spindump_deepdebugf("report displaying connection %u", actualTable[j]->id);
+        spindump_connection_report_brief(actualTable[j],
+                                         connectionbuf,
+                                         sizeof(connectionbuf),
+                                         average,
+                                         (unsigned int)COLS,
+                                         reporter->anonymizeLeft,
+                                         reporter->anonymizeRight,
+                                         reporter->querier);
+        mvaddstr(y++, 0, connectionbuf);
+        
       }
     }
 
@@ -346,8 +346,8 @@ spindump_report_update(struct spindump_report_state* reporter,
 
 static
 void spindump_report_putcurrentinputonscreen(struct spindump_report_state* reporter,
-					     const char* string,
-					     const char* value) {
+                                             const char* string,
+                                             const char* value) {
   for (int i = 0;
        i < COLS;
        i++) {
@@ -364,7 +364,7 @@ void spindump_report_putcurrentinputonscreen(struct spindump_report_state* repor
 
 static
 void spindump_report_puterroronscreen(struct spindump_report_state* reporter,
-				      const char* string) {
+                                      const char* string) {
   spindump_report_putcurrentinputonscreen(reporter,"Error: ",string);
 }
 
@@ -375,7 +375,7 @@ void spindump_report_puterroronscreen(struct spindump_report_state* reporter,
 static
 int
 spindump_report_checkinput_updateinterval(struct spindump_report_state* reporter,
-					  double* p_argument) {
+                                          double* p_argument) {
   spindump_report_putcurrentinputonscreen(reporter,"interval: ","");
   int ch;
   char buf[20];
@@ -416,7 +416,7 @@ spindump_report_checkinput_updateinterval(struct spindump_report_state* reporter
 
 enum spindump_report_command
 spindump_report_checkinput(struct spindump_report_state* reporter,
-			   double* p_argument) {
+                           double* p_argument) {
   
     int ch;
     
@@ -435,12 +435,12 @@ spindump_report_checkinput(struct spindump_report_state* reporter,
       case 'c': return(spindump_report_command_toggle_closed);
       case 'u': return(spindump_report_command_toggle_udp);
       case 's':
-	if (spindump_report_checkinput_updateinterval(reporter,p_argument)) {
-	  return(spindump_report_command_update_interval);
-	} else {
-	  return(spindump_report_command_none);
-	}
-	
+        if (spindump_report_checkinput_updateinterval(reporter,p_argument)) {
+          return(spindump_report_command_update_interval);
+        } else {
+          return(spindump_report_command_none);
+        }
+        
       default: return(spindump_report_command_none);
       }
       

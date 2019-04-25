@@ -36,11 +36,11 @@ struct spindump_rtt {
   unsigned long lastRTT;                     // in usecs, spindump_rtt_infinite if not set
   unsigned long lastMovingAvgRTT;            // in usecs, spindump_rtt_infinite if not set
   unsigned int recentTableIndex;             // where the next recent RTT measurement will
-					     //	be placed in
+                                             // be placed in
   unsigned int padding;                      // unused padding to align the next field properly
   unsigned long
     recentRTTs[spindump_rtt_nrecent];        // recent RTT measurements, in usec. Value 
-					     //	positions via above index.
+                                             // positions via above index.
 };
 
 //
@@ -51,7 +51,7 @@ void
 spindump_rtt_initialize(struct spindump_rtt* rtt);
 unsigned long
 spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
-			    unsigned long long timediff);
+                            unsigned long long timediff);
 unsigned long
 spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt);
 const char*

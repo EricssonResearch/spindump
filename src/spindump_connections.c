@@ -57,7 +57,7 @@ spindump_connections_setisestablishing(struct spindump_connection_set* set);
 
 unsigned long long
 spindump_connections_lastaction(struct spindump_connection* connection,
-				const struct timeval* now) {
+                                const struct timeval* now) {
   spindump_assert(now->tv_sec > 0);
   spindump_assert(now->tv_usec < 1000 * 1000);
   unsigned long long diff;
@@ -67,10 +67,10 @@ spindump_connections_lastaction(struct spindump_connection* connection,
     spindump_assert(!spindump_iszerotime(&connection->latestPacketFromSide1));
 #if 0
     spindump_deepdebugf("spindump_connections_lastaction now %lu:%lu, latestside1 %lu:%lu",
-			now->tv_sec,
-			now->tv_usec,
-			connection->latestPacketFromSide1.tv_sec,
-			connection->latestPacketFromSide1.tv_usec);
+                        now->tv_sec,
+                        now->tv_usec,
+                        connection->latestPacketFromSide1.tv_sec,
+                        connection->latestPacketFromSide1.tv_usec);
 #endif
     diff = spindump_timediffinusecs(now,&connection->latestPacketFromSide1);
     return(diff);
@@ -114,8 +114,8 @@ spindump_connections_markconnectiondeleted(struct spindump_connection* connectio
 
 void
 spindump_connections_getaddresses(struct spindump_connection* connection,
-				  spindump_address** p_side1address,
-				  spindump_address** p_side2address) {
+                                  spindump_address** p_side1address,
+                                  spindump_address** p_side2address) {
 
   spindump_assert(connection != 0);
   spindump_assert(p_side1address != 0);
@@ -164,7 +164,7 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
     break;
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_getaddresses",
-		    connection->type);
+                    connection->type);
     *p_side1address = 0;
     *p_side2address = 0;
     break;
@@ -178,8 +178,8 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
 
 void
 spindump_connections_getnetworks(struct spindump_connection* connection,
-				 spindump_network* p_side1network,
-				 spindump_network* p_side2network) {
+                                 spindump_network* p_side1network,
+                                 spindump_network* p_side2network) {
 
   spindump_assert(connection != 0);
   spindump_assert(p_side1network != 0);
@@ -228,7 +228,7 @@ spindump_connections_getnetworks(struct spindump_connection* connection,
     break;
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_getaddresses",
-		    connection->type);
+                    connection->type);
     spindump_network_fromempty(AF_INET,p_side1network);
     spindump_network_fromempty(AF_INET,p_side2network);
     break;
@@ -244,8 +244,8 @@ spindump_connections_getnetworks(struct spindump_connection* connection,
 
 void
 spindump_connections_getports(struct spindump_connection* connection,
-			      spindump_port* p_side1port,
-			      spindump_port* p_side2port) {
+                              spindump_port* p_side1port,
+                              spindump_port* p_side2port) {
 
   spindump_assert(connection != 0);
   spindump_assert(p_side1port != 0);
@@ -294,7 +294,7 @@ spindump_connections_getports(struct spindump_connection* connection,
     break;
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_getports",
-		    connection->type);
+                    connection->type);
     *p_side1port = 0;
     *p_side2port = 0;
     break;
@@ -316,13 +316,13 @@ spindump_connections_getports(struct spindump_connection* connection,
 
 unsigned long
 spindump_connections_newrttmeasurement(struct spindump_analyze* state,
-				       struct spindump_packet* packet,
-				       struct spindump_connection* connection,
-				       const int right,
-				       const int unidirectional,
-				       const struct timeval* sent,
-				       const struct timeval* rcvd,
-				       const char* why) {
+                                       struct spindump_packet* packet,
+                                       struct spindump_connection* connection,
+                                       const int right,
+                                       const int unidirectional,
+                                       const struct timeval* sent,
+                                       const struct timeval* rcvd,
+                                       const char* why) {
 
   //
   // Sanity checks
@@ -343,8 +343,8 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
 
   spindump_deepdebugf("spindump_connections_newrttmeasurement due to %s", why);
   spindump_deepdebugf("matching packet sent at %u:%u, response received %u:%u",
-		      sent->tv_sec, sent->tv_usec,
-		      rcvd->tv_sec, rcvd->tv_usec);
+                      sent->tv_sec, sent->tv_usec,
+                      rcvd->tv_sec, rcvd->tv_usec);
   unsigned long long diff = spindump_timediffinusecs(rcvd,sent);
   unsigned long ret;
 
@@ -356,21 +356,21 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
     if (right) {
       ret = spindump_rtt_newmeasurement(&connection->respToInitFullRTT,diff);
       spindump_debugf("due to %s new calculated full RTT from responder = %lu us for connection %u",
-		      why, connection->respToInitFullRTT.lastRTT, connection->id);
+                      why, connection->respToInitFullRTT.lastRTT, connection->id);
     } else {
       ret = spindump_rtt_newmeasurement(&connection->initToRespFullRTT,diff);
       spindump_debugf("due to %s new calculated full RTT from initiator = %lu us for connection %u",
-		      why, connection->initToRespFullRTT.lastRTT, connection->id);
+                      why, connection->initToRespFullRTT.lastRTT, connection->id);
     }
   } else {
     if (right) {
       ret = spindump_rtt_newmeasurement(&connection->rightRTT,diff);
       spindump_debugf("due to %s new calculated right RTT = %lu us for connection %u",
-		      why, connection->rightRTT.lastRTT, connection->id);
+                      why, connection->rightRTT.lastRTT, connection->id);
     } else {
       ret = spindump_rtt_newmeasurement(&connection->leftRTT,diff);
       spindump_debugf("due to %s new calculated left RTT = %lu us for connection %u",
-		      why, connection->leftRTT.lastRTT, connection->id);
+                      why, connection->leftRTT.lastRTT, connection->id);
     }
   }
   
@@ -380,16 +380,16 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   
   if (unidirectional) {
     spindump_analyze_process_handlers(state,
-				      right ? spindump_analyze_event_newrespinitfullrttmeasurement :
-				      spindump_analyze_event_newinitrespfullrttmeasurement,
-				      packet,
-				      connection);
+                                      right ? spindump_analyze_event_newrespinitfullrttmeasurement :
+                                      spindump_analyze_event_newinitrespfullrttmeasurement,
+                                      packet,
+                                      connection);
   } else {
     spindump_analyze_process_handlers(state,
-				      right ? spindump_analyze_event_newrightrttmeasurement :
-				      spindump_analyze_event_newleftrttmeasurement,
-				      packet,
-				      connection);
+                                      right ? spindump_analyze_event_newrightrttmeasurement :
+                                      spindump_analyze_event_newleftrttmeasurement,
+                                      packet,
+                                      connection);
   }
   
   //
@@ -427,7 +427,7 @@ spindump_connections_setisclosed(struct spindump_connection_set* set) {
     struct spindump_connection* other = set->set[i];
     if (other != 0) {
       if (!spindump_connections_isclosed(other)) {
-				return(0);
+                                return(0);
       }
     }
   }
@@ -471,7 +471,7 @@ spindump_connections_setisestablishing(struct spindump_connection_set* set) {
     struct spindump_connection* other = set->set[i];
     if (other != 0) {
       if (!spindump_connections_isestablishing(other)) {
-	return(0);
+        return(0);
       }
     }
   }
@@ -592,13 +592,13 @@ spindump_connections_aggregateset(struct spindump_connection* connection) {
 
 int
 spindump_connections_matches_aggregate_connection(struct spindump_connection* connection,
-						  struct spindump_connection* aggregate) {
+                                                  struct spindump_connection* aggregate) {
 
   spindump_address* side1address = 0;
   spindump_address* side2address = 0;
   spindump_connections_getaddresses(connection,
-				    &side1address,
-				    &side2address);
+                                    &side1address,
+                                    &side2address);
   if (side1address == 0 || side2address == 0) {
     spindump_deepdebugf("  can't figure out addresses from connection %u", connection->id);
     return(0);
@@ -611,29 +611,29 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
     spindump_deepdebugf("  side1address %s",spindump_address_tostring(side1address));
     spindump_deepdebugf("  side2address %s",spindump_address_tostring(side2address));
     spindump_deepdebugf("  hostpair side1 address %s",
-			spindump_address_tostring(&aggregate->u.aggregatehostpair.side1peerAddress));
+                        spindump_address_tostring(&aggregate->u.aggregatehostpair.side1peerAddress));
     spindump_deepdebugf("  hostpair side2 address %s",
-			spindump_address_tostring(&aggregate->u.aggregatehostpair.side2peerAddress));
+                        spindump_address_tostring(&aggregate->u.aggregatehostpair.side2peerAddress));
     return((spindump_address_equal(side1address,&aggregate->u.aggregatehostpair.side1peerAddress) &&
-	    spindump_address_equal(side2address,&aggregate->u.aggregatehostpair.side2peerAddress)) ||
-	   (spindump_address_equal(side1address,&aggregate->u.aggregatehostpair.side2peerAddress) &&
-	    spindump_address_equal(side2address,&aggregate->u.aggregatehostpair.side1peerAddress)));
+            spindump_address_equal(side2address,&aggregate->u.aggregatehostpair.side2peerAddress)) ||
+           (spindump_address_equal(side1address,&aggregate->u.aggregatehostpair.side2peerAddress) &&
+            spindump_address_equal(side2address,&aggregate->u.aggregatehostpair.side1peerAddress)));
 
   case spindump_connection_aggregate_hostnetwork:
     return((spindump_address_equal(side1address,&aggregate->u.aggregatehostnetwork.side1peerAddress) &&
-	    spindump_address_innetwork(side2address,&aggregate->u.aggregatehostnetwork.side2Network)) ||
-	   (spindump_address_innetwork(side1address,&aggregate->u.aggregatehostnetwork.side2Network) &&
-	    spindump_address_equal(side2address,&aggregate->u.aggregatehostnetwork.side1peerAddress)));
+            spindump_address_innetwork(side2address,&aggregate->u.aggregatehostnetwork.side2Network)) ||
+           (spindump_address_innetwork(side1address,&aggregate->u.aggregatehostnetwork.side2Network) &&
+            spindump_address_equal(side2address,&aggregate->u.aggregatehostnetwork.side1peerAddress)));
 
   case spindump_connection_aggregate_networknetwork:
     return((spindump_address_innetwork(side1address,&aggregate->u.aggregatenetworknetwork.side1Network) &&
-	    spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side2Network)) ||
-	   (spindump_address_innetwork(side1address,&aggregate->u.aggregatenetworknetwork.side2Network) &&
-	    spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side1Network)));
+            spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side2Network)) ||
+           (spindump_address_innetwork(side1address,&aggregate->u.aggregatenetworknetwork.side2Network) &&
+            spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side1Network)));
 
   case spindump_connection_aggregate_multicastgroup:
     return(spindump_address_equal(side1address,&aggregate->u.aggregatemulticastgroup.group) ||
-	   spindump_address_equal(side2address,&aggregate->u.aggregatemulticastgroup.group));
+           spindump_address_equal(side2address,&aggregate->u.aggregatemulticastgroup.group));
 
   case spindump_connection_transport_tcp:
   case spindump_connection_transport_udp:
@@ -646,7 +646,7 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
     
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_connection",
-		    aggregate->type);
+                    aggregate->type);
     return(0);
 
   }
@@ -658,8 +658,8 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
 
 int
 spindump_connections_matches_aggregate_srcdst(spindump_address* source,
-					      spindump_address* destination,
-					      struct spindump_connection* aggregate) {
+                                              spindump_address* destination,
+                                              struct spindump_connection* aggregate) {
   spindump_assert(aggregate != 0);
   spindump_assert(spindump_connections_isaggregate(aggregate));
 
@@ -676,25 +676,25 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
     
   case spindump_connection_aggregate_hostpair:
     return((spindump_address_equal(source,&aggregate->u.aggregatehostpair.side1peerAddress) &&
-	    spindump_address_equal(destination,&aggregate->u.aggregatehostpair.side2peerAddress)) ||
-	   (spindump_address_equal(destination,&aggregate->u.aggregatehostpair.side1peerAddress) &&
-	    spindump_address_equal(source,&aggregate->u.aggregatehostpair.side2peerAddress)));
+            spindump_address_equal(destination,&aggregate->u.aggregatehostpair.side2peerAddress)) ||
+           (spindump_address_equal(destination,&aggregate->u.aggregatehostpair.side1peerAddress) &&
+            spindump_address_equal(source,&aggregate->u.aggregatehostpair.side2peerAddress)));
 
   case spindump_connection_aggregate_hostnetwork:
     return((spindump_address_equal(source,&aggregate->u.aggregatehostnetwork.side1peerAddress) &&
-	    spindump_address_innetwork(destination,&aggregate->u.aggregatehostnetwork.side2Network)) ||
-	   (spindump_address_equal(destination,&aggregate->u.aggregatehostnetwork.side1peerAddress) &&
-	    spindump_address_innetwork(source,&aggregate->u.aggregatehostnetwork.side2Network)));
+            spindump_address_innetwork(destination,&aggregate->u.aggregatehostnetwork.side2Network)) ||
+           (spindump_address_equal(destination,&aggregate->u.aggregatehostnetwork.side1peerAddress) &&
+            spindump_address_innetwork(source,&aggregate->u.aggregatehostnetwork.side2Network)));
 
   case spindump_connection_aggregate_networknetwork:
     return((spindump_address_innetwork(source,&aggregate->u.aggregatenetworknetwork.side1Network) &&
-	    spindump_address_innetwork(destination,&aggregate->u.aggregatenetworknetwork.side2Network)) ||
-	   (spindump_address_innetwork(destination,&aggregate->u.aggregatenetworknetwork.side1Network) &&
-	    spindump_address_innetwork(source,&aggregate->u.aggregatenetworknetwork.side2Network)));
+            spindump_address_innetwork(destination,&aggregate->u.aggregatenetworknetwork.side2Network)) ||
+           (spindump_address_innetwork(destination,&aggregate->u.aggregatenetworknetwork.side1Network) &&
+            spindump_address_innetwork(source,&aggregate->u.aggregatenetworknetwork.side2Network)));
 
   case spindump_connection_aggregate_multicastgroup:
     return(spindump_address_equal(source,&aggregate->u.aggregatemulticastgroup.group) ||
-	   spindump_address_equal(destination,&aggregate->u.aggregatemulticastgroup.group));
+           spindump_address_equal(destination,&aggregate->u.aggregatemulticastgroup.group));
 
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_srcdst", aggregate->type);
@@ -710,8 +710,8 @@ spindump_connections_matches_aggregate_srcdst(spindump_address* source,
 
 void
 spindump_connections_changeidentifiers(struct spindump_analyze* state,
-				       struct spindump_packet* packet,
-				       struct spindump_connection* connection) {
+                                       struct spindump_packet* packet,
+                                       struct spindump_connection* connection) {
 
   //
   // Sanity checks
@@ -725,9 +725,9 @@ spindump_connections_changeidentifiers(struct spindump_analyze* state,
   //
 
   spindump_analyze_process_handlers(state,
-				    spindump_analyze_event_changeconnection,
-				    packet,
-				    connection);
+                                    spindump_analyze_event_changeconnection,
+                                    packet,
+                                    connection);
 }
 
 //
@@ -737,9 +737,9 @@ spindump_connections_changeidentifiers(struct spindump_analyze* state,
 
 void
 spindump_connections_changestate(struct spindump_analyze* state,
-				 struct spindump_packet* packet,
-				 struct spindump_connection* connection,
-				 enum spindump_connection_state newState) {
+                                 struct spindump_packet* packet,
+                                 struct spindump_connection* connection,
+                                 enum spindump_connection_state newState) {
 
   //
   // Sanity checks
@@ -758,7 +758,7 @@ spindump_connections_changestate(struct spindump_analyze* state,
   //
 
   spindump_analyze_process_handlers(state,
-				    spindump_analyze_event_statechange,
-				    packet,
-				    connection);
+                                    spindump_analyze_event_statechange,
+                                    packet,
+                                    connection);
 }

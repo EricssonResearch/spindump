@@ -29,9 +29,9 @@
 // Packet header definitions ------------------------------------------------------------------
 //
 
-#define spindump_ethernet_address_length	6
-#define spindump_ethernet_header_size		(spindump_ethernet_address_length*2 + 2)
-#define spindump_null_header_size		4
+#define spindump_ethernet_address_length        6
+#define spindump_ethernet_header_size           (spindump_ethernet_address_length*2 + 2)
+#define spindump_null_header_size               4
 
 typedef uint16_t spindump_port;
 
@@ -44,18 +44,18 @@ struct spindump_ethernet {
 };
 
 struct spindump_ip {
-  unsigned char ip_vhl;		                // version << 4 | header length >> 2
-  unsigned char ip_tos;	                        // type of service
-  uint16_t ip_len;		                // total length
-  uint16_t ip_id;		                // identification
-  uint16_t ip_off;		                // fragment offset field
-#define SPINDUMP_IP_RF ((uint16_t)0x8000)	// reserved fragment flag
-#define SPINDUMP_IP_DF ((uint16_t)0x4000)	// dont fragment flag
+  unsigned char ip_vhl;                         // version << 4 | header length >> 2
+  unsigned char ip_tos;                         // type of service
+  uint16_t ip_len;                              // total length
+  uint16_t ip_id;                               // identification
+  uint16_t ip_off;                              // fragment offset field
+#define SPINDUMP_IP_RF ((uint16_t)0x8000)       // reserved fragment flag
+#define SPINDUMP_IP_DF ((uint16_t)0x4000)       // dont fragment flag
 #define SPINDUMP_IP_MF ((uint16_t)0x2000)       // more fragments flag
 #define SPINDUMP_IP_OFFMASK ((uint16_t)0x1fff)  // mask for fragmenting bits
-  unsigned char ip_ttl;		                // time to live
-  unsigned char ip_proto;	                // protocol
-  uint16_t ip_sum;		                // checksum
+  unsigned char ip_ttl;                         // time to live
+  unsigned char ip_proto;                       // protocol
+  uint16_t ip_sum;                              // checksum
   uint32_t ip_src;                              // source address
   uint32_t ip_dst;                              // dest address
 };
@@ -95,16 +95,16 @@ struct spindump_ip6addr {
 //
 
 struct spindump_ip6 {
-  unsigned char ip6_vtc;	           // version & traffic class
-  unsigned char ip6_tcfl;	           // traffic class & flow label
-  uint8_t ip6_flowlabel[2];	           // flow label
-  uint16_t ip6_payloadlen;	           // payload length
-  unsigned char ip6_nextheader;	           // protocol
-  unsigned char ip6_hoplimit;	           // hop limit
+  unsigned char ip6_vtc;                   // version & traffic class
+  unsigned char ip6_tcfl;                  // traffic class & flow label
+  uint8_t ip6_flowlabel[2];                // flow label
+  uint16_t ip6_payloadlen;                 // payload length
+  unsigned char ip6_nextheader;            // protocol
+  unsigned char ip6_hoplimit;              // hop limit
   struct spindump_ip6addr ip6_source;      // source address
   struct spindump_ip6addr ip6_destination; // destination address
 };
-#define SPINDUMP_IP6_V(ip)		((uint8_t)((((ip)->ip6_vtc) >> 4)))
+#define SPINDUMP_IP6_V(ip)              ((uint8_t)((((ip)->ip6_vtc) >> 4)))
 #define SPINDUMP_IP6_ECN(ip)            ((uint8_t)(((((ip)->ip6_tcfl >> 4)) & 0x3)))
   
 //
@@ -133,7 +133,7 @@ struct spindump_ip6 {
 #define spindump_ip6_fh_header_size      8
 
 struct spindump_ip6_fh {
-  uint8_t fh_nextheader;	        // protocol
+  uint8_t fh_nextheader;                // protocol
   uint8_t fh_reserved;                  // reserved
   uint16_t fh_off;                      // offset, reserved, and more flag
   uint32_t fh_identification;           // identification
@@ -159,14 +159,14 @@ struct spindump_ip6_fh {
 #define spindump_icmp_echo_header_size   (spindump_icmp_header_size+4)
 
 struct spindump_icmp {
-  uint8_t  ih_type;        	// type
-  uint8_t  ih_code;        	// code
-  uint16_t ih_csum;      	// checksum
+  uint8_t  ih_type;             // type
+  uint8_t  ih_code;             // code
+  uint16_t ih_csum;             // checksum
   union {
     struct {
-      uint16_t ih_id;      	// identifier
-      uint16_t ih_seq;      	// sequence number
-      uint8_t  ih_data[2];     	// data (zero or more bytes)
+      uint16_t ih_id;           // identifier
+      uint16_t ih_seq;          // sequence number
+      uint8_t  ih_data[2];      // data (zero or more bytes)
     } ih_echo;
   } ih_u;
 };
@@ -186,14 +186,14 @@ struct spindump_icmp {
 //
 
 struct spindump_icmpv6 {
-  uint8_t  ih6_type;        	// type
-  uint8_t  ih6_code;        	// code
-  uint16_t ih6_csum;      	// checksum
+  uint8_t  ih6_type;            // type
+  uint8_t  ih6_code;            // code
+  uint16_t ih6_csum;            // checksum
   union {
     struct {
-      uint16_t ih6_id;      	// identifier
-      uint16_t ih6_seq;      	// sequence number
-      uint8_t  ih6_data[2];    	// data (zero or more bytes)
+      uint16_t ih6_id;          // identifier
+      uint16_t ih6_seq;         // sequence number
+      uint8_t  ih6_data[2];     // data (zero or more bytes)
     } ih6_echo;
   } ih6_u;
 };
@@ -214,10 +214,10 @@ struct spindump_icmpv6 {
 #define spindump_udp_header_size 8
 
 struct spindump_udp {
-  spindump_port uh_sport;      	// source port
-  spindump_port uh_dport;    	// destination port
-  uint16_t uh_len;         	// UDP header and payload length
-  uint16_t uh_csum;      	// checksum
+  spindump_port uh_sport;       // source port
+  spindump_port uh_dport;       // destination port
+  uint16_t uh_len;              // UDP header and payload length
+  uint16_t uh_csum;             // checksum
 };
 
 //
@@ -244,37 +244,37 @@ struct spindump_udp {
 //
 // DNS OpCodes
 //
-// 0	Query	[RFC1035]
-// 1	IQuery (Inverse Query, OBSOLETE)	[RFC3425]
-// 2	Status	[RFC1035]
-// 4	Notify	[RFC1996]
-// 5	Update	[RFC2136]
-// 6	DNS Stateful Operations (DSO)	[RFC-ietf-dnsop-session-signal-20]
+// 0    Query   [RFC1035]
+// 1    IQuery (Inverse Query, OBSOLETE)        [RFC3425]
+// 2    Status  [RFC1035]
+// 4    Notify  [RFC1996]
+// 5    Update  [RFC2136]
+// 6    DNS Stateful Operations (DSO)   [RFC-ietf-dnsop-session-signal-20]
 //
 // DNS RCODEs
 //
-// 0	NoError	No Error	[RFC1035]
-// 1	FormErr	Format Error	[RFC1035]
-// 2	ServFail	Server Failure	[RFC1035]
-// 3	NXDomain	Non-Existent Domain	[RFC1035]
-// 4	NotImp	Not Implemented	[RFC1035]
-// 5	Refused	Query Refused	[RFC1035]
-// 6	YXDomain	Name Exists when it should not	[RFC2136][RFC6672]
-// 7	YXRRSet	RR Set Exists when it should not	[RFC2136]
-// 8	NXRRSet	RR Set that should exist does not	[RFC2136]
-// 9	NotAuth	Server Not Authoritative for zone	[RFC2136]
-// 9	NotAuth	Not Authorized	[RFC2845]
-// 10	NotZone	Name not contained in zone	[RFC2136]
-// 11	DSOTYPENI	DSO-TYPE Not Implemented	[RFC-ietf-dnsop-session-signal-20]
-// 16	BADVERS	Bad OPT Version	[RFC6891]
-// 16	BADSIG	TSIG Signature Failure	[RFC2845]
-// 17	BADKEY	Key not recognized	[RFC2845]
-// 18	BADTIME	Signature out of time window	[RFC2845]
-// 19	BADMODE	Bad TKEY Mode	[RFC2930]
-// 20	BADNAME	Duplicate key name	[RFC2930]
-// 21	BADALG	Algorithm not supported	[RFC2930]
-// 22	BADTRUNC	Bad Truncation	[RFC4635]
-// 23	BADCOOKIE	Bad/missing Server Cookie	[RFC7873]
+// 0    NoError No Error        [RFC1035]
+// 1    FormErr Format Error    [RFC1035]
+// 2    ServFail        Server Failure  [RFC1035]
+// 3    NXDomain        Non-Existent Domain     [RFC1035]
+// 4    NotImp  Not Implemented [RFC1035]
+// 5    Refused Query Refused   [RFC1035]
+// 6    YXDomain        Name Exists when it should not  [RFC2136][RFC6672]
+// 7    YXRRSet RR Set Exists when it should not        [RFC2136]
+// 8    NXRRSet RR Set that should exist does not       [RFC2136]
+// 9    NotAuth Server Not Authoritative for zone       [RFC2136]
+// 9    NotAuth Not Authorized  [RFC2845]
+// 10   NotZone Name not contained in zone      [RFC2136]
+// 11   DSOTYPENI       DSO-TYPE Not Implemented        [RFC-ietf-dnsop-session-signal-20]
+// 16   BADVERS Bad OPT Version [RFC6891]
+// 16   BADSIG  TSIG Signature Failure  [RFC2845]
+// 17   BADKEY  Key not recognized      [RFC2845]
+// 18   BADTIME Signature out of time window    [RFC2845]
+// 19   BADMODE Bad TKEY Mode   [RFC2930]
+// 20   BADNAME Duplicate key name      [RFC2930]
+// 21   BADALG  Algorithm not supported [RFC2930]
+// 22   BADTRUNC        Bad Truncation  [RFC4635]
+// 23   BADCOOKIE       Bad/missing Server Cookie       [RFC7873]
 //
 
 #define spindump_dns_header_size     (2+1+1+4*2)
@@ -547,16 +547,16 @@ struct spindump_coap {
 //   they would otherwise be incompatible.
 //
 
-#define spindump_tls_legacy_version_10			0x0301
-#define spindump_tls_legacy_version_11			0x0302
-#define spindump_tls_legacy_version_12			0x0303
-#define spindump_tls_tls_version_13			0x0304
+#define spindump_tls_legacy_version_10                  0x0301
+#define spindump_tls_legacy_version_11                  0x0302
+#define spindump_tls_legacy_version_12                  0x0303
+#define spindump_tls_tls_version_13                     0x0304
 #define spindump_tls_tls_version_dtlstotls(v)           ((~(v)) + 0x0201)
-#define spindump_tls_tls_version_13_is_draft(v)		(((v)&0xff00) == 0x7f00)
-#define spindump_tls_tls_version_13_draft_ver(v)	(((v)&0x00ff))
-#define spindump_tls_tls_version_is_valid(v)		(((v)>>8) >= 0x03 && ((v)&0xff) >= 0x01)
-#define spindump_tls_tls_version_major(v)		((((v)>>8) == 0x7f) ? 1 : (((v)>>8) - 2))
-#define spindump_tls_tls_version_minor(v)		((((v)>>8) == 0x7f) ? 3 : (((v)&0xff) - 1))
+#define spindump_tls_tls_version_13_is_draft(v)         (((v)&0xff00) == 0x7f00)
+#define spindump_tls_tls_version_13_draft_ver(v)        (((v)&0x00ff))
+#define spindump_tls_tls_version_is_valid(v)            (((v)>>8) >= 0x03 && ((v)&0xff) >= 0x01)
+#define spindump_tls_tls_version_major(v)               ((((v)>>8) == 0x7f) ? 1 : (((v)>>8) - 2))
+#define spindump_tls_tls_version_minor(v)               ((((v)>>8) == 0x7f) ? 3 : (((v)&0xff) - 1))
 
 typedef uint16_t spindump_tls_version;                  // internal representation in host byte order
 typedef uint8_t spindump_tls_version_inpacket[2];       // 16 bit number
@@ -664,12 +664,12 @@ typedef uint32_t tcp_seq;
 #define spindump_tcp_header_length     (2+2+4+4+1+1+2+2+2)
 
 struct spindump_tcp {
-  spindump_port th_sport;      	// source port
-  spindump_port th_dport;    	// destination port
-  tcp_seq th_seq;		// sequence number
-  tcp_seq th_ack;		// acknowledgement number
-  unsigned char th_offx2;	// data offset, rsvd
-#define SPINDUMP_TH_OFF(th)	(((th)->th_offx2 & 0xf0) >> 4)
+  spindump_port th_sport;       // source port
+  spindump_port th_dport;       // destination port
+  tcp_seq th_seq;               // sequence number
+  tcp_seq th_ack;               // acknowledgement number
+  unsigned char th_offx2;       // data offset, rsvd
+#define SPINDUMP_TH_OFF(th)     (((th)->th_offx2 & 0xf0) >> 4)
   unsigned char th_flags;
 #define SPINDUMP_TH_FIN 0x01
 #define SPINDUMP_TH_SYN 0x02
@@ -680,11 +680,11 @@ struct spindump_tcp {
 #define SPINDUMP_TH_ECE 0x40
 #define SPINDUMP_TH_CWR 0x80
 #define SPINDUMP_TH_FLAGS (SPINDUMP_TH_FIN | SPINDUMP_TH_SYN | SPINDUMP_TH_RST | \
-			   SPINDUMP_TH_ACK | SPINDUMP_TH_URG | SPINDUMP_TH_ECE | \
-			   SPINDUMP_TH_CWR)
-  uint16_t th_win;		// window
-  uint16_t th_sum;		// checksum
-  uint16_t th_urp;		// urgent pointer
+                           SPINDUMP_TH_ACK | SPINDUMP_TH_URG | SPINDUMP_TH_ECE | \
+                           SPINDUMP_TH_CWR)
+  uint16_t th_win;              // window
+  uint16_t th_sum;              // checksum
+  uint16_t th_urp;              // urgent pointer
 };
 
 //
@@ -951,9 +951,9 @@ struct spindump_quic {
 
 #define spindump_decodebyte(field,payload,position)     \
   memcpy(&(field),(payload)+((position)++),1)
-#define spindump_decodebytes(field,payload,n,position)	\
+#define spindump_decodebytes(field,payload,n,position)  \
   do { \
-    memcpy(&(field),(payload)+(position),(n));		      \
+    memcpy(&(field),(payload)+(position),(n));                \
     (position) += (n);                                  \
   } while(0)
 #define spindump_decode2byteint(field,payload,position) \
@@ -973,51 +973,51 @@ const char*
 spindump_protocols_tcp_flagstostring(uint8_t flags);
 void
 spindump_protocols_ethernet_header_decode(const unsigned char* header,
-					  struct spindump_ethernet* decoded);
+                                          struct spindump_ethernet* decoded);
 void
 spindump_protocols_ip_header_decode(const unsigned char* header,
-				    struct spindump_ip* decoded);
+                                    struct spindump_ip* decoded);
 void
 spindump_protocols_ip6_header_decode(const unsigned char* header,
-				     struct spindump_ip6* decoded);
+                                     struct spindump_ip6* decoded);
 void
 spindump_protocols_ip6_fh_header_decode(const unsigned char* header,
-					struct spindump_ip6_fh* decoded);
+                                        struct spindump_ip6_fh* decoded);
 void
 spindump_protocols_icmp_header_decode(const unsigned char* header,
-				      struct spindump_icmp* decoded);
+                                      struct spindump_icmp* decoded);
 void
 spindump_protocols_icmp6_header_decode(const unsigned char* header,
-				       struct spindump_icmpv6* decoded);
+                                       struct spindump_icmpv6* decoded);
 void
 spindump_protocols_udp_header_decode(const unsigned char* header,
-				     struct spindump_udp* decoded);
+                                     struct spindump_udp* decoded);
 void
 spindump_protocols_dns_header_decode(const unsigned char* header,
-				     struct spindump_dns* decoded);
+                                     struct spindump_dns* decoded);
 void
 spindump_protocols_coap_header_decode(const unsigned char* header,
-				      struct spindump_coap* decoded);
+                                      struct spindump_coap* decoded);
 void
 spindump_protocols_tcp_header_decode(const unsigned char* header,
-				     struct spindump_tcp* decoded);
+                                     struct spindump_tcp* decoded);
 void
 spindump_protocols_quic_header_decode(const unsigned char* header,
-				      unsigned char* decoded);
+                                      unsigned char* decoded);
 void
 spindump_protocols_quic_longheader_decode(const unsigned char* header,
-					  struct spindump_quic* decoded);
+                                          struct spindump_quic* decoded);
 void
 spindump_protocols_tls_recordlayerheader_decode(const unsigned char* header,
-						struct spindump_tls_recordlayer* decoded);
+                                                struct spindump_tls_recordlayer* decoded);
 void
 spindump_protocols_dtls_recordlayerheader_decode(const unsigned char* header,
-						 struct spindump_dtls_recordlayer* decoded);
+                                                 struct spindump_dtls_recordlayer* decoded);
 void
 spindump_protocols_tls_handshakeheader_decode(const unsigned char* header,
-					      struct spindump_tls_handshake* decoded);
+                                              struct spindump_tls_handshake* decoded);
 void
 spindump_protocols_dtls_handshakeheader_decode(const unsigned char* header,
-					       struct spindump_dtls_handshake* decoded);
+                                               struct spindump_dtls_handshake* decoded);
 
 #endif // SPINDUMP_PROTOCOLS_H

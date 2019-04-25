@@ -43,16 +43,16 @@ void
 spindump_connections_set_initialize(struct spindump_connection_set* set);
 void
 spindump_connections_set_uninitialize(struct spindump_connection_set* set,
-				      struct spindump_connection* owner);
+                                      struct spindump_connection* owner);
 int
 spindump_connections_set_inset(struct spindump_connection_set* set,
-			       struct spindump_connection* connection);
+                               struct spindump_connection* connection);
 void
 spindump_connections_set_add(struct spindump_connection_set* set,
-			     struct spindump_connection* connection);
+                             struct spindump_connection* connection);
 void
 spindump_connections_set_remove(struct spindump_connection_set* set,
-				struct spindump_connection* connection);
+                                struct spindump_connection* connection);
 const char*
 spindump_connections_set_listids(struct spindump_connection_set* set);
 

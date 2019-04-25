@@ -28,14 +28,14 @@
 
 void
 spindump_event_initialize(enum spindump_event_type eventType,
-			  enum spindump_connection_type connectionType,
-			  const spindump_network* initiatorAddress,
-			  const spindump_network* responderAddress,
-			  const char* session,
-			  unsigned long long timestamp,
-			  unsigned int packets,
-			  unsigned int bytes,
-			  struct spindump_event* event) {
+                          enum spindump_connection_type connectionType,
+                          const spindump_network* initiatorAddress,
+                          const spindump_network* responderAddress,
+                          const char* session,
+                          unsigned long long timestamp,
+                          unsigned int packets,
+                          unsigned int bytes,
+                          struct spindump_event* event) {
 
   //
   // Sanity checks

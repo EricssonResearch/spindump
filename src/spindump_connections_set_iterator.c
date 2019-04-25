@@ -34,7 +34,7 @@
 
 void
 spindump_connection_set_iterator_initialize(struct spindump_connection_set* set,
-					    struct spindump_connection_set_iterator* iter) {
+                                            struct spindump_connection_set_iterator* iter) {
   spindump_assert(set != 0);
   spindump_assert(iter != 0);
   iter->set = set;

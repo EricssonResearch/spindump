@@ -85,7 +85,7 @@ spindump_remote_client_init(const char* url) {
 
 void
 spindump_remote_client_update_periodic(struct spindump_remote_client* client,
-				       struct spindump_connectionstable* table) {
+                                       struct spindump_connectionstable* table) {
   // ..
   spindump_deepdebugf("spindump_remote_client_update_periodic, data: ");
   spindump_errorf("periodic updates not implemented");
@@ -98,9 +98,9 @@ spindump_remote_client_update_periodic(struct spindump_remote_client* client,
 
 void
 spindump_remote_client_update_event(struct spindump_remote_client* client,
-				    const char* mediaType,
-				    unsigned long length,
-				    const uint8_t* data) {
+                                    const char* mediaType,
+                                    unsigned long length,
+                                    const uint8_t* data) {
 
   //
   // Configure the request
@@ -128,8 +128,8 @@ spindump_remote_client_update_event(struct spindump_remote_client* client,
   if (res != CURLE_OK) {
     spindump_debugf("failed");
     spindump_errorf("remote request to %s failed: %s",
-		    client->url,
-		    curl_easy_strerror(res));
+                    client->url,
+                    curl_easy_strerror(res));
   }
   spindump_debugf("Ok");
 }

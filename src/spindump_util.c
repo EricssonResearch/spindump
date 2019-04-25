@@ -40,8 +40,8 @@ static int
 spindump_address_islocalbroadcast(uint32_t address);
 static void
 spindump_anon_aux(unsigned long seed,
-		  unsigned char* bytes,
-		  unsigned int length);
+                  unsigned char* bytes,
+                  unsigned int length);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ spindump_getcurrenttime(struct timeval* result) {
 
 unsigned long long
 spindump_timediffinusecs(const struct timeval* later,
-			 const struct timeval* earlier) {
+                         const struct timeval* earlier) {
   
   spindump_assert(earlier != 0);
   spindump_assert(later != 0);
@@ -102,17 +102,17 @@ spindump_timediffinusecs(const struct timeval* later,
   if (later->tv_sec == earlier->tv_sec) {
     if (later->tv_usec < earlier->tv_usec) {
       spindump_errorf("spindump_timediffinusec: expected later time to be greater, secs both %uls, microsecond go back %ulus (%ul to %ul)",
-		      earlier->tv_sec,
-		      earlier->tv_usec - later->tv_usec,
-		      earlier->tv_usec, later->tv_usec);
+                      earlier->tv_sec,
+                      earlier->tv_usec - later->tv_usec,
+                      earlier->tv_usec, later->tv_usec);
       return(0);
     } else {
       return(((unsigned long long)later->tv_usec) - ((unsigned long long)earlier->tv_usec));
     }
   } else {
     unsigned long long result = 1000 * 1000 * (((unsigned long long)later->tv_sec) -
-					       ((unsigned long long)earlier->tv_sec) -
-					       1);
+                                               ((unsigned long long)earlier->tv_sec) -
+                                               1);
     result += ((unsigned long long)(1000*1000)) - (unsigned long long)earlier->tv_usec;
     result += (unsigned long long)later->tv_usec;
     return(result);
@@ -126,7 +126,7 @@ spindump_timediffinusecs(const struct timeval* later,
 
 int
 spindump_isearliertime(const struct timeval* later,
-		       const struct timeval* earlier) {
+                       const struct timeval* earlier) {
   spindump_assert(later != 0);
   spindump_assert(earlier != 0);
   spindump_assert(later->tv_usec < 1000 * 1000);
@@ -135,7 +135,7 @@ spindump_isearliertime(const struct timeval* later,
   if (earlier->tv_sec < later->tv_sec) {
     return(1);
   } else if (earlier->tv_sec == later->tv_sec &&
-	     earlier->tv_usec < later->tv_usec) {
+             earlier->tv_usec < later->tv_usec) {
     return(1);
   } else {
     return(0);
@@ -165,10 +165,10 @@ spindump_timetostring(const struct timeval* result) {
   static char buf[100];
   struct tm* t = localtime(&result->tv_sec);
   snprintf(buf,sizeof(buf)-1,"%02lu:%02lu:%02lu.%06lu",
-	   (unsigned long)t->tm_hour,
-	   (unsigned long)t->tm_min,
-	   (unsigned long)t->tm_sec,
-	   (unsigned long)result->tv_usec);
+           (unsigned long)t->tm_hour,
+           (unsigned long)t->tm_min,
+           (unsigned long)t->tm_sec,
+           (unsigned long)result->tv_usec);
   return(buf);
 }
 
@@ -178,7 +178,7 @@ spindump_timetostring(const struct timeval* result) {
 
 int
 spindump_address_equal(spindump_address* address1,
-		       spindump_address* address2) {
+                       spindump_address* address2) {
   
   if (address1->ss_family != address2->ss_family) return(0);
   
@@ -262,23 +262,23 @@ spindump_address_islocalbroadcast(uint32_t address) {
        thisInterface = thisInterface->ifa_next) {
 
     if (thisInterface->ifa_addr != 0 &&
-	thisInterface->ifa_netmask != 0 &&
-	thisInterface->ifa_addr->sa_family == AF_INET) {
+        thisInterface->ifa_netmask != 0 &&
+        thisInterface->ifa_addr->sa_family == AF_INET) {
       
       spindump_deepdebugf("local broadcast: looking at interface %s",
-			  thisInterface->ifa_name != 0 ? thisInterface->ifa_name : "none");
+                          thisInterface->ifa_name != 0 ? thisInterface->ifa_name : "none");
       struct sockaddr_in addressv4;
       struct sockaddr_in maskv4;
       memcpy((unsigned char*)&addressv4,(unsigned char*)(thisInterface->ifa_addr),sizeof(addressv4));
       memcpy((unsigned char*)&maskv4,(unsigned char*)(thisInterface->ifa_netmask),sizeof(maskv4));
       uint32_t thisBroadcast =
-	(addressv4.sin_addr.s_addr & maskv4.sin_addr.s_addr) |
-	(~(maskv4.sin_addr.s_addr));
+        (addressv4.sin_addr.s_addr & maskv4.sin_addr.s_addr) |
+        (~(maskv4.sin_addr.s_addr));
       spindump_deepdebugf("address %08x netmask %08x broadcast %08x compare to %08x\n",
-			  addressv4.sin_addr.s_addr,
-			  maskv4.sin_addr.s_addr,
-			  thisBroadcast,
-			  address);
+                          addressv4.sin_addr.s_addr,
+                          maskv4.sin_addr.s_addr,
+                          thisBroadcast,
+                          address);
       if (address == thisBroadcast) return(1);
     }
   }
@@ -312,8 +312,8 @@ spindump_address_ismulticast(spindump_address* address) {
       uint32_t highByte = (ntohl(addressv4->sin_addr.s_addr) >> 24) & 0xFF;
       spindump_deepdebugf("spindump_address_ismulticast v4 high byte = %02x", highByte);
       return(spindump_address_islocalbroadcast(addressv4->sin_addr.s_addr) ||
-	     (highByte >= 224 && highByte <= 239) ||
-	     (highByte == 255));
+             (highByte >= 224 && highByte <= 239) ||
+             (highByte == 255));
     }
     
   case AF_INET6:
@@ -346,10 +346,10 @@ spindump_address_ismulticast(spindump_address* address) {
 
 int
 spindump_network_equal(spindump_network* network1,
-		       spindump_network* network2) {
+                       spindump_network* network2) {
   return(network1->length == network2->length &&
-	 spindump_address_equal(&network1->address,
-				&network2->address));
+         spindump_address_equal(&network1->address,
+                                &network2->address));
 }
 
 //
@@ -359,7 +359,7 @@ spindump_network_equal(spindump_network* network1,
 int
 spindump_network_ismulticast(spindump_network* network) {
   return(network->length >= 8 &&
-	 spindump_address_ismulticast(&network->address));
+         spindump_address_ismulticast(&network->address));
 }
 
 //
@@ -368,7 +368,7 @@ spindump_network_ismulticast(spindump_network* network) {
 
 int
 spindump_address_innetwork(spindump_address* address,
-			   spindump_network* network) {
+                           spindump_network* network) {
 
   static const uint32_t v4prefixmasks[33] = {
     
@@ -449,7 +449,7 @@ spindump_address_innetwork(spindump_address* address,
       spindump_assert(network->length <= 32);
       uint32_t addressMask = v4prefixmasks[network->length];
       return((addressValue & addressMask) ==
-	     (networkValue & addressMask));
+             (networkValue & addressMask));
     }
     
   case AF_INET6:
@@ -466,15 +466,15 @@ spindump_address_innetwork(spindump_address* address,
       spindump_assert(bytes <= 16);
       unsigned int i;
       for (i = 0; i < bytes; i++) {
-	uint8_t bytemask;
-	if (i == bytes - 1) {
-	  bytemask = (remainingbits == 0) ? 0xFF : v6prefixmasks[remainingbits];
-	} else {
-	  bytemask = 0xFF;
-	}
-	uint8_t addressbyte = addressValue[i] & bytemask;
-	uint8_t networkbyte = networkValue[i] & bytemask;
-	if (addressbyte != networkbyte) return(0);
+        uint8_t bytemask;
+        if (i == bytes - 1) {
+          bytemask = (remainingbits == 0) ? 0xFF : v6prefixmasks[remainingbits];
+        } else {
+          bytemask = 0xFF;
+        }
+        uint8_t addressbyte = addressValue[i] & bytemask;
+        uint8_t networkbyte = networkValue[i] & bytemask;
+        if (addressbyte != networkbyte) return(0);
       }
       return(1);
     }
@@ -490,7 +490,7 @@ spindump_address_innetwork(spindump_address* address,
 
 int
 spindump_address_fromstring(spindump_address* address,
-			    const char* string) {
+                            const char* string) {
   if (index(string,':')) {
     
     address->ss_family = AF_INET6;
@@ -525,7 +525,7 @@ spindump_address_fromstring(spindump_address* address,
 
 void
 spindump_address_fromempty(sa_family_t af,
-			   spindump_address* address) {
+                           spindump_address* address) {
   memset(address,0,sizeof(*address));
   address->ss_family = af;
 }
@@ -536,8 +536,8 @@ spindump_address_fromempty(sa_family_t af,
 
 void
 spindump_address_frombytes(spindump_address* address,
-			   sa_family_t af,
-			   const unsigned char* string) {
+                           sa_family_t af,
+                           const unsigned char* string) {
   spindump_assert(address != 0);
   spindump_assert(af == AF_INET || af == AF_INET6);
   memset(address,0,sizeof(*address));
@@ -545,13 +545,13 @@ spindump_address_frombytes(spindump_address* address,
   if (af == AF_INET) {
     struct sockaddr_in* actual = (struct sockaddr_in*)address;
     memcpy((unsigned char*)&actual->sin_addr.s_addr,
-	   string,
-	   4);
+           string,
+           4);
   } else {
     struct sockaddr_in6* actual = (struct sockaddr_in6*)address;
     memcpy((unsigned char*)&actual->sin6_addr.s6_addr,
-	   string,
-	   16);
+           string,
+           16);
   }
 }
 
@@ -594,8 +594,8 @@ spindump_address_tostring(const spindump_address* address) {
 
 static void
 spindump_anon_aux(unsigned long seed,
-		  unsigned char* bytes,
-		  unsigned int length) {
+                  unsigned char* bytes,
+                  unsigned int length) {
   while (length > 0) {
 
     *bytes = (*bytes ^ (unsigned char)seed);
@@ -615,7 +615,7 @@ spindump_anon_aux(unsigned long seed,
 
 const char*
 spindump_address_tostring_anon(int anonymize,
-			       spindump_address* address) {
+                               spindump_address* address) {
 
   //
   // Some checks
@@ -676,7 +676,7 @@ spindump_address_tostring_anon(int anonymize,
 
 int
 spindump_network_fromstring(spindump_network* network,
-			    const char* string) {
+                            const char* string) {
   const char* prefix = index(string,'/');
   if (prefix == 0) {
     spindump_warnf("invalid prefix slash format: %s", string);
@@ -718,8 +718,8 @@ spindump_network_tostring(const  spindump_network* network) {
   static char buf[100];
   memset(buf,0,sizeof(buf));
   snprintf(buf, sizeof(buf)-1, "%s/%u",
-	   spindump_address_tostring(&network->address),
-	   network->length);
+           spindump_address_tostring(&network->address),
+           network->length);
   return(buf);
 }
 
@@ -746,7 +746,7 @@ spindump_network_tostringoraddr(const spindump_network* network) {
 
 void
 spindump_network_fromaddress(const spindump_address* address,
-			     spindump_network* network) {
+                             spindump_network* network) {
   spindump_assert(address != 0);
   spindump_assert(network != 0);
   network->address = *address;
@@ -759,7 +759,7 @@ spindump_network_fromaddress(const spindump_address* address,
 
 void
 spindump_network_fromempty(sa_family_t af,
-			   spindump_network* network) {
+                           spindump_network* network) {
   spindump_address_fromempty(af,&network->address);
   network->length = 0;
 }
@@ -870,4 +870,3 @@ spindump_strlcat(char * restrict dst, const char * restrict src, size_t size) {
   dst[size-1] = 0;
   return(strlen(src));
 }
-

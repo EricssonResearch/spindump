@@ -36,52 +36,52 @@
 
 static int
 spindump_remote_server_answer(void *cls,
-			      struct MHD_Connection *connection,
-			      const char *url,
-			      const char *method,
-			      const char *version,
-			      const char *upload_data,
-			      size_t *upload_data_size,
-			      void **con_cls);
+                              struct MHD_Connection *connection,
+                              const char *url,
+                              const char *method,
+                              const char *version,
+                              const char *upload_data,
+                              size_t *upload_data_size,
+                              void **con_cls);
 static struct spindump_remote_connection* 
 spindump_remote_server_getconnectionobject(struct spindump_remote_server* server,
-					   const char* identifier);
+                                           const char* identifier);
 static void
 spindump_remote_server_releaseconnectionobject(struct spindump_remote_server* server,
-					       struct spindump_remote_connection* connection);
+                                               struct spindump_remote_connection* connection);
 static int
 spindump_remote_server_answer_error(struct MHD_Connection *connection,
-				    unsigned int code,
-				    char* why);
+                                    unsigned int code,
+                                    char* why);
 static void
 spindump_remote_server_printparameters(struct MHD_Connection *connection);
 static int
 spindump_remote_server_printparameter(void *cls,
-				      enum MHD_ValueKind kind, 
-				      const char *key,
-				      const char *value);
+                                      enum MHD_ValueKind kind, 
+                                      const char *key,
+                                      const char *value);
 static void
 spindump_remote_server_requestcompleted(void *cls,
-					struct MHD_Connection *connection, 
-					void **con_cls,
-					enum MHD_RequestTerminationCode toe);
+                                        struct MHD_Connection *connection, 
+                                        void **con_cls,
+                                        enum MHD_RequestTerminationCode toe);
 static int
 spindump_remote_server_answertopost(struct spindump_remote_server* server,
-				    struct spindump_remote_connection* connectionObject,
-				    struct MHD_Connection *connection);
+                                    struct spindump_remote_connection* connectionObject,
+                                    struct MHD_Connection *connection);
 static int
 spindump_remote_server_postiterator(void *coninfo_cls,
-				    enum MHD_ValueKind kind,
-				    const char *key,
-				    const char *filename,
-				    const char *content_type,
-				    const char *transfer_encoding,
-				    const char *data, 
-				    uint64_t off, size_t size);
+                                    enum MHD_ValueKind kind,
+                                    const char *key,
+                                    const char *filename,
+                                    const char *content_type,
+                                    const char *transfer_encoding,
+                                    const char *data, 
+                                    uint64_t off, size_t size);
 static int
 spindump_remote_server_adddata(struct spindump_remote_connection* connectionObject,
-			       const char* data,
-			       size_t length);
+                               const char* data,
+                               size_t length);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -105,10 +105,10 @@ spindump_remote_server_init(spindump_port port) {
   memset(server,0,sizeof(*server));
   server->listenport = port;
   server->daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, server->listenport,
-				    NULL, NULL,
-				    spindump_remote_server_answer, server,
-				    MHD_OPTION_NOTIFY_COMPLETED, &spindump_remote_server_requestcompleted, server,
-				    MHD_OPTION_END);
+                                    NULL, NULL,
+                                    spindump_remote_server_answer, server,
+                                    MHD_OPTION_NOTIFY_COMPLETED, &spindump_remote_server_requestcompleted, server,
+                                    MHD_OPTION_END);
   if (server->daemon == 0) {
     spindump_errorf("cannot open a server daemon on port %u", server->listenport);
     spindump_free(server);
@@ -167,7 +167,7 @@ spindump_remote_server_getupdate(struct spindump_remote_server* server) {
 
 static struct spindump_remote_connection* 
 spindump_remote_server_getconnectionobject(struct spindump_remote_server* server,
-					   const char* identifier) {
+                                           const char* identifier) {
 
   //
   // Sanity checks
@@ -186,8 +186,8 @@ spindump_remote_server_getconnectionobject(struct spindump_remote_server* server
     struct spindump_remote_connection* connection = &server->clients[i];
     if (connection->active) {
       if (strcmp(identifier,connection->identifier) == 0) {
-	spindump_deepdebugf("spindump_remote_server_getconnectionobject finds an existing connection object in index %u", i);
-	return(connection);
+        spindump_deepdebugf("spindump_remote_server_getconnectionobject finds an existing connection object in index %u", i);
+        return(connection);
       }
     } else if (firstFreeConnection == 0) {
       firstFreeConnection = connection;
@@ -225,7 +225,7 @@ spindump_remote_server_getconnectionobject(struct spindump_remote_server* server
 
 static void
 spindump_remote_server_releaseconnectionobject(struct spindump_remote_server* server,
-					       struct spindump_remote_connection* connection) {
+                                               struct spindump_remote_connection* connection) {
   //
   // Sanity checks
   //
@@ -254,13 +254,13 @@ spindump_remote_server_releaseconnectionobject(struct spindump_remote_server* se
 
 static int
 spindump_remote_server_answer_error(struct MHD_Connection *connection,
-				    unsigned int code,
-				    char* why) {
+                                    unsigned int code,
+                                    char* why) {
   spindump_deepdebugf("spindump_remote_server_answer_error");
   spindump_debugf("HTTP response %u because %s", code, why);
   struct MHD_Response *response = MHD_create_response_from_buffer (strlen(why),
-								   (void*)why,
-								   MHD_RESPMEM_PERSISTENT);
+                                                                   (void*)why,
+                                                                   MHD_RESPMEM_PERSISTENT);
   int ret = MHD_queue_response(connection, code, response);
   MHD_destroy_response(response);
   return(ret);
@@ -272,9 +272,9 @@ spindump_remote_server_answer_error(struct MHD_Connection *connection,
 
 static int
 spindump_remote_server_printparameter(void *cls,
-				      enum MHD_ValueKind kind, 
-				      const char *key,
-				      const char *value) {
+                                      enum MHD_ValueKind kind, 
+                                      const char *key,
+                                      const char *value) {
   spindump_deepdebugf("%s: %s", key, value);
   return(MHD_YES);
 }
@@ -297,14 +297,14 @@ spindump_remote_server_printparameters(struct MHD_Connection *connection) {
 
 static int
 spindump_remote_server_postiterator(void *coninfo_cls,
-				    enum MHD_ValueKind kind,
-				    const char *key,
-				    const char *filename,
-				    const char *content_type,
-				    const char *transfer_encoding,
-				    const char *data,
-				    uint64_t off,
-				    size_t size) {
+                                    enum MHD_ValueKind kind,
+                                    const char *key,
+                                    const char *filename,
+                                    const char *content_type,
+                                    const char *transfer_encoding,
+                                    const char *data,
+                                    uint64_t off,
+                                    size_t size) {
   spindump_deepdebugf("post iterator (%s, %s, %u bytes) %s", content_type, transfer_encoding, size, data);
   struct spindump_remote_connection* connectionObject =
     (struct spindump_remote_connection*)coninfo_cls;
@@ -320,30 +320,30 @@ spindump_remote_server_postiterator(void *coninfo_cls,
 
 static int
 spindump_remote_server_answertopost(struct spindump_remote_server* server,
-				    struct spindump_remote_connection* connectionObject,
-				    struct MHD_Connection *connection) {
+                                    struct spindump_remote_connection* connectionObject,
+                                    struct MHD_Connection *connection) {
   
   //
   // Respond to the POST
   //
   
   spindump_deepdebugf("spindump_remote_server_answertopost, collected submission length %u (error %u)",
-		      connectionObject->submissionLength,
-		      connectionObject->isBufferOverrun);
+                      connectionObject->submissionLength,
+                      connectionObject->isBufferOverrun);
   if (connectionObject->isBufferOverrun) {
     return(spindump_remote_server_answer_error(connection,
-					       MHD_HTTP_BAD_REQUEST,
-					       "<html><p>data does not fit in buffer</p></html>\n"));
+                                               MHD_HTTP_BAD_REQUEST,
+                                               "<html><p>data does not fit in buffer</p></html>\n"));
   }
   if (connectionObject->submissionLength == 0) {
     return(spindump_remote_server_answer_error(connection,
-					       MHD_HTTP_BAD_REQUEST,
-					       "<html><p>no data provided in POST</p></html>\n"));
+                                               MHD_HTTP_BAD_REQUEST,
+                                               "<html><p>no data provided in POST</p></html>\n"));
   }
 
   struct MHD_Response *response = MHD_create_response_from_buffer(0,
-								  (void*)"",
-								  MHD_RESPMEM_PERSISTENT);
+                                                                  (void*)"",
+                                                                  MHD_RESPMEM_PERSISTENT);
   unsigned int code = MHD_HTTP_OK;
   spindump_debugf("HTTP successful response %u", code);
   int ret = MHD_queue_response(connection, code, response);
@@ -360,8 +360,8 @@ spindump_remote_server_answertopost(struct spindump_remote_server* server,
 
 static int
 spindump_remote_server_adddata(struct spindump_remote_connection* connectionObject,
-			       const char* data,
-			       size_t length) {
+                               const char* data,
+                               size_t length) {
   spindump_deepdebugf("spindump_remote_server_adddata");
   spindump_assert(data != 0);
   if (connectionObject->isBufferOverrun) {
@@ -370,18 +370,18 @@ spindump_remote_server_adddata(struct spindump_remote_connection* connectionObje
   } else if (connectionObject->submissionLength + length <=
       sizeof(connectionObject->submission)) {
     memcpy(&connectionObject->submission[connectionObject->submissionLength],
-	   data,
-	   length);
+           data,
+           length);
     connectionObject->submissionLength += length;
     spindump_deepdebugf("submission from %s grew to %u bytes by %u bytes",
-			connectionObject->identifier,
-			connectionObject->submissionLength,
-			length);
+                        connectionObject->identifier,
+                        connectionObject->submissionLength,
+                        length);
     return(MHD_YES);
   } else {
     spindump_errorf("cannot add extra %u bytes of bdata to a buffer from a request from %s",
-		    length,
-		    connectionObject->identifier);
+                    length,
+                    connectionObject->identifier);
     connectionObject->isBufferOverrun = 1;
     return(MHD_NO);
   }
@@ -396,13 +396,13 @@ spindump_remote_server_adddata(struct spindump_remote_connection* connectionObje
 
 static int
 spindump_remote_server_answer(void *cls,
-			      struct MHD_Connection *connection,
-			      const char *url,
-			      const char *method,
-			      const char *version,
-			      const char *upload_data,
-			      size_t *upload_data_size,
-			      void **con_cls)
+                              struct MHD_Connection *connection,
+                              const char *url,
+                              const char *method,
+                              const char *version,
+                              const char *upload_data,
+                              size_t *upload_data_size,
+                              void **con_cls)
 {
   spindump_deepdebugf("spindump_remote_server_answer");
   struct spindump_remote_server* server = (struct spindump_remote_server*)cls;
@@ -431,21 +431,21 @@ spindump_remote_server_answer(void *cls,
   
   if (strcmp(method,"POST") != 0) {
     return(spindump_remote_server_answer_error(connection,
-					       MHD_HTTP_METHOD_NOT_ALLOWED,
-					       "<html><p>invalid method</p></html>\n"));
+                                               MHD_HTTP_METHOD_NOT_ALLOWED,
+                                               "<html><p>invalid method</p></html>\n"));
   }
   
   if (strncmp(url,SPINDUMP_REMOTE_PATHSTART,strlen(SPINDUMP_REMOTE_PATHSTART)) != 0) {
     return(spindump_remote_server_answer_error(connection,
-					       MHD_HTTP_BAD_REQUEST,
-					       "<html><p>expected URL to start with " SPINDUMP_REMOTE_PATHSTART "</p></html>\n"));
+                                               MHD_HTTP_BAD_REQUEST,
+                                               "<html><p>expected URL to start with " SPINDUMP_REMOTE_PATHSTART "</p></html>\n"));
   }
   
   const char* remainingPathInput = url + strlen(SPINDUMP_REMOTE_PATHSTART);
   if (strlen(remainingPathInput) > SPINDUMP_REMOTE_MAXPATHCOMPONENTLENGTH) {
     return(spindump_remote_server_answer_error(connection,
-					       MHD_HTTP_BAD_REQUEST,
-					       "<html><p>path component too long</p></html>\n"));
+                                               MHD_HTTP_BAD_REQUEST,
+                                               "<html><p>path component too long</p></html>\n"));
   }
   
   char remainingPath[SPINDUMP_REMOTE_MAXPATHCOMPONENTLENGTH];
@@ -458,8 +458,8 @@ spindump_remote_server_answer(void *cls,
   if (strlen(remainingPath) == 0 ||
       index(remainingPath,'/') != 0) {
     return(spindump_remote_server_answer_error(connection,
-					       MHD_HTTP_BAD_REQUEST,
-					       "<html><p>expected exactly two path components</p></html>\n"));
+                                               MHD_HTTP_BAD_REQUEST,
+                                               "<html><p>expected exactly two path components</p></html>\n"));
   }
   
   //
@@ -490,8 +490,8 @@ spindump_remote_server_answer(void *cls,
 
     if (connectionObject->ongoingTransaction) {
       return(spindump_remote_server_answer_error(connection,
-						 MHD_HTTP_BAD_REQUEST,
-						 "<html><p>only one transaction per client allowed</p></html>\n"));
+                                                 MHD_HTTP_BAD_REQUEST,
+                                                 "<html><p>only one transaction per client allowed</p></html>\n"));
     }
     
     //
@@ -512,13 +512,13 @@ spindump_remote_server_answer(void *cls,
       connectionObject->isPost = 1;
       spindump_assert(connectionObject->postprocessor == 0);
       connectionObject->postprocessor = MHD_create_post_processor(connection,
-								  SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONDATASIZE, 
-								  spindump_remote_server_postiterator,
-								  (void*)connectionObject);
+                                                                  SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONDATASIZE, 
+                                                                  spindump_remote_server_postiterator,
+                                                                  (void*)connectionObject);
       spindump_deepdebugf("post processor created for max %u bytes", SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONDATASIZE);
       if (connectionObject->postprocessor == 0) {
-	spindump_remote_server_releaseconnectionobject(server,connectionObject);
-	return(MHD_NO);
+        spindump_remote_server_releaseconnectionobject(server,connectionObject);
+        return(MHD_NO);
       }
       
     }
@@ -553,14 +553,14 @@ spindump_remote_server_answer(void *cls,
 
       spindump_deepdebugf("adding data to buffer");
       if (spindump_remote_server_adddata(existingConnectionObject,
-					 upload_data,
-					 *upload_data_size) != MHD_YES) {
-	spindump_deepdebugf("saw an error, we've already flagged it but need to continue processing");
-	spindump_assert(existingConnectionObject->isBufferOverrun);
+                                         upload_data,
+                                         *upload_data_size) != MHD_YES) {
+        spindump_deepdebugf("saw an error, we've already flagged it but need to continue processing");
+        spindump_assert(existingConnectionObject->isBufferOverrun);
       }
       spindump_deepdebugf("calling MHD_post_process");
-      MHD_post_process(existingConnectionObject->postprocessor, upload_data,	
-		       *upload_data_size);
+      MHD_post_process(existingConnectionObject->postprocessor, upload_data,    
+                       *upload_data_size);
       spindump_deepdebugf("MHD_post_process call returned");
       *upload_data_size = 0;
       return(MHD_YES);
@@ -579,8 +579,8 @@ spindump_remote_server_answer(void *cls,
     //
     
     return(spindump_remote_server_answer_error(connection,
-					       MHD_HTTP_METHOD_NOT_ALLOWED,
-					       "<html><p>invalid method</p></html>\n"));
+                                               MHD_HTTP_METHOD_NOT_ALLOWED,
+                                               "<html><p>invalid method</p></html>\n"));
     
   }
 }
@@ -594,9 +594,9 @@ spindump_remote_server_answer(void *cls,
 
 static void
 spindump_remote_server_requestcompleted(void *cls,
-					struct MHD_Connection *connection, 
-					void **con_cls,
-					enum MHD_RequestTerminationCode toe) {
+                                        struct MHD_Connection *connection, 
+                                        void **con_cls,
+                                        enum MHD_RequestTerminationCode toe) {
   spindump_deepdebugf("spindump_remote_server_requestcompleted");
   
   struct spindump_remote_server* server = (struct spindump_remote_server*)cls;

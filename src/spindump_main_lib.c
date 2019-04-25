@@ -151,8 +151,8 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
 
 void
 spindump_main_processargs(int argc,
-			  char** argv,
-			  struct spindump_main_configuration* config) {
+                          char** argv,
+                          struct spindump_main_configuration* config) {
   
   argc--; argv++;
   while (argc > 0) {
@@ -285,8 +285,8 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--remote") == 0 && argc > 1) {
 
       if (config->nRemotes == SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS) {
-	spindump_errorf("too many --remote connections");
-	exit(1);
+        spindump_errorf("too many --remote connections");
+        exit(1);
       }
 
       config->remotes[config->nRemotes++] = spindump_remote_client_init(argv[1]);
@@ -303,13 +303,13 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--collector-port") == 0 && argc > 1) {
 
       if (!isdigit(*(argv[1]))) {
-	spindump_errorf("expected a numeric argument for --collector-port, got %s", argv[1]);
-	exit(1);
+        spindump_errorf("expected a numeric argument for --collector-port, got %s", argv[1]);
+        exit(1);
       }
       int input = atoi(argv[1]);
       if (input <= 1 || input > 65535) {
-	spindump_errorf("expected argument for --collector-port to be between 1 and 65535, got %s", argv[1]);
-	exit(1);
+        spindump_errorf("expected argument for --collector-port to be between 1 and 65535, got %s", argv[1]);
+        exit(1);
       }
       config->collectorPort = (spindump_port)input;
       argc--; argv++;
@@ -317,8 +317,8 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--remote-block-size") == 0 && argc > 1) {
 
       if (!isdigit(*(argv[1]))) {
-	spindump_errorf("expected a numeric argument for --remote-block-size, got %s", argv[1]);
-	exit(1);
+        spindump_errorf("expected a numeric argument for --remote-block-size, got %s", argv[1]);
+        exit(1);
       }
       config->remoteBlockSize = 1024 * (unsigned long)atoi(argv[1]);
       argc--; argv++;
@@ -326,8 +326,8 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--max-receive") == 0 && argc > 1) {
 
       if (!isdigit(*(argv[1]))) {
-	spindump_errorf("expected a numeric argument for --max-receive, got %s", argv[1]);
-	exit(1);
+        spindump_errorf("expected a numeric argument for --max-receive, got %s", argv[1]);
+        exit(1);
       }
       config->maxReceive = (unsigned int)atoi(argv[1]);
       argc--; argv++;
@@ -358,17 +358,17 @@ spindump_main_processargs(int argc,
       memset(&side1network,0,sizeof(side1network));
       
       if (side1ishost) {
-	if (!spindump_address_fromstring(&side1address,side1string)) {
-	  spindump_errorf("expected an address as first argument for --aggregate, got %s", side1string);
-	  exit(1);
-	}
-	side1isgroup = spindump_address_ismulticast(&side1address);
+        if (!spindump_address_fromstring(&side1address,side1string)) {
+          spindump_errorf("expected an address as first argument for --aggregate, got %s", side1string);
+          exit(1);
+        }
+        side1isgroup = spindump_address_ismulticast(&side1address);
       } else {
-	if (!spindump_network_fromstring(&side1network,side1string)) {
-	  spindump_errorf("expected a network as first argument bor --aggregate, got %s", side1string);
-	  exit(1);
-	}
-	side1isgroup = spindump_network_ismulticast(&side1network);
+        if (!spindump_network_fromstring(&side1network,side1string)) {
+          spindump_errorf("expected a network as first argument bor --aggregate, got %s", side1string);
+          exit(1);
+        }
+        side1isgroup = spindump_network_ismulticast(&side1network);
       }
 
       spindump_deepdebugf("side1isgroup = %u side1ishost = %u", side1isgroup, side1ishost);
@@ -393,41 +393,41 @@ spindump_main_processargs(int argc,
       
       if (!side1isgroup) {
 
-	if (!(argc > 1)) {
-	  spindump_errorf("expected two addresses or networks as arguments to --aggregate, got just one (%s)",
-			  side1string);
-	  exit(1);
-	}
+        if (!(argc > 1)) {
+          spindump_errorf("expected two addresses or networks as arguments to --aggregate, got just one (%s)",
+                          side1string);
+          exit(1);
+        }
 
-	const char* side2string = argv[1];
+        const char* side2string = argv[1];
 
-	//
-	// Determine whether the second argument is host or a network
-	//
+        //
+        // Determine whether the second argument is host or a network
+        //
 
-	side2ishost = (index(side2string,'/') == 0);
+        side2ishost = (index(side2string,'/') == 0);
 
-	//
-	// Parse the second argument
-	//
+        //
+        // Parse the second argument
+        //
 
-	if (side2ishost) {
-	  if (!spindump_address_fromstring(&side2address,side2string)) {
-	    spindump_errorf("expected an address as second argument for --aggregate, got %s", side2string);
-	    exit(1);
-	  }
-	} else {
-	  if (!spindump_network_fromstring(&side2network,side2string)) {
-	    spindump_errorf("expected a network as second argument for --aggregate, got %s", side2string);
-	    exit(1);
-	  }
-	}
+        if (side2ishost) {
+          if (!spindump_address_fromstring(&side2address,side2string)) {
+            spindump_errorf("expected an address as second argument for --aggregate, got %s", side2string);
+            exit(1);
+          }
+        } else {
+          if (!spindump_network_fromstring(&side2network,side2string)) {
+            spindump_errorf("expected a network as second argument for --aggregate, got %s", side2string);
+            exit(1);
+          }
+        }
 
-	//
-	// Move past the second argument
-	//
+        //
+        // Move past the second argument
+        //
 
-	argc--; argv++;
+        argc--; argv++;
 
       }
 
@@ -437,9 +437,9 @@ spindump_main_processargs(int argc,
       //
 
       if (config->nAggregates >= spindump_main_maxnaggregates) {
-	  spindump_errorf("too many aggregates specified, can only support %u",
-			  spindump_main_maxnaggregates);
-	  exit(1);
+          spindump_errorf("too many aggregates specified, can only support %u",
+                          spindump_main_maxnaggregates);
+          exit(1);
       }
 
       struct spindump_main_aggregate* aggregate = &config->aggregates[config->nAggregates++];
@@ -465,38 +465,38 @@ spindump_main_processargs(int argc,
 
       if (config->filter == 0) {
 
-	//
-	// No filter components seen before. Allocate a fresh string.
-	//
+        //
+        // No filter components seen before. Allocate a fresh string.
+        //
 
-	spindump_deepdebugf("initial filter component...");
-	config->filter = spindump_strdup(argv[0]);
-	if (config->filter == 0) {
-	  spindump_errorf("Cannot allocate %u bytes", strlen(argv[0])+1);
-	  exit(1);
-	}
+        spindump_deepdebugf("initial filter component...");
+        config->filter = spindump_strdup(argv[0]);
+        if (config->filter == 0) {
+          spindump_errorf("Cannot allocate %u bytes", strlen(argv[0])+1);
+          exit(1);
+        }
 
       } else {
 
-	//
-	// Additional components to a filter that has already begun in
-	// previous arguments.
-	//
+        //
+        // Additional components to a filter that has already begun in
+        // previous arguments.
+        //
 
-	spindump_deepdebugf("additional filter components...");
-	char* prevfilter = config->filter;
-	unsigned long n = strlen(prevfilter) + 1 + strlen(argv[0]) + 1;
-	config->filter = spindump_malloc(n);
-	
-	if (config->filter == 0) {
-	  spindump_errorf("Cannot allocate %u bytes", n);
-	  exit(1);
-	} else {
-	  spindump_strlcpy(config->filter,prevfilter,n);
-	  spindump_strlcat(config->filter," ",n);
-	  spindump_strlcat(config->filter,argv[0],n);
-	  spindump_free(prevfilter);
-	}
+        spindump_deepdebugf("additional filter components...");
+        char* prevfilter = config->filter;
+        unsigned long n = strlen(prevfilter) + 1 + strlen(argv[0]) + 1;
+        config->filter = spindump_malloc(n);
+        
+        if (config->filter == 0) {
+          spindump_errorf("Cannot allocate %u bytes", n);
+          exit(1);
+        } else {
+          spindump_strlcpy(config->filter,prevfilter,n);
+          spindump_strlcat(config->filter," ",n);
+          spindump_strlcat(config->filter,argv[0],n);
+          spindump_free(prevfilter);
+        }
       }
 
     }

@@ -32,7 +32,7 @@
 //
 
 #ifndef spindump_seqtracker_nstored
-#define spindump_seqtracker_nstored		50
+#define spindump_seqtracker_nstored             50
 #endif
 
 //
@@ -62,15 +62,15 @@ void
 spindump_seqtracker_initialize(struct spindump_seqtracker* tracker);
 void
 spindump_seqtracker_add(struct spindump_seqtracker* tracker,
-			struct timeval* ts,
-			tcp_seq seq,
-			unsigned int payloadlen,
-			int finset);
+                        struct timeval* ts,
+                        tcp_seq seq,
+                        unsigned int payloadlen,
+                        int finset);
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
-			  tcp_seq seq,
-			  tcp_seq* sentSeq,
-			  int* sentFin);
+                          tcp_seq seq,
+                          tcp_seq* sentSeq,
+                          int* sentFin);
 void
 spindump_seqtracker_uninitialize(struct spindump_seqtracker* tracker);
 

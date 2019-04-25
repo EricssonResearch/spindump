@@ -35,9 +35,9 @@
 
 static void
 spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connection,
-					    const struct timeval* now,
-					    struct spindump_connectionstable* table,
-					    struct spindump_analyze* analyzer);
+                                            const struct timeval* now,
+                                            struct spindump_connectionstable* table,
+                                            struct spindump_analyze* analyzer);
 static void
 spindump_connectionstable_compresstable(struct spindump_connectionstable* table);
 
@@ -157,9 +157,9 @@ spindump_connectionstable_uninitialize(struct spindump_connectionstable* table) 
 
 static void
 spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connection,
-					    const struct timeval* now,
-					    struct spindump_connectionstable* table,
-					    struct spindump_analyze* analyzer) {
+                                            const struct timeval* now,
+                                            struct spindump_connectionstable* table,
+                                            struct spindump_analyze* analyzer) {
 
 
   //
@@ -201,12 +201,12 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
     stats->connectionsDeletedClosed++;
     
   } else if (spindump_connections_isestablishing(connection) &&
-	     lastAction >= (unsigned long long)(spindump_connection_establishing_timeout)) {
+             lastAction >= (unsigned long long)(spindump_connection_establishing_timeout)) {
     
     spindump_deepdebugf("timeouts last action %llu timeout %lu comparison %llu",
-			lastAction,
-			spindump_connection_establishing_timeout,
-			(unsigned long long)(spindump_connection_establishing_timeout));
+                        lastAction,
+                        spindump_connection_establishing_timeout,
+                        (unsigned long long)(spindump_connection_establishing_timeout));
     spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed");
     stats->connectionsDeletedInactive++;
     
@@ -248,8 +248,8 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
 
 int
 spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
-					const struct timeval* now,
-					struct spindump_analyze* analyzer) {
+                                        const struct timeval* now,
+                                        struct spindump_analyze* analyzer) {
   spindump_assert(now->tv_sec > 0);
   spindump_assert(now->tv_usec < 1000 * 1000);
   if (table->lastPeriodicCheck.tv_sec != now->tv_sec) {
@@ -271,9 +271,9 @@ spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
 
 void
 spindump_connectionstable_deleteconnection(struct spindump_connection* connection,
-					   struct spindump_connectionstable* table,
-					   struct spindump_analyze* analyzer,
-					   const char* reason) {
+                                           struct spindump_connectionstable* table,
+                                           struct spindump_analyze* analyzer,
+                                           const char* reason) {
 
   //
   // Do some checks & print debugs
@@ -284,9 +284,9 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
   spindump_assert(reason != 0);
   
   spindump_debugf("deleting %s connection %u due to %s",
-		  spindump_connection_type_to_string(connection->type),
-		  connection->id,
-		  reason);
+                  spindump_connection_type_to_string(connection->type),
+                  connection->id,
+                  reason);
   
   //
   // Call some handlers
@@ -296,9 +296,9 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
   memset(&dummy,0,sizeof(dummy));
   spindump_getcurrenttime(&dummy.timestamp);
   spindump_analyze_process_handlers(analyzer,
-				    spindump_analyze_event_connectiondelete,
-				    &dummy,
-				    connection);
+                                    spindump_analyze_event_connectiondelete,
+                                    &dummy,
+                                    connection);
   
   //
   // Delete the connection from the table
@@ -328,9 +328,9 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
 
 void
 spindump_connectionstable_report(struct spindump_connectionstable* table,
-				 FILE* file,
-				 int anonymize,
-				 struct spindump_reverse_dns* querier) {
+                                 FILE* file,
+                                 int anonymize,
+                                 struct spindump_reverse_dns* querier) {
 
   //
   // Sanity checks

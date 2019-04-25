@@ -154,10 +154,10 @@ spindump_reverse_dns_resolveinternal(spindump_address* address) {
   int err;
 #if defined(__linux__)
   if ((err = getnameinfo(sa, sizeof(*sa), hbuf, sizeof(hbuf)-1, NULL, 0,
-		  NI_NAMEREQD))) {
+                  NI_NAMEREQD))) {
 #else
   if ((err = getnameinfo(sa, sa->sa_len, hbuf, sizeof(hbuf)-1, NULL, 0,
-		  NI_NAMEREQD))) {
+                  NI_NAMEREQD))) {
 #endif
     spindump_deepdebugf("spindump_reversedns getnameinfo returned error code %s ", gai_strerror(err));
     return(0);
@@ -265,7 +265,7 @@ spindump_reverse_dns_backgroundfunction(void* data) {
 
     while (service->nextEntryIndex > previousNextEntryIndex) {
       struct spindump_reverse_dns_entry* entry =
-	&service->entries[previousNextEntryIndex++ % spindump_reverse_dns_maxnentries];
+        &service->entries[previousNextEntryIndex++ % spindump_reverse_dns_maxnentries];
       spindump_reverse_dns_backgroundfunction_resolveone(entry);
     }
 

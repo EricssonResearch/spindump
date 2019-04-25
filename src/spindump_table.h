@@ -47,17 +47,17 @@ void
 spindump_connectionstable_uninitialize(struct spindump_connectionstable* table);
 int
 spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
-					const struct timeval* now,
-					struct spindump_analyze* analyzer);
+                                        const struct timeval* now,
+                                        struct spindump_analyze* analyzer);
 void
 spindump_connectionstable_deleteconnection(struct spindump_connection* connection,
-					   struct spindump_connectionstable* table,
-					   struct spindump_analyze* analyzer,
-					   const char* reason);
+                                           struct spindump_connectionstable* table,
+                                           struct spindump_analyze* analyzer,
+                                           const char* reason);
 void
 spindump_connectionstable_report(struct spindump_connectionstable* table,
-				 FILE* file,
-				 int anonymize,
-				 struct spindump_reverse_dns* querier);
+                                 FILE* file,
+                                 int anonymize,
+                                 struct spindump_reverse_dns* querier);
 
 #endif // SPINDUMP_TABLE_H

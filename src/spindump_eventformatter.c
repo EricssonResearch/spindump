@@ -41,38 +41,38 @@ static void
 spindump_eventformatter_measurement_begin(struct spindump_eventformatter* formatter);
 static const uint8_t*
 spindump_eventformatter_measurement_beginaux(struct spindump_eventformatter* formatter,
-					     unsigned long* length);
+                                             unsigned long* length);
 static const uint8_t*
 spindump_eventformatter_measurement_midaux(struct spindump_eventformatter* formatter,
-					   unsigned long* length);
+                                           unsigned long* length);
 static unsigned long
 spindump_eventformatter_measurement_endlength(struct spindump_eventformatter* formatter);
 static void
 spindump_eventformatter_measurement_end(struct spindump_eventformatter* formatter);
 static const uint8_t*
 spindump_eventformatter_measurement_endaux(struct spindump_eventformatter* formatter,
-					   unsigned long* length);
+                                           unsigned long* length);
 static void
 spindump_eventformatter_measurement_one(struct spindump_analyze* state,
-					void* handlerData,
-					void** handlerConnectionData,
-					spindump_analyze_event event,
-					struct spindump_packet* packet,
-					struct spindump_connection* connection);
+                                        void* handlerData,
+                                        void** handlerConnectionData,
+                                        spindump_analyze_event event,
+                                        struct spindump_packet* packet,
+                                        struct spindump_connection* connection);
 static struct spindump_eventformatter*
 spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
-				   enum spindump_eventformatter_outputformat format,
-				   struct spindump_reverse_dns* querier,
-				   int reportSpins,
-				   int reportSpinFlips,
-				   int anonymizeLeft,
-				   int anonymizeRight);
+                                   enum spindump_eventformatter_outputformat format,
+                                   struct spindump_reverse_dns* querier,
+                                   int reportSpins,
+                                   int reportSpinFlips,
+                                   int anonymizeLeft,
+                                   int anonymizeRight);
 static const char*
 spindump_eventformatter_mediatype(enum spindump_eventformatter_outputformat format);
 static void
 spindump_eventformatter_deliverdata_remoteblock(struct spindump_eventformatter* formatter,
-						unsigned long length,
-						const uint8_t* data);
+                                                unsigned long length,
+                                                const uint8_t* data);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -80,12 +80,12 @@ spindump_eventformatter_deliverdata_remoteblock(struct spindump_eventformatter* 
 
 static struct spindump_eventformatter*
 spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
-				   enum spindump_eventformatter_outputformat format,
-				   struct spindump_reverse_dns* querier,
-				   int reportSpins,
-				   int reportSpinFlips,
-				   int anonymizeLeft,
-				   int anonymizeRight) {
+                                   enum spindump_eventformatter_outputformat format,
+                                   struct spindump_reverse_dns* querier,
+                                   int reportSpins,
+                                   int reportSpinFlips,
+                                   int anonymizeLeft,
+                                   int anonymizeRight) {
   
   //
   // Allocate an object
@@ -122,10 +122,10 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   //
   
   spindump_analyze_registerhandler(analyzer,
-				   spindump_analyze_event_alllegal,
-				   0,
-				   spindump_eventformatter_measurement_one,
-				   formatter);
+                                   spindump_analyze_event_alllegal,
+                                   0,
+                                   spindump_eventformatter_measurement_one,
+                                   formatter);
 
   //
   // Done. Return the object.
@@ -137,25 +137,25 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
 
 struct spindump_eventformatter*
 spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
-					enum spindump_eventformatter_outputformat format,
-					FILE* file,
-					struct spindump_reverse_dns* querier,
-					int reportSpins,
-					int reportSpinFlips,
-					int anonymizeLeft,
-					int anonymizeRight) {
+                                        enum spindump_eventformatter_outputformat format,
+                                        FILE* file,
+                                        struct spindump_reverse_dns* querier,
+                                        int reportSpins,
+                                        int reportSpinFlips,
+                                        int anonymizeLeft,
+                                        int anonymizeRight) {
   
   //
   // Call the basic eventformatter initialization
   //
 
   struct spindump_eventformatter* formatter = spindump_eventformatter_initialize(analyzer,
-										 format,
-										 querier,
-										 reportSpins,
-										 reportSpinFlips,
-										 anonymizeLeft,
-										 anonymizeRight);
+                                                                                 format,
+                                                                                 querier,
+                                                                                 reportSpins,
+                                                                                 reportSpinFlips,
+                                                                                 anonymizeLeft,
+                                                                                 anonymizeRight);
   if (formatter == 0) {
     return(0);
   }
@@ -181,15 +181,15 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
 
 struct spindump_eventformatter*
 spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
-					  enum spindump_eventformatter_outputformat format,
-					  unsigned int nRemotes,
-					  struct spindump_remote_client** remotes,
-					  unsigned long blockSize,
-					  struct spindump_reverse_dns* querier,
-					  int reportSpins,
-					  int reportSpinFlips,
-					  int anonymizeLeft,
-					  int anonymizeRight) {
+                                          enum spindump_eventformatter_outputformat format,
+                                          unsigned int nRemotes,
+                                          struct spindump_remote_client** remotes,
+                                          unsigned long blockSize,
+                                          struct spindump_reverse_dns* querier,
+                                          int reportSpins,
+                                          int reportSpinFlips,
+                                          int anonymizeLeft,
+                                          int anonymizeRight) {
   
   //
   // Call the basic eventformatter initialization
@@ -197,12 +197,12 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
 
   spindump_deepdebugf("eventformatter_initialize_remote");
   struct spindump_eventformatter* formatter = spindump_eventformatter_initialize(analyzer,
-										 format,
-										 querier,
-										 reportSpins,
-										 reportSpinFlips,
-										 anonymizeLeft,
-										 anonymizeRight);
+                                                                                 format,
+                                                                                 querier,
+                                                                                 reportSpins,
+                                                                                 reportSpinFlips,
+                                                                                 anonymizeLeft,
+                                                                                 anonymizeRight);
   if (formatter == 0) {
     return(0);
   }
@@ -241,9 +241,9 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
        spindump_eventformatter_measurement_beginlength(formatter) > spindump_eventformatter_maxpreamble ||
        spindump_eventformatter_measurement_beginlength(formatter) > spindump_eventformatter_maxpostamble)) {
     spindump_errorf("preamble and postamble lengths (%lu,%lu) are too large or exceed the block size %lu",
-		    spindump_eventformatter_measurement_beginlength(formatter),
-		    spindump_eventformatter_measurement_endlength(formatter),
-		    formatter->blockSize);
+                    spindump_eventformatter_measurement_beginlength(formatter),
+                    spindump_eventformatter_measurement_endlength(formatter),
+                    formatter->blockSize);
     spindump_free(formatter->block);
     spindump_free(formatter);
     return(0);
@@ -293,10 +293,10 @@ spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter) 
   //
 
   spindump_analyze_unregisterhandler(formatter->analyzer,
-				     spindump_analyze_event_alllegal,
-				     0,
-				     spindump_eventformatter_measurement_one,
-				     formatter);
+                                     spindump_analyze_event_alllegal,
+                                     0,
+                                     spindump_eventformatter_measurement_one,
+                                     formatter);
   
   //
   // Free the memory
@@ -345,7 +345,7 @@ spindump_eventformatter_measurement_begin(struct spindump_eventformatter* format
 
 static const uint8_t*
 spindump_eventformatter_measurement_beginaux(struct spindump_eventformatter* formatter,
-					     unsigned long* length) {
+                                             unsigned long* length) {
   *length = spindump_eventformatter_measurement_beginlength(formatter);
   switch (formatter->format) {
   case spindump_eventformatter_outputformat_text:
@@ -381,7 +381,7 @@ spindump_eventformatter_measurement_midlength(struct spindump_eventformatter* fo
 
 static const uint8_t*
 spindump_eventformatter_measurement_midaux(struct spindump_eventformatter* formatter,
-					   unsigned long* length) {
+                                           unsigned long* length) {
   *length = spindump_eventformatter_measurement_midlength(formatter);
   switch (formatter->format) {
   case spindump_eventformatter_outputformat_text:
@@ -428,7 +428,7 @@ spindump_eventformatter_measurement_end(struct spindump_eventformatter* formatte
 
 static const uint8_t*
 spindump_eventformatter_measurement_endaux(struct spindump_eventformatter* formatter,
-					   unsigned long* length) {
+                                           unsigned long* length) {
   *length = spindump_eventformatter_measurement_endlength(formatter);
   switch (formatter->format) {
   case spindump_eventformatter_outputformat_text:
@@ -448,11 +448,11 @@ spindump_eventformatter_measurement_endaux(struct spindump_eventformatter* forma
 
 static void
 spindump_eventformatter_measurement_one(struct spindump_analyze* state,
-					void* handlerData,
-					void** handlerConnectionData,
-					spindump_analyze_event event,
-					struct spindump_packet* packet,
-					struct spindump_connection* connection) {
+                                        void* handlerData,
+                                        void** handlerConnectionData,
+                                        spindump_analyze_event event,
+                                        struct spindump_packet* packet,
+                                        struct spindump_connection* connection) {
 
   //
   // Sanity checks
@@ -550,14 +550,14 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   spindump_network responderAddress;
   spindump_connections_getnetworks(connection,&initiatorAddress,&responderAddress);
   spindump_event_initialize(eventType,
-			    connection->type,
-			    &initiatorAddress,
-			    &responderAddress,
-			    session,
-			    timestamplonglong,
-			    connection->packetsFromSide1 + connection->packetsFromSide2,
-			    connection->bytesFromSide1 + connection->bytesFromSide2,
-			    &eventobj);
+                            connection->type,
+                            &initiatorAddress,
+                            &responderAddress,
+                            session,
+                            timestamplonglong,
+                            connection->packetsFromSide1 + connection->packetsFromSide2,
+                            connection->bytesFromSide1 + connection->bytesFromSide2,
+                            &eventobj);
 
 
   switch (event) {
@@ -677,8 +677,8 @@ spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter) {
     memcpy(formatter->block + formatter->bytesInBlock,postamble,postambleLength);
     formatter->bytesInBlock += postambleLength;
     spindump_eventformatter_deliverdata_remoteblock(formatter,
-						    formatter->bytesInBlock,
-						    formatter->block);
+                                                    formatter->bytesInBlock,
+                                                    formatter->block);
     formatter->bytesInBlock = 0;
     spindump_eventformatter_measurement_begin(formatter);
   }
@@ -694,8 +694,8 @@ spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter) {
 
 void
 spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
-				    unsigned long length,
-				    const uint8_t* data) {
+                                    unsigned long length,
+                                    const uint8_t* data) {
   if (formatter->file != 0) {
     
     //
@@ -703,13 +703,13 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
     //
 
     spindump_deepdebugf("deliverdata midamble check length %u postambleLength %u entries %u",
-			length, formatter->postambleLength, formatter->nEntries);
+                        length, formatter->postambleLength, formatter->nEntries);
     if (length > spindump_eventformatter_maxamble) {
       if (formatter->nEntries > 0) {
-	size_t midlength;
-	const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
-	fwrite(mid,midlength,1,formatter->file);
-	spindump_deepdebugf("adding the midamble %s", mid);
+        size_t midlength;
+        const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
+        fwrite(mid,midlength,1,formatter->file);
+        spindump_deepdebugf("adding the midamble %s", mid);
       }
       formatter->nEntries++;
     }
@@ -730,8 +730,8 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
 
     if (formatter->blockSize == 0) {
       spindump_eventformatter_deliverdata_remoteblock(formatter,
-						      length,
-						      data);
+                                                      length,
+                                                      data);
     } else {
       
       //
@@ -739,71 +739,71 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
       //
       
       if (formatter->bytesInBlock + spindump_eventformatter_maxmidamble + length + spindump_eventformatter_maxpostamble <
-	  formatter->blockSize) {
-	
-	//
-	// All fits in and still some space
-	//
+          formatter->blockSize) {
+        
+        //
+        // All fits in and still some space
+        //
 
-	spindump_deepdebugf("(1) checking to see if need to insert the midamble (%u bytes vs. %u preamble length",
-			    formatter->bytesInBlock, formatter->preambleLength);
-	if (formatter->bytesInBlock > formatter->preambleLength) {
-	  size_t midlength;
-	  const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
-	  spindump_deepdebugf("(1) adding midamble %s of %u bytes", mid, midlength);
-	  memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);
-	  formatter->bytesInBlock += midlength;
-	}
-	memcpy(formatter->block + formatter->bytesInBlock,data,length);
-	formatter->bytesInBlock += length;
-	
+        spindump_deepdebugf("(1) checking to see if need to insert the midamble (%u bytes vs. %u preamble length",
+                            formatter->bytesInBlock, formatter->preambleLength);
+        if (formatter->bytesInBlock > formatter->preambleLength) {
+          size_t midlength;
+          const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
+          spindump_deepdebugf("(1) adding midamble %s of %u bytes", mid, midlength);
+          memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);
+          formatter->bytesInBlock += midlength;
+        }
+        memcpy(formatter->block + formatter->bytesInBlock,data,length);
+        formatter->bytesInBlock += length;
+        
       } else if (formatter->bytesInBlock + spindump_eventformatter_maxmidamble + length + spindump_eventformatter_maxpostamble ==
-		 formatter->blockSize) {
-	
-	//
-	// All fits in but exactly
-	//
-	
-	spindump_deepdebugf("(2) checking to see if need to insert the midamble (%u bytes vs. %u preamble length",
-			    formatter->bytesInBlock, formatter->preambleLength);
-	if (formatter->bytesInBlock > formatter->preambleLength) {
-	  size_t midlength;
-	  const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
-	  spindump_deepdebugf("(2) adding midamble %s of %u bytes", mid, midlength);
-	  memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);
-	  formatter->bytesInBlock += midlength;
-	}
-	memcpy(formatter->block + formatter->bytesInBlock,data,length);
-	formatter->bytesInBlock += length;
-	unsigned long postambleLength;
-	const uint8_t* postamble = spindump_eventformatter_measurement_endaux(formatter,&postambleLength);
-	memcpy(formatter->block + formatter->bytesInBlock,postamble,postambleLength);
-	formatter->bytesInBlock += postambleLength;
-	spindump_eventformatter_deliverdata_remoteblock(formatter,
-							formatter->bytesInBlock,
-							formatter->block);
-	formatter->bytesInBlock = 0;
-	spindump_eventformatter_measurement_begin(formatter);
-	
+                 formatter->blockSize) {
+        
+        //
+        // All fits in but exactly
+        //
+        
+        spindump_deepdebugf("(2) checking to see if need to insert the midamble (%u bytes vs. %u preamble length",
+                            formatter->bytesInBlock, formatter->preambleLength);
+        if (formatter->bytesInBlock > formatter->preambleLength) {
+          size_t midlength;
+          const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
+          spindump_deepdebugf("(2) adding midamble %s of %u bytes", mid, midlength);
+          memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);
+          formatter->bytesInBlock += midlength;
+        }
+        memcpy(formatter->block + formatter->bytesInBlock,data,length);
+        formatter->bytesInBlock += length;
+        unsigned long postambleLength;
+        const uint8_t* postamble = spindump_eventformatter_measurement_endaux(formatter,&postambleLength);
+        memcpy(formatter->block + formatter->bytesInBlock,postamble,postambleLength);
+        formatter->bytesInBlock += postambleLength;
+        spindump_eventformatter_deliverdata_remoteblock(formatter,
+                                                        formatter->bytesInBlock,
+                                                        formatter->block);
+        formatter->bytesInBlock = 0;
+        spindump_eventformatter_measurement_begin(formatter);
+        
       } else {
 
-	//
-	// Latest entry does not fit in, send the current block and
-	// then put this entry to the buffer
-	//
-	
-	unsigned long postambleLength;
-	const uint8_t* postamble = spindump_eventformatter_measurement_endaux(formatter,&postambleLength);
-	memcpy(formatter->block + formatter->bytesInBlock,postamble,postambleLength);
-	formatter->bytesInBlock += postambleLength;
-	spindump_eventformatter_deliverdata_remoteblock(formatter,
-							formatter->bytesInBlock,
-							formatter->block);
-	formatter->bytesInBlock = 0;
-	spindump_eventformatter_measurement_begin(formatter);
-	memcpy(formatter->block,data,length);
-	formatter->bytesInBlock = length;
-	
+        //
+        // Latest entry does not fit in, send the current block and
+        // then put this entry to the buffer
+        //
+        
+        unsigned long postambleLength;
+        const uint8_t* postamble = spindump_eventformatter_measurement_endaux(formatter,&postambleLength);
+        memcpy(formatter->block + formatter->bytesInBlock,postamble,postambleLength);
+        formatter->bytesInBlock += postambleLength;
+        spindump_eventformatter_deliverdata_remoteblock(formatter,
+                                                        formatter->bytesInBlock,
+                                                        formatter->block);
+        formatter->bytesInBlock = 0;
+        spindump_eventformatter_measurement_begin(formatter);
+        memcpy(formatter->block,data,length);
+        formatter->bytesInBlock = length;
+        
       }
     }
     
@@ -820,8 +820,8 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
 
 static void
 spindump_eventformatter_deliverdata_remoteblock(struct spindump_eventformatter* formatter,
-						unsigned long length,
-						const uint8_t* data) {
+                                                unsigned long length,
+                                                const uint8_t* data) {
   for (unsigned int i = 0; i < formatter->nRemotes; i++) {
     struct spindump_remote_client* client = formatter->remotes[i];
     spindump_assert(client != 0);

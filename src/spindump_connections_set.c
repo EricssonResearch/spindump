@@ -32,7 +32,7 @@
 
 static void
 spindump_connections_set_unlinkfromset(struct spindump_connection* connection,
-				       struct spindump_connection* otherConnection);
+                                       struct spindump_connection* otherConnection);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ spindump_connections_set_unlinkfromset(struct spindump_connection* connection,
 
 static void
 spindump_connections_set_unlinkfromset(struct spindump_connection* connection,
-				       struct spindump_connection* otherConnection) {
+                                       struct spindump_connection* otherConnection) {
   spindump_assert(connection != 0);
   spindump_assert(otherConnection != 0);
   if (spindump_connections_set_inset(&connection->aggregates,otherConnection)) {
@@ -117,7 +117,7 @@ spindump_connections_set_initialize(struct spindump_connection_set* set) {
 
 void
 spindump_connections_set_uninitialize(struct spindump_connection_set* set,
-				      struct spindump_connection* owner) {
+                                      struct spindump_connection* owner) {
   spindump_assert(set != 0);
   if (set->maxNConnections > 0) {
     unsigned int i;
@@ -138,7 +138,7 @@ spindump_connections_set_uninitialize(struct spindump_connection_set* set,
 
 int
 spindump_connections_set_inset(struct spindump_connection_set* set,
-			       struct spindump_connection* connection) {
+                               struct spindump_connection* connection) {
   spindump_assert(set != 0);
   spindump_assert(connection != 0);
   for (unsigned int i = 0; i < set->nConnections; i++) {
@@ -153,7 +153,7 @@ spindump_connections_set_inset(struct spindump_connection_set* set,
 
 void
 spindump_connections_set_add(struct spindump_connection_set* set,
-			     struct spindump_connection* connection) {
+                             struct spindump_connection* connection) {
   spindump_assert(set != 0);
   spindump_assert(connection != 0);
   spindump_assert(!spindump_connections_set_inset(set,connection));
@@ -213,7 +213,7 @@ spindump_connections_set_add(struct spindump_connection_set* set,
 
 void
 spindump_connections_set_remove(struct spindump_connection_set* set,
-				struct spindump_connection* connection) {
+                                struct spindump_connection* connection) {
   spindump_assert(set != 0);
   spindump_assert(connection != 0);
   spindump_assert(set->nConnections > 0);
@@ -223,7 +223,7 @@ spindump_connections_set_remove(struct spindump_connection_set* set,
   for (unsigned int i = 0; i < set->nConnections; i++) {
     if (set->set[i] == connection) {
       for (unsigned int j = i+1; j < set->nConnections; j++) {
-	set->set[j-1] = set->set[j];
+        set->set[j-1] = set->set[j];
       }
       set->set[set->nConnections -1] = 0;
       set->nConnections--;
@@ -232,7 +232,7 @@ spindump_connections_set_remove(struct spindump_connection_set* set,
   }
   
   spindump_errorf("attempted to remove connection %u from a set that does not include that connection",
-		  connection->id);
+                  connection->id);
 }
 
 //
@@ -251,10 +251,10 @@ spindump_connections_set_listids(struct spindump_connection_set* set) {
     struct spindump_connection* connection = set->set[i];
     if (connection != 0) {
       snprintf(buf+strlen(buf),
-	       sizeof(buf)-1-strlen(buf),
-	       "%s%u",
-	       seenone ? "," : "",
-	       connection->id);
+               sizeof(buf)-1-strlen(buf),
+               "%s%u",
+               seenone ? "," : "",
+               connection->id);
       seenone = 1;
     }
   }

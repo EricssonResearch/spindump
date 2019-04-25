@@ -29,14 +29,14 @@
 // Some helper macros -------------------------------------------------------------------------
 //
 
-#define spindump_checktest(cond)  do {                             	                 \
+#define spindump_checktest(cond)  do {                                                   \
                                     spindump_debugf("running check %s on line %u",       \
                                                     #cond, __LINE__);                    \
-                                    if (!(cond)) {                             	         \
+                                    if (!(cond)) {                                       \
                                       spindump_fatalf("Test %s failed on %s line %u",    \
-                                                      #cond,               	         \
-                                                      __FILE__, __LINE__);		 \
-                                    }                           	                 \
+                                                      #cond,                             \
+                                                      __FILE__, __LINE__);               \
+                                    }                                                    \
                                   } while(0)
 
 #endif // SPIDUMP_TEST_H

@@ -88,7 +88,7 @@ struct spindump_stats*
 spindump_stats_initialize(void);
 void
 spindump_stats_report(struct spindump_stats* stats,
-		      FILE* file);
+                      FILE* file);
 void
 spindump_stats_uninitialize(struct spindump_stats* state);
 

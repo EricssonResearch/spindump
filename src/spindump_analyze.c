@@ -12,7 +12,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
-//  AUTHOR: JARI ARKKO
+//  AUTHOR: JARI ARKKO AND MARCUS IHLAR
 //
 //
 
@@ -42,15 +42,15 @@
 
 static void
 spindump_analyze_process_null(struct spindump_analyze* state,
-			      struct spindump_packet* packet,
-			      struct spindump_connection** p_connection);
+                              struct spindump_packet* packet,
+                              struct spindump_connection** p_connection);
 static void
 spindump_analyze_process_ethernet(struct spindump_analyze* state,
-				  struct spindump_packet* packet,
-				  struct spindump_connection** p_connection);
+                                  struct spindump_packet* packet,
+                                  struct spindump_connection** p_connection);
 static int
 spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
-						     spindump_handler_mask mask);
+                                                     spindump_handler_mask mask);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -69,10 +69,10 @@ spindump_analyze_initialize(void) {
 
   if (spindump_connection_max_handlers != spindump_analyze_max_handlers) {
     spindump_errorf("the maximum number of registered handlers must be defined to be the same, "
-		    "now spindump_connection_max_handlers (%u) and spindump_analyze_max_handlers (%u) "
-		    "differ",
-		    spindump_connection_max_handlers,
-		    spindump_analyze_max_handlers);
+                    "now spindump_connection_max_handlers (%u) and spindump_analyze_max_handlers (%u) "
+                    "differ",
+                    spindump_connection_max_handlers,
+                    spindump_analyze_max_handlers);
     return(0);
   }
 
@@ -147,10 +147,10 @@ spindump_analyze_uninitialize(struct spindump_analyze* state) {
 
 void
 spindump_analyze_registerhandler(struct spindump_analyze* state,
-				 spindump_analyze_event eventmask,
-				 struct spindump_connection* connection,
-				 spindump_analyze_handler handler,
-				 void* handlerData) {
+                                 spindump_analyze_event eventmask,
+                                 struct spindump_connection* connection,
+                                 spindump_analyze_handler handler,
+                                 void* handlerData) {
   //
   // Checks
   //
@@ -181,10 +181,10 @@ spindump_analyze_registerhandler(struct spindump_analyze* state,
 
 void
 spindump_analyze_unregisterhandler(struct spindump_analyze* state,
-				   spindump_analyze_event eventmask,
-				   struct spindump_connection* connection,
-				   spindump_analyze_handler handler,
-				   void* handlerData) {
+                                   spindump_analyze_event eventmask,
+                                   struct spindump_connection* connection,
+                                   spindump_analyze_handler handler,
+                                   void* handlerData) {
   
   //
   // Checks
@@ -203,10 +203,10 @@ spindump_analyze_unregisterhandler(struct spindump_analyze* state,
 
     struct spindump_analyze_handler* handlerPtr = &state->handlers[i];
     if (handlerPtr->eventmask == eventmask &&
-	((!handlerPtr->connectionSpecific && connection == 0) ||
-	 (handlerPtr->connectionSpecific && connection != 0)) &&
-	handlerPtr->function == handler &&
-	handlerPtr->handlerData == handlerData) {
+        ((!handlerPtr->connectionSpecific && connection == 0) ||
+         (handlerPtr->connectionSpecific && connection != 0)) &&
+        handlerPtr->function == handler &&
+        handlerPtr->handlerData == handlerData) {
 
       //
       // If this was a connection-specific handler, deregister the
@@ -214,34 +214,34 @@ spindump_analyze_unregisterhandler(struct spindump_analyze* state,
       //
 
       if (connection != 0) {
-	
-	spindump_handler_mask mask = (1 << i);
-	
-	//
-	// Check that the mask was on
-	//
-	
-	if ((connection->handlerMask & mask) == 0) {
-	  spindump_errorf("unregistering a handler for a connection for which it was not registered");
-	}
+        
+        spindump_handler_mask mask = (1 << i);
+        
+        //
+        // Check that the mask was on
+        //
+        
+        if ((connection->handlerMask & mask) == 0) {
+          spindump_errorf("unregistering a handler for a connection for which it was not registered");
+        }
 
-	//
-	// Zero the bit in the mask
-	//
-	
-	connection->handlerMask &= (~mask);
-	spindump_assert((connection->handlerMask & mask) == 0);
+        //
+        // Zero the bit in the mask
+        //
+        
+        connection->handlerMask &= (~mask);
+        spindump_assert((connection->handlerMask & mask) == 0);
 
-	//
-	// Finally, if the handler is still registered in some other
-	// connection objects, we cannot entirely delete it, but
-	// rather just the deletion from the bit mask is enough.
-	//
-	
-	if (spindump_analyze_connectionspecifichandlerstillinuse(state,mask)) {
-	  spindump_deepdebugf("connection-specific handler is still in use by some other connections");
-	  return;
-	}
+        //
+        // Finally, if the handler is still registered in some other
+        // connection objects, we cannot entirely delete it, but
+        // rather just the deletion from the bit mask is enough.
+        //
+        
+        if (spindump_analyze_connectionspecifichandlerstillinuse(state,mask)) {
+          spindump_deepdebugf("connection-specific handler is still in use by some other connections");
+          return;
+        }
       }
       
       //
@@ -258,15 +258,15 @@ spindump_analyze_unregisterhandler(struct spindump_analyze* state,
       //
       
       while (i == state->nHandlers - 1 &&
-	     state->nHandlers > 0 &&
-	     handlerPtr->eventmask == 0 &&
-	     handlerPtr->function == 0 &&
-	     handlerPtr->handlerData == 0) {
-	state->nHandlers--;
-	if  (state->nHandlers > 0) {
-	  i = state->nHandlers - 1;
-	  handlerPtr = &state->handlers[i];
-	}
+             state->nHandlers > 0 &&
+             handlerPtr->eventmask == 0 &&
+             handlerPtr->function == 0 &&
+             handlerPtr->handlerData == 0) {
+        state->nHandlers--;
+        if  (state->nHandlers > 0) {
+          i = state->nHandlers - 1;
+          handlerPtr = &state->handlers[i];
+        }
       }
       
       //
@@ -286,13 +286,13 @@ spindump_analyze_unregisterhandler(struct spindump_analyze* state,
 
 static int
 spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
-						     spindump_handler_mask mask) {
+                                                     spindump_handler_mask mask) {
   for (unsigned int i = 0; i < state->table->nConnections; i++) {
     
     struct spindump_connection* connection = state->table->connections[i];
     
     if (connection != 0 &&
-	(connection->handlerMask & mask) != 0) {
+        (connection->handlerMask & mask) != 0) {
       
       //
       // Found. Return 1.
@@ -310,16 +310,16 @@ spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* st
   
   return(0);
 }
-				   
+                                   
 //
 // Run all the handlers for a specific event
 //
 
 void
 spindump_analyze_process_handlers(struct spindump_analyze* state,
-				  spindump_analyze_event event,
-				  struct spindump_packet* packet,
-				  struct spindump_connection* connection) {
+                                  spindump_analyze_event event,
+                                  struct spindump_packet* packet,
+                                  struct spindump_connection* connection) {
   //
   // Checks
   //
@@ -327,10 +327,10 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
   spindump_assert(state != 0);
   spindump_assert((event & spindump_analyze_event_alllegal) == event);
   spindump_assert(event == spindump_analyze_event_connectiondelete ||
-		  spindump_packet_isvalid(packet));
+                  spindump_packet_isvalid(packet));
   spindump_assert(connection != 0);
   spindump_deepdebugf("calling handlers for event %x (%s)",
-		      event, spindump_analyze_eventtostring(event));
+                      event, spindump_analyze_eventtostring(event));
 
   //
   // Scan through the registered handlers and execute them if they
@@ -344,11 +344,11 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
       spindump_assert(i < spindump_connection_max_handlers);
       spindump_deepdebugf("calling handler %x", handler->eventmask);
       (*(handler->function))(state,
-			     handler->handlerData,
-			     &connection->handlerConnectionDatas[i],
-			     event,
-			     packet,
-			     connection);
+                             handler->handlerData,
+                             &connection->handlerConnectionDatas[i],
+                             event,
+                             packet,
+                             connection);
     }
   }
 
@@ -375,9 +375,9 @@ spindump_analyze_getstats(struct spindump_analyze* state) {
 
 void
 spindump_analyze_getsource(struct spindump_packet* packet,
-			   uint8_t ipVersion,
-			   unsigned int ipHeaderPosition,
-			   spindump_address *address) {
+                           uint8_t ipVersion,
+                           unsigned int ipHeaderPosition,
+                           spindump_address *address) {
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(address != 0);
   if (ipVersion == 4) {
@@ -401,9 +401,9 @@ spindump_analyze_getsource(struct spindump_packet* packet,
 
 void
 spindump_analyze_getdestination(struct spindump_packet* packet,
-				uint8_t ipVersion,
-				unsigned int ipHeaderPosition,
-				spindump_address *address) {
+                                uint8_t ipVersion,
+                                unsigned int ipHeaderPosition,
+                                spindump_address *address) {
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(address != 0);
   if (ipVersion == 4) {
@@ -436,9 +436,9 @@ spindump_analyze_getdestination(struct spindump_packet* packet,
 
 void
 spindump_analyze_process(struct spindump_analyze* state,
-			 enum spindump_capture_linktype linktype,
-			 struct spindump_packet* packet,
-			 struct spindump_connection** p_connection) {
+                         enum spindump_capture_linktype linktype,
+                         struct spindump_packet* packet,
+                         struct spindump_connection** p_connection) {
 
   //
   // Checks
@@ -472,8 +472,8 @@ spindump_analyze_process(struct spindump_analyze* state,
 
 static void
 spindump_analyze_process_null(struct spindump_analyze* state,
-			      struct spindump_packet* packet,
-			      struct spindump_connection** p_connection) {
+                              struct spindump_packet* packet,
+                              struct spindump_connection** p_connection) {
   //
   // Check there is enough of the null header. As pcap_datalink man page says:
   //
@@ -500,7 +500,7 @@ spindump_analyze_process_null(struct spindump_analyze* state,
   if (packet->etherlen < spindump_null_header_size ||
       packet->caplen < spindump_null_header_size) {
     spindump_warnf("not enough bytes for the Null header, only %u bytes in received frame",
-		   packet->etherlen);
+                   packet->etherlen);
     *p_connection = 0;
     return;
   }
@@ -521,18 +521,18 @@ spindump_analyze_process_null(struct spindump_analyze* state,
   switch (nullInt) {
   case 2:
     spindump_analyze_ip_decodeiphdr(state,
-				    packet,
-				    spindump_null_header_size,
-				    p_connection);
+                                    packet,
+                                    spindump_null_header_size,
+                                    p_connection);
     return;
 
   case 22:
   case 28:
   case 30:
     spindump_analyze_ip_decodeip6hdr(state,
-				     packet,
-				     spindump_null_header_size,
-				     p_connection);
+                                     packet,
+                                     spindump_null_header_size,
+                                     p_connection);
     return;
 
   default:
@@ -551,8 +551,8 @@ spindump_analyze_process_null(struct spindump_analyze* state,
 
 void
 spindump_analyze_process_ethernet(struct spindump_analyze* state,
-				  struct spindump_packet* packet,
-				  struct spindump_connection** p_connection) {
+                                  struct spindump_packet* packet,
+                                  struct spindump_connection** p_connection) {
   //
   // Check there is enough of the Ethernet header
   //
@@ -560,7 +560,7 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
   if (packet->etherlen < spindump_ethernet_header_size ||
       packet->caplen < spindump_ethernet_header_size) {
     spindump_warnf("not enough bytes for the Ethernet header, only %u bytes in received frame",
-		   packet->etherlen);
+                   packet->etherlen);
     state->stats->notEnoughPacketForEthernetHdr++;
     *p_connection = 0;
     return;
@@ -576,16 +576,16 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
 
   case spindump_ethertype_ip:
     spindump_analyze_ip_decodeiphdr(state,
-				    packet,
-				    spindump_ethernet_header_size,
-				    p_connection);
+                                    packet,
+                                    spindump_ethernet_header_size,
+                                    p_connection);
     return;
 
   case spindump_ethertype_ip6:
     spindump_analyze_ip_decodeip6hdr(state,
-				     packet,
-				     spindump_ethernet_header_size,
-				     p_connection);
+                                     packet,
+                                     spindump_ethernet_header_size,
+                                     p_connection);
     return;
 
   default:
@@ -608,11 +608,11 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
 
 void
 spindump_analyze_process_pakstats(struct spindump_analyze* state,
-				  struct spindump_connection* connection,
-				  int fromResponder,
-				  struct spindump_packet* packet,
-				  unsigned int ipPacketLength,
-					uint8_t ecnFlags) {
+                                  struct spindump_connection* connection,
+                                  int fromResponder,
+                                  struct spindump_packet* packet,
+                                  unsigned int ipPacketLength,
+                                        uint8_t ecnFlags) {
 
   //
   // Checks
@@ -623,7 +623,7 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
-	spindump_assert(ecnFlags <= 3);
+        spindump_assert(ecnFlags <= 3);
 
   //
   // Update the statistics based on whether the packet was from side1
@@ -681,23 +681,23 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
 
   if (fromResponder && connection->packetsFromSide2 == 1) {
     spindump_analyze_process_handlers(state,
-				      spindump_analyze_event_firstresponsepacket,
-				      packet,
-				      connection);
+                                      spindump_analyze_event_firstresponsepacket,
+                                      packet,
+                                      connection);
   }
 
   spindump_analyze_process_handlers(state,
-				    spindump_analyze_event_newpacket,
-				    packet,
-				    connection);
+                                    spindump_analyze_event_newpacket,
+                                    packet,
+                                    connection);
 
-	if (ecnCe) {
-		spindump_analyze_process_handlers(state,
+        if (ecnCe) {
+                spindump_analyze_process_handlers(state,
                                       fromResponder ? spindump_analyze_event_responderecnce :
-																			spindump_analyze_event_initiatorecnce,
+                                                                                                                                                        spindump_analyze_event_initiatorecnce,
                                       packet,
                                       connection);
-	}
+        }
 
 
 

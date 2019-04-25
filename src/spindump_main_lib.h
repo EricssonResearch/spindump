@@ -30,7 +30,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_main_maxnaggregates	10
+#define spindump_main_maxnaggregates    10
 
 //
 // Data types ---------------------------------------------------------------------------------
@@ -95,10 +95,9 @@ void
 spindump_main_uninitialize(struct spindump_main_state* state);
 void
 spindump_main_processargs(int argc,
-			  char** argv,
-			  struct spindump_main_configuration* config);
+                          char** argv,
+                          struct spindump_main_configuration* config);
 void
 spindump_main_help(void);
 
 #endif // SPINDUMP_MAIN_LIB_H
-

@@ -185,11 +185,11 @@ unittests_table(void) {
   when1.tv_usec = 900 * 1000;
   struct spindump_connection* connection1 =
     spindump_connections_newconnection_icmp(&address1,
-					    &address2,
-					    ICMP_ECHO,
-					    500,
-					    &when1,
-					    table);
+                                            &address2,
+                                            ICMP_ECHO,
+                                            500,
+                                            &when1,
+                                            table);
   spindump_checktest(connection1 != 0);
 
   //
@@ -200,24 +200,24 @@ unittests_table(void) {
   spindump_address_fromstring(&address3,"127.0.0.3");
   struct spindump_connection* connection2 =
     spindump_connections_searchconnection_icmp(&address1,
-					       &address3,
-					       ICMP_ECHO,
-					       500,
-					       table);
+                                               &address3,
+                                               ICMP_ECHO,
+                                               500,
+                                               table);
   spindump_checktest(connection2 == 0);
   struct spindump_connection* connection3 =
     spindump_connections_searchconnection_icmp(&address1,
-					       &address2,
-					       ICMP_ECHOREPLY,
-					       500,
-					       table);
+                                               &address2,
+                                               ICMP_ECHOREPLY,
+                                               500,
+                                               table);
   spindump_checktest(connection3 == 0);
   struct spindump_connection* connection4 =
     spindump_connections_searchconnection_icmp(&address1,
-					       &address2,
-					       ICMP_ECHO,
-					       501,
-					       table);
+                                               &address2,
+                                               ICMP_ECHO,
+                                               501,
+                                               table);
   spindump_checktest(connection4 == 0);
   
   //
@@ -228,10 +228,10 @@ unittests_table(void) {
   spindump_deepdebugf("address2 %s", spindump_address_tostring(&address2));
   struct spindump_connection* connection5 =
     spindump_connections_searchconnection_icmp(&address1,
-					       &address2,
-					       ICMP_ECHO,
-					       500,
-					       table);
+                                               &address2,
+                                               ICMP_ECHO,
+                                               500,
+                                               table);
   spindump_checktest(connection5 != 0);
   spindump_checktest(connection5 == connection1);
 
@@ -257,13 +257,13 @@ unittests_table(void) {
   cid2.id[7] = 43;
   struct spindump_connection* connection6 =
     spindump_connections_newconnection_quic_5tupleandcids(&address1,
-							  &address2,
-							  5000,
-							  4433,
-							  &cid1,
-							  &cid2,
-							  &when1,
-							  table);
+                                                          &address2,
+                                                          5000,
+                                                          4433,
+                                                          &cid1,
+                                                          &cid2,
+                                                          &when1,
+                                                          table);
   spindump_checktest(connection6 != 0);
 
   //
@@ -273,11 +273,11 @@ unittests_table(void) {
   int fromResponder;
   struct spindump_connection* connection7 =
     spindump_connections_searchconnection_quic_5tuple_either(&address2,
-							     &address1,
-							     4433,
-							     5000,
-							     table,
-							     &fromResponder);
+                                                             &address1,
+                                                             4433,
+                                                             5000,
+                                                             table,
+                                                             &fromResponder);
   spindump_checktest(connection7 != 0);
   spindump_checktest(fromResponder == 1);
   spindump_checktest(connection7 == connection6);
@@ -288,9 +288,9 @@ unittests_table(void) {
 
   struct spindump_connection* connection8 =
     spindump_connections_searchconnection_quic_cids_either(&cid1,
-							   &cid2,
-							   table,
-							   &fromResponder);
+                                                           &cid2,
+                                                           table,
+                                                           &fromResponder);
   spindump_checktest(connection8 != 0);
   spindump_checktest(fromResponder == 0);
   spindump_checktest(connection8 == connection6);
@@ -315,14 +315,14 @@ unittests_textparser(void) {
   spindump_network_fromstring(&network1,"1.2.3.4/32");
   spindump_network_fromstring(&network2,"5.6.7.8/32");
   spindump_event_initialize(spindump_event_type_new_connection,
-			    spindump_connection_transport_tcp,
-			    &network1,
-			    &network2,
-			    "123:456",
-			    timestamp,
-			    1,
-			    2,
-			    &event);
+                            spindump_connection_transport_tcp,
+                            &network1,
+                            &network2,
+                            "123:456",
+                            timestamp,
+                            1,
+                            2,
+                            &event);
   char buf[200];
   int ret;
   size_t consumed;

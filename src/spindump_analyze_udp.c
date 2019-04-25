@@ -53,16 +53,16 @@
 
 void
 spindump_analyze_process_udp(struct spindump_analyze* state,
-			     struct spindump_packet* packet,
-			     unsigned int ipHeaderPosition,
-			     unsigned int ipHeaderSize,
-			     uint8_t ipVersion,
-					 uint8_t ecnFlags,
-			     unsigned int ipPacketLength,
-			     unsigned int udpHeaderPosition,
-			     unsigned int udpLength,
-			     unsigned int remainingCaplen,
-			     struct spindump_connection** p_connection) {
+                             struct spindump_packet* packet,
+                             unsigned int ipHeaderPosition,
+                             unsigned int ipHeaderSize,
+                             uint8_t ipVersion,
+                                         uint8_t ecnFlags,
+                             unsigned int ipPacketLength,
+                             unsigned int udpHeaderPosition,
+                             unsigned int udpLength,
+                             unsigned int remainingCaplen,
+                             struct spindump_connection** p_connection) {
 
   //
   // Some checks first
@@ -100,15 +100,15 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   unsigned int size_udppayload = spindump_max(udp.uh_len,udpLength) - udpHeaderSize;
   
   spindump_debugf("received an IPv%u UDP packet of %u bytes (eth %u ip %u udp %u) size_payload = %u payload = %02x%02x%02x...",
-		  ipVersion,
-		  packet->etherlen,
-		  ipHeaderPosition,
-		  ipHeaderSize,
-		  udpHeaderSize,
-		  size_udppayload,
-		  (unsigned int)payload[0],
-		  (unsigned int)payload[1],
-		  (unsigned int)payload[2]);
+                  ipVersion,
+                  packet->etherlen,
+                  ipHeaderPosition,
+                  ipHeaderSize,
+                  udpHeaderSize,
+                  size_udppayload,
+                  (unsigned int)payload[0],
+                  (unsigned int)payload[1],
+                  (unsigned int)payload[2]);
 
   //
   // Find out some information about the packet
@@ -129,9 +129,9 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   //
 
   spindump_debugf("saw UDP packet from %s (ports %u:%u) payload = %02x%02x%02x... (payload length %u)",
-		  spindump_address_tostring(&source), side1port, side2port,
-		  payload[0], payload[1], payload[2],
-		  size_udppayload);
+                  spindump_address_tostring(&source), side1port, side2port,
+                  payload[0], payload[1], payload[2],
+                  size_udppayload);
 
   //
   // If the packet uses DNS ports, hand control over to the DNS
@@ -139,20 +139,20 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   //
 
   if (spindump_analyze_dns_isprobablednspacket(payload,
-					       size_udppayload,
-					       side1port,
-					       side2port)) {
+                                               size_udppayload,
+                                               side1port,
+                                               side2port)) {
     spindump_analyze_process_dns(state,
-				 packet,
-				 ipHeaderPosition,
-				 ipHeaderSize,
-				 ipVersion,
-				 ecnFlags,
-				 ipPacketLength,
-				 ipHeaderPosition + ipHeaderSize,
-				 udpLength,
-				 remainingCaplen,
-				 p_connection);
+                                 packet,
+                                 ipHeaderPosition,
+                                 ipHeaderSize,
+                                 ipVersion,
+                                 ecnFlags,
+                                 ipPacketLength,
+                                 ipHeaderPosition + ipHeaderSize,
+                                 udpLength,
+                                 remainingCaplen,
+                                 p_connection);
     return;
   }
 
@@ -163,22 +163,22 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
 
   int dtls;
   if (spindump_analyze_coap_isprobablecoappacket(payload,
-						 size_udppayload,
-						 side1port,
-						 side2port,
-						 &dtls)) {
+                                                 size_udppayload,
+                                                 side1port,
+                                                 side2port,
+                                                 &dtls)) {
     spindump_analyze_process_coap(state,
-				  packet,
-				  ipHeaderPosition,
-				  ipHeaderSize,
-				  ipVersion,
-					ecnFlags,
-				  ipPacketLength,
-				  ipHeaderPosition + ipHeaderSize,
-				  udpLength,
-				  remainingCaplen,
-				  dtls,
-				  p_connection);
+                                  packet,
+                                  ipHeaderPosition,
+                                  ipHeaderSize,
+                                  ipVersion,
+                                        ecnFlags,
+                                  ipPacketLength,
+                                  ipHeaderPosition + ipHeaderSize,
+                                  udpLength,
+                                  remainingCaplen,
+                                  dtls,
+                                  p_connection);
     return;
   }
 
@@ -188,41 +188,41 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   //
 
   if (spindump_analyze_quic_parser_isprobablequickpacket(payload,
-							 size_udppayload,
-							 side1port,
-							 side2port)) {
+                                                         size_udppayload,
+                                                         side1port,
+                                                         side2port)) {
     spindump_analyze_process_quic(state,
-				  packet,
-				  ipHeaderPosition,
-				  ipHeaderSize,
-				  ipVersion,
-					ecnFlags,
-				  ipPacketLength,
-				  udpHeaderPosition,
-				  udpLength,
-				  remainingCaplen,
-				  p_connection);
+                                  packet,
+                                  ipHeaderPosition,
+                                  ipHeaderSize,
+                                  ipVersion,
+                                        ecnFlags,
+                                  ipPacketLength,
+                                  udpHeaderPosition,
+                                  udpLength,
+                                  remainingCaplen,
+                                  p_connection);
     return;
   }
 
   connection = spindump_connections_searchconnection_quic_5tuple_either(&source,
-									&destination,
-									side1port,
-									side2port,
-									state->table,
-									&fromResponder);
+                                                                        &destination,
+                                                                        side1port,
+                                                                        side2port,
+                                                                        state->table,
+                                                                        &fromResponder);
   if (connection != 0) {
     spindump_analyze_process_quic(state,
-				  packet,
-				  ipHeaderPosition,
-				  ipHeaderSize,
-				  ipVersion,
-					ecnFlags,
-				  ipPacketLength,
-				  udpHeaderPosition,
-				  udpLength,
-				  remainingCaplen,
-				  p_connection);
+                                  packet,
+                                  ipHeaderPosition,
+                                  ipHeaderSize,
+                                  ipVersion,
+                                        ecnFlags,
+                                  ipPacketLength,
+                                  udpHeaderPosition,
+                                  udpLength,
+                                  remainingCaplen,
+                                  p_connection);
     return;
   }
 
@@ -231,11 +231,11 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   //
 
   connection = spindump_connections_searchconnection_udp_either(&source,
-								&destination,
-								side1port,
-								side2port,
-								state->table,
-								&fromResponder);
+                                                                &destination,
+                                                                side1port,
+                                                                side2port,
+                                                                state->table,
+                                                                &fromResponder);
 
   //
   // If not found, create a new one
@@ -244,11 +244,11 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   if (connection == 0) {
 
     connection = spindump_connections_newconnection_udp(&source,
-							&destination,
-							side1port,
-							side2port,
-							&packet->timestamp,
-							state->table);
+                                                        &destination,
+                                                        side1port,
+                                                        side2port,
+                                                        &packet->timestamp,
+                                                        state->table);
 
     fromResponder = 0;
     new = 1;

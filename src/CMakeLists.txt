@@ -12,7 +12,7 @@
 ###  ######################################################################
 ###
 ###  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
-###  AUTHOR: JARI ARKKO
+###  AUTHOR: JARI ARKKO AND LARS EGGERT
 ###
 ###
 
@@ -155,8 +155,8 @@ add_test( spindump_testtraces spindump_testtraces.sh )
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/spindump.tar.gz
                    COMMAND rm ARGS -f ${PROJECT_SOURCE_DIR}/spindump.tar.gz
                    COMMAND tar
-		   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh test/*.txt test/*.pcap test/*.expected test/*.options
-		   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+                   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh test/*.txt test/*.pcap test/*.expected test/*.options
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
 set_property(SOURCE spindump_main.c APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_SOURCE_DIR}/spindump.tar.gz)
@@ -171,7 +171,7 @@ install(SCRIPT spindump_install.sh)
 add_custom_target(uninstall
                   COMMAND sh spindump_uninstall.sh
 )
-		  
+                  
 #
 # Word counts
 #

@@ -42,9 +42,9 @@
 
 int
 spindump_event_parser_text_parse(const char* buffer,
-				 size_t length,
-				 struct spindump_event* event,
-				 size_t* consumed) {
+                                 size_t length,
+                                 struct spindump_event* event,
+                                 size_t* consumed) {
   return(0); // ...
 }
 
@@ -60,9 +60,9 @@ spindump_event_parser_text_parse(const char* buffer,
 
 int
 spindump_event_parser_text_print(const struct spindump_event* event,
-				 char* buffer,
-				 size_t length,
-				 size_t* consumed) {
+                                 char* buffer,
+                                 size_t length,
+                                 size_t* consumed) {
 
   //
   // Check length
@@ -84,17 +84,17 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   //
   
   addtobuffer2("%s ",
-	       spindump_connection_type_to_string(event->connectionType));
+               spindump_connection_type_to_string(event->connectionType));
   addtobuffer2("%s <-> ",
-	       spindump_network_tostringoraddr(&event->initiatorAddress));
+               spindump_network_tostringoraddr(&event->initiatorAddress));
   addtobuffer2("%s ",
-	       spindump_network_tostringoraddr(&event->responderAddress));
+               spindump_network_tostringoraddr(&event->responderAddress));
   addtobuffer2("%s ",
-	       event->session);
+               event->session);
   addtobuffer2("at %llu ",
-	       event->timestamp);
+               event->timestamp);
   addtobuffer2("%s ",
-	       spindump_event_type_tostring(event->eventType));
+               spindump_event_type_tostring(event->eventType));
   
   //
   // The variable part that depends on which event we have
@@ -114,34 +114,34 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   case spindump_event_type_new_rtt_measurement:
     if (event->u.newRttMeasurement.measurement == spindump_measurement_type_bidirectional) {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
-	addtobuffer2("left %lu ", event->u.newRttMeasurement.rtt);
+        addtobuffer2("left %lu ", event->u.newRttMeasurement.rtt);
       } else {
-	addtobuffer2("right %lu ", event->u.newRttMeasurement.rtt);
+        addtobuffer2("right %lu ", event->u.newRttMeasurement.rtt);
       }
     } else {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
-	addtobuffer2("full (initiator) %lu ", event->u.newRttMeasurement.rtt);
+        addtobuffer2("full (initiator) %lu ", event->u.newRttMeasurement.rtt);
       } else {
-	addtobuffer2("full (responder) %lu ", event->u.newRttMeasurement.rtt);
+        addtobuffer2("full (responder) %lu ", event->u.newRttMeasurement.rtt);
       }
     }
     break;
     
   case spindump_event_type_spin_flip:
     addtobuffer3("%s %s ",
-		 event->u.spinFlip.spin0to1 ? "0-1" : "1-0",
-		 event->u.spinFlip.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+                 event->u.spinFlip.spin0to1 ? "0-1" : "1-0",
+                 event->u.spinFlip.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
     
   case spindump_event_type_spin_value:
     addtobuffer3("%u %s ",
-		 event->u.spinValue.value,
-		 event->u.spinValue.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+                 event->u.spinValue.value,
+                 event->u.spinValue.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
     
   case spindump_event_type_ecn_congestion_event:
     addtobuffer2("%s ",
-		 event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+                 event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
     
   default:
@@ -153,9 +153,9 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   //
   
   addtobuffer2("packets %u ",
-	       event->packets);
+               event->packets);
   addtobuffer2("bytes %u",
-	       event->bytes);
+               event->bytes);
   
   //
   // The end of the record

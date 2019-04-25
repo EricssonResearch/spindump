@@ -31,7 +31,7 @@
 // Parameter definitions ----------------------------------------------------------------------
 //
 
-#define spindump_report_maxlinelen		400
+#define spindump_report_maxlinelen              400
 
 //
 // Data structures ----------------------------------------------------------------------------
@@ -71,19 +71,19 @@ struct spindump_report_state*
 spindump_report_initialize_terminal(struct spindump_reverse_dns* querier);
 void
 spindump_report_setanonymization(struct spindump_report_state* reporter,
-				 int anonymizeLeft,
-				 int anonymizeRight);
+                                 int anonymizeLeft,
+                                 int anonymizeRight);
 void
 spindump_report_update(struct spindump_report_state* reporter,
-		       int average,
-		       int aggregate,
-		       int closed,
-		       int udp,
-		       struct spindump_connectionstable* table,
-		       struct spindump_stats* stats);
+                       int average,
+                       int aggregate,
+                       int closed,
+                       int udp,
+                       struct spindump_connectionstable* table,
+                       struct spindump_stats* stats);
 enum spindump_report_command
 spindump_report_checkinput(struct spindump_report_state* reporter,
-			   double* p_argument);
+                           double* p_argument);
 void
 spindump_report_showhelp(struct spindump_report_state* reporter);
 void

@@ -50,8 +50,8 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
 # define spindump_checkflag(flag,string,val)                    \
   do {                                                          \
     if (((val) & flag) != 0) {                                  \
-      if (buf[0] != 0) spindump_strlcat(buf," ",sizeof(buf));	  \
-      spindump_strlcat(buf,string,sizeof(buf));			            \
+      if (buf[0] != 0) spindump_strlcat(buf," ",sizeof(buf));     \
+      spindump_strlcat(buf,string,sizeof(buf));                             \
     }                                                           \
   } while(0)
   
@@ -77,7 +77,7 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
 
 void
 spindump_protocols_ethernet_header_decode(const unsigned char* header,
-					  struct spindump_ethernet* decoded) {
+                                          struct spindump_ethernet* decoded) {
   
   //
   // Sanity checks
@@ -106,7 +106,7 @@ spindump_protocols_ethernet_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_ip_header_decode(const unsigned char* header,
-				    struct spindump_ip* decoded) {
+                                    struct spindump_ip* decoded) {
   
   //
   // Sanity checks
@@ -146,12 +146,12 @@ spindump_protocols_ip_header_decode(const unsigned char* header,
   spindump_decode2byteint(decoded->ip_sum,header,pos);   // checksum
   spindump_decodebytes(decoded->ip_src,header,4,pos);    // source address
   spindump_deepdebugf("IPv4 source set from %u.%u.%u.%u to %08x",
-		      header[pos - 4], header[pos - 3], header[pos - 2], header[pos - 1],
-		      decoded->ip_src);
+                      header[pos - 4], header[pos - 3], header[pos - 2], header[pos - 1],
+                      decoded->ip_src);
   spindump_decodebytes(decoded->ip_dst,header,4,pos);    // destination address
   spindump_deepdebugf("IPv4 destination set from %u.%u.%u.%u to %08x",
-		      header[pos - 4], header[pos - 3], header[pos - 2], header[pos - 1],
-		      decoded->ip_dst);
+                      header[pos - 4], header[pos - 3], header[pos - 2], header[pos - 1],
+                      decoded->ip_dst);
 }
 
 //
@@ -164,7 +164,7 @@ spindump_protocols_ip_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_ip6_header_decode(const unsigned char* header,
-				     struct spindump_ip6* decoded) {
+                                     struct spindump_ip6* decoded) {
   
   //
   // Sanity checks
@@ -221,7 +221,7 @@ spindump_protocols_ip6_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_ip6_fh_header_decode(const unsigned char* header,
-					struct spindump_ip6_fh* decoded) {
+                                        struct spindump_ip6_fh* decoded) {
   
   //
   // Sanity checks
@@ -257,7 +257,7 @@ spindump_protocols_ip6_fh_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_icmp_header_decode(const unsigned char* header,
-				      struct spindump_icmp* decoded) {
+                                      struct spindump_icmp* decoded) {
   
   //
   // Sanity checks
@@ -300,7 +300,7 @@ spindump_protocols_icmp_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_icmp6_header_decode(const unsigned char* header,
-				       struct spindump_icmpv6* decoded) {
+                                       struct spindump_icmpv6* decoded) {
 
   //
   // Sanity checks
@@ -344,7 +344,7 @@ spindump_protocols_icmp6_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_udp_header_decode(const unsigned char* header,
-				     struct spindump_udp* decoded) {
+                                     struct spindump_udp* decoded) {
 
   //
   // Sanity checks
@@ -384,7 +384,7 @@ spindump_protocols_udp_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_dns_header_decode(const unsigned char* header,
-				     struct spindump_dns* decoded) {
+                                     struct spindump_dns* decoded) {
 
   //
   // Sanity checks
@@ -435,7 +435,7 @@ spindump_protocols_dns_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_coap_header_decode(const unsigned char* header,
-				     struct spindump_coap* decoded) {
+                                     struct spindump_coap* decoded) {
 
   //
   // Sanity checks
@@ -478,7 +478,7 @@ spindump_protocols_coap_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_tcp_header_decode(const unsigned char* header,
-				     struct spindump_tcp* decoded) {
+                                     struct spindump_tcp* decoded) {
 
   //
   // Sanity checks
@@ -535,7 +535,7 @@ spindump_protocols_tcp_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_quic_header_decode(const unsigned char* header,
-				      unsigned char* decoded) {
+                                      unsigned char* decoded) {
   
   //
   // Sanity checks
@@ -589,7 +589,7 @@ spindump_protocols_quic_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_quic_longheader_decode(const unsigned char* header,
-					  struct spindump_quic* decoded) {
+                                          struct spindump_quic* decoded) {
   
   //
   // Sanity checks
@@ -685,7 +685,7 @@ spindump_protocols_quic_longheader_decode(const unsigned char* header,
 
 void
 spindump_protocols_tls_recordlayerheader_decode(const unsigned char* header,
-						struct spindump_tls_recordlayer* decoded) {
+                                                struct spindump_tls_recordlayer* decoded) {
   
   //
   // Sanity checks
@@ -714,7 +714,7 @@ spindump_protocols_tls_recordlayerheader_decode(const unsigned char* header,
 
 void
 spindump_protocols_dtls_recordlayerheader_decode(const unsigned char* header,
-						 struct spindump_dtls_recordlayer* decoded) {
+                                                 struct spindump_dtls_recordlayer* decoded) {
   
   //
   // Sanity checks
@@ -745,7 +745,7 @@ spindump_protocols_dtls_recordlayerheader_decode(const unsigned char* header,
 
 void
 spindump_protocols_tls_handshakeheader_decode(const unsigned char* header,
-					      struct spindump_tls_handshake* decoded) {
+                                              struct spindump_tls_handshake* decoded) {
   //
   // Sanity checks
   //
@@ -772,7 +772,7 @@ spindump_protocols_tls_handshakeheader_decode(const unsigned char* header,
 
 void
 spindump_protocols_dtls_handshakeheader_decode(const unsigned char* header,
-					       struct spindump_dtls_handshake* decoded) {
+                                               struct spindump_dtls_handshake* decoded) {
   //
   // Sanity checks
   //

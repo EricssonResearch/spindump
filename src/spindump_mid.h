@@ -31,7 +31,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_messageidtracker_nstored		8
+#define spindump_messageidtracker_nstored               8
 
 //
 // Data structures ----------------------------------------------------------------------------
@@ -58,11 +58,11 @@ void
 spindump_messageidtracker_initialize(struct spindump_messageidtracker* tracker);
 void
 spindump_messageidtracker_add(struct spindump_messageidtracker* tracker,
-			      const struct timeval* ts,
-			      const uint16_t messageid);
+                              const struct timeval* ts,
+                              const uint16_t messageid);
 const struct timeval*
 spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
-				const uint16_t messageid);
+                                const uint16_t messageid);
 void
 spindump_messageidtracker_uninitialize(struct spindump_messageidtracker* tracker);
 

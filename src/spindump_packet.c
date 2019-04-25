@@ -35,10 +35,10 @@
 int
 spindump_packet_isvalid(struct spindump_packet* packet) {
   return(packet != 0 &&
-	 packet->etherlen > 0 &&
-	 packet->caplen > 0 &&
-	 packet->caplen <= packet->etherlen &&
-	 packet->contents != 0);
+         packet->etherlen > 0 &&
+         packet->caplen > 0 &&
+         packet->caplen <= packet->etherlen &&
+         packet->contents != 0);
 }
 
 

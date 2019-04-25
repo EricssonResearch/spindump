@@ -66,10 +66,10 @@ struct spindump_reverse_dns*
 spindump_reverse_dns_initialize_full(void);
 const char*
 spindump_reverse_dns_query(spindump_address* address,
-			   struct spindump_reverse_dns* service);
+                           struct spindump_reverse_dns* service);
 const char*
 spindump_reverse_dns_address_tostring(spindump_address* address,
-				      struct spindump_reverse_dns* service);
+                                      struct spindump_reverse_dns* service);
 void
 spindump_reverse_dns_uninitialize(struct spindump_reverse_dns* service);
 
