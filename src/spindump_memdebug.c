@@ -43,13 +43,20 @@ spindump_memdebug_malloc(size_t size) {
   size_t newSize = size + spindump_memorytag_fulloverhead;
   spindump_assert(newSize > size);
   char* block = (char*)malloc(newSize);
-  size_t* blockSize = (size_t*)(block + spindump_memorytag_tagoverhead);
-  void* userBlock = (void*)(block + spindump_memorytag_beginoverhead);
-  char* blockEnd = block + spindump_memorytag_beginoverhead + size;
-  memcpy(block,spindump_memorytag_begin,spindump_memorytag_tagoverhead);
-  *blockSize = size;
-  memcpy(blockEnd,spindump_memorytag_end,spindump_memorytag_tagoverhead);
-  return(userBlock);
+  if (block == 0) {
+    return(0);
+  } else {
+    size_t* blockSize = (size_t*)(block + spindump_memorytag_tagoverhead);
+    void* userBlock = (void*)(block + spindump_memorytag_beginoverhead);
+    char* blockEnd = block + spindump_memorytag_beginoverhead + size;
+    memcpy(block,spindump_memorytag_begin,spindump_memorytag_tagoverhead);
+    *blockSize = size;
+    memcpy(blockEnd,spindump_memorytag_end,spindump_memorytag_tagoverhead);
+#ifdef SPINDUMP_MEMDEBUG_TRASHMEM
+    memset(userBlock,0xf7,size);
+#endif
+    return(userBlock);
+  }
 }
 
 //
@@ -83,6 +90,9 @@ spindump_memdebug_free(void* ptr) {
   char* blockEnd = block + spindump_memorytag_beginoverhead + size;
   spindump_assert(memcmp(block,spindump_memorytag_begin,spindump_memorytag_tagoverhead) == 0);
   spindump_assert(memcmp(blockEnd,spindump_memorytag_end,spindump_memorytag_tagoverhead) == 0);
+#ifdef SPINDUMP_MEMDEBUG_TRASHMEM
+  memset(ptr,0x6f,size);
+#endif
   free(block);
 }
 

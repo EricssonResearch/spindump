@@ -39,6 +39,8 @@
 #include "spindump_event_parser_json.h"
 #include "spindump_event_parser_text.h"
 #include "spindump_analyze.h"
+#include "spindump_json_value.h"
+#include "spindump_json.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -49,7 +51,12 @@ static void unittests_util(void);
 static void unittests_table(void);
 static void unittests_textparser(void);
 static void unittests_jsonparser(void);
+static void unittests_jsonvalue(void);
 static void systemtests(void);
+static void
+unittests_jsonparse_callback(const struct spindump_json_value* value,
+                             const struct spindump_json_schema* type,
+                             void* data);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -65,6 +72,7 @@ unittests(void) {
   unittests_table();
   unittests_textparser();
   unittests_jsonparser();
+  unittests_jsonvalue();
 }
 
 //
@@ -334,11 +342,200 @@ unittests_textparser(void) {
 }
 
 //
+// Helper functin for json parsing unit tests
+//
+
+static void
+unittests_jsonparse_callback(const struct spindump_json_value* value,
+                             const struct spindump_json_schema* type,
+                             void* data) {
+  spindump_assert(value != 0);
+  spindump_assert(type != 0);
+  spindump_assert(data == 0);
+  char* string = spindump_json_value_tostring(value);
+  spindump_deepdebugf("got a callback on %s", string);
+  spindump_free(string);
+  spindump_deepdeepdebugf("callback exiting");
+}
+
+//
 // Unittests -- spindump_event_parser_json
 //
 
 static void
 unittests_jsonparser(void) {
+  spindump_debugf("unittests_jsonparser");
+  struct spindump_json_schema fieldb;
+  struct spindump_json_schema fielda;
+  struct spindump_json_schema record;
+  struct spindump_json_schema_field fields[2];
+  struct spindump_json_schema array;
+  struct spindump_json_schema top;
+  top.type = spindump_json_schema_type_recordorarray;
+  top.callback = 0;
+  top.u.arrayorrecord.array = &array;
+  top.u.arrayorrecord.record = &record;
+  array.type = spindump_json_schema_type_array;
+  array.callback = 0;
+  array.u.array.schema = &record;
+  record.type = spindump_json_schema_type_record;
+  record.callback = unittests_jsonparse_callback;
+  record.u.record.nFields = 2;
+  fields[0].required = 1;
+  fields[0].name = "a";
+  fields[0].schema = &fielda;
+  fields[1].required = 0;
+  fields[1].name = "b";
+  fields[1].schema = &fieldb;
+  record.u.record.fields[0] = fields[0];
+  record.u.record.fields[1] = fields[1];
+  fielda.type = spindump_json_schema_type_integer;
+  fielda.callback = 0;
+  fieldb.type = spindump_json_schema_type_string;
+  fieldb.callback = 0;
+  struct spindump_json_schema otherarray;
+  struct spindump_json_schema literal;
+  otherarray.type = spindump_json_schema_type_array;
+  otherarray.callback = 0;
+  otherarray.u.array.schema = &literal;
+  literal.type = spindump_json_schema_type_literal;
+  literal.callback = 0;
+  struct spindump_json_schema any;
+  any.type = spindump_json_schema_type_any;
+  any.callback = 0;
+  const char* input1 = "";
+  const char* input2 = "}";
+  const char* input3 = "[{\"a\":12}]";
+  const char* input4 = "    \t {\"a\":12,  \"b\" :   \"heivaan\"  } ";
+  const char* input5 = "[{\"a\":12,\"b\":\"heivaan\"}]";
+  const char* input6 = "{\"b\":12,\"a\":\"heivaan\"}";
+  const char* input7 = "{\"b\":\"heivaan\"}";
+  const char* input8 = "[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,120930192830913,20]";
+  const char* input9 = "[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,"
+    "\"heivaanpitkastringiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii\"]";
+  const char* input10 = "[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,[],21]";
+  const char* input11 = "[]";
+  const char* input12 = "[\"a\",1,{\"nix\":\"nox\",\"nux\":[]},{}]";
+  int ans;
+
+  spindump_debugf("json_parse test1");
+  ans = spindump_json_parse(&top,0,&input1);
+  spindump_deepdebugf("spindump_json_parse test 1 parsing %s (expecting fail)",ans ? "succeeded" : "failed");
+  spindump_assert(ans == 0);
+
+  spindump_debugf("json_parse test2");
+  ans = spindump_json_parse(&top,0,&input2);
+  spindump_deepdebugf("spindump_json_parse test 2 parsing %s (expecting fail)",ans ? "succeeded" : "failed");
+  spindump_assert(ans == 0);
+
+  spindump_debugf("json_parse test3");
+  ans = spindump_json_parse(&top,0,&input3);
+  spindump_deepdebugf("spindump_json_parse test 3 parsing %s",ans ? "succeeded" : "failed");
+  spindump_assert(ans != 0);
+  
+  spindump_debugf("json_parse test4");
+  ans = spindump_json_parse(&top,0,&input4);
+  spindump_deepdebugf("spindump_json_parse test 4 parsing %s",ans ? "succeeded" : "failed");
+  spindump_assert(ans != 0);
+  
+  spindump_debugf("json_parse test5");
+  ans = spindump_json_parse(&top,0,&input5);
+  spindump_deepdebugf("spindump_json_parse test 5 parsing %s",ans ? "succeeded" : "failed");
+  spindump_assert(ans != 0);
+  
+  spindump_debugf("json_parse test6");
+  ans = spindump_json_parse(&top,0,&input6);
+  spindump_deepdebugf("spindump_json_parse test 6 parsing %s (expecting fail)",ans ? "succeeded" : "failed");
+  spindump_assert(ans == 0);
+
+  spindump_debugf("json_parse test7");
+  ans = spindump_json_parse(&top,0,&input7);
+  spindump_deepdebugf("spindump_json_parse test 7 parsing %s (expecting fail)",ans ? "succeeded" : "failed");
+  spindump_assert(ans == 0);
+
+  spindump_debugf("json_parse test8");
+  ans = spindump_json_parse(&otherarray,0,&input8);
+  spindump_deepdebugf("spindump_json_parse test 8 parsing %s",ans ? "succeeded" : "failed");
+  spindump_assert(ans != 0);
+  
+  spindump_debugf("json_parse test9");
+  ans = spindump_json_parse(&otherarray,0,&input9);
+  spindump_deepdebugf("spindump_json_parse test 9 parsing %s",ans ? "succeeded" : "failed");
+  spindump_assert(ans != 0);
+  
+  spindump_debugf("json_parse test10");
+  ans = spindump_json_parse(&otherarray,0,&input10);
+  spindump_deepdebugf("spindump_json_parse test 10 parsing %s (expecting fail)",ans ? "succeeded" : "failed");
+  spindump_assert(ans == 0);
+
+  spindump_debugf("json_parse test11");
+  ans = spindump_json_parse(&otherarray,0,&input11);
+  spindump_deepdebugf("spindump_json_parse test 11 parsing %s",ans ? "succeeded" : "failed");
+  spindump_assert(ans != 0);
+  
+  spindump_debugf("json_parse test12");
+  ans = spindump_json_parse(&any,0,&input12);
+  spindump_deepdebugf("spindump_json_parse test 12 parsing %s",ans ? "succeeded" : "failed");
+  spindump_assert(ans != 0);
+  
+}
+
+//
+// Unittests -- spindump_json_value
+//
+
+static void
+unittests_jsonvalue(void) {
+  spindump_debugf("unittests_jsonvalue");
+  spindump_deepdebugf("value1");
+  struct spindump_json_value* value1 = spindump_json_value_new_integer(12);
+  spindump_deepdebugf("value2");
+  struct spindump_json_value* value2 = spindump_json_value_new_string("heivaan",7);
+  struct spindump_json_value_field fields1[2];
+  fields1[0].name = spindump_strdup("a");
+  fields1[0].value = spindump_json_value_copy(value1);
+  fields1[1].name = spindump_strdup("b");
+  fields1[1].value = spindump_json_value_copy(value2);
+  struct spindump_json_value_field fields2[1];
+  spindump_deepdebugf("value3");
+  struct spindump_json_value* value3 = spindump_json_value_new_record(2,fields1,0,fields2);
+  spindump_deepdebugf("value4");
+  struct spindump_json_value* value4 = spindump_json_value_new_array();
+  spindump_deepdebugf("value1 add");
+  spindump_json_value_new_array_element(value4,spindump_json_value_copy(value3));
+  
+  spindump_deepdebugf("value1 copy");
+  struct spindump_json_value* copy1 = spindump_json_value_copy(value1);
+  spindump_deepdebugf("value2 copy");
+  struct spindump_json_value* copy2 = spindump_json_value_copy(value2);
+  spindump_deepdebugf("value3 copy");
+  struct spindump_json_value* copy3 = spindump_json_value_copy(value3);
+  spindump_deepdebugf("value4 copy");
+  struct spindump_json_value* copy4 = spindump_json_value_copy(value4);
+
+  spindump_deepdebugf("value4 tostring");
+  char* string4 = spindump_json_value_tostring(value4);
+  spindump_deepdebugf("value = %s", string4);
+  const char* expected4 = "[{\"a\":12,\"b\":\"heivaan\"}]";
+  spindump_assert(strcmp(string4,expected4) == 0);
+  
+  spindump_deepdebugf("freeing...");
+  spindump_deepdebugf("value1 free");
+  spindump_json_value_free(value1);
+  spindump_deepdebugf("value2 free");
+  spindump_json_value_free(value2);
+  spindump_deepdebugf("value3 free");
+  spindump_json_value_free(value3);
+  spindump_deepdebugf("value4 free");
+  spindump_json_value_free(value4);
+  spindump_deepdebugf("copy1 free");
+  spindump_json_value_free(copy1);
+  spindump_deepdebugf("copy1 free");
+  spindump_json_value_free(copy2);
+  spindump_deepdebugf("copy3 free");
+  spindump_json_value_free(copy3);
+  spindump_deepdebugf("copy4 free");
+  spindump_json_value_free(copy4);
 }
 
 //
@@ -479,6 +676,11 @@ systemtests(void) {
   spindump_checktest(connection2 != connection1);
   spindump_checktest(connection2->type == spindump_connection_transport_icmp);
   spindump_checktest(connection2->state == spindump_connection_state_established);
+  spindump_deepdebugf("connection 2 stats paks %lu %lu bytes %lu %lu",
+                      connection2->packetsFromSide1,
+                      connection2->packetsFromSide2,
+                      connection2->bytesFromSide1,
+                      connection2->bytesFromSide2);
   spindump_checktest(connection2->packetsFromSide1 == 1);
   spindump_checktest(connection2->packetsFromSide2 == 1);
   spindump_checktest(connection2->bytesFromSide1 == sizeof(packet3bytes) - spindump_ethernet_header_size);

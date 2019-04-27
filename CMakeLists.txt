@@ -67,7 +67,7 @@ foreach(FLAG
     -Wno-reserved-id-macro
     -Wno-documentation
 # comment in/out one of the two following lines out to switch between optimized and debug versions
-    -g -DSPINDUMP_DEBUG -DSPINDUMP_MEMDEBUG -Wno-cast-align
+    -g -DSPINDUMP_DEBUG -DSPINDUMP_MEMDEBUG -DSPINDUMP_MEMDEBUG_TRASHMEM -Wno-cast-align
     # -O3 -Wno-unused-variable
 # uncomment the following line if you're doing profiling with GNU performance tools (gperf)
     # -pg
