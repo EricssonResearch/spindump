@@ -58,7 +58,7 @@ struct spindump_capture_state {
 // Capture module API interface ---------------------------------------------------------------
 //
 
-const char*
+char*
 spindump_capture_defaultinterface(void);
 struct spindump_capture_state*
 spindump_capture_initialize_live(const char* interface,

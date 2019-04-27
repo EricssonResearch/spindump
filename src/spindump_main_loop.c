@@ -79,11 +79,12 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   //
   // Initialize the actual operation
   //
-  
+  int interface_allocated = 0;
   struct spindump_main_configuration* config = &state->config;
   if (config->interface == 0 && config->inputFile == 0) {
     config->interface = spindump_capture_defaultinterface();
     if (config->interface == 0) exit(1);
+    interface_allocated = 1;
   }
 
   //
@@ -257,7 +258,10 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                      config->anonymizeLeft,
                                      querier);
   }
-  
+  // Only free interface string if it was allocated by us
+  if (interface_allocated) {
+    spindump_free(config->interface);
+  }
   spindump_report_uninitialize(reporter);
   spindump_analyze_uninitialize(analyzer);
   spindump_capture_uninitialize(capturer);
