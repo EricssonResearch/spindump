@@ -10,6 +10,8 @@
       <script type="text/javascript">
         //TODO: move all the script to separate folder.
 
+
+
         function getSessionInfo () {
 
           fetch('http://localhost:5040/demo')
@@ -35,30 +37,25 @@
 
           var id=selected_ID.value;
 
-
-
           console.log("selected ID = " +id);
 
            var chart = c3.generate({
              data: {
-               url: encodeURI('http://127.0.0.1:5040/data/id'),
+               url: encodeURI('http://127.0.0.1:5040/demo/'+id),
                mimeType: 'json',
-               x:'Timestamps'
+               type: 'area-spline'
              }
            });
 
-          var i;
-
-          for (i=0;i<60;i++) {
-            setTimeout(function () {
-             chart.load({
-              url: encodeURI('http://127.0.0.1:5040/data/id'),
-              mimeType: 'json',
-              x:'Timestamps'
-            });
-           }, 1000);
-          }
+          setTimeout(function () {
+           chart.load({
+            url: encodeURI('http://127.0.0.1:5040/demo/'+id),
+            mimeType: 'json',
+            type: 'area-spline'
+          });
+         }, 1000);
         }
+
       </script>
 
       <div id="populator">
