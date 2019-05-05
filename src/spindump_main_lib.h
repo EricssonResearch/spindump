@@ -58,7 +58,7 @@ struct spindump_main_aggregate {
 };
 
 struct spindump_main_configuration {
-  const char* interface;
+  char* interface;
   const char* inputFile;
   char* filter;
   enum spindump_toolmode toolmode;
