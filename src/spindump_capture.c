@@ -53,7 +53,7 @@ spindump_capture_initialize_aux(const char* interface,
 // Return the name of the default interface in this system.
 //
 
-const char*
+char*
 spindump_capture_defaultinterface(void) {
 
   //

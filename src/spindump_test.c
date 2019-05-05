@@ -647,6 +647,8 @@ unittests_jsonvalue(void) {
   spindump_json_value_free(copy3);
   spindump_deepdebugf("copy4 free");
   spindump_json_value_free(copy4);
+  spindump_deepdebugf("string4 free");
+  spindump_free(string4);
 }
 
 //
