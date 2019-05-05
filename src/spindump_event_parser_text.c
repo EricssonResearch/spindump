@@ -152,10 +152,12 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   // Additional information about the connection
   //
   
-  addtobuffer2("packets %u ",
-               event->packets);
-  addtobuffer2("bytes %u",
-               event->bytes);
+  addtobuffer3("packets %u %u ",
+               event->packetsFromSide1,
+               event->packetsFromSide2);
+  addtobuffer3("bytes %u %u",
+               event->bytesFromSide1,
+               event->bytesFromSide2);
   
   //
   // The end of the record

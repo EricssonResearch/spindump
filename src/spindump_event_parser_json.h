@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include "spindump_event.h"
+#include "spindump_json_value.h"
 
 //
 // Data types ---------------------------------------------------------------------------------
@@ -43,10 +44,8 @@
 //
 
 int
-spindump_event_parser_json_parse(const char* buffer,
-                                 size_t length,
-                                 struct spindump_event* event,
-                                 size_t* consumed);
+spindump_event_parser_json_parse(const struct spindump_json_value* json,
+                                 struct spindump_event* event);
 int
 spindump_event_parser_json_print(const struct spindump_event* event,
                                  char* buffer,

@@ -28,7 +28,13 @@ Also, a long-awaited upgrade is in the work: Spindump will be able to collect in
 
     spindump --remote-block-size 0 --silent --format json --remote https://httpbin.org/post
 
-This will send every event in JSON format to the webserver in httpbin.org, and make a POST for each of those events.
+This will send every event in JSON format to the webserver in httpbin.org, and make a POST for each of those events. Or do
+
+    spindump --remote-block-size 0 --silent --format json --remote http://localhost:5040/data/1
+
+if you have a Spindump instance listening in on these posts in the same machine. On the other end, where these messages will be received, start Spindump as follows:
+
+    spindump --collector
 
 ## CMake (February 2019)
 

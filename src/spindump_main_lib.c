@@ -583,6 +583,9 @@ spindump_main_help(void) {
   printf("  \n");
   printf("    --deepdebug             Sets the extensive internal debugging output on/off.\n");
   printf("    --no-deepdebug\n");
+  printf("  \n");
+  printf("    --deepdeepdebug         Sets the even more extensive internal debugging output on/off.\n");
+  printf("    --no-deepdeepdebug\n");
   printf("\n");
   printf("    --help                  Outputs information about the command usage and options.\n");
   printf("  \n");

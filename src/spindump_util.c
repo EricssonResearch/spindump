@@ -177,8 +177,8 @@ spindump_timetostring(const struct timeval* result) {
 //
 
 int
-spindump_address_equal(spindump_address* address1,
-                       spindump_address* address2) {
+spindump_address_equal(const spindump_address* address1,
+                       const spindump_address* address2) {
   
   if (address1->ss_family != address2->ss_family) return(0);
   
@@ -186,15 +186,15 @@ spindump_address_equal(spindump_address* address1,
     
   case AF_INET:
     {
-      struct sockaddr_in* address1v4 = (struct sockaddr_in*)address1;
-      struct sockaddr_in* address2v4 = (struct sockaddr_in*)address2;
+      const struct sockaddr_in* address1v4 = (const struct sockaddr_in*)address1;
+      const struct sockaddr_in* address2v4 = (const struct sockaddr_in*)address2;
       return(address1v4->sin_addr.s_addr == address2v4->sin_addr.s_addr);
     }
     
   case AF_INET6:
     {
-      struct sockaddr_in6* address1v6 = (struct sockaddr_in6*)address1;
-      struct sockaddr_in6* address2v6 = (struct sockaddr_in6*)address2;
+      const struct sockaddr_in6* address1v6 = (const struct sockaddr_in6*)address1;
+      const struct sockaddr_in6* address2v6 = (const struct sockaddr_in6*)address2;
       return(memcmp(address1v6->sin6_addr.s6_addr,address2v6->sin6_addr.s6_addr,16) == 0);
     }
     
@@ -293,11 +293,27 @@ spindump_address_islocalbroadcast(uint32_t address) {
 }
 
 //
+// Check whether the network represents a host network (i.e., a /32 or
+// /128).
+//
+
+int
+spindump_network_ishost(const spindump_network* network) {
+  if (network->address.ss_family == AF_INET && network->length == 32) {
+    return(1);
+  } else if (network->address.ss_family == AF_INET6 && network->length == 128) {
+    return(1);
+  } else {
+    return(0);
+  }
+}
+
+//
 // Check whether the given address is a multicast address
 //
 
 int
-spindump_address_ismulticast(spindump_address* address) {
+spindump_address_ismulticast(const spindump_address* address) {
 
   switch (address->ss_family) {
 
@@ -308,7 +324,7 @@ spindump_address_ismulticast(spindump_address* address) {
     //
     
     {
-      struct sockaddr_in* addressv4 = (struct sockaddr_in*)address;
+      const struct sockaddr_in* addressv4 = (const struct sockaddr_in*)address;
       uint32_t highByte = (ntohl(addressv4->sin_addr.s_addr) >> 24) & 0xFF;
       spindump_deepdebugf("spindump_address_ismulticast v4 high byte = %02x", highByte);
       return(spindump_address_islocalbroadcast(addressv4->sin_addr.s_addr) ||
@@ -323,8 +339,8 @@ spindump_address_ismulticast(spindump_address* address) {
     //
 
     {
-      struct sockaddr_in6* addressv6 = (struct sockaddr_in6*)address;
-      uint8_t* addressValue = addressv6->sin6_addr.s6_addr;
+      const struct sockaddr_in6* addressv6 = (const struct sockaddr_in6*)address;
+      const uint8_t* addressValue = addressv6->sin6_addr.s6_addr;
       spindump_deepdebugf("spindump_address_ismulticast v6 high byte = %02x", addressValue[0]);
       return(addressValue[0] == 0xFF);
     }
@@ -345,8 +361,8 @@ spindump_address_ismulticast(spindump_address* address) {
 //
 
 int
-spindump_network_equal(spindump_network* network1,
-                       spindump_network* network2) {
+spindump_network_equal(const spindump_network* network1,
+                       const spindump_network* network2) {
   return(network1->length == network2->length &&
          spindump_address_equal(&network1->address,
                                 &network2->address));
@@ -357,7 +373,7 @@ spindump_network_equal(spindump_network* network1,
 //
 
 int
-spindump_network_ismulticast(spindump_network* network) {
+spindump_network_ismulticast(const spindump_network* network) {
   return(network->length >= 8 &&
          spindump_address_ismulticast(&network->address));
 }
@@ -367,8 +383,8 @@ spindump_network_ismulticast(spindump_network* network) {
 //
 
 int
-spindump_address_innetwork(spindump_address* address,
-                           spindump_network* network) {
+spindump_address_innetwork(const spindump_address* address,
+                           const spindump_network* network) {
 
   static const uint32_t v4prefixmasks[33] = {
     
@@ -442,8 +458,8 @@ spindump_address_innetwork(spindump_address* address,
     
   case AF_INET:
     {
-      struct sockaddr_in* addressv4 = (struct sockaddr_in*)address;
-      struct sockaddr_in* networkv4 = (struct sockaddr_in*)&network->address;
+      const struct sockaddr_in* addressv4 = (const struct sockaddr_in*)address;
+      const struct sockaddr_in* networkv4 = (const struct sockaddr_in*)&network->address;
       uint32_t addressValue = htonl(addressv4->sin_addr.s_addr);
       uint32_t networkValue = htonl(networkv4->sin_addr.s_addr);
       spindump_assert(network->length <= 32);
@@ -454,10 +470,10 @@ spindump_address_innetwork(spindump_address* address,
     
   case AF_INET6:
     {
-      struct sockaddr_in6* addressv6 = (struct sockaddr_in6*)address;
-      struct sockaddr_in6* networkv6 = (struct sockaddr_in6*)&network->address;
-      uint8_t* addressValue = addressv6->sin6_addr.s6_addr;
-      uint8_t* networkValue = networkv6->sin6_addr.s6_addr;
+      const struct sockaddr_in6* addressv6 = (const struct sockaddr_in6*)address;
+      const struct sockaddr_in6* networkv6 = (const struct sockaddr_in6*)&network->address;
+      const uint8_t* addressValue = addressv6->sin6_addr.s6_addr;
+      const uint8_t* networkValue = networkv6->sin6_addr.s6_addr;
       spindump_assert(network->length <= 128);
       unsigned int bytes = network->length / 8;
       unsigned int remainingbits = network->length % 8;
@@ -736,6 +752,31 @@ spindump_network_tostringoraddr(const spindump_network* network) {
     return(spindump_address_tostring(&network->address));
   } else {
     return(spindump_network_tostring(network));
+  }
+}
+
+//
+// Read a network from a string that is either in the slash (/) format
+// with a prefix length, or just an address.
+//
+
+int
+spindump_network_fromstringoraddr(spindump_network* network,
+                                  const char* string) {
+  if (index(string,'/') == 0) {
+    if (!spindump_address_fromstring(&network->address,string)) {
+      return(0);
+    } else if (network->address.ss_family == AF_INET6) {
+      network->length = 128;
+      return(1);
+    } else if (network->address.ss_family == AF_INET) {
+      network->length = 32;
+      return(1);
+    } else {
+      return(0);
+    }
+  } else {
+    return(spindump_network_fromstring(network,string));
   }
 }
 

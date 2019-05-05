@@ -49,7 +49,8 @@
 static void unittests(void);
 static void unittests_util(void);
 static void unittests_table(void);
-static void unittests_textparser(void);
+static void unittests_eventtextparser(void);
+static void unittests_eventjsonparser(void);
 static void unittests_jsonparser(void);
 static void unittests_jsonvalue(void);
 static void systemtests(void);
@@ -57,6 +58,10 @@ static void
 unittests_jsonparse_callback(const struct spindump_json_value* value,
                              const struct spindump_json_schema* type,
                              void* data);
+static void
+unittests_eventjsonparser_callback(const struct spindump_json_value* value,
+                                   const struct spindump_json_schema* type,
+                                   void* data);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -70,9 +75,10 @@ static void
 unittests(void) {
   unittests_util();
   unittests_table();
-  unittests_textparser();
-  unittests_jsonparser();
   unittests_jsonvalue();
+  unittests_jsonparser();
+  unittests_eventtextparser();
+  unittests_eventjsonparser();
 }
 
 //
@@ -81,6 +87,8 @@ unittests(void) {
 
 static void
 unittests_util(void) {
+
+  printf("unit tests: util...\n");
   
   //
   // Address tests
@@ -117,9 +125,11 @@ unittests_util(void) {
   spindump_network n1;
   spindump_network n2;
   spindump_network n3;
+  spindump_network n4;
   spindump_network_fromstring(&n1,"10.30.0.0/24");
   spindump_network_fromstring(&n2,"10.30.0.0/8");
   spindump_network_fromstring(&n3,"2001:14bb:150:4979::0/64");
+  spindump_network_fromstringoraddr(&n4,"2001:14bb:150:4979::0");
   spindump_checktest(spindump_network_equal(&n1,&n1));
   spindump_checktest(!spindump_network_equal(&n1,&n2));
   spindump_checktest(!spindump_network_equal(&n1,&n3));
@@ -132,7 +142,8 @@ unittests_util(void) {
   spindump_checktest(spindump_address_innetwork(&a4,&n3));
   spindump_checktest(spindump_address_innetwork(&a5,&n3));
   spindump_checktest(!spindump_address_innetwork(&a6,&n3));
-
+  spindump_checktest(n4.length == 128);
+  
   //
   // QUIC CID tests
   // 
@@ -170,6 +181,8 @@ unittests_util(void) {
 static void
 unittests_table(void) {
 
+  printf("unit tests: connection table...\n");
+  
   //
   // Creation and deletion of the table itself
   //
@@ -311,7 +324,8 @@ unittests_table(void) {
 //
 
 static void
-unittests_textparser(void) {
+unittests_eventtextparser(void) {
+  printf("unit tests: event text parser...\n");
   struct spindump_event event;
   unsigned long long million = 1000 * 1000;
   unsigned long long timestamp =
@@ -329,7 +343,9 @@ unittests_textparser(void) {
                             "123:456",
                             timestamp,
                             1,
+                            0,
                             2,
+                            3,
                             &event);
   char buf[200];
   int ret;
@@ -339,10 +355,99 @@ unittests_textparser(void) {
   ret = spindump_event_parser_text_print(&event,buf,sizeof(buf),&consumed);
   spindump_assert(ret == 1);
   spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
+  const char* expected = "TCP 1.2.3.4 <-> 5.6.7.8 123:456 at 1892188800001234 new packets 1 0 bytes 2 3\n";
+  spindump_assert(strcmp(buf,expected) == 0);
 }
 
 //
-// Helper functin for json parsing unit tests
+// Variable to store data forunittests_eventjsonparser; a JSON value
+// that was received in parsing
+//
+
+static struct spindump_json_value* parsedRecord = 0;
+
+//
+// Helper function for unittests_eventjsonparser; a callback for JSON
+// parsing.
+//
+
+static void
+unittests_eventjsonparser_callback(const struct spindump_json_value* value,
+                                   const struct spindump_json_schema* type,
+                                   void* data) {
+  spindump_assert(value != 0);
+  spindump_assert(type != 0);
+  parsedRecord = spindump_json_value_copy(value);
+}
+
+//
+// Unittests -- spindump_event_parser_text
+//
+
+static void
+unittests_eventjsonparser(void) {
+  printf("unit tests: event json parser...\n");
+  struct spindump_event event1;
+  unsigned long long million = 1000 * 1000;
+  unsigned long long timestamp =
+    ((unsigned long long)(60 * 365 * 24 * 3600 + 8 * 3600)) *
+    million +
+    (unsigned long long)1234;
+  spindump_network network1;
+  spindump_network network2;
+  spindump_network_fromstring(&network1,"1.2.3.4/32");
+  spindump_network_fromstring(&network2,"5.6.7.8/32");
+  spindump_event_initialize(spindump_event_type_new_connection,
+                            spindump_connection_transport_tcp,
+                            &network1,
+                            &network2,
+                            "123:456",
+                            timestamp,
+                            1,
+                            0,
+                            2,
+                            3,
+                            &event1);
+  char buf[200];
+  int ret;
+  size_t consumed;
+  ret = spindump_event_parser_json_print(&event1,buf,1,&consumed);
+  spindump_assert(ret == 0);
+  ret = spindump_event_parser_json_print(&event1,buf,sizeof(buf),&consumed);
+  spindump_assert(ret == 1);
+  spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
+  const char* expected =
+    "{ \"Event\": \"new\", \"Type\": \"TCP\", \"Addrs\": [\"1.2.3.4\",\"5.6.7.8\"], "
+    "\"Session\": \"123:456\", \"Ts\": 1892188800001234, \"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3 }";
+  spindump_assert(strcmp(buf,expected) == 0);
+  
+  //
+  // Parse it back and see if you get the same result
+  //
+  
+  struct spindump_event event2;
+  struct spindump_json_schema eventschema = {
+    .type = spindump_json_schema_type_record,
+    .callback = unittests_eventjsonparser_callback,
+    .u = {
+      .record = {
+        .nFields = 0
+      }
+    }
+  };
+  struct spindump_json_value* json = 0;
+  const char* input = &buf[0];
+  ret = spindump_json_parse(&eventschema,0,&input);
+  spindump_assert(ret == 1);
+  json = parsedRecord;
+  spindump_assert(json != 0);
+  spindump_assert(json->type == spindump_json_value_type_record);
+  ret = spindump_event_parser_json_parse(json,&event2);
+  spindump_assert(ret == 1);
+}
+
+//
+// Helper function for json parsing unit tests
 //
 
 static void
@@ -364,6 +469,7 @@ unittests_jsonparse_callback(const struct spindump_json_value* value,
 
 static void
 unittests_jsonparser(void) {
+  printf("unit tests: json parser...\n");
   spindump_debugf("unittests_jsonparser");
   struct spindump_json_schema fieldb;
   struct spindump_json_schema fielda;
@@ -486,11 +592,14 @@ unittests_jsonparser(void) {
 
 static void
 unittests_jsonvalue(void) {
+  printf("unit tests: json value...\n");
   spindump_debugf("unittests_jsonvalue");
   spindump_deepdebugf("value1");
   struct spindump_json_value* value1 = spindump_json_value_new_integer(12);
   spindump_deepdebugf("value2");
+  spindump_assert(spindump_json_value_getinteger(value1) == 12);
   struct spindump_json_value* value2 = spindump_json_value_new_string("heivaan",7);
+  spindump_assert(strcmp(spindump_json_value_getstring(value2),"heivaan") == 0);
   struct spindump_json_value_field fields1[2];
   fields1[0].name = spindump_strdup("a");
   fields1[0].value = spindump_json_value_copy(value1);
@@ -499,6 +608,8 @@ unittests_jsonvalue(void) {
   struct spindump_json_value_field fields2[1];
   spindump_deepdebugf("value3");
   struct spindump_json_value* value3 = spindump_json_value_new_record(2,fields1,0,fields2);
+  spindump_assert(spindump_json_value_getrequiredfield("a",value3) == fields1[0].value);
+  spindump_assert(spindump_json_value_getfield("b",value3) == fields1[1].value);
   spindump_deepdebugf("value4");
   struct spindump_json_value* value4 = spindump_json_value_new_array();
   spindump_deepdebugf("value1 add");
@@ -544,6 +655,8 @@ unittests_jsonvalue(void) {
 
 static void
 systemtests(void) {
+  
+  printf("system tests...\n");
   
   //
   // Analyzer tests -- ICMP

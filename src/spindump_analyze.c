@@ -35,6 +35,7 @@
 #include "spindump_analyze_quic.h"
 #include "spindump_analyze_icmp.h"
 #include "spindump_analyze_aggregate.h"
+#include "spindump_event.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------

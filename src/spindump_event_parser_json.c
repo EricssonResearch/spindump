@@ -25,6 +25,35 @@
 #include "spindump_connections.h"
 
 //
+// Function prototypes ------------------------------------------------------------------------
+//
+
+static int
+spindump_event_parser_json_converteventtype(const char* string,
+                                            enum spindump_event_type* type);
+static int
+spindump_event_parser_json_parse_aux_new_connection(const struct spindump_json_value* json,
+                                                    struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_change_connection(const struct spindump_json_value* json,
+                                                       struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_connection_delete(const struct spindump_json_value* json,
+                                                       struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_new_rtt_measurement(const struct spindump_json_value* json,
+                                                         struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_spin_flip(const struct spindump_json_value* json,
+                                               struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_spin_value(const struct spindump_json_value* json,
+                                                struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_ecn_congestion_event(const struct spindump_json_value* json,
+                                                          struct spindump_event* event);
+
+//
 // Actual code --------------------------------------------------------------------------------
 //
 
@@ -41,11 +70,300 @@
 //
 
 int
-spindump_event_parser_json_parse(const char* buffer,
-                                 size_t length,
-                                 struct spindump_event* event,
-                                 size_t* consumed) {
-  return(0); // ...
+spindump_event_parser_json_parse(const struct spindump_json_value* json,
+                                 struct spindump_event* event) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(json != 0);
+  spindump_assert(json->type == spindump_json_value_type_record);
+  spindump_assert(event != 0);
+
+  //
+  // Get the mandatory fields
+  //
+
+  const char* eventType = spindump_json_value_getstring(spindump_json_value_getrequiredfield("Event",json));
+  spindump_deepdeepdebugf("spindump_event_parser_json_parse %s", eventType);
+  if (!spindump_event_parser_json_converteventtype(eventType,&event->eventType)) {
+    spindump_errorf("Invalid event type %s", eventType);
+    return(0);
+  }
+  const char* connectionType = spindump_json_value_getstring(spindump_json_value_getrequiredfield("Type",json));
+  if (!spindump_connection_string_to_connectiontype(connectionType,&event->connectionType)) {
+    spindump_errorf("Invalid connection type %s", connectionType);
+    return(0);
+  }
+  const struct spindump_json_value* addrs = spindump_json_value_getrequiredfield("Addrs",json);
+  const struct spindump_json_value* addr1elem = spindump_json_value_getarrayelem(0,addrs);
+  const struct spindump_json_value* addr2elem = spindump_json_value_getarrayelem(1,addrs);
+  if (addr1elem == 0 || addr2elem == 0) {
+    spindump_errorf("Missing addresses in an event");
+    return(0);
+  }
+  const char* addr1 = spindump_json_value_getstring(addr1elem);
+  if (!spindump_network_fromstringoraddr(&event->initiatorAddress,addr1)) {
+    spindump_errorf("Cannot parse initiator address");
+    return(0);
+  }
+  const char* addr2 = spindump_json_value_getstring(addr2elem);
+  if (!spindump_network_fromstringoraddr(&event->responderAddress,addr2)) {
+    spindump_errorf("Cannot parse responder address");
+    return(0);
+  }
+  const char* session = spindump_json_value_getstring(spindump_json_value_getrequiredfield("Session",json));
+  if (strlen(session) + 1 > sizeof(event->session)) {
+    spindump_errorf("Session field is too long for the event");
+    return(0);
+  }
+  strncpy(&event->session[0],session,sizeof(event->session));
+  unsigned long long ts = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Ts",json));
+  event->timestamp = ts;
+  unsigned long long packets1 = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Packets1",json));
+  event->packetsFromSide1 = (unsigned int)packets1;
+  unsigned long long packets2 = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Packets2",json));
+  event->packetsFromSide2 = (unsigned int)packets2;
+  unsigned long long bytes1 = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Bytes1",json));
+  event->bytesFromSide1 = (unsigned int)bytes1;
+  unsigned long long bytes2 = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Bytes2",json));
+  event->bytesFromSide2 = (unsigned int)bytes2;
+  
+  //
+  // Get the rest of the fields based on the type of event
+  //
+
+  switch (event->eventType) {
+    
+  case spindump_event_type_new_connection:
+    if (!spindump_event_parser_json_parse_aux_new_connection(json,event)) {
+      return(0);
+    }
+    break;
+    
+  case spindump_event_type_change_connection:
+    if (!spindump_event_parser_json_parse_aux_change_connection(json,event)) {
+      return(0);
+    }
+    break;
+    
+  case spindump_event_type_connection_delete:
+    if (!spindump_event_parser_json_parse_aux_connection_delete(json,event)) {
+      return(0);
+    }
+    break;
+    
+  case spindump_event_type_new_rtt_measurement:
+    if (!spindump_event_parser_json_parse_aux_new_rtt_measurement(json,event)) {
+      return(0);
+    }
+    break;
+    
+  case spindump_event_type_spin_flip:
+    if (!spindump_event_parser_json_parse_aux_spin_flip(json,event)) {
+      return(0);
+    }
+    break;
+    
+  case spindump_event_type_spin_value:
+    if (!spindump_event_parser_json_parse_aux_spin_value(json,event)) {
+      return(0);
+    }
+    break;
+    
+  case spindump_event_type_ecn_congestion_event:
+    if (!spindump_event_parser_json_parse_aux_ecn_congestion_event(json,event)) {
+      return(0);
+    }
+    break;
+    
+  default:
+    spindump_errorf("Invalid event type %u", event->eventType);
+    return(0);
+  }
+  
+  return(1);
+}
+
+//
+// Copy fields from JSON event to the event struct, for events of the
+// type "". Return value is 0 upon error, 1 upon success.
+//
+
+static int
+spindump_event_parser_json_parse_aux_new_connection(const struct spindump_json_value* json,
+                                                    struct spindump_event* event) {
+  //
+  // This always succeeds
+  //
+  
+  return(1);
+}
+
+//
+// Copy fields from JSON event to the event struct, for events of the
+// type "Change Connection". Return value is 0 upon error, 1 upon success.
+//
+
+static int
+spindump_event_parser_json_parse_aux_change_connection(const struct spindump_json_value* json,
+                                                       struct spindump_event* event) {
+  //
+  // This always succeeds
+  //
+  
+  return(1);
+}
+
+//
+// Copy fields from JSON event to the event struct, for events of the
+// type "Connection Delete". Return value is 0 upon error, 1 upon
+// success.
+//
+
+static int
+spindump_event_parser_json_parse_aux_connection_delete(const struct spindump_json_value* json,
+                                                       struct spindump_event* event) {
+  //
+  // This always succeeds
+  //
+  
+  return(1);
+}
+
+//
+// Copy fields from JSON event to the event struct, for events of the
+// type "". Return value is 0 upon error, 1 upon success.
+//
+
+static int
+spindump_event_parser_json_parse_aux_new_rtt_measurement(const struct spindump_json_value* json,
+                                                         struct spindump_event* event) {
+  const struct spindump_json_value* field = 0;
+  if ((field = spindump_json_value_getfield("Left_rtt",json)) != 0) {
+    event->u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
+    event->u.newRttMeasurement.direction = spindump_direction_frominitiator;
+  } else if ((field = spindump_json_value_getfield("Right_rtt",json)) != 0) {
+    event->u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
+    event->u.newRttMeasurement.direction = spindump_direction_fromresponder;
+  } else if ((field = spindump_json_value_getfield("Full_rtt_initiator",json)) != 0) {
+    event->u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
+    event->u.newRttMeasurement.direction = spindump_direction_frominitiator;
+  } else if ((field = spindump_json_value_getfield("Full_rtt_responder",json)) != 0) {
+    event->u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
+    event->u.newRttMeasurement.direction = spindump_direction_fromresponder;
+  } else {
+    spindump_errorf("new RTT measurement event does not have the necessary JSON fields");
+    return(0);
+  }
+  unsigned long long value = spindump_json_value_getinteger(field);
+  event->u.newRttMeasurement.rtt = (unsigned long)value;
+  return(1);
+}
+
+//
+// Copy fields from JSON event to the event struct, for events of the
+// type "Spin Flip". Return value is 0 upon error, 1 upon success.
+//
+
+static int
+spindump_event_parser_json_parse_aux_spin_flip(const struct spindump_json_value* json,
+                                               struct spindump_event* event) {
+  const struct spindump_json_value* transitionField = spindump_json_value_getfield("Transition",json);
+  const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
+  if (transitionField == 0 || whoField == 0) {
+    spindump_errorf("spin flip event does not have the necessary JSON fields");
+    return(0);
+  }
+  const char* transitionValue = spindump_json_value_getstring(transitionField);
+  const char* whoValue = spindump_json_value_getstring(whoField);
+  if (strcmp(transitionValue,"0-1") == 0) {
+    event->u.spinFlip.spin0to1 = 1;
+  } else if (strcmp(transitionValue,"1-0") == 0) {
+    event->u.spinFlip.spin0to1 = 0;
+  } else {
+    spindump_errorf("spin flip transition value does not have the right value in JSON: %s", transitionValue);
+    return(0);
+  }
+  if (strcasecmp(whoValue,"initiator") == 0) {
+    event->u.spinFlip.direction = spindump_direction_frominitiator;
+  } else if (strcasecmp(whoValue,"responder") == 0) {
+    event->u.spinFlip.direction = spindump_direction_fromresponder;
+  } else {
+    spindump_errorf("spin flip direction does not have the right value in JSON: %s", whoValue);
+    return(0);
+  }
+  return(1);
+}
+
+//
+// Copy fields from JSON event to the event struct, for events of the
+// type "Spin Value". Return value is 0 upon error, 1 upon success.
+//
+
+static int
+spindump_event_parser_json_parse_aux_spin_value(const struct spindump_json_value* json,
+                                                struct spindump_event* event) {
+  const struct spindump_json_value* valueField = spindump_json_value_getfield("Value",json);
+  const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
+  if (valueField == 0 || whoField == 0) {
+    spindump_errorf("spin value event does not have the necessary JSON fields");
+    return(0);
+  }
+  unsigned long long valueValue = spindump_json_value_getinteger(valueField);
+  const char* whoValue = spindump_json_value_getstring(whoField);
+  if (valueValue == 0) {
+    event->u.spinValue.value = 0;
+  } else if (valueValue == 1) {
+    event->u.spinValue.value = 1;
+  } else {
+    spindump_errorf("spin value bit value does not have the right value in JSON: %llu", valueValue);
+    return(0);
+  }
+  if (strcasecmp(whoValue,"initiator") == 0) {
+    event->u.spinValue.direction = spindump_direction_frominitiator;
+  } else if (strcasecmp(whoValue,"responder") == 0) {
+    event->u.spinValue.direction = spindump_direction_fromresponder;
+  } else {
+    spindump_errorf("spin value direction does not have the right value in JSON: %s", whoValue);
+    return(0);
+  }
+  return(1);
+}
+
+//
+// Copy fields from JSON event to the event struct, for events of the
+// type "ECN Congestion Event". Return value is 0 upon error, 1 upon success.
+//
+
+static int
+spindump_event_parser_json_parse_aux_ecn_congestion_event(const struct spindump_json_value* json,
+                                                          struct spindump_event* event) {
+  const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
+  const struct spindump_json_value* ecn0Field = spindump_json_value_getfield("Ecn0",json);
+  const struct spindump_json_value* ecn1Field = spindump_json_value_getfield("Ecn1",json);
+  const struct spindump_json_value* ceField = spindump_json_value_getfield("Ce",json);
+  if (whoField == 0 || ecn0Field == 0 || ecn1Field == 0 || ceField == 0) {
+    spindump_errorf("congestion notification event does not have the necessary JSON fields");
+    return(0);
+  }
+  const char* whoValue = spindump_json_value_getstring(whoField);
+  unsigned long long ecn0Value = spindump_json_value_getinteger(ecn0Field);
+  unsigned long long ecn1Value = spindump_json_value_getinteger(ecn1Field);
+  unsigned long long ceValue = spindump_json_value_getinteger(ceField);
+  event->u.ecnCongestionEvent.ecn0 = (unsigned int)ecn0Value;
+  event->u.ecnCongestionEvent.ecn1 = (unsigned int)ecn1Value;
+  event->u.ecnCongestionEvent.ce = (unsigned int)ceValue;
+  if (strcasecmp(whoValue,"initiator") == 0) {
+    event->u.ecnCongestionEvent.direction = spindump_direction_frominitiator;
+  } else if (strcasecmp(whoValue,"responder") == 0) {
+    event->u.ecnCongestionEvent.direction = spindump_direction_fromresponder;
+  } else {
+    spindump_errorf("congestion notification event direction does not have the right value in JSON: %s", whoValue);
+    return(0);
+  }
+  return(1);
 }
 
 //
@@ -92,7 +410,7 @@ spindump_event_parser_json_print(const struct spindump_event* event,
                spindump_network_tostringoraddr(&event->responderAddress));
   addtobuffer2("\"Session\": \"%s\", ",
                event->session);
-  addtobuffer2("\"Ts\": \"%llu\"",
+  addtobuffer2("\"Ts\": %llu",
                event->timestamp);
 
   //
@@ -141,6 +459,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   case spindump_event_type_ecn_congestion_event:
     addtobuffer2(", \"Who\": \"%s\"",
                  event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+    addtobuffer2(", \"Ecn0\": \"%u\"", event->u.ecnCongestionEvent.ecn0);
+    addtobuffer2(", \"Ecn1\": \"%u\"", event->u.ecnCongestionEvent.ecn1);
+    addtobuffer2(", \"Ce\": \"%u\"", event->u.ecnCongestionEvent.ce);
     break;
     
   default:
@@ -151,10 +472,14 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   // Additional information about the connection
   //
   
-  addtobuffer2(", \"Packets\": %u",
-               event->packets);
-  addtobuffer2(", \"Bytes\": %u",
-               event->bytes);
+  addtobuffer2(", \"Packets1\": %u",
+               event->packetsFromSide1);
+  addtobuffer2(", \"Packets2\": %u",
+               event->packetsFromSide2);
+  addtobuffer2(", \"Bytes1\": %u",
+               event->bytesFromSide1);
+  addtobuffer2(", \"Bytes2\": %u",
+               event->bytesFromSide2);
   
   //
   // The end of the record
@@ -168,4 +493,35 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   
   *consumed = strlen(buffer);
   return(strlen(buffer) < length - 1);
+}
+
+static int
+spindump_event_parser_json_converteventtype(const char* string,
+                                            enum spindump_event_type* type) {
+  spindump_assert(string != 0);
+  spindump_assert(type != 0);
+  if (strcasecmp("new",string) == 0) {
+    *type = spindump_event_type_new_connection;
+    return(1);
+  } else if (strcasecmp("change",string) == 0) {
+    *type = spindump_event_type_change_connection;
+    return(1);
+  } else if (strcasecmp("delete",string) == 0) {
+    *type = spindump_event_type_connection_delete;
+    return(1);
+  } else if (strcasecmp("spinflip",string) == 0) {
+    *type = spindump_event_type_spin_flip;
+    return(1);
+  } else if (strcasecmp("spin",string) == 0) {
+    *type = spindump_event_type_spin_value;
+    return(1);
+  } else if (strcasecmp("measurement" ,string) == 0) {
+    *type = spindump_event_type_new_rtt_measurement;
+    return(1);
+  } else if (strcasecmp("ecnce",string) == 0) {
+    *type = spindump_event_type_ecn_congestion_event;
+    return(1);
+  } else {
+    return(0);
+  }
 }

@@ -40,15 +40,19 @@
 static void
 spindump_json_parse_seekcurrentchar(const char** input);
 static struct spindump_json_value*
-spindump_json_parse_integer(const char** input);
+spindump_json_parse_integer(const char* upperFieldName,
+                            const char** input);
 static struct spindump_json_value*
-spindump_json_parse_string(const char** input);
-static struct spindump_json_value*
-spindump_json_parse_array(const struct spindump_json_schema* schema,
-                           void* data,
+spindump_json_parse_string(const char* upperFieldName,
                            const char** input);
 static struct spindump_json_value*
+spindump_json_parse_array(const struct spindump_json_schema* schema,
+                          const char* upperFieldName,
+                          void* data,
+                          const char** input);
+static struct spindump_json_value*
 spindump_json_parse_record(const struct spindump_json_schema* schema,
+                           const char* upperFieldName,
                            void* data,
                            const char** input);
 static char*
@@ -75,16 +79,20 @@ spindump_json_parse_record_aux_free(unsigned int nSchemaFields,
                                     struct spindump_json_value_field* otherFields);
 static struct spindump_json_value*
 spindump_json_parse_aux(const struct spindump_json_schema* schema,
+                        const char* upperFieldName,
                         void* data,
                         const char** input);
 static struct spindump_json_value*
-spindump_json_parse_literal(const char** input);
+spindump_json_parse_literal(const char* upperFieldName,
+                            const char** input);
 static struct spindump_json_value*
 spindump_json_parse_recordorarray(const struct spindump_json_schema* schema,
+                                  const char* upperFieldName,
                                   void* data,
                                   const char** input);
 static struct spindump_json_value*
 spindump_json_parse_any(const struct spindump_json_schema* schema,
+                        const char* upperFieldName,
                         void* data,
                         const char** input);
 static int
@@ -131,7 +139,7 @@ spindump_json_parse(const struct spindump_json_schema* schema,
   // Call the auxiliary function that does the actual work
   //
 
-  struct spindump_json_value* value = spindump_json_parse_aux(schema,data,input);
+  struct spindump_json_value* value = spindump_json_parse_aux(schema,"top",data,input);
   if (value == 0) {
     spindump_deepdeepdebugf("spindump_json_parse: failed");
     return(0);
@@ -159,6 +167,7 @@ spindump_json_parse(const struct spindump_json_schema* schema,
 
 struct spindump_json_value*
 spindump_json_parse_aux(const struct spindump_json_schema* schema,
+                        const char* upperFieldName,
                         void* data,
                         const char** input) {
   
@@ -167,6 +176,7 @@ spindump_json_parse_aux(const struct spindump_json_schema* schema,
   //
   
   spindump_assert(schema != 0);
+  spindump_assert(upperFieldName != 0);
   spindump_assert(input != 0);
   spindump_assert(*input != 0);
   
@@ -174,45 +184,51 @@ spindump_json_parse_aux(const struct spindump_json_schema* schema,
   // Branch based on what schema expects
   //
 
-  spindump_deepdeepdebugf("JSON parse aux schema type %u, input = %s...",
-                          schema->type, *input);
+  spindump_deepdeepdebugf("JSON parse aux schema type %u in field %s, input = %s...",
+                          schema->type,
+                          upperFieldName,
+                          *input);
   
   struct spindump_json_value* value;
   switch (schema->type) {
     
   case spindump_json_schema_type_integer:
-    value = spindump_json_parse_integer(input);
+    value = spindump_json_parse_integer(upperFieldName,input);
     break;
     
   case spindump_json_schema_type_string:
-    value = spindump_json_parse_string(input);
+    value = spindump_json_parse_string(upperFieldName,input);
     break;
     
   case spindump_json_schema_type_literal:
-    value = spindump_json_parse_literal(input);
+    value = spindump_json_parse_literal(upperFieldName,input);
     break;
     
   case spindump_json_schema_type_record:
-    value = spindump_json_parse_record(schema,data,input);
+    value = spindump_json_parse_record(schema,upperFieldName,data,input);
     break;
     
   case spindump_json_schema_type_array:
-    value = spindump_json_parse_array(schema,data,input);
+    value = spindump_json_parse_array(schema,upperFieldName,data,input);
     break;
     
   case spindump_json_schema_type_recordorarray:
-    value = spindump_json_parse_recordorarray(schema,data,input);
+    value = spindump_json_parse_recordorarray(schema,upperFieldName,data,input);
     break;
     
   case spindump_json_schema_type_any:
-    value = spindump_json_parse_any(schema,data,input);
+    value = spindump_json_parse_any(schema,upperFieldName,data,input);
     break;
     
   default:
-    spindump_errorf("invalid JSON schema type %u", schema->type);
+    spindump_errorf("invalid JSON schema type %u for field %s",
+                    schema->type,
+                    upperFieldName);
     return(0);
   }
-
+  
+  spindump_deepdeepdebugf("done with _aux switch for field %s", upperFieldName);
+  
   //
   // Bail out if an error
   //
@@ -252,7 +268,8 @@ spindump_json_parse_aux(const struct spindump_json_schema* schema,
 //
 
 static struct spindump_json_value*
-spindump_json_parse_integer(const char** input) {
+spindump_json_parse_integer(const char* upperFieldName,
+                            const char** input) {
   spindump_json_parse_seekcurrentchar(input);
   spindump_deepdeepdebugf("spindump_json_parse_integer parsing %s...", *input);
 # define maxdigits 40
@@ -260,12 +277,14 @@ spindump_json_parse_integer(const char** input) {
   unsigned int bufChars = 0;
   memset(buf,0,sizeof(buf));
   if (!isdigit(**input)) {
-      spindump_errorf("expected a JSON integer");
-      return(0);
+    spindump_errorf("expected a JSON integer for field %s",
+                    upperFieldName);
+    return(0);
   }
   while (**input != 0 && isdigit(**input)) {
     if (bufChars >= maxdigits) {
-      spindump_errorf("JSON integer number is too long");
+      spindump_errorf("JSON integer number is too long in field %s",
+                      upperFieldName);
       return(0);
     }
     buf[bufChars++] = **input;
@@ -274,7 +293,8 @@ spindump_json_parse_integer(const char** input) {
   unsigned long long value;
   int x = sscanf(buf,"%llu",&value);
   if (x < 1) {
-      spindump_errorf("JSON integer number cannot be parsed");
+    spindump_errorf("JSON integer number cannot be parsed in field %s",
+                    upperFieldName);
     return(0);
   }
   return(spindump_json_value_new_integer(value));
@@ -294,17 +314,20 @@ spindump_json_parse_integer(const char** input) {
 //
 
 static struct spindump_json_value*
-spindump_json_parse_string(const char** input) {
+spindump_json_parse_string(const char* upperFieldName,
+                           const char** input) {
   spindump_json_parse_seekcurrentchar(input);
   spindump_deepdeepdebugf("spindump_json_parse_string parsing %s...", *input);
   if (**input != '\"') {
-    spindump_errorf("cannot parse JSON string: missing opening quote");
+    spindump_errorf("cannot parse JSON string: missing opening quote in field %s",
+                    upperFieldName);
     return(0);
   }
   spindump_json_parse_movetonextchar(input);
   char* closing = index(*input,'\"');
   if (closing == 0) {
-    spindump_errorf("cannot parse JSON string: missing closing quote");
+    spindump_errorf("cannot parse JSON string: missing closing quote in field %s",
+                    upperFieldName);
     return(0);
   }
   long len = closing - (*input);
@@ -328,13 +351,14 @@ spindump_json_parse_string(const char** input) {
 //
 
 static struct spindump_json_value*
-spindump_json_parse_literal(const char** input) {
+spindump_json_parse_literal(const char* upperFieldName,
+                            const char** input) {
   spindump_json_parse_seekcurrentchar(input);
   spindump_deepdeepdebugf("spindump_json_parse_literal parsing %s...", *input);
   if (isdigit(**input)) {
-    return(spindump_json_parse_integer(input));
+    return(spindump_json_parse_integer(upperFieldName,input));
   } else {
-    return(spindump_json_parse_string(input));
+    return(spindump_json_parse_string(upperFieldName,input));
   }
 }
 
@@ -354,6 +378,7 @@ spindump_json_parse_literal(const char** input) {
 
 static struct spindump_json_value*
 spindump_json_parse_array(const struct spindump_json_schema* schema,
+                          const char* upperFieldName,
                           void* data,
                           const char** input) {
   spindump_assert(schema != 0);
@@ -361,7 +386,8 @@ spindump_json_parse_array(const struct spindump_json_schema* schema,
   spindump_json_parse_seekcurrentchar(input);
   spindump_deepdeepdebugf("spindump_json_parse_array parsing %s...", *input);
   if (**input != '[') {
-    spindump_errorf("cannot parse JSON array: missing opening bracket");
+    spindump_errorf("cannot parse JSON array: missing opening bracket in field %s",
+                    upperFieldName);
     return(0);
   }
   spindump_json_parse_movetonextchar(input);
@@ -372,11 +398,13 @@ spindump_json_parse_array(const struct spindump_json_schema* schema,
   }
   while (**input != ']') {
     if (**input == 0) {
-      spindump_errorf("cannot parse JSON array: missing closing bracket");
+      spindump_errorf("cannot parse JSON array: missing closing bracket in field %s",
+                      upperFieldName);
       spindump_json_value_free(value);
       return(0);
     }
-    struct spindump_json_value* element = spindump_json_parse_aux(schema->u.array.schema,data,input);
+    struct spindump_json_value* element =
+      spindump_json_parse_aux(schema->u.array.schema,"array",data,input);
     if (element == 0) {
       spindump_json_value_free(value);
       return(0);
@@ -390,7 +418,8 @@ spindump_json_parse_array(const struct spindump_json_schema* schema,
       spindump_json_parse_movetonextchar(input);
       spindump_json_parse_seekcurrentchar(input);
       if (**input == ']') {
-        spindump_errorf("cannot parse JSON array: closing bracket after comma");
+        spindump_errorf("cannot parse JSON array: closing bracket after comma in field %s",
+                        upperFieldName);
         spindump_json_value_free(value);
         return(0);
       } else {
@@ -399,7 +428,8 @@ spindump_json_parse_array(const struct spindump_json_schema* schema,
     } else if (**input == ']') {
       break;
     } else {
-      spindump_errorf("cannot parse JSON array: syntax error after element");
+      spindump_errorf("cannot parse JSON array: syntax error after element in field %s",
+                      upperFieldName);
       spindump_json_value_free(value);
       return(0);
     }
@@ -601,7 +631,7 @@ spindump_json_parse_record_aux_field(const struct spindump_json_schema* schema,
   //
   
   spindump_assert(subtype != 0);
-  struct spindump_json_value* value = spindump_json_parse_aux(subtype,data,input);
+  struct spindump_json_value* value = spindump_json_parse_aux(subtype,fieldName,data,input);
   if (value == 0) {
     spindump_deepdeepdebugf("field %s value parsing failed, aborting", fieldName);
     spindump_free(fieldName);
@@ -671,6 +701,7 @@ spindump_json_parse_lookforfield(const char* name,
 
 static struct spindump_json_value*
 spindump_json_parse_record(const struct spindump_json_schema* schema,
+                           const char* upperFieldName,
                            void* data,
                            const char** input) {
 
@@ -690,7 +721,8 @@ spindump_json_parse_record(const struct spindump_json_schema* schema,
   spindump_json_parse_seekcurrentchar(input);
   spindump_deepdeepdebugf("spindump_json_parse_record parsing %s...", *input);
   if (**input != '{') {
-    spindump_errorf("cannot parse JSON record: missing opening brace");
+    spindump_errorf("cannot parse JSON record: missing opening brace in field %s",
+                    upperFieldName);
     return(0);
   }
   spindump_json_parse_movetonextchar(input);
@@ -716,7 +748,8 @@ spindump_json_parse_record(const struct spindump_json_schema* schema,
     spindump_deepdeepdebugf("record parsing loop, input = %s...", *input);
     
     if (**input == 0) {
-      spindump_errorf("cannot parse JSON record: missing closing brace");
+      spindump_errorf("cannot parse JSON record: missing closing brace in field %s",
+                      upperFieldName);
       spindump_json_parse_record_aux_free(nSchemaFields,schemaFields,nOtherFields,otherFields);
       return(0);
     }
@@ -734,7 +767,8 @@ spindump_json_parse_record(const struct spindump_json_schema* schema,
       spindump_json_parse_movetonextchar(input);
       spindump_json_parse_seekcurrentchar(input);
       if (**input == '}') {
-        spindump_errorf("cannot parse JSON record: closing brace after comma");
+        spindump_errorf("cannot parse JSON record: closing brace after comma in field %s",
+                        upperFieldName);
         spindump_json_parse_record_aux_free(nSchemaFields,schemaFields,nOtherFields,otherFields);
         return(0);
       } else {
@@ -743,7 +777,9 @@ spindump_json_parse_record(const struct spindump_json_schema* schema,
     } else if (**input == '}') {
       break;
     } else {
-      spindump_errorf("cannot parse JSON record: syntax error on char %c after field", **input);
+      spindump_errorf("cannot parse JSON record: syntax error on char %c after field in field %s",
+                      **input,
+                      upperFieldName);
       spindump_json_parse_record_aux_free(nSchemaFields,schemaFields,nOtherFields,otherFields);
       return(0);
     }
@@ -763,18 +799,21 @@ spindump_json_parse_record(const struct spindump_json_schema* schema,
   // mandatory fields are missing.
   //
 
-  spindump_deepdebugf("schema comformance check for the record");
+  spindump_deepdebugf("schema comformance check for the record %s", upperFieldName);
   
   for (unsigned int q = 0; q < schema->u.record.nFields; q++) {
     const struct spindump_json_schema_field* schemaField =
       &schema->u.record.fields[q];
     spindump_assert(schemaField != 0);
+    spindump_deepdebugf("schema comformance check for the record field %s", schemaField->name);
     if (schemaField->required && spindump_json_parse_lookforfield(schemaField->name,nSchemaFields,schemaFields) == 0) {
       spindump_errorf("field %s is missing from the JSON record", schemaField->name);
       spindump_json_parse_record_aux_free(nSchemaFields,schemaFields,nOtherFields,otherFields);
       return(0);
     }
   }
+  
+  spindump_deepdebugf("schema comformance check for the record %s done", upperFieldName);
   
   //
   // Create a JSON value record object
@@ -786,6 +825,8 @@ spindump_json_parse_record(const struct spindump_json_schema* schema,
       spindump_json_parse_record_aux_free(nSchemaFields,schemaFields,nOtherFields,otherFields);
       return(0);
   }
+  
+  spindump_deepdebugf("value created for the record %s", upperFieldName);
   
   //
   // Done. Return the created record object.
@@ -807,6 +848,7 @@ spindump_json_parse_record(const struct spindump_json_schema* schema,
 
 static struct spindump_json_value*
 spindump_json_parse_recordorarray(const struct spindump_json_schema* schema,
+                                  const char* upperFieldName,
                                   void* data,
                                   const char** input) {
 
@@ -825,11 +867,14 @@ spindump_json_parse_recordorarray(const struct spindump_json_schema* schema,
   
   spindump_json_parse_seekcurrentchar(input);
   spindump_deepdeepdebugf("spindump_json_parse_recordorarray parsing %s...", *input);
+  struct spindump_json_value* ret = 0;
   if (**input == '[') {
-    return(spindump_json_parse_array(schema->u.arrayorrecord.array,data,input));
+    ret = spindump_json_parse_array(schema->u.arrayorrecord.array,upperFieldName,data,input);
   } else {
-    return(spindump_json_parse_record(schema->u.arrayorrecord.record,data,input));
+    ret = spindump_json_parse_record(schema->u.arrayorrecord.record,upperFieldName,data,input);
   }
+  spindump_deepdeepdebugf("returning from spindump_json_parse_recordorarray for %s", upperFieldName);
+  return(ret);
 }
 
 //
@@ -845,6 +890,7 @@ spindump_json_parse_recordorarray(const struct spindump_json_schema* schema,
 
 static struct spindump_json_value*
 spindump_json_parse_any(const struct spindump_json_schema* schema,
+                        const char* upperFieldName,
                         void* data,
                         const char** input) {
 
@@ -869,22 +915,22 @@ spindump_json_parse_any(const struct spindump_json_schema* schema,
   //
   
   if (isdigit(**input)) {
-    return(spindump_json_parse_integer(input));
+    return(spindump_json_parse_integer(upperFieldName,input));
   } else if (**input == '\"') {
-    return(spindump_json_parse_string(input));
+    return(spindump_json_parse_string(upperFieldName,input));
   } else if (**input == '[') {
     struct spindump_json_schema array;
     struct spindump_json_schema any = *schema;
     array.type = spindump_json_schema_type_array;
     array.callback = 0;
     array.u.array.schema = &any;
-    return(spindump_json_parse_array(&array,data,input));
+    return(spindump_json_parse_array(&array,upperFieldName,data,input));
   } else {
     struct spindump_json_schema record;
     record.type = spindump_json_schema_type_record;
     record.callback = 0;
     record.u.record.nFields = 0;
-    return(spindump_json_parse_record(&record,data,input));
+    return(spindump_json_parse_record(&record,upperFieldName,data,input));
   }
 }
 

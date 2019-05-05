@@ -28,6 +28,7 @@
 #include "spindump_protocols.h"
 #include "spindump_table.h"
 #include "spindump_eventformatter.h"
+#include "spindump_json.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -38,6 +39,7 @@
 #define SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONDATASIZE (50*1024)
 #define SPINDUMP_REMOTE_MAXPATHCOMPONENTLENGTH 20
 #define SPINDUMP_REMOTE_PATHSTART "/data/"
+#define SPINDUMP_REMOTE_SERVER_MAXSUBMISSIONS  1000
 
 //
 // Data structures ----------------------------------------------------------------------------
@@ -55,10 +57,17 @@ struct spindump_remote_connection {
 };
 
 struct spindump_remote_server {
-  spindump_port listenport;
-  uint8_t padding[2]; // unused padding to align the next field properly
-  struct MHD_Daemon* daemon;
-  struct spindump_remote_connection clients[SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONS];
+  spindump_port listenport;                           // used by main thread only
+  uint8_t padding[2];                                 // unused padding to align the next field properly
+  struct MHD_Daemon* daemon;                          // used by main thread only
+  struct spindump_remote_connection
+   clients[SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONS];   // used by main thread only
+  const struct spindump_json_schema* schema;          // written by main thread only, read by daemon thread
+  atomic_bool exit;                                   // written by main thread, read by daemon thread
+  atomic_uint nextAddItemIndex;                       // written by daemon thread, read by main thread
+  atomic_uint nextConsumeItemIndex;                   // written by main thread, read by daemon thread
+  struct spindump_json_value*
+      items[SPINDUMP_REMOTE_SERVER_MAXSUBMISSIONS];   // written by daemon thread, read by the main thread
 };
 
 //
@@ -68,7 +77,8 @@ struct spindump_remote_server {
 struct spindump_remote_server*
 spindump_remote_server_init(spindump_port port);
 int
-spindump_remote_server_getupdate(struct spindump_remote_server* server);
+spindump_remote_server_getupdate(struct spindump_remote_server* server,
+                                 struct spindump_analyze* analyzer);
 void
 spindump_remote_server_close(struct spindump_remote_server* server);
 

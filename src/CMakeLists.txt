@@ -49,7 +49,8 @@ find_package_handle_standard_args(MICROHTTPD DEFAULT_MSG MICROHTTPD_INCLUDE_DIR 
 #
 
 add_library(spindumplib
-  spindump_analyze.c
+  spindump_analyze.c 
+  spindump_analyze_event.c 
   spindump_analyze_aggregate.c
   spindump_analyze_coap.c
   spindump_analyze_dns.c

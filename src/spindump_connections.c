@@ -657,8 +657,8 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
 //
 
 int
-spindump_connections_matches_aggregate_srcdst(spindump_address* source,
-                                              spindump_address* destination,
+spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
+                                              const spindump_address* destination,
                                               struct spindump_connection* aggregate) {
   spindump_assert(aggregate != 0);
   spindump_assert(spindump_connections_isaggregate(aggregate));

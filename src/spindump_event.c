@@ -33,8 +33,10 @@ spindump_event_initialize(enum spindump_event_type eventType,
                           const spindump_network* responderAddress,
                           const char* session,
                           unsigned long long timestamp,
-                          unsigned int packets,
-                          unsigned int bytes,
+                          unsigned int packetsFromSide1,
+                          unsigned int packetsFromSide2,
+                          unsigned int bytesFromSide1,
+                          unsigned int bytesFromSide2,
                           struct spindump_event* event) {
 
   //
@@ -53,9 +55,16 @@ spindump_event_initialize(enum spindump_event_type eventType,
   event->responderAddress = *responderAddress;
   strncpy(&event->session[0],session,sizeof(event->session));
   event->timestamp = timestamp;
-  event->packets = packets;
-  event->bytes = bytes;
+  event->packetsFromSide1 = packetsFromSide1;
+  event->packetsFromSide2 = packetsFromSide2;
+  event->bytesFromSide1 = bytesFromSide1;
+  event->bytesFromSide2 = bytesFromSide2;
 }
+
+//
+// Get the name of the event as a string. The returned string is
+// static, ie. should not be deallocated by the caller.
+//
 
 const char*
 spindump_event_type_tostring(enum spindump_event_type type) {
@@ -71,5 +80,82 @@ spindump_event_type_tostring(enum spindump_event_type type) {
     spindump_errorf("invalid event type");
     return("UNKNOWN");
   }
+}
+
+//
+// Compare two events for equality
+//
+
+int
+spindump_event_equal(const struct spindump_event* event1,
+                     const struct spindump_event* event2) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(event1 != 0);
+  spindump_assert(event2 != 0);
+
+  //
+  // Basic type compare
+  //
+
+  if (event1->eventType != event2->eventType) return(0);
+
+  //
+  // Compare common fields
+  //
+
+  if (event1->connectionType != event2->connectionType) return(0);
+  if (!spindump_network_equal(&event1->initiatorAddress,&event2->initiatorAddress)) return(0);
+  if (!spindump_network_equal(&event1->responderAddress,&event2->responderAddress)) return(0);
+  if (strcmp(event1->session,event2->session) != 0) return(0);
+  if (event1->timestamp != event2->timestamp) return(0);
+  if (event1->packetsFromSide1 != event2->packetsFromSide1) return(0);
+  if (event1->packetsFromSide2 != event2->packetsFromSide2) return(0);
+  if (event1->bytesFromSide1 != event2->bytesFromSide1) return(0);
+  if (event1->bytesFromSide2 != event2->bytesFromSide2) return(0);
+  
+  //
+  // Compare type-specific fields
+  //
+
+  switch (event1->eventType) {
+  case spindump_event_type_new_connection:
+    break;
+  case spindump_event_type_change_connection:
+    break;
+  case spindump_event_type_connection_delete:
+    break;
+  case spindump_event_type_new_rtt_measurement:
+    if (event1->u.newRttMeasurement.measurement != event2->u.newRttMeasurement.measurement) return(0);
+    if (event1->u.newRttMeasurement.direction != event2->u.newRttMeasurement.direction) return(0);
+    if (event1->u.newRttMeasurement.rtt != event2->u.newRttMeasurement.rtt) return(0);
+    break;
+  case spindump_event_type_spin_flip:
+    if (event1->u.spinFlip.direction != event2->u.spinFlip.direction) return(0);
+    if (event1->u.spinFlip.spin0to1 != event2->u.spinFlip.spin0to1) return(0);
+    break;
+  case spindump_event_type_spin_value:
+    if (event1->u.spinValue.direction != event2->u.spinValue.direction) return(0);
+    if (event1->u.spinValue.value != event2->u.spinValue.value) return(0);
+    break;
+  case spindump_event_type_ecn_congestion_event:
+    if (event1->u.ecnCongestionEvent.direction != event2->u.ecnCongestionEvent.direction) return(0);
+    if (event1->u.ecnCongestionEvent.ecn0 != event2->u.ecnCongestionEvent.ecn0) return(0);
+    if (event1->u.ecnCongestionEvent.ecn1 != event2->u.ecnCongestionEvent.ecn1) return(0);
+    if (event1->u.ecnCongestionEvent.ce != event2->u.ecnCongestionEvent.ce) return(0);
+    break;
+  default:
+    spindump_errorf("unrecognised event type %u", event1->eventType);
+    return(0);
+  }
+  
+  //
+  // Done. Everything compared the same
+  //
+  
+  return(1);
 }
 

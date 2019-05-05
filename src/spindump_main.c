@@ -106,6 +106,7 @@ int main(int argc,char** argv) {
     spindump_setdebugdestination(debugfile);
   }
   spindump_seterrordestination(debugfile);
+  spindump_deepdeepdebugf("main setup done, now main loop");
   
   //
   // Main operation

@@ -71,10 +71,11 @@ void
 spindump_main_loop_operation(struct spindump_main_state* state) {
 
   //
-  // Checks
+  // Checks and debugs
   //
 
   spindump_assert(state != 0);
+  spindump_deepdeepdebugf("main loop operation");
   
   //
   // Initialize the actual operation
@@ -173,10 +174,15 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // Initialize the spindump server, if running silent
   //
 
+  spindump_deepdeepdebugf("main loop operation, server init");
   struct spindump_remote_server* server = 0;
   if (config->collector) {
     server = spindump_remote_server_init(config->collectorPort);
+    if (server == 0) {
+      exit(1);
+    }
   }
+  spindump_deepdeepdebugf("main loop operation, server init done %lx", server);
   
   //
   // Draw screen once before waiting for packets
@@ -225,6 +231,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // Enter the main packet-waiting-loop
   //
   
+  spindump_deepdeepdebugf("main loop operation, entering packetloop");
   spindump_main_loop_packetloop(state,
                                 analyzer,
                                 capturer,
@@ -294,7 +301,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
   struct spindump_main_configuration* config = &state->config;
   int more = 1;
   
-  spindump_deepdebugf("main loop");
+  spindump_deepdebugf("main packet loop");
   while (!state->interrupt &&
          more &&
          (config->maxReceive == 0 ||
@@ -348,9 +355,10 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     // take those updates into account in our connection/analyzer
     // tables.
     //
-    
+
+    //spindump_deepdeepdebugf("calling spindump_remote_server_getupdate? %lx %u", server, config->collector);
     if (server != 0) {
-      while (spindump_remote_server_getupdate(server)) {
+      while (spindump_remote_server_getupdate(server,analyzer)) {
       }
     }
     
@@ -358,7 +366,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     // See if we need to do any periodic maintenance (timeouts etc) of
     // the set of connections we have.
     //
-
+    
     if (spindump_connectionstable_periodiccheck(analyzer->table,
                                                 &now,
                                                 analyzer)) {

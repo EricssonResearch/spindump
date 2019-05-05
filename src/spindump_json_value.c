@@ -507,6 +507,7 @@ spindump_json_value_new_array_element(struct spindump_json_value* array,
 
 char*
 spindump_json_value_tostring(const struct spindump_json_value* value) {
+  spindump_deepdeepdebugf("spindump_json_value_tostring");
   const size_t initialSize = 50;
   size_t size = initialSize;
   char* buffer = (char*)spindump_malloc(initialSize);
@@ -537,6 +538,14 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
   //
 
   spindump_assert(value != 0);
+  spindump_assert(buffer != 0);
+  spindump_assert(*buffer != 0);
+  spindump_assert(bufferSize != 0);
+  spindump_assert(*bufferSize > 0);
+#if 0
+  spindump_deepdeepdebugf("spindump_json_value_tostring_aux %u (bufsiz %u)",
+                          value->type, *bufferSize);
+#endif
   
   //
   // Helper macros for buffer allocation and string adding
@@ -545,6 +554,8 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
 # define checkbufferspace(n)                            \
   if (!(*position + (n) + 1 < *bufferSize)) {           \
     size_t newSize = *bufferSize + 50 + (n);            \
+    spindump_deepdeepdebugf("have to expand %u->%u",    \
+                            *bufferSize, newSize);      \
     char* newBuffer = (char*)spindump_malloc(newSize);  \
     if (newBuffer == 0) {                               \
       spindump_errorf("cannot allocate space for JSON " \
@@ -553,9 +564,13 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
       *bufferSize = 0;                                  \
       return;                                           \
     }                                                   \
+    spindump_deepdeepdebugf("expanded");                \
+    memcpy(newBuffer,*buffer,*bufferSize);              \
     spindump_free(*buffer);                             \
+    spindump_deepdeepdebugf("copied");                  \
     *buffer = newBuffer;                                \
     *bufferSize = newSize;                              \
+    spindump_deepdeepdebugf("done");                    \
   }
 
 # define addtobuffer(s,n)                               \
@@ -571,7 +586,8 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
     
   case spindump_json_value_type_integer:
     {
-      unsigned int maxdigits = 40;
+      unsigned int maxdigits = 60;
+      spindump_deepdeepdebugf("integer value is %llu", value->u.integer.value);
       checkbufferspace(maxdigits);
       int used = snprintf((*buffer)+(*position),*bufferSize-*position,
                           "%llu",
@@ -583,6 +599,8 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
     
   case spindump_json_value_type_string:
     {
+      spindump_assert(value->u.string.value != 0);
+      spindump_deepdeepdebugf("string value is %s", value->u.string.value);
       size_t needed = strlen(value->u.string.value);
       checkbufferspace(1+needed+1);
       addtobuffer("\"",1);
@@ -593,11 +611,15 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
     
   case spindump_json_value_type_record:
     {
+      spindump_deepdeepdebugf("record value will have %u+%u fields",
+                              value->u.record.nSchemaFields,
+                              value->u.record.nOtherFields);
       spindump_assert(value->u.record.schemaFields != 0);
       spindump_assert(value->u.record.otherFields != 0);
       checkbufferspace(1);
       addtobuffer("{",1);
       unsigned int i,j;
+      spindump_deepdeepdebugf("schema fields next");
       for (i = 0; i < value->u.record.nSchemaFields; i++) {
         if (i > 0) {
           checkbufferspace(1);
@@ -611,14 +633,18 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
         checkbufferspace(2);
         addtobuffer("\":",2);
         spindump_json_value_tostring_aux(field->value,buffer,bufferSize,position);
+        spindump_deepdeepdebugf("done with one schema field %s (%u/%u)",
+                                field->name, i, value->u.record.nSchemaFields);
       }
+      spindump_deepdeepdebugf("other fields next (%u)", value->u.record.nOtherFields);
       for (j = 0; j < value->u.record.nOtherFields; j++) {
         if (i + j > 0) {
           checkbufferspace(1);
           addtobuffer(",",1);
         }
-        const struct spindump_json_value_field* field = &value->u.record.otherFields[i];
+        const struct spindump_json_value_field* field = &value->u.record.otherFields[j];
         spindump_json_value_tostring_aux(field->value,buffer,bufferSize,position);
+        spindump_deepdeepdebugf("done with one other field");
       }
       checkbufferspace(1);
       addtobuffer("}",1);
@@ -627,6 +653,7 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
     
   case spindump_json_value_type_array:
     {
+      spindump_deepdeepdebugf("array values has %u elements", value->u.array.n);
       spindump_assert(value->u.array.elements != 0);
       checkbufferspace(1);
       addtobuffer("[",1);
@@ -639,6 +666,7 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
                                          buffer,
                                          bufferSize,
                                          position);
+        spindump_deepdeepdebugf("done with one array element");
       }
       checkbufferspace(1);
       addtobuffer("]",1);
@@ -648,4 +676,64 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
   default:
     spindump_errorf("invalid internal JSON value type");
   }
+}
+
+const struct spindump_json_value*
+spindump_json_value_getrequiredfield(const char* field,
+                                     const struct spindump_json_value* value) {
+  spindump_assert(value != 0);
+  spindump_assert(value->type == spindump_json_value_type_record);
+  spindump_assert(field != 0);
+  const struct spindump_json_value* result = spindump_json_value_getfield(field,value);
+  if (result == 0) {
+    spindump_fatalf("expected field %s to be mandatory but it is not in the JSON record", field);
+  } else {
+    return(result);
+  }
+}
+
+const struct spindump_json_value*
+spindump_json_value_getfield(const char* field,
+                             const struct spindump_json_value* value) {
+  unsigned int i;
+  spindump_assert(value != 0);
+  spindump_assert(value->type == spindump_json_value_type_record);
+  spindump_assert(field != 0);
+  for (i = 0; i < value->u.record.nSchemaFields; i++) {
+    if (strcmp(value->u.record.schemaFields[i].name,field) == 0) {
+      return(value->u.record.schemaFields[i].value);
+    }
+  }
+  for (i = 0; i < value->u.record.nOtherFields; i++) {
+    if (strcmp(value->u.record.otherFields[i].name,field) == 0) {
+      return(value->u.record.otherFields[i].value);
+    }
+  }
+  return(0);
+}
+
+const struct spindump_json_value*
+spindump_json_value_getarrayelem(unsigned int index,
+                                 const struct spindump_json_value* value) {
+  spindump_assert(value != 0);
+  spindump_assert(value->type == spindump_json_value_type_array);
+  if (index >= value->u.array.n) {
+    return(0);
+  } else {
+    return(value->u.array.elements[index]);
+  }
+}
+
+unsigned long long
+spindump_json_value_getinteger(const struct spindump_json_value* value) {
+  spindump_assert(value != 0);
+  spindump_assert(value->type == spindump_json_value_type_integer);
+  return(value->u.integer.value);
+}
+
+const char*
+spindump_json_value_getstring(const struct spindump_json_value* value) {
+  spindump_assert(value != 0);
+  spindump_assert(value->type == spindump_json_value_type_string);
+  return(value->u.string.value);
 }

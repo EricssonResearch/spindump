@@ -63,80 +63,80 @@ spindump_connections_delete(struct spindump_connection* connection);
 struct spindump_connection*
 spindump_connections_newconnection(struct spindump_connectionstable* table,
                                    enum spindump_connection_type type,
-                                   struct timeval* when,
+                                   const struct timeval* when,
                                    int manuallyCreated);
 struct spindump_connection*
-spindump_connections_newconnection_icmp(spindump_address* side1address,
-                                        spindump_address* side2address,
+spindump_connections_newconnection_icmp(const spindump_address* side1address,
+                                        const spindump_address* side2address,
                                         u_int8_t side1peerType,
                                         u_int16_t side1peerId,
-                                        struct timeval* when,
+                                        const struct timeval* when,
                                         struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_tcp(spindump_address* side1address,
-                                       spindump_address* side2address,
+spindump_connections_newconnection_tcp(const spindump_address* side1address,
+                                       const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_udp(spindump_address* side1address,
-                                       spindump_address* side2address,
+spindump_connections_newconnection_udp(const spindump_address* side1address,
+                                       const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_dns(spindump_address* side1address,
-                                       spindump_address* side2address,
+spindump_connections_newconnection_dns(const spindump_address* side1address,
+                                       const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_coap(spindump_address* side1address,
-                                        spindump_address* side2address,
+spindump_connections_newconnection_coap(const spindump_address* side1address,
+                                        const spindump_address* side2address,
                                         spindump_port side1port,
                                         spindump_port side2port,
-                                        struct timeval* when,
+                                        const struct timeval* when,
                                         struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_quic_5tuple(spindump_address* side1address,
-                                               spindump_address* side2address,
+spindump_connections_newconnection_quic_5tuple(const spindump_address* side1address,
+                                               const spindump_address* side2address,
                                                spindump_port side1port,
                                                spindump_port side2port,
-                                               struct timeval* when,
+                                               const struct timeval* when,
                                                struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_quic_5tupleandcids(spindump_address* side1address,
-                                                      spindump_address* side2address,
+spindump_connections_newconnection_quic_5tupleandcids(const spindump_address* side1address,
+                                                      const spindump_address* side2address,
                                                       spindump_port side1port,
                                                       spindump_port side2port,
                                                       struct spindump_quic_connectionid* destinationCid,
                                                       struct spindump_quic_connectionid* sourceCid,
-                                                      struct timeval* when,
+                                                      const struct timeval* when,
                                                       struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_hostpair(spindump_address* side1address,
-                                                      spindump_address* side2address,
-                                                      struct timeval* when,
+spindump_connections_newconnection_aggregate_hostpair(const spindump_address* side1address,
+                                                      const spindump_address* side2address,
+                                                      const struct timeval* when,
                                                       int manuallyCreated,
                                                       struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_hostnetwork(spindump_address* side1address,
-                                                         spindump_network* side2network,
-                                                         struct timeval* when,
+spindump_connections_newconnection_aggregate_hostnetwork(const spindump_address* side1address,
+                                                         const spindump_network* side2network,
+                                                         const struct timeval* when,
                                                          int manuallyCreated,
                                                          struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_networknetwork(spindump_network* side1network,
-                                                            spindump_network* side2network,
-                                                            struct timeval* when,
+spindump_connections_newconnection_aggregate_networknetwork(const spindump_network* side1network,
+                                                            const spindump_network* side2network,
+                                                            const struct timeval* when,
                                                             int manuallyCreated,
                                                             struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_multicastgroup(spindump_address* group,
-                                                            struct timeval* when,
+spindump_connections_newconnection_aggregate_multicastgroup(const spindump_address* group,
+                                                            const struct timeval* when,
                                                             int manuallyCreated,
                                                             struct spindump_connectionstable* table);
 struct spindump_connection*
@@ -144,27 +144,27 @@ spindump_connections_search(struct spindump_connection_searchcriteria* criteria,
                             struct spindump_connectionstable* table,
                             int* fromResponder);
 struct spindump_connection*
-spindump_connections_searchconnection_icmp(spindump_address* side1address,
-                                           spindump_address* side2address,
+spindump_connections_searchconnection_icmp(const spindump_address* side1address,
+                                           const spindump_address* side2address,
                                            u_int8_t side1peerType,
                                            u_int16_t side1peerId,
                                            struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_searchconnection_tcp(spindump_address* side1address,
-                                          spindump_address* side2address,
+spindump_connections_searchconnection_tcp(const spindump_address* side1address,
+                                          const spindump_address* side2address,
                                           spindump_port side1port,
                                           spindump_port side2port,
                                           struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_searchconnection_tcp_either(spindump_address* side1address,
-                                                 spindump_address* side2address,
+spindump_connections_searchconnection_tcp_either(const spindump_address* side1address,
+                                                 const spindump_address* side2address,
                                                  spindump_port side1port,
                                                  spindump_port side2port,
                                                  struct spindump_connectionstable* table,
                                                  int* fromResponder);
 struct spindump_connection*
-spindump_connections_searchconnection_quic_5tuple(spindump_address* side1address,
-                                                  spindump_address* side2address,
+spindump_connections_searchconnection_quic_5tuple(const spindump_address* side1address,
+                                                  const spindump_address* side2address,
                                                   spindump_port side1port,
                                                   spindump_port side2port,
                                                   struct spindump_connectionstable* table);
@@ -182,8 +182,8 @@ struct spindump_connection*
 spindump_connections_searchconnection_quic_partialcid_source(const unsigned char* destinationCid,
                                                              struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_searchconnection_quic_5tuple_either(spindump_address* side1address,
-                                                         spindump_address* side2address,
+spindump_connections_searchconnection_quic_5tuple_either(const spindump_address* side1address,
+                                                         const spindump_address* side2address,
                                                          spindump_port side1port,
                                                          spindump_port side2port,
                                                          struct spindump_connectionstable* table,
@@ -198,44 +198,59 @@ spindump_connections_searchconnection_quic_partialcid_either(const unsigned char
                                                              struct spindump_connectionstable* table,
                                                              int* fromResponder);
 struct spindump_connection*
-spindump_connections_searchconnection_udp(spindump_address* side1address,
-                                          spindump_address* side2address,
+spindump_connections_searchconnection_udp(const spindump_address* side1address,
+                                          const spindump_address* side2address,
                                           spindump_port side1port,
                                           spindump_port side2port,
                                           struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_searchconnection_udp_either(spindump_address* side1address,
-                                                 spindump_address* side2address,
+spindump_connections_searchconnection_udp_either(const spindump_address* side1address,
+                                                 const spindump_address* side2address,
                                                  spindump_port side1port,
                                                  spindump_port side2port,
                                                  struct spindump_connectionstable* table,
                                                  int* fromResponder);
 struct spindump_connection*
-spindump_connections_searchconnection_dns(spindump_address* side1address,
-                                          spindump_address* side2address,
+spindump_connections_searchconnection_dns(const spindump_address* side1address,
+                                          const spindump_address* side2address,
                                           spindump_port side1port,
                                           spindump_port side2port,
                                           struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_searchconnection_dns_either(spindump_address* side1address,
-                                                 spindump_address* side2address,
+spindump_connections_searchconnection_dns_either(const spindump_address* side1address,
+                                                 const spindump_address* side2address,
                                                  spindump_port side1port,
                                                  spindump_port side2port,
                                                  struct spindump_connectionstable* table,
                                                  int* fromResponder);
 struct spindump_connection*
-spindump_connections_searchconnection_coap(spindump_address* side1address,
-                                           spindump_address* side2address,
+spindump_connections_searchconnection_coap(const spindump_address* side1address,
+                                           const spindump_address* side2address,
                                            spindump_port side1port,
                                            spindump_port side2port,
                                            struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_searchconnection_coap_either(spindump_address* side1address,
-                                                  spindump_address* side2address,
+spindump_connections_searchconnection_coap_either(const spindump_address* side1address,
+                                                  const spindump_address* side2address,
                                                   spindump_port side1port,
                                                   spindump_port side2port,
                                                   struct spindump_connectionstable* table,
                                                   int* fromResponder);
+struct spindump_connection*
+spindump_connections_searchconnection_aggregate_hostpair(const spindump_address* side1address,
+                                                         const spindump_address* side2address,
+                                                         struct spindump_connectionstable* table);
+struct spindump_connection*
+spindump_connections_searchconnection_aggregate_hostnetwork(const spindump_address* side1address,
+                                                            const spindump_network* side2network,
+                                                            struct spindump_connectionstable* table);
+struct spindump_connection*
+spindump_connections_searchconnection_aggregate_networknetwork(const spindump_network* side1network,
+                                                               const spindump_network* side2network,
+                                                               struct spindump_connectionstable* table);
+struct spindump_connection*
+spindump_connections_searchconnection_aggregate_multicastgroup(const spindump_address* address,
+                                                               struct spindump_connectionstable* table);
 unsigned long
 spindump_connections_newrttmeasurement(struct spindump_analyze* state,
                                        struct spindump_packet* packet,
@@ -260,6 +275,9 @@ spindump_connections_getports(struct spindump_connection* connection,
 const char*
 spindump_connection_type_to_string(enum spindump_connection_type type);
 int
+spindump_connection_string_to_connectiontype(const char* string,
+                                             enum spindump_connection_type* type);
+int
 spindump_connections_isaggregate(struct spindump_connection* connection);
 struct spindump_connection_set*
 spindump_connections_aggregateset(struct spindump_connection* connection);
@@ -271,8 +289,8 @@ int
 spindump_connections_matches_aggregate_connection(struct spindump_connection* connection,
                                                   struct spindump_connection* aggregate);
 int
-spindump_connections_matches_aggregate_srcdst(spindump_address* source,
-                                              spindump_address* destination,
+spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
+                                              const spindump_address* destination,
                                               struct spindump_connection* aggregate);
 void
 spindump_connection_report(struct spindump_connection* connection,

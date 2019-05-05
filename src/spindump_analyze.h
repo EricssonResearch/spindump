@@ -58,6 +58,7 @@ typedef uint16_t spindump_analyze_event;
 #define spindump_analyze_event_alllegal                          65535
 
 struct spindump_analyze;
+struct spindump_event;
 
 typedef void (*spindump_analyze_handler)(struct spindump_analyze* state,
                                          void* handlerData,
@@ -114,6 +115,10 @@ spindump_analyze_process(struct spindump_analyze* state,
                          enum spindump_capture_linktype linktype,
                          struct spindump_packet* packet,
                          struct spindump_connection** p_connection);
+void
+spindump_analyze_processevent(struct spindump_analyze* state,
+                              const struct spindump_event* event,
+                              struct spindump_connection** p_connection);
 void
 spindump_analyze_getsource(struct spindump_packet* packet,
                            uint8_t ipVersion,

@@ -28,8 +28,8 @@ The JSON format is a machine-readable, but easily processable format. It is used
 Example:
 
     [
-    { "Event": "new", "Type": "ICMP", "Addrs": ["31.133.128.152","212.16.98.51"], "Session": "45845", "Ts": "1553373707781246" }
-    { "Event": "measurement", "Type": "ICMP", "Addrs": ["31.133.128.152","212.16.98.51"], "Session": "45845", "Ts": "1553373707818571", "Left_rtt": "37325" }
+    { "Event": "new", "Type": "ICMP", "Addrs": ["31.133.128.152","212.16.98.51"], "Session": "45845", "Ts": 1553373707781246 }
+    { "Event": "measurement", "Type": "ICMP", "Addrs": ["31.133.128.152","212.16.98.51"], "Session": "45845", "Ts": 1553373707818571, "Left_rtt": "37325" }
     ]
 
 In more detail, the JSON format consists of a bracketed sequence of records in braces. Each record has the following fields:
@@ -38,7 +38,7 @@ In more detail, the JSON format consists of a bracketed sequence of records in b
    * The "Type" field specifies the type of a connection. This field can take on the following basic values: "UDP", "TCP", "QUIC", "DNS", "COAP", and "ICMP". In addition, it is possible to specify aggregate connections; these take on the following types: "HOSTS" for a host-to-host aggregate, "H2NET" for a host-to-network aggregate, "NET2NET" for a network-to-network aggregate, and "MCAST" for a multicast group aggregate.
    * The "Addrs" field specifies addresses associated with the connection or aggregate.
    * The "Session" field specifies the session identifiers associated with the connection, if any. For TCP and UDP connections these are the port numbers, for QUIC the connection IDs, and for ICMP the identifier field.
-   * The "Ts" is the timestamp, number of microseconds since the start of January 1, 1970.
+   * The "Ts" is the timestamp, number of microseconds since the start of January 1, 1970. Note that the number is represented as an integer, given that the 53 bits of integer precision in JSON integers is sufficient. About 20 bits are needed for the microseconds part, which leaves 43 bits for the integer seconds parts; enough until year 280892.
 
 The other fields depend on the type of an event and connection. These fields can be provided:
 
@@ -49,6 +49,9 @@ The other fields depend on the type of an event and connection. These fields can
    * The field "Value" specifies the value of the spin bit.
    * The field "Transition" specifies the spin bit transition, which is either "0-1" or "1-0". 
    * The field "Who" specifies from which direction did the information come from, "initiator" or "responder".
+   * The field "Packets" specifies the number of packets (both directions) that have been seen on this connection. 
+   * The field "Bytes" specifies the number of packets (both directions) that have been seen on this connection. 
+   * The fields "Ect0", "ect1" and "ce" specify ECN event counters for ECN(0), ECN(1), and CE events.
 
 ## Binary format
 

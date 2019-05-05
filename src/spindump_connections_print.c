@@ -139,6 +139,52 @@ spindump_connection_type_to_string(enum spindump_connection_type type) {
 }
 
 //
+// Return 1 if a string can be mapped to a connection type. And set
+// the output parameter type to the specific connection type. Return 0
+// otherwise.
+//
+
+int
+spindump_connection_string_to_connectiontype(const char* string,
+                                             enum spindump_connection_type* type) {
+  spindump_assert(string != 0);
+  spindump_assert(type != 0);
+  if (strcasecmp(string,"TCP") == 0) {
+    *type = spindump_connection_transport_tcp;
+    return(1);
+  } else if (strcasecmp(string,"UDP") == 0) {
+    *type = spindump_connection_transport_udp;
+    return(1);
+  } else if (strcasecmp(string,"DNS") == 0) {
+    *type = spindump_connection_transport_dns;
+    return(1);
+  } else if (strcasecmp(string,"COAP") == 0) {
+    *type = spindump_connection_transport_coap;
+    return(1);
+  } else if (strcasecmp(string,"QUIC") == 0) {
+    *type = spindump_connection_transport_quic;
+    return(1);
+  } else if (strcasecmp(string,"ICMP") == 0) {
+    *type = spindump_connection_transport_icmp;
+    return(1);
+  } else if (strcasecmp(string,"HOSTS") == 0) {
+    *type = spindump_connection_aggregate_hostpair;
+    return(1);
+  } else if (strcasecmp(string,"H2NET") == 0) {
+    *type = spindump_connection_aggregate_hostnetwork;
+    return(1);
+  } else if (strcasecmp(string,"NET2NET") == 0) {
+    *type = spindump_connection_aggregate_networknetwork;
+    return(1);
+  } else if (strcasecmp(string,"MCAST") == 0) {
+    *type = spindump_connection_aggregate_multicastgroup;
+    return(1);
+  } else {
+    return(0);
+  }
+}
+
+//
 // Print a report of a TCP connection
 //
 
@@ -662,7 +708,7 @@ spindump_connection_statestring(struct spindump_connection* connection) {
 const char*
 spindump_connection_sessionstring(struct spindump_connection* connection,
                                   unsigned int maxlen) {
-  static char buf[100];
+  static char buf[100]; // ... TBD should be removed 
   
   spindump_assert(connection != 0);
   spindump_assert(maxlen > 2);

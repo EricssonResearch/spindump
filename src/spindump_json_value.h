@@ -98,6 +98,19 @@ struct spindump_json_value*
 spindump_json_value_copy(const struct spindump_json_value* value);
 void
 spindump_json_value_free(struct spindump_json_value* value);
+const struct spindump_json_value*
+spindump_json_value_getfield(const char* field,
+                             const struct spindump_json_value* value);
+const struct spindump_json_value*
+spindump_json_value_getrequiredfield(const char* field,
+                                     const struct spindump_json_value* value);
+const struct spindump_json_value*
+spindump_json_value_getarrayelem(unsigned int index,
+                                 const struct spindump_json_value* value);
+unsigned long long
+spindump_json_value_getinteger(const struct spindump_json_value* value);
+const char*
+spindump_json_value_getstring(const struct spindump_json_value* value);
 char*
 spindump_json_value_tostring(const struct spindump_json_value* value);
 

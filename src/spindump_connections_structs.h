@@ -68,10 +68,11 @@ enum spindump_connection_state {
 #define spindump_connection_deleted_timeout         (10*1000*1000) // us
 #define spindump_connection_establishing_timeout    (30*1000*1000) // us
 #define spindump_connection_inactive_timeout       (180*1000*1000) // us
+#define spindump_connection_quic_cid_maxlen                     18
 
 struct spindump_quic_connectionid {
   unsigned int len;
-  unsigned char id[18];
+  unsigned char id[spindump_connection_quic_cid_maxlen];
   unsigned char padding[2]; // unused padding, to align the structure size properly
 };
 
@@ -218,9 +219,12 @@ struct spindump_connection {
 
 enum spindump_connection_searchcriteria_srcdst {
   spindump_connection_searchcriteria_srcdst_none = 0,
-  spindump_connection_searchcriteria_srcdst_destinationonly = 1,
-  spindump_connection_searchcriteria_srcdst_both = 2,
-  spindump_connection_searchcriteria_srcdst_both_allowreverse = 3
+  spindump_connection_searchcriteria_srcdst_sourceonly = 1,
+  spindump_connection_searchcriteria_srcdst_destinationonly = 2,
+  spindump_connection_searchcriteria_srcdst_both = 3,
+  spindump_connection_searchcriteria_srcdst_both_allowreverse = 4,
+  spindump_connection_searchcriteria_srcdst_both_hostnetwork = 5,
+  spindump_connection_searchcriteria_srcdst_both_networknetwork = 6
 };
 
 struct spindump_connection_searchcriteria {
@@ -240,6 +244,8 @@ struct spindump_connection_searchcriteria {
   uint8_t padding3[4]; // unused padding to align the next field properly
   spindump_address side1address;
   spindump_address side2address;
+  spindump_network side1network;
+  spindump_network side2network;
 
   enum spindump_connection_searchcriteria_srcdst matchPorts;
   spindump_port side1port;

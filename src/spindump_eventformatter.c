@@ -555,8 +555,10 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                             &responderAddress,
                             session,
                             timestamplonglong,
-                            connection->packetsFromSide1 + connection->packetsFromSide2,
-                            connection->bytesFromSide1 + connection->bytesFromSide2,
+                            connection->packetsFromSide1,
+                            connection->packetsFromSide2,
+                            connection->bytesFromSide1,
+                            connection->bytesFromSide2,
                             &eventobj);
 
 
@@ -618,6 +620,9 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_initiatorecnce:
     eventobj.u.ecnCongestionEvent.direction = spindump_direction_frominitiator;
+    eventobj.u.ecnCongestionEvent.ecn0 = connection->ect0FromInitiator + connection->ect0FromResponder;
+    eventobj.u.ecnCongestionEvent.ecn1 = connection->ect1FromInitiator + connection->ect1FromResponder;
+    eventobj.u.ecnCongestionEvent.ce = connection->ceFromInitiator + connection->ceFromResponder;
     break;
 
   case spindump_analyze_event_responderecnce:

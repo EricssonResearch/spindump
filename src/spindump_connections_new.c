@@ -44,7 +44,7 @@
 static void
 spindump_connections_newconnection_aux(struct spindump_connection* connection,
                                        enum spindump_connection_type type,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        int manuallyCreated);
 static void
 spindump_connections_newconnection_addtoaggregates(struct spindump_connection* connection,
@@ -64,7 +64,7 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
 static void
 spindump_connections_newconnection_aux(struct spindump_connection* connection,
                                        enum spindump_connection_type type,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        int manuallyCreated) {
 
   //
@@ -241,7 +241,7 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
 struct spindump_connection*
 spindump_connections_newconnection(struct spindump_connectionstable* table,
                                    enum spindump_connection_type type,
-                                   struct timeval* when,
+                                   const struct timeval* when,
                                    int manuallyCreated) {
   
   //
@@ -315,11 +315,11 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_icmp(spindump_address* side1address,
-                                        spindump_address* side2address,
+spindump_connections_newconnection_icmp(const spindump_address* side1address,
+                                        const spindump_address* side2address,
                                         u_int8_t side1peerType,
                                         u_int16_t side1peerId,
-                                        struct timeval* when,
+                                        const struct timeval* when,
                                         struct spindump_connectionstable* table) {
   spindump_assert(side1address != 0);
   spindump_assert(side2address != 0);
@@ -347,11 +347,11 @@ spindump_connections_newconnection_icmp(spindump_address* side1address,
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_tcp(spindump_address* side1address,
-                                       spindump_address* side2address,
+spindump_connections_newconnection_tcp(const spindump_address* side1address,
+                                       const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        struct spindump_connectionstable* table) {
   
   spindump_assert(side1address != 0);
@@ -379,11 +379,11 @@ spindump_connections_newconnection_tcp(spindump_address* side1address,
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_udp(spindump_address* side1address,
-                                       spindump_address* side2address,
+spindump_connections_newconnection_udp(const spindump_address* side1address,
+                                       const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        struct spindump_connectionstable* table) {
   
   spindump_assert(side1address != 0);
@@ -411,11 +411,11 @@ spindump_connections_newconnection_udp(spindump_address* side1address,
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_dns(spindump_address* side1address,
-                                       spindump_address* side2address,
+spindump_connections_newconnection_dns(const spindump_address* side1address,
+                                       const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
-                                       struct timeval* when,
+                                       const struct timeval* when,
                                        struct spindump_connectionstable* table) {
   
   spindump_assert(side1address != 0);
@@ -443,11 +443,11 @@ spindump_connections_newconnection_dns(spindump_address* side1address,
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_coap(spindump_address* side1address,
-                                        spindump_address* side2address,
+spindump_connections_newconnection_coap(const spindump_address* side1address,
+                                        const spindump_address* side2address,
                                         spindump_port side1port,
                                         spindump_port side2port,
-                                        struct timeval* when,
+                                        const struct timeval* when,
                                         struct spindump_connectionstable* table) {
   
   spindump_assert(side1address != 0);
@@ -476,11 +476,11 @@ spindump_connections_newconnection_coap(spindump_address* side1address,
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_quic_5tuple(spindump_address* side1address,
-                                               spindump_address* side2address,
+spindump_connections_newconnection_quic_5tuple(const spindump_address* side1address,
+                                               const spindump_address* side2address,
                                                spindump_port side1port,
                                                spindump_port side2port,
-                                               struct timeval* when,
+                                               const struct timeval* when,
                                                struct spindump_connectionstable* table) {
   
   spindump_assert(side1address != 0);
@@ -511,13 +511,13 @@ spindump_connections_newconnection_quic_5tuple(spindump_address* side1address,
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_quic_5tupleandcids(spindump_address* side1address,
-                                                      spindump_address* side2address,
+spindump_connections_newconnection_quic_5tupleandcids(const spindump_address* side1address,
+                                                      const spindump_address* side2address,
                                                       spindump_port side1port,
                                                       spindump_port side2port,
                                                       struct spindump_quic_connectionid* destinationCid,
                                                       struct spindump_quic_connectionid* sourceCid,
-                                                      struct timeval* when,
+                                                      const struct timeval* when,
                                                       struct spindump_connectionstable* table) {
   
   spindump_assert(side1address != 0);
@@ -549,9 +549,9 @@ spindump_connections_newconnection_quic_5tupleandcids(spindump_address* side1add
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_hostpair(spindump_address* side1address,
-                                                      spindump_address* side2address,
-                                                      struct timeval* when,
+spindump_connections_newconnection_aggregate_hostpair(const spindump_address* side1address,
+                                                      const spindump_address* side2address,
+                                                      const struct timeval* when,
                                                       int manuallyCreated,
                                                       struct spindump_connectionstable* table) {
   spindump_assert(side1address != 0);
@@ -577,9 +577,9 @@ spindump_connections_newconnection_aggregate_hostpair(spindump_address* side1add
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_hostnetwork(spindump_address* side1address,
-                                                         spindump_network* side2network,
-                                                         struct timeval* when,
+spindump_connections_newconnection_aggregate_hostnetwork(const spindump_address* side1address,
+                                                         const spindump_network* side2network,
+                                                         const struct timeval* when,
                                                          int manuallyCreated,
                                                          struct spindump_connectionstable* table) {
   spindump_assert(side1address != 0);
@@ -604,9 +604,9 @@ spindump_connections_newconnection_aggregate_hostnetwork(spindump_address* side1
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_networknetwork(spindump_network* side1network,
-                                                            spindump_network* side2network,
-                                                            struct timeval* when,
+spindump_connections_newconnection_aggregate_networknetwork(const spindump_network* side1network,
+                                                            const spindump_network* side2network,
+                                                            const struct timeval* when,
                                                             int manuallyCreated,
                                                             struct spindump_connectionstable* table) {
   spindump_assert(side1network != 0);
@@ -632,8 +632,8 @@ spindump_connections_newconnection_aggregate_networknetwork(spindump_network* si
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_multicastgroup(spindump_address* group,
-                                                            struct timeval* when,
+spindump_connections_newconnection_aggregate_multicastgroup(const spindump_address* group,
+                                                            const struct timeval* when,
                                                             int manuallyCreated,
                                                             struct spindump_connectionstable* table) {
   spindump_assert(group != 0);
