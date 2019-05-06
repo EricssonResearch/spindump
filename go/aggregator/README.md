@@ -13,6 +13,7 @@ Expect both API and implementation to change frequently.
 The server is implemented in GO, so first of all you need to make sure you have GO [installed and properly configured](https://golang.org/doc/install).
 
 To install the server run the command:
+
 	# go get github.com/EricssonResearch/spindump/go/aggregator
 
 This will pull the source code from github and install an executable named aggregator located in `$GOPATH/bin/`
@@ -20,17 +21,21 @@ This will pull the source code from github and install an executable named aggre
 ## Running the server
 
 Running the server without any arguments starts a server listening to a single spindump instance:
+
 	# ./aggregator
 
 The server accepts the following command-line flags.
 
 To bind to a different address/port pair than the default `0.0.0.0:5040`:
+
 	# ./aggrregator --bind address:port
 
 To specify the number of reporting spindump instances (default 1):
+
 	# ./aggrregator --reporters n
 
 To enable/disable smoothing of RTT samples (default true):
+
 	# ./aggrregator --rtt-smoothing true/false
 
 ## Reporting API
