@@ -1,4 +1,4 @@
-package aggregate
+package iofmt
 
 // representation of spindump json event
 type Event struct {

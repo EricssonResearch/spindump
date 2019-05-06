@@ -1,4 +1,4 @@
-package format
+package iofmt
 
 type LabeledRtt struct {
 	Label string

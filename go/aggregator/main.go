@@ -13,22 +13,22 @@ import (
   "github.com/gorilla/mux"
 
   "github.com/EricssonResearch/spindump/go/aggregator/internal/aggregate"
+  "github.com/EricssonResearch/spindump/go/aggregator/internal/iofmt"
 )
 
-var sessions map[string]*aggregate.Session
+var sessions aggregate.SessionGroup
 
 func getSessions(w http.ResponseWriter, _ *http.Request) {
-  var sids []aggregate.SessionId
-  for id, sess := range sessions {
-    sids = append(sids, aggregate.SessionId{Id: id, Type: sess.Type})
-  }
-  json.NewEncoder(w).Encode(sids)
+  json.NewEncoder(w).Encode(sessions.Ids())
 }
 
 func getSession(w http.ResponseWriter, r *http.Request) {
   var sessId = mux.Vars(r)["session"]
-  sess, _ := sessions[sessId]
-  json.NewEncoder(w).Encode(sess.OutputFormat())
+  s, err := sessions.FormatSession(sessId)
+  if err != nil {
+    panic(err)
+  }
+  json.NewEncoder(w).Encode(s)
 }
 
 func addEvent(w http.ResponseWriter, r *http.Request) {
@@ -39,19 +39,12 @@ func addEvent(w http.ResponseWriter, r *http.Request) {
 
   var sender = mux.Vars(r)["id"]
 
-  var event aggregate.Event
+  var event iofmt.Event
   err = json.Unmarshal(body, &event)
   if err != nil {
     panic(err)
   }
-
-  sess, ok := sessions[event.Session]
-  if !ok {
-    sess = aggregate.NewSession(event)
-    log.Printf("New session %s", event.Session)
-    sessions[event.Session] = sess
-  }
-  sess.NewEvent(event, sender)
+  sessions.NewEvent(event, sender)
 }
 
 func commonHeaders(next http.Handler) http.Handler {
@@ -61,13 +54,14 @@ func commonHeaders(next http.Handler) http.Handler {
     })
 }
 
-// todo: move data store and functionality to appropriate package and files
 func main() {
 
-  sessions = make(map[string]*aggregate.Session)
-
   sAddr := flag.String("bind", "0.0.0.0:5040", "Server address")
+  nInst := flag.Int("reporters", 1, "N spindump instances")
+  smth := flag.Bool("rtt-smoothing", true, "RTT smoothing on/off")
   flag.Parse()
+
+  sessions = aggregate.NewSessionGroup(*nInst, *smth)
 
   r := mux.NewRouter()
   r.HandleFunc("/data/{id:[0-9]+}", addEvent).Methods("POST")
@@ -89,7 +83,6 @@ func main() {
   }()
 
   c := make(chan os.Signal, 1)
-  // We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
   signal.Notify(c, os.Interrupt)
 
   <-c
