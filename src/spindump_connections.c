@@ -329,7 +329,6 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   //
   
   spindump_assert(state != 0);
-  spindump_assert(packet != 0);
   spindump_assert(connection != 0);
   spindump_assert(spindump_isbool(right));
   spindump_assert(spindump_isbool(unidirectional));

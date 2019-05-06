@@ -165,6 +165,8 @@ The user's function gets called when the relevant event happens. The interface i
 
 Here "myhandler" is the user's function and it will get as parameters the analyzer object, the handler data pointer supplied upon registration, a pointer to a pointer that the handler can use to store some information relating to this handler for the specific connection in question, the event, a pointer to the packet, and a pointer to the connection object.
 
+Note that the packet may be 0, in case the callback is being made when the packet is not locally available, such as when the update is due to a remotely delivered event.
+
 ### API data structure struct spindump_connection
 
 This object represents a single connection observed by the analyzer. The full description of that object needs to be added later, but here are some of the key fields that are relevant:

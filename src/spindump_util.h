@@ -94,6 +94,12 @@ spindump_zerotime(struct timeval* result);
 const char*
 spindump_timetostring(const struct timeval* result);
 void
+spindump_timeval_to_timestamp(const struct timeval* timev,
+                              unsigned long long* timestamp);
+void
+spindump_timestamp_to_timeval(const unsigned long long timestamp,
+                              struct timeval* timev);
+void
 spindump_address_fromempty(sa_family_t af,
                            spindump_address* address);
 int

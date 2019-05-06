@@ -361,8 +361,7 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
                                              const struct spindump_event* event,
                                              struct spindump_connection** p_connection) {
   struct timeval when;
-  when.tv_sec = event->timestamp/(1000*1000);
-  when.tv_usec = event->timestamp%(1000*1000);
+  spindump_timestamp_to_timeval(event->timestamp,&when);
   spindump_port side1port;
   spindump_port side2port;
   struct spindump_quic_connectionid side1cid;
@@ -580,7 +579,6 @@ static void
 spindump_analyze_processevent_new_rtt_measurement(struct spindump_analyze* state,
                                                   const struct spindump_event* event,
                                                   struct spindump_connection** p_connection) {
-  // ... TBD
 
   *p_connection = spindump_analyze_processevent_find_connection(state,event);
   if (*p_connection == 0) return;
@@ -592,6 +590,30 @@ spindump_analyze_processevent_new_rtt_measurement(struct spindump_analyze* state
   //
 
   spindump_analyze_event_updateinfo(state,*p_connection,event);
+  
+  //
+  // And update RTT statistics as well
+  //
+  
+  unsigned long long timestamp = event->timestamp;
+  unsigned long long timestampEarlier =
+    timestamp >= event->u.newRttMeasurement.rtt ?
+    timestamp - event->u.newRttMeasurement.rtt :
+    0;
+  struct timeval sent;
+  struct timeval rcvd;
+  spindump_timestamp_to_timeval(timestampEarlier,&sent);
+  spindump_timestamp_to_timeval(timestamp,&rcvd);
+  int right = (event->u.newRttMeasurement.direction == spindump_direction_fromresponder);
+  int unidirectional = (event->u.newRttMeasurement.measurement == spindump_measurement_type_unidirectional);
+  spindump_connections_newrttmeasurement(state,
+                                         0,
+                                         *p_connection,
+                                         right,
+                                         unidirectional,
+                                         &sent,
+                                         &rcvd,
+                                         "remote update");
 }
 
 //
@@ -843,5 +865,22 @@ spindump_analyze_event_updateinfo(struct spindump_analyze* state,
   spindump_assert(event != 0);
 
   //
+  // Update timestamps
   //
+
+  if (connection->packetsFromSide1 < event->packetsFromSide1) {
+    spindump_timestamp_to_timeval(event->timestamp,&connection->latestPacketFromSide1);
+  }
+  if (connection->packetsFromSide2 < event->packetsFromSide2) {
+    spindump_timestamp_to_timeval(event->timestamp,&connection->latestPacketFromSide2);
+  }
+  
+  //
+  // Update packet counters
+  //
+  
+  connection->packetsFromSide1 = event->packetsFromSide1;
+  connection->packetsFromSide2 = event->packetsFromSide2;
+  connection->bytesFromSide1 = event->bytesFromSide1;
+  connection->bytesFromSide2 = event->bytesFromSide2;
 }

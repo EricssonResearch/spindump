@@ -256,7 +256,7 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
                                        struct spindump_packet* packet,
                                        struct spindump_connection* connection,
                                        const int right,
-                                                         const int unidirectional,
+                                       const int unidirectional,
                                        const struct timeval* sent,
                                        const struct timeval* rcvd,
                                        const char* why);

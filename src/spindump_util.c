@@ -173,6 +173,34 @@ spindump_timetostring(const struct timeval* result) {
 }
 
 //
+// Convert timeval (struct) to a timestamp (nr. useconds from 1970 Jan
+// 1).
+//
+
+void
+spindump_timeval_to_timestamp(const struct timeval* timev,
+                              unsigned long long* timestamp) {
+  spindump_assert(timev != 0);
+  spindump_assert(timestamp != 0);
+  *timestamp = (unsigned long long)(timev->tv_usec);
+  *timestamp += 1000 * 1000 * (unsigned long long)(timev->tv_sec);
+}
+
+//
+// Convert a timestamp (nr. useconds from 1970 Jan 1) to a timeval
+// (struct).
+//
+
+void
+spindump_timestamp_to_timeval(const unsigned long long timestamp,
+                              struct timeval* timev) {
+  spindump_assert(timestamp != 0);
+  spindump_assert(timev != 0);
+  timev->tv_sec = timestamp / (1000*1000);
+  timev->tv_usec = timestamp % (1000*1000);
+}
+
+//
 // Address comparison
 //
 
@@ -911,3 +939,4 @@ spindump_strlcat(char * restrict dst, const char * restrict src, size_t size) {
   dst[size-1] = 0;
   return(strlen(src));
 }
+
