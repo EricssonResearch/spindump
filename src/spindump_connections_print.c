@@ -914,7 +914,8 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   
   if (connection->type == spindump_connection_transport_quic) {
     spindump_deepdeepdebugf("report_brief_notefieldval point 4");
-    if (connection->u.quic.version == connection->u.quic.originalVersion) {
+    if (connection->u.quic.version == connection->u.quic.originalVersion ||
+        spindump_quic_version_isforcenegot(connection->u.quic.originalVersion)) {
       spindump_connection_addtobuf(buf,sizeof(buf),
                                    spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
                                    "",

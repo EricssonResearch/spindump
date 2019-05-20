@@ -1,0 +1,3 @@
+[
+{ "Event": "new", "Type": "QUIC", "Addrs": ["192.168.203.236","64.99.80.121"], "Session": "09440fca-80adf45068f6d37db6b47d", "Ts": 1558349060897624, "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 }
+]

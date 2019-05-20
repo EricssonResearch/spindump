@@ -772,6 +772,7 @@ enum spindump_quic_message_type {
 
 #define spindump_quic_version_negotiation      0x00000000
 #define spindump_quic_version_rfc              0x00000001
+#define spindump_quic_version_draft20          0xff000014
 #define spindump_quic_version_draft19          0xff000013
 #define spindump_quic_version_draft18          0xff000012
 #define spindump_quic_version_draft17          0xff000011
@@ -793,6 +794,7 @@ enum spindump_quic_message_type {
 #define spindump_quic_version_draft01          0xff000001
 #define spindump_quic_version_draft00          0xff000000
 #define spindump_quic_version_quant19          0x45474713
+#define spindump_quic_version_quant20          0x45474714
 #define spindump_quic_version_huitema          0x50435131
 #define spindump_quic_version_mozilla          0xf123f0c5
 #define spindump_quic_version_googlemask       0xfff0f0f0
@@ -800,6 +802,8 @@ enum spindump_quic_message_type {
 #define spindump_quic_version_forcenegotmask   0x0f0f0f0f
 #define spindump_quic_version_forcenegotiation 0x0a0a0a0a
 #define spindump_quic_version_unknown          0xffffffff
+
+#define spindump_quic_version_isforcenegot(v)  (((v) & spindump_quic_version_forcenegotmask) == spindump_quic_version_forcenegotiation)
 
 #define spindump_quic_header_length            1
 #define spindump_quic_longheader_length        (1+4+1)
