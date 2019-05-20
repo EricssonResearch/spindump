@@ -1,2 +1,2 @@
-QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-ba5573c827ffe4e911 at 1553410393050231 new packets 0 0 bytes 0 0
-QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-3f39d101ab09b290 at 1553410393101193 measurement right 50962 packets 1 0 bytes 1228 0
+QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-ba5573c827ffe4e911 at 1553410393050231 new starting packets 0 0 bytes 0 0
+QUIC 10.0.6.137 <-> 52.58.13.57 1bb4f0a9-3f39d101ab09b290 at 1553410393101193 measurement up right 50962 packets 1 0 bytes 1228 0

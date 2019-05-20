@@ -338,6 +338,7 @@ unittests_eventtextparser(void) {
   spindump_network_fromstring(&network2,"5.6.7.8/32");
   spindump_event_initialize(spindump_event_type_new_connection,
                             spindump_connection_transport_tcp,
+                            spindump_connection_state_established,
                             &network1,
                             &network2,
                             "123:456",
@@ -355,7 +356,7 @@ unittests_eventtextparser(void) {
   ret = spindump_event_parser_text_print(&event,buf,sizeof(buf),&consumed);
   spindump_assert(ret == 1);
   spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
-  const char* expected = "TCP 1.2.3.4 <-> 5.6.7.8 123:456 at 1892188800001234 new packets 1 0 bytes 2 3\n";
+  const char* expected = "TCP 1.2.3.4 <-> 5.6.7.8 123:456 at 1892188800001234 new up packets 1 0 bytes 2 3\n";
   spindump_assert(strcmp(buf,expected) == 0);
 }
 
@@ -399,6 +400,7 @@ unittests_eventjsonparser(void) {
   spindump_network_fromstring(&network2,"5.6.7.8/32");
   spindump_event_initialize(spindump_event_type_new_connection,
                             spindump_connection_transport_tcp,
+                            spindump_connection_state_establishing,
                             &network1,
                             &network2,
                             "123:456",
@@ -418,7 +420,8 @@ unittests_eventjsonparser(void) {
   spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
   const char* expected =
     "{ \"Event\": \"new\", \"Type\": \"TCP\", \"Addrs\": [\"1.2.3.4\",\"5.6.7.8\"], "
-    "\"Session\": \"123:456\", \"Ts\": 1892188800001234, \"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3 }";
+    "\"Session\": \"123:456\", \"Ts\": 1892188800001234, \"State\": \"Starting\", "
+    "\"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3 }";
   spindump_assert(strcmp(buf,expected) == 0);
   
   //

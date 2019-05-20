@@ -109,8 +109,6 @@ spindump_connection_report_multicastgroup(struct spindump_connection* connection
                                           FILE* file,
                                           int anonymize,
                                           struct spindump_reverse_dns* querier);
-static const char*
-spindump_connection_statestring_aux(enum spindump_connection_state state);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -178,6 +176,37 @@ spindump_connection_string_to_connectiontype(const char* string,
     return(1);
   } else if (strcasecmp(string,"MCAST") == 0) {
     *type = spindump_connection_aggregate_multicastgroup;
+    return(1);
+  } else {
+    return(0);
+  }
+}
+
+//
+// Return 1 if a string can be mapped to a connection state. And set
+// the output parameter "state" to the specific state. Return 0
+// otherwise.
+//
+
+int
+spindump_connection_statestring_to_state(const char* string,
+                                         enum spindump_connection_state* state) {
+  spindump_assert(string != 0);
+  spindump_assert(state != 0);
+  if (strcasecmp(string,"starting") == 0) {
+    *state = spindump_connection_state_establishing;
+    return(1);
+  } else if (strcasecmp(string,"up") == 0) {
+    *state = spindump_connection_state_established;
+    return(1);
+  } else if (strcasecmp(string,"closing") == 0) {
+    *state = spindump_connection_state_closing;
+    return(1);
+  } else if (strcasecmp(string,"closed") == 0) {
+    *state = spindump_connection_state_closed;
+    return(1);
+  } else if (strcasecmp(string,"static") == 0) {
+    *state = spindump_connection_state_static;
     return(1);
   } else {
     return(0);
@@ -673,8 +702,8 @@ spindump_connection_addresses(struct spindump_connection* connection,
 // and the UI
 //
 
-static const char*
-spindump_connection_statestring_aux(enum spindump_connection_state state) {
+const char*
+spindump_connection_statestring_plain(enum spindump_connection_state state) {
   switch (state) {
   case spindump_connection_state_establishing: return("Starting");
   case spindump_connection_state_established: return("Up");
@@ -695,7 +724,7 @@ spindump_connection_statestring_aux(enum spindump_connection_state state) {
 const char*
 spindump_connection_statestring(struct spindump_connection* connection) {
   spindump_assert(connection != 0);
-  return(spindump_connection_statestring_aux(connection->state));
+  return(spindump_connection_statestring_plain(connection->state));
 }
 
 //

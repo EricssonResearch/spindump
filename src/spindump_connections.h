@@ -278,6 +278,9 @@ int
 spindump_connection_string_to_connectiontype(const char* string,
                                              enum spindump_connection_type* type);
 int
+spindump_connection_statestring_to_state(const char* string,
+                                         enum spindump_connection_state* state);
+int
 spindump_connections_isaggregate(struct spindump_connection* connection);
 struct spindump_connection_set*
 spindump_connections_aggregateset(struct spindump_connection* connection);
@@ -313,6 +316,8 @@ const char*
 spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id);
 const char*
 spindump_connection_statestring(struct spindump_connection* connection);
+const char*
+spindump_connection_statestring_plain(enum spindump_connection_state state);
 const char*
 spindump_connection_addresses(struct spindump_connection* connection,
                               unsigned int maxlen,

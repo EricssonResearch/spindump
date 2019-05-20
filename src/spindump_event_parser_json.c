@@ -96,6 +96,11 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
     spindump_errorf("Invalid connection type %s", connectionType);
     return(0);
   }
+  const char* state = spindump_json_value_getstring(spindump_json_value_getrequiredfield("State",json));
+  if (!spindump_connection_statestring_to_state(state,&event->state)) {
+    spindump_errorf("Invalid state %s", state);
+    return(0);
+  }
   const struct spindump_json_value* addrs = spindump_json_value_getrequiredfield("Addrs",json);
   const struct spindump_json_value* addr1elem = spindump_json_value_getarrayelem(0,addrs);
   const struct spindump_json_value* addr2elem = spindump_json_value_getarrayelem(1,addrs);
@@ -410,9 +415,11 @@ spindump_event_parser_json_print(const struct spindump_event* event,
                spindump_network_tostringoraddr(&event->responderAddress));
   addtobuffer2("\"Session\": \"%s\", ",
                event->session);
-  addtobuffer2("\"Ts\": %llu",
+  addtobuffer2("\"Ts\": %llu, ",
                event->timestamp);
-
+  addtobuffer2("\"State\": \"%s\"",
+               spindump_connection_statestring_plain(event->state));
+  
   //
   // The variable part that depends on which event we have
   //

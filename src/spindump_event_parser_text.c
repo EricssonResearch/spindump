@@ -17,6 +17,7 @@
 // 
 
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include "spindump_util.h"
@@ -95,6 +96,12 @@ spindump_event_parser_text_print(const struct spindump_event* event,
                event->timestamp);
   addtobuffer2("%s ",
                spindump_event_type_tostring(event->eventType));
+  const char* stateString = spindump_connection_statestring_plain(event->state);
+  spindump_assert(stateString != 0);
+  spindump_assert(strlen(stateString) > 0);
+  addtobuffer3("%c%s ",
+               tolower(*stateString),
+               stateString + 1);
   
   //
   // The variable part that depends on which event we have

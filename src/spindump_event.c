@@ -29,6 +29,7 @@
 void
 spindump_event_initialize(enum spindump_event_type eventType,
                           enum spindump_connection_type connectionType,
+                          enum spindump_connection_state state,
                           const spindump_network* initiatorAddress,
                           const spindump_network* responderAddress,
                           const char* session,
@@ -51,6 +52,7 @@ spindump_event_initialize(enum spindump_event_type eventType,
   memset(event,0,sizeof(*event));
   event->eventType = eventType;
   event->connectionType = connectionType;
+  event->state = state;
   event->initiatorAddress = *initiatorAddress;
   event->responderAddress = *responderAddress;
   strncpy(&event->session[0],session,sizeof(event->session));
@@ -108,6 +110,7 @@ spindump_event_equal(const struct spindump_event* event1,
   //
 
   if (event1->connectionType != event2->connectionType) return(0);
+  if (event1->state != event2->state) return(0);
   if (!spindump_network_equal(&event1->initiatorAddress,&event2->initiatorAddress)) return(0);
   if (!spindump_network_equal(&event1->responderAddress,&event2->responderAddress)) return(0);
   if (strcmp(event1->session,event2->session) != 0) return(0);

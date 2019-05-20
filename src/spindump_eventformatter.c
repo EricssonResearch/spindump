@@ -551,6 +551,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   spindump_connections_getnetworks(connection,&initiatorAddress,&responderAddress);
   spindump_event_initialize(eventType,
                             connection->type,
+                            connection->state,
                             &initiatorAddress,
                             &responderAddress,
                             session,

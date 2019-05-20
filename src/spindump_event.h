@@ -99,6 +99,7 @@ struct spindump_event_ecn_congestion_event {
 struct spindump_event {
   enum spindump_event_type eventType;
   enum spindump_connection_type connectionType;
+  enum spindump_connection_state state;
   spindump_network initiatorAddress;
   spindump_network responderAddress;
   char session[spindump_event_sessioidmaxlength];
@@ -125,6 +126,7 @@ struct spindump_event {
 void
 spindump_event_initialize(enum spindump_event_type eventType,
                           enum spindump_connection_type connectionType,
+                          enum spindump_connection_state state,
                           const spindump_network* initiatorAddress,
                           const spindump_network* responderAddress,
                           const char* session,
