@@ -79,7 +79,9 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
   
   static unsigned int generatedIdCounter = 0;
   connection->id = generatedIdCounter++;
-
+  spindump_deepdeepdebugf("spindump_connections_newconnection_aux %u %s",
+                          connection->id, spindump_connection_type_to_string(type));
+  
   //
   // Set the basic fields of the connection
   // 
@@ -243,6 +245,15 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
                                    enum spindump_connection_type type,
                                    const struct timeval* when,
                                    int manuallyCreated) {
+
+  //
+  // Sanity checks and debugs
+  //
+
+  spindump_assert(table != 0);
+  spindump_assert(when != 0);
+  spindump_deepdeepdebugf("spindump_connections_newconnection %s",
+                          spindump_connection_type_to_string(type));
   
   //
   // Allocate the object
@@ -486,7 +497,8 @@ spindump_connections_newconnection_quic_5tuple(const spindump_address* side1addr
   spindump_assert(side1address != 0);
   spindump_assert(side2address != 0);
   spindump_assert(table != 0);
-  
+
+  spindump_deepdeepdebugf("spindump_connections_newconnection_quic_5tuple");
   struct spindump_connection* connection =
     spindump_connections_newconnection(table,spindump_connection_transport_quic,when,0);
   if (connection == 0) return(0);
@@ -525,6 +537,7 @@ spindump_connections_newconnection_quic_5tupleandcids(const spindump_address* si
   spindump_assert(destinationCid != 0);
   spindump_assert(sourceCid != 0);
   spindump_assert(table != 0);
+  spindump_deepdeepdebugf("spindump_connections_newconnection_quic_5tupleandcids");
   
   struct spindump_connection* connection =
     spindump_connections_newconnection(table,spindump_connection_transport_quic,when,0);

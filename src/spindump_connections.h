@@ -309,9 +309,10 @@ spindump_connection_report_brief(struct spindump_connection* connection,
                                  int anonymizeLeft,
                                  int anonymizeRight,
                                  struct spindump_reverse_dns* querier);
-const char*
+void
 spindump_connection_sessionstring(struct spindump_connection* connection,
-                                  unsigned int maxlen);
+                                  char* buffer,
+                                  size_t maxlen);
 const char*
 spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id);
 const char*

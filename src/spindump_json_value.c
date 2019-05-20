@@ -236,7 +236,7 @@ spindump_json_value_free(struct spindump_json_value* value) {
   //
   
   spindump_assert(value != 0);
-  spindump_deepdeepdebugf("json_value_free(%u)", value->type);
+  //spindump_deepdeepdebugf("json_value_free(%u)", value->type);
   
   //
   // Branch off based on type of the value
@@ -253,17 +253,15 @@ spindump_json_value_free(struct spindump_json_value* value) {
     break;
     
   case spindump_json_value_type_record:
-    spindump_deepdeepdebugf("case record %u + %u fields",
-                            value->u.record.nSchemaFields,
-                            value->u.record.nOtherFields);
+    //spindump_deepdeepdebugf("case record %u + %u fields", value->u.record.nSchemaFields, value->u.record.nOtherFields);
     spindump_assert(value->u.record.schemaFields != 0);
     spindump_assert(value->u.record.otherFields != 0);
     for (i = 0; i < value->u.record.nSchemaFields; i++) {
-      spindump_deepdeepdebugf("spindump_json_value_free freeing up record field %s", value->u.record.schemaFields[i].name);
+      //spindump_deepdeepdebugf("spindump_json_value_free freeing up record field %s", value->u.record.schemaFields[i].name);
       spindump_json_value_free_field(&value->u.record.schemaFields[i]);
     }
     for (i = 0; i < value->u.record.nOtherFields; i++) {
-      spindump_deepdeepdebugf("spindump_json_value_free freeing up record field %s", value->u.record.otherFields[i].name);
+      //spindump_deepdeepdebugf("spindump_json_value_free freeing up record field %s", value->u.record.otherFields[i].name);
       spindump_json_value_free_field(&value->u.record.otherFields[i]);
     }
     spindump_free(value->u.record.schemaFields);
@@ -273,7 +271,7 @@ spindump_json_value_free(struct spindump_json_value* value) {
   case spindump_json_value_type_array:
     spindump_assert(value->u.array.elements != 0);
     for (i = 0; i < value->u.array.n; i++) {
-      spindump_deepdeepdebugf("spindump_json_value_free freeing up array element %u/%u", i, value->u.array.n);
+      //spindump_deepdeepdebugf("spindump_json_value_free freeing up array element %u/%u", i, value->u.array.n);
       spindump_json_value_free(value->u.array.elements[i]);
     }
     spindump_free(value->u.array.elements);
@@ -288,7 +286,7 @@ spindump_json_value_free(struct spindump_json_value* value) {
   // Free up the actual value object
   //
 
-  spindump_deepdeepdebugf("spindump_json_value_free, freed the contents, now freeing the actual object (type %u)", value->type);
+  //spindump_deepdeepdebugf("spindump_json_value_free, freed the contents, now freeing the actual object (type %u)", value->type);
   spindump_free(value);
 }
 
@@ -643,6 +641,12 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
           addtobuffer(",",1);
         }
         const struct spindump_json_value_field* field = &value->u.record.otherFields[j];
+        checkbufferspace(1);
+        addtobuffer("\"",1);
+        checkbufferspace(strlen(field->name));
+        addtobuffer(field->name,strlen(field->name));
+        checkbufferspace(2);
+        addtobuffer("\":",2);
         spindump_json_value_tostring_aux(field->value,buffer,bufferSize,position);
         spindump_deepdeepdebugf("done with one other field");
       }

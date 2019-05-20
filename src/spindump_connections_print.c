@@ -586,7 +586,7 @@ spindump_connection_addresses(struct spindump_connection* connection,
     buf[0] = 0;
     return(buf);
   }
-      
+  
   //
   // Add the start of the JSON as needed
   //
@@ -728,87 +728,95 @@ spindump_connection_statestring(struct spindump_connection* connection) {
 }
 
 //
-// Return a string describing a session. The string need not be freed,
-// but will not survive the next call to this function.
-//
-// Note: This function is not thread safe.
+// Construct a string describing a session. The string space is given
+// by the caller in "buffer" parameter. The maximum size of the buffer
+// (including the nul character in the end) is given by the "maxlen"
+// parameter.
 //
 
-const char*
+void
 spindump_connection_sessionstring(struct spindump_connection* connection,
-                                  unsigned int maxlen) {
-  static char buf[100]; // ... TBD should be removed 
+                                  char* buffer,
+                                  size_t maxlen) {
   
   spindump_assert(connection != 0);
-  spindump_assert(maxlen > 2);
-  memset(buf,0,sizeof(buf));
+
+  if (maxlen <= 2) {
+    buffer[0] = 0;
+    return;
+  }
+  
+  memset(buffer,0,maxlen);
   
   switch (connection->type) {
   case spindump_connection_transport_tcp:
-    snprintf(buf,sizeof(buf)-1,"%u:%u",
+    snprintf(buffer,maxlen-1,"%u:%u",
              connection->u.tcp.side1peerPort,
              connection->u.tcp.side2peerPort);
     break;
     
   case spindump_connection_transport_udp:
-    snprintf(buf,sizeof(buf)-1,"%u:%u",
+    snprintf(buffer,maxlen-1,"%u:%u",
              connection->u.udp.side1peerPort,
              connection->u.udp.side2peerPort);
     break;
     
   case spindump_connection_transport_dns:
-    snprintf(buf,sizeof(buf)-1,"%u:%u",
+    snprintf(buffer,maxlen-1,"%u:%u",
              connection->u.dns.side1peerPort,
              connection->u.dns.side2peerPort);
     break;
     
   case spindump_connection_transport_coap:
-    snprintf(buf,sizeof(buf)-1,"%u:%u",
+    snprintf(buffer,maxlen-1,"%u:%u",
              connection->u.coap.side1peerPort,
              connection->u.coap.side2peerPort);
     break;
     
   case spindump_connection_transport_quic:
-    snprintf(buf,sizeof(buf)-1,"%s-",spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
-    snprintf(buf+strlen(buf),sizeof(buf)-strlen(buf)-1,"%s",spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+    snprintf(buffer,maxlen-1,"%s-",
+             spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
+    snprintf(buffer+strlen(buffer),maxlen-strlen(buffer)-1,"%s",
+             spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+    snprintf(buffer+strlen(buffer),maxlen-strlen(buffer)-1," (%u:%u)",
+             connection->u.quic.side1peerPort,
+             connection->u.quic.side2peerPort);
     break;
     
   case spindump_connection_transport_icmp:
-    snprintf(buf,sizeof(buf)-1,"%u",ntohs(connection->u.icmp.side1peerId));
+    snprintf(buffer,maxlen-1,"%u",ntohs(connection->u.icmp.side1peerId));
     break;
     
   case spindump_connection_aggregate_hostpair:
-    snprintf(buf,sizeof(buf)-1,"%u sessions",
+    snprintf(buffer,maxlen-1,"%u sessions",
              connection->u.aggregatehostpair.connections.nConnections);
     break;
     
   case spindump_connection_aggregate_hostnetwork:
-    snprintf(buf,sizeof(buf)-1,"%u sessions",
+    snprintf(buffer,maxlen-1,"%u sessions",
              connection->u.aggregatehostnetwork.connections.nConnections);
     break;
 
   case spindump_connection_aggregate_networknetwork:
-    snprintf(buf,sizeof(buf)-1,"%u sessions",
+    snprintf(buffer,maxlen-1,"%u sessions",
              connection->u.aggregatenetworknetwork.connections.nConnections);
     break;
 
   case spindump_connection_aggregate_multicastgroup:
-    snprintf(buf,sizeof(buf)-1,"%u sessions",
+    snprintf(buffer,maxlen-1,"%u sessions",
              connection->u.aggregatemulticastgroup.connections.nConnections);
     break;
     
   default:
     spindump_errorf("invalid connection type");
-    return("");
+    return;
   }
   
-  if (strlen(buf) > maxlen) {
-    buf[maxlen-2] = '.';
-    buf[maxlen-1] = '.';
-    buf[maxlen-0] = 0;
+  if (strlen(buffer) >= maxlen - 1) {
+    buffer[maxlen-3] = '.';
+    buffer[maxlen-2] = '.';
+    buffer[maxlen-1] = 0;
   }
-  
-  return(buf);
 }
 
 //
@@ -818,10 +826,14 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
 
 unsigned int
 spindump_connection_report_brief_sessionsize(unsigned int linelen) {
-  if (linelen >= 100)
-    return(27);
+  if (linelen >= 140)
+    return(55);
+  else if (linelen >= 120)
+    return(42);
+  else if (linelen >= 100)
+    return(30);
   else if (linelen >= 80)
-    return(18);
+    return(20);
   else
     return(12);
 }
@@ -833,7 +845,7 @@ spindump_connection_report_brief_sessionsize(unsigned int linelen) {
 
 int
 spindump_connection_report_brief_isnotefield(unsigned int linelen) {
-  return(linelen >= 100);
+  return(linelen >= 130);
 }
 
 //
@@ -868,7 +880,8 @@ spindump_connection_report_brief_fixedsize(unsigned int linelen) {
 
 unsigned int
 spindump_connection_report_brief_variablesize(unsigned int linelen) {
-  return(linelen - spindump_connection_report_brief_fixedsize(linelen));
+  unsigned int fixed = spindump_connection_report_brief_fixedsize(linelen);
+  return(linelen > fixed ? linelen - fixed : 0);
 }
 
 //
@@ -1054,12 +1067,15 @@ spindump_connection_report_brief(struct spindump_connection* connection,
   unsigned int addrsiz = spindump_connection_report_brief_variablesize(linelen);
   unsigned int maxsessionlen = spindump_connection_report_brief_sessionsize(linelen);
   spindump_deepdeepdebugf("report_brief point 4");
+  char sessionbuf[120];
+  size_t maxsessionbuflen = spindump_min(sizeof(sessionbuf),maxsessionlen);
+  spindump_connection_sessionstring(connection,sessionbuf,maxsessionbuflen);
   snprintf(buf,bufsiz,"%-7s %-*s %-*s %8s %6s %10s %10s",
            spindump_connection_type_to_string(connection->type),
            addrsiz,
            spindump_connection_addresses(connection,addrsiz,anonymizeLeft,anonymizeRight,0,querier),
            maxsessionlen,
-           spindump_connection_sessionstring(connection,maxsessionlen),
+           sessionbuf,
            spindump_connection_statestring(connection),
            paksbuf,
            rttbuf1,

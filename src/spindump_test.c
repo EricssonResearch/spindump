@@ -214,6 +214,68 @@ unittests_table(void) {
   spindump_checktest(connection1 != 0);
 
   //
+  // Printing that simple connection as a string in different line lengths
+  //
+
+  struct spindump_reverse_dns* querier = spindump_reverse_dns_initialize_noop();
+  char buf[200];
+  unsigned int L;
+  
+  L = 40; spindump_connection_report_brief(connection1,buf,sizeof(buf),0,L,0,0,querier);
+  spindump_deepdebugf("connection1 in %u chars (fixed=%u,session=%u,variable=%u)\nconnection1 = %s.",
+                      L,
+                      spindump_connection_report_brief_fixedsize(L),
+                      spindump_connection_report_brief_sessionsize(L),
+                      spindump_connection_report_brief_variablesize(L),
+                      buf);
+  spindump_assert(strcmp(buf,"ICMP     62465        Starting      0        n/a        n/a") == 0);
+  
+  L = 60; spindump_connection_report_brief(connection1,buf,sizeof(buf),0,60,0,0,querier);
+  spindump_deepdebugf("connection1 in %u chars (fixed=%u,session=%u,variable=%u)\nconnection1 = %s.",
+                      L,
+                      spindump_connection_report_brief_fixedsize(L),
+                      spindump_connection_report_brief_sessionsize(L),
+                      spindump_connection_report_brief_variablesize(L),
+                      buf);
+  spindump_assert(strcmp(buf,"ICMP      62465        Starting      0        n/a        n/a") == 0);
+
+  L = 80; spindump_connection_report_brief(connection1,buf,sizeof(buf),0,80,0,0,querier);
+  spindump_deepdebugf("connection1 in %u chars (fixed=%u,session=%u,variable=%u)\nconnection1 = %s.",
+                      L,
+                      spindump_connection_report_brief_fixedsize(L),
+                      spindump_connection_report_brief_sessionsize(L),
+                      spindump_connection_report_brief_variablesize(L),
+                      buf);
+  spindump_assert(strcmp(buf,"ICMP    127.0.0.1 <.. 62465                Starting      0        n/a        n/a") == 0);
+
+  L = 100; spindump_connection_report_brief(connection1,buf,sizeof(buf),0,100,0,0,querier);
+  spindump_deepdebugf("connection1 in %u chars (fixed=%u,session=%u,variable=%u)\nconnection1 = %s.",
+                      L,
+                      spindump_connection_report_brief_fixedsize(L),
+                      spindump_connection_report_brief_sessionsize(L),
+                      spindump_connection_report_brief_variablesize(L),
+                      buf);
+  spindump_assert(strcmp(buf,"ICMP    127.0.0.1 <-> 127.0.0.2 62465                          Starting      0        n/a        n/a") == 0);
+
+  L = 120; spindump_connection_report_brief(connection1,buf,sizeof(buf),0,120,0,0,querier);
+  spindump_deepdebugf("connection1 in %u chars (fixed=%u,session=%u,variable=%u)\nconnection1 = %s.",
+                      L,
+                      spindump_connection_report_brief_fixedsize(L),
+                      spindump_connection_report_brief_sessionsize(L),
+                      spindump_connection_report_brief_variablesize(L),
+                      buf);
+  spindump_assert(strcmp(buf,"ICMP    127.0.0.1 <-> 127.0.0.2         62465                                      Starting      0        n/a        n/a") == 0);
+
+  L = 140; spindump_connection_report_brief(connection1,buf,sizeof(buf),0,140,0,0,querier);
+  spindump_deepdebugf("connection1 in %u chars (fixed=%u,session=%u,variable=%u)\nconnection1 = %s.",
+                      L,
+                      spindump_connection_report_brief_fixedsize(L),
+                      spindump_connection_report_brief_sessionsize(L),
+                      spindump_connection_report_brief_variablesize(L),
+                      buf);
+  spindump_assert(strcmp(buf,"ICMP    127.0.0.1 .. 62465                                                   Starting      0        n/a        n/a  No response             ") == 0);
+  
+  //
   // Searching for a connection that does not exist
   //
   
@@ -441,6 +503,22 @@ unittests_eventjsonparser(void) {
   struct spindump_json_value* json = 0;
   const char* input = &buf[0];
   ret = spindump_json_parse(&eventschema,0,&input);
+  spindump_assert(ret == 1);
+  json = parsedRecord;
+  spindump_assert(json != 0);
+  spindump_assert(json->type == spindump_json_value_type_record);
+  ret = spindump_event_parser_json_parse(json,&event2);
+  spindump_assert(ret == 1);
+
+  //
+  // Parse a given QUIC event and see if we get the right result
+  //
+
+  const char* jsonInput1 =
+    "{ \"Event\": \"new\", \"Type\": \"QUIC\", \"Addrs\": [\"1.2.3.4\",\"5.6.7.8\"], "
+    "\"Session\": \"aabbccdd:eeff0011223344556677 (12:4560)\", \"Ts\": 1892188800001234, \"State\": \"Starting\", "
+    "\"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3 }";
+  ret = spindump_json_parse(&eventschema,0,&jsonInput1);
   spindump_assert(ret == 1);
   json = parsedRecord;
   spindump_assert(json != 0);

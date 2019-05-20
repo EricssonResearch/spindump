@@ -828,6 +828,8 @@ spindump_remote_server_answer(void *cls,
       
     } else {
 
+      //spindump_deepdebugf("no submitted data so going to just say MHD_YES");
+      //return(MHD_YES);
       spindump_deepdebugf("no submitted data so going to answer");
       return(spindump_remote_server_answertopost(server,existingConnectionObject,connection));
       
@@ -879,7 +881,7 @@ spindump_remote_server_requestcompleted(void *cls,
   //
   
   if (connectionObject == 0) return;
-  spindump_remote_server_answertopost(server,connectionObject,connection);
+  //spindump_remote_server_answertopost(server,connectionObject,connection);
   spindump_remote_server_releaseconnectionobject(server,connectionObject);
   *con_cls = 0;   
 }
@@ -913,7 +915,7 @@ spindump_remote_server_jsonrecordorarraycallback(const struct spindump_json_valu
 #ifdef SPINDUMP_DEBUG
   spindump_deepdeepdebugf("spindump_remote_server_jsonrecordorarraycallback");
   char* string = spindump_json_value_tostring(value);
-  spindump_deepdeepdebugf("got the value %s", string);
+  spindump_deepdeepdebugf("spindump_remote_server_jsonrecordorarraycallback got the value %s", string);
   spindump_free(string);
 #endif
 

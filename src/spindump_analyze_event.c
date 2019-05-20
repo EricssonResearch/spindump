@@ -20,6 +20,7 @@
 // Includes -----------------------------------------------------------------------------------
 //
 
+#include <ctype.h>
 #include <string.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
@@ -83,7 +84,9 @@ spindump_analyze_event_parseportpair(const struct spindump_event* event,
 static int
 spindump_analyze_event_parsecidpair(const struct spindump_event* event,
                                     struct spindump_quic_connectionid* p_side1cid,
-                                    struct spindump_quic_connectionid* p_side2cid);
+                                    struct spindump_quic_connectionid* p_side2cid,
+                                    spindump_port* side1port,
+                                    spindump_port* side2port);
 static struct spindump_connection*
 spindump_analyze_processevent_find_connection(struct spindump_analyze* state,
                                               const struct spindump_event* event);
@@ -250,7 +253,8 @@ spindump_analyze_event_charbytetobyte(char ch1,
     spindump_errorf("Invalid char in a QUIC connection id");
     return(0);
   }
-  return((uint8_t)x);
+  *byte = (uint8_t)x;
+  return(1);
 }
 
 //
@@ -282,8 +286,10 @@ spindump_analyze_event_string_to_quicconnectionid(const char* buf,
     }
     nchars -= 2;
     buf += 2;
-    id->len++;
+    id->id[id->len++] = byte;
   }
+  spindump_deepdeepdebugf("successfully parsed quicconnectionid %s",
+                          spindump_connection_quicconnectionid_tostring(id));
   return(1);
 }
 
@@ -295,7 +301,9 @@ spindump_analyze_event_string_to_quicconnectionid(const char* buf,
 static int
 spindump_analyze_event_parsecidpair(const struct spindump_event* event,
                                     struct spindump_quic_connectionid* p_side1cid,
-                                    struct spindump_quic_connectionid* p_side2cid) {
+                                    struct spindump_quic_connectionid* p_side2cid,
+                                    spindump_port* side1port,
+                                    spindump_port* side2port) {
 
   //
   // Sanity checks
@@ -304,9 +312,10 @@ spindump_analyze_event_parsecidpair(const struct spindump_event* event,
   spindump_assert(event != 0);
   spindump_assert(p_side1cid != 0);
   spindump_assert(p_side2cid != 0);
+  spindump_deepdeepdebugf("spindump_analyze_event_parsecidpair(%s)", event->session);
   
   //
-  // Find out where the separator (hyphen) is in a nnnnn-mmmmm CID
+  // Find out where the separator (hyphen) is in a "nnnnn-mmmmm" CID
   // pair.
   //
   
@@ -316,7 +325,42 @@ spindump_analyze_event_parsecidpair(const struct spindump_event* event,
                     event->session);
     return(0);
   }
+  
+  //
+  // Find out where the separator (space and an opening paranthesis)
+  // is after the "nnnnn-mmmmm" CID pair, as " (port:port)" follows.
+  //
+  
+  const char* spaceseparator = index(separator,' ');
+  if (spaceseparator == 0 ||
+      spaceseparator[1] != '(') {
+    spindump_errorf("QUIC connection id pair %s is not followed by a port pair",
+                    event->session);
+    return(0);
+  }
 
+  //
+  // Find out where the separator (colon) is between the port pair.
+  //
+  
+  const char* colonseparator = index(spaceseparator,':');
+  if (colonseparator == 0) {
+    spindump_errorf("QUIC connection id pair %s is not followed by a port pair with a colon",
+                    event->session);
+    return(0);
+  }
+  
+  //
+  // Find out where the separator (colon) is between the port pair.
+  //
+  
+  const char* closingseparator = index(colonseparator,')');
+  if (closingseparator == 0) {
+    spindump_errorf("QUIC connection id pair %s is not followed by a port pair that ends with a closing paranthesis",
+                    event->session);
+    return(0);
+  }
+  
   //
   // Parse first CID in a nnnnn-mmmmm CID pair
   //
@@ -332,11 +376,37 @@ spindump_analyze_event_parsecidpair(const struct spindump_event* event,
   //
   
   if (!spindump_analyze_event_string_to_quicconnectionid(separator + 1,
-                                                         (unsigned int)(strlen(separator) - 1),
+                                                         (unsigned int)(spaceseparator - (separator + 1)),
                                                          p_side2cid)) {
     return(0);
   }
 
+  //
+  // Parse the first port
+  //
+
+  const char* port1begin = spaceseparator+2;
+  if (!isdigit(*port1begin)) {
+    spindump_errorf("QUIC connection id pair %s is not followed by a parseable port number",
+                    event->session);
+    return(0);
+  }
+  *side1port = (spindump_port)atoi(port1begin);
+  spindump_deepdeepdebugf("successfully parsed port %u", *side1port);
+  
+  //
+  // Parse the second port
+  //
+  
+  const char* port2begin = colonseparator+1;
+  if (!isdigit(*port2begin)) {
+    spindump_errorf("QUIC connection id pair %s is not followed by a second parseable port number",
+                    event->session);
+    return(0);
+  }
+  *side2port = (spindump_port)atoi(port2begin);
+  spindump_deepdeepdebugf("successfully parsed port %u", *side2port);
+  
   //
   // Ok
   //
@@ -367,6 +437,8 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
   struct spindump_quic_connectionid side1cid;
   struct spindump_quic_connectionid side2cid;
   uint16_t peerid;
+
+  spindump_deepdeepdebugf("spindump_analyze_processevent_new_connection");
   
   switch (event->connectionType) {
     
@@ -420,9 +492,7 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
     
   case spindump_connection_transport_quic:
     if (!spindump_analyze_event_parsehostpair(event)) return;
-    if (!spindump_analyze_event_parsecidpair(event,&side1cid,&side2cid)) return;
-    side1port = 0; // ... TBD needs more info in the JSON events to know this
-    side2port = 0; // ... TBD needs more info in the JSON events to know this
+    if (!spindump_analyze_event_parsecidpair(event,&side1cid,&side2cid,&side1port,&side2port)) return;
     *p_connection =
       spindump_connections_newconnection_quic_5tupleandcids(&event->initiatorAddress.address,
                                                             &event->responderAddress.address,
@@ -495,9 +565,13 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
   // connection object.
   //
 
+  spindump_deepdeepdebugf("spindump_analyze_processevent_new_connection update");
+  
   if (*p_connection != 0) {
     spindump_analyze_event_updateinfo(state,*p_connection,event);
   }
+  
+  spindump_deepdeepdebugf("spindump_analyze_processevent_new_connection done");
 }
 
 //
@@ -775,11 +849,19 @@ spindump_analyze_processevent_find_connection(struct spindump_analyze* state,
     
   case spindump_connection_transport_quic:
     if (!spindump_analyze_event_parsehostpair(event)) return(0);
-    if (!spindump_analyze_event_parsecidpair(event,&side1cid,&side2cid)) return(0);
+    if (!spindump_analyze_event_parsecidpair(event,&side1cid,&side2cid,&side1port,&side2port)) return(0);
     connection =
-      spindump_connections_searchconnection_quic_cids(&side1cid, // ... TBD needs a better search function with addresses or ports
+      spindump_connections_searchconnection_quic_cids(&side1cid,
                                                       &side2cid,
                                                       state->table);
+    if (connection == 0) {
+      connection =
+        spindump_connections_searchconnection_quic_5tuple(&event->initiatorAddress.address,
+                                                          &event->responderAddress.address,
+                                                          side1port,
+                                                          side2port,
+                                                          state->table);
+    }
     break;
     
   case spindump_connection_transport_icmp:

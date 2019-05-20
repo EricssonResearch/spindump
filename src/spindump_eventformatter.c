@@ -463,13 +463,16 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   //
   
   struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)handlerData;
-  const char* session = spindump_connection_sessionstring(connection,70);
-
+  char session[spindump_event_sessioidmaxlength];
+  spindump_connection_sessionstring(connection,session,sizeof(session));
+  
   //
   // Construct the time stamp
   //
   
-  unsigned long long timestamplonglong = ((unsigned long long)packet->timestamp.tv_sec) * 1000 * 1000 + (unsigned long long)packet->timestamp.tv_usec;
+  unsigned long long timestamplonglong =
+    ((unsigned long long)packet->timestamp.tv_sec) * 1000 * 1000 +
+    (unsigned long long)packet->timestamp.tv_usec;
   
   //
   // Determine event type

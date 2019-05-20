@@ -1,4 +1,4 @@
 [
-{ "Event": "new", "Type": "QUIC", "Addrs": ["192.168.203.236","52.58.13.57"], "Session": "1a82f1d1-0a941f3f0ea13ad12e29ab854cb87c95e651", "Ts": 1558349397887478, "State": "Starting", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
-{ "Event": "measurement", "Type": "QUIC", "Addrs": ["192.168.203.236","52.58.13.57"], "Session": "1a82f1d1-0a941f3f0ea13ad12e29ab854cb87c95e651", "Ts": 1558349397913777, "State": "Starting", "Right_rtt": 26299, "Packets1": 1, "Packets2": 0, "Bytes
+{ "Event": "new", "Type": "QUIC", "Addrs": ["192.168.203.236","52.58.13.57"], "Session": "1a82f1d1-0a941f3f0ea13ad12e29ab854cb87c95e651 (59060:4433)", "Ts": 1558349397887478, "State": "Starting", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
+{ "Event": "measurement", "Type": "QUIC", "Addrs": ["192.168.203.236","52.58.13.57"], "Session": "1a82f1d1-0a941f3f0ea13ad12e29ab854cb87c95e651 (59060:4433)", "Ts": 1558349397913777, "State": "Starting", "Right_rtt": 26299, "Packets1": 1, "Packets2": 0, "Bytes1": 1228, "Bytes2": 0 }
 ]
