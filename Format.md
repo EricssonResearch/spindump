@@ -39,6 +39,7 @@ In more detail, the JSON format consists of a bracketed sequence of records in b
    * The "Addrs" field specifies addresses associated with the connection or aggregate.
    * The "Session" field specifies the session identifiers associated with the connection, if any. For TCP and UDP connections these are the port numbers, for QUIC the connection IDs, and for ICMP the identifier field.
    * The "Ts" is the timestamp, number of microseconds since the start of January 1, 1970. Note that the number is represented as an integer, given that the 53 bits of integer precision in JSON integers is sufficient. About 20 bits are needed for the microseconds part, which leaves 43 bits for the integer seconds parts; enough until year 280892.
+   * The "State" field is the state of the connection, either "Starting", "Up", "Closing", or "Closed".
 
 The other fields depend on the type of an event and connection. These fields can be provided:
 
