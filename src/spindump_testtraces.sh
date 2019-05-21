@@ -28,7 +28,7 @@ spindump=$srcdir/spindump
 # file (.options).
 #
 
-traces="trace_icmpv4_short trace_icmpv6_short trace_tcp_short trace_tcp_short_json trace_dns trace_quic_v18_short_spin trace_quic_v18_short_spin_all trace_quic_v18_long_spin trace_quic_v18_long_spin_all trace_quic_v19_short_quant trace_quic_v20_medium_quant trace_quic_v20_no0rtt_quant trace_quic_v20_0rtt_quant trace_quic_fail1_quant trace_quic_fail2_quant trace_quic_google trace_quic_bug_ls trace_tunnel_interface_ping trace_tcp_medium_snap80 trace_tcp_large_snap80"
+traces="trace_icmpv4_short trace_icmpv6_short trace_tcp_short trace_tcp_short_json trace_dns trace_quic_v18_short_spin trace_quic_v18_short_spin_all trace_quic_v18_long_spin trace_quic_v18_long_spin_all trace_quic_v19_short_quant trace_quic_v20_medium_quant trace_quic_v20_no0rtt_quant trace_quic_v20_0rtt_quant trace_quic_fail1_quant trace_quic_fail2_quant trace_quic_google trace_quic_pandora trace_quic_bug_ls trace_tunnel_interface_ping trace_tcp_medium_snap80 trace_tcp_large_snap80"
 
 #
 # Loop through test cases
@@ -47,6 +47,7 @@ do
     
     pcap=$testdir/$trace.pcap
     descr=$testdir/$trace.txt
+    outpre=$testdir/$trace.out.pre
     out=$testdir/$trace.out
     corr=$testdir/$trace.expected
     optsfile=$testdir/$trace.options
@@ -62,7 +63,7 @@ do
     # Now run it!
     #
     
-    if $spindump --input-file $pcap --textual --format text $opts > $out
+    if $spindump --input-file $pcap --textual --format text $opts > $outpre
     then
         echo "  run ok..."
     else
@@ -70,6 +71,16 @@ do
         exit 1
     fi
 
+    #
+    # Filter results to ensure timestamps in some events do not vary
+    # from test run to test run.
+    #
+
+    awk '
+      /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; }
+      /.*/ { print $0; }
+    ' < $outpre > $out
+    
     #
     # Check results
     #
