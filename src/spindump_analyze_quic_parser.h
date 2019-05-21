@@ -67,6 +67,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
                                    int* p_hasVersion,
                                    uint32_t* p_version,
                                    int* p_mayHaveSpinBit,
+                                   int* p_0rttAttempted,
                                    int* p_destinationCidLengthKnown,
                                    struct spindump_quic_connectionid* p_destinationCid,
                                    int* p_sourceCidPresent,
@@ -75,17 +76,18 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
                                    struct spindump_stats* stats);
 int
 spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
-                                   unsigned int payload_len,
-                                   unsigned int remainingCaplen,
-                                   int* p_hasVersion,
-                                   uint32_t* p_version,
-                                   int* p_mayHaveSpinBit,
-                                   int* p_destinationCidLengthKnown,
-                                   struct spindump_quic_connectionid* p_destinationCid,
-                                   int* p_sourceCidPresent,
-                                   struct spindump_quic_connectionid* p_sourceCid,
-                                   enum spindump_quic_message_type* p_type,
-                                   struct spindump_stats* stats);
+                                               unsigned int payload_len,
+                                               unsigned int remainingCaplen,
+                                               int* p_hasVersion,
+                                               uint32_t* p_version,
+                                               int* p_mayHaveSpinBit,
+                                               int* p_0rttAttempted,
+                                               int* p_destinationCidLengthKnown,
+                                               struct spindump_quic_connectionid* p_destinationCid,
+                                               int* p_sourceCidPresent,
+                                               struct spindump_quic_connectionid* p_sourceCid,
+                                               enum spindump_quic_message_type* p_type,
+                                               struct spindump_stats* stats);
 int
 spindump_analyze_quic_parser_isgoogleversion(uint32_t version);
 uint32_t

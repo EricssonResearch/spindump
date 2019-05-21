@@ -107,6 +107,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
   int hasVersion = 0;
   int mayHaveSpinBit = 0;
+  int attempted0Rtt = 0;
   uint32_t quicVersion;
   int destinationCidLengthKnown;
   struct spindump_quic_connectionid destinationCid;
@@ -120,6 +121,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                           &hasVersion,
                                           &quicVersion,
                                           &mayHaveSpinBit,
+                                          &attempted0Rtt,
                                           &destinationCidLengthKnown,
                                           &destinationCid,
                                           &sourceCidPresent,
@@ -148,13 +150,13 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                                         side2port,
                                                                         state->table,
                                                                         &fromResponder);
-
+  
   //
   // If not found, and we know the CIDs, search based on them instead.
   //
 
   if (connection == 0 && destinationCidLengthKnown && sourceCidPresent) {
-
+    
     connection = spindump_connections_searchconnection_quic_cids_either(&destinationCid,
                                                                         &sourceCid,
                                                                         state->table,
@@ -219,7 +221,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
     spindump_debugf("initialized QUIC connection %u state to ESTABLISHING, version %08x", connection->id, quicVersion);
     fromResponder = 0;
     new = 1;
-
+    if (attempted0Rtt) {
+      spindump_debugf("attempted 0-RTT negotiation");
+      connection->u.quic.attempted0Rtt = 1;
+    }
+    
     state->stats->connections++;
     state->stats->connectionsQuic++;
 
@@ -306,8 +312,9 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
     if (!fromResponder &&
         !spindump_iszerotime(&connection->u.quic.side2initialResponsePacket) &&
-        type == spindump_quic_message_type_initial) {
-
+        (type == spindump_quic_message_type_initial ||
+         type == spindump_quic_message_type_0rtt)) {
+      
       connection->u.quic.initialLeftRTT =
         spindump_connections_newrttmeasurement(state,
                                                packet,

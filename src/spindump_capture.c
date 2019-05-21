@@ -43,7 +43,8 @@
 static struct spindump_capture_state*
 spindump_capture_initialize_aux(const char* interface,
                                 const char* file,
-                                const char* filter);
+                                const char* filter,
+                                unsigned int snaplen);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -96,7 +97,8 @@ spindump_capture_defaultinterface(void) {
 static struct spindump_capture_state*
 spindump_capture_initialize_aux(const char* interface,
                                 const char* file,
-                                const char* filter) {
+                                const char* filter,
+                                unsigned int snaplen) {
   //
   // Debugs
   // 
@@ -141,12 +143,18 @@ spindump_capture_initialize_aux(const char* interface,
     return(state);
     
   } else if (interface != 0) {
-  
+
+    if (((int)snaplen) < 0) {
+      spindump_errorf("snaplen %u is too high", snaplen);
+      spindump_free(state);
+      return(0);
+    }
+    
     //
     // Open the PCAP interface
     // 
     
-    state->handle = pcap_open_live(interface, spindump_capture_snaplen, promisc, spindump_capture_wait, errbuf);
+    state->handle = pcap_open_live(interface, (int)snaplen, promisc, spindump_capture_wait, errbuf);
     if (state->handle == 0) {
       spindump_errorf("couldn't open device %s: %s", interface, errbuf);
       spindump_free(state);
@@ -245,7 +253,7 @@ struct spindump_capture_state*
 spindump_capture_initialize_file(const char* file,
                                  const char* filter) {
   spindump_debugf("opening capture file %s...", file);
-  return(spindump_capture_initialize_aux(0,file,filter));
+  return(spindump_capture_initialize_aux(0,file,filter,0));
 }
 
 //
@@ -255,10 +263,11 @@ spindump_capture_initialize_file(const char* file,
 
 struct spindump_capture_state*
 spindump_capture_initialize_live(const char* interface,
-                                 const char* filter) {
+                                 const char* filter,
+                                 unsigned int snaplen) {
 
   spindump_debugf("opening capture on interface %s...", interface);
-  return(spindump_capture_initialize_aux(interface,0,filter));
+  return(spindump_capture_initialize_aux(interface,0,filter,snaplen));
   
 }
 
@@ -269,7 +278,7 @@ spindump_capture_initialize_live(const char* interface,
 struct spindump_capture_state*
 spindump_capture_initialize_null(void) {
   spindump_debugf("opening null capture...");
-  return(spindump_capture_initialize_aux(0,0,""));
+  return(spindump_capture_initialize_aux(0,0,"",0));
   
 }
 

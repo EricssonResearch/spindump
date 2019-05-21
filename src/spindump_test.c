@@ -41,6 +41,7 @@
 #include "spindump_analyze.h"
 #include "spindump_json_value.h"
 #include "spindump_json.h"
+#include "spindump_analyze_quic_parser_util.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -48,6 +49,7 @@
 
 static void unittests(void);
 static void unittests_util(void);
+static void unittests_quicparser(void);
 static void unittests_table(void);
 static void unittests_eventtextparser(void);
 static void unittests_eventjsonparser(void);
@@ -74,6 +76,7 @@ unittests_eventjsonparser_callback(const struct spindump_json_value* value,
 static void
 unittests(void) {
   unittests_util();
+  unittests_quicparser();
   unittests_table();
   unittests_jsonvalue();
   unittests_jsonparser();
@@ -172,6 +175,34 @@ unittests_util(void) {
   const char* id2s = spindump_connection_quicconnectionid_tostring(&id2);
   spindump_debugf("id2s = %s", id2s);
   spindump_checktest(strcmp(id2s,"0102030405060708090a0b0c0d0e") == 0);
+}
+
+//
+// Unit tests for the QUIC parser
+//
+
+static void
+unittests_quicparser(void) {
+#define checkint(B1,B2,B3,B4,L,C,F,V,D)                                            \
+  {                                                                                \
+    uint64_t value = 0;                                                            \
+    unsigned int len = 0;                                                          \
+    unsigned char buf[] = {B1,B2,B3,B4};                                           \
+    int ans = spindump_analyze_quic_parser_util_parseint(buf,L,C,&len,&value);     \
+    spindump_deepdeepdebugf("parseint %u %u = %u %u %llu", L, C, ans, len, value); \
+    spindump_assert(ans == F);                                                     \
+    spindump_assert(value == V);                                                   \
+    spindump_assert(len == D);                                                     \
+  }
+
+  checkint(0x00,0x00,0x00,0x00,1,1,1,0,1);
+  checkint(0x3f,0x00,0x00,0x00,1,1,1,0x3f,1);
+  checkint(0x00,0x00,0x00,0x00,1,0,0,0,0);
+  checkint(0x00,0x00,0x00,0x00,0,1,0,0,0);
+  checkint(0x43,0x85,0x00,0x00,2,2,1,0x0385,2);
+  checkint(0x43,0x85,0x00,0x00,2,1,0,0,0);
+  checkint(0x83,0xff,0x12,0x34,4,4,1,0x03ff1234,4);
+  checkint(0xC3,0x85,0x00,0x00,2,2,0,0,0);
 }
 
 //

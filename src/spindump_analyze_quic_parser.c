@@ -22,26 +22,76 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "spindump_util.h"
 #include "spindump_connections.h"
 #include "spindump_analyze.h"
 #include "spindump_analyze_quic.h"
 #include "spindump_analyze_quic_parser.h"
+#include "spindump_analyze_quic_parser_util.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
 //
 
-static unsigned int
-spindump_analyze_quic_parser_onecidlength(uint8_t value);
-static void
-spindump_analyze_quic_parser_cidlengths(uint8_t lengthsbyte,
-                                        unsigned int* p_destinationLength,
-                                        unsigned int* p_sourceLength);
-#ifdef SPINDUMP_DEBUG
-static const char*
-spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type);
-#endif
+static int
+spindump_analyze_quic_parse_parseheaderbyte(const unsigned char* payload,
+                                            unsigned int payload_len,
+                                            unsigned int remainingCapLen,
+                                            uint8_t* headerByte,
+                                            int* longForm,
+                                            int* googleQuic,
+                                            struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parseversionnumber(const unsigned char* payload,
+                                                unsigned int payload_len,
+                                                unsigned int remainingCaplen,
+                                                uint8_t headerByte,
+                                                uint32_t* p_version,
+                                                uint32_t* p_originalVersion,
+                                                struct spindump_quic* quic,
+                                                struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parsemessagetype(uint8_t headerByte,
+                                              uint32_t version,
+                                              enum spindump_quic_message_type* p_type,
+                                              uint8_t* p_messageType,
+                                              int* p_0rttAttempted,
+                                              struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
+                                                unsigned int payload_len,
+                                                unsigned int remainingCaplen,
+                                                uint32_t version,
+                                                enum spindump_quic_message_type type,
+                                                unsigned int cidLengthsInBytes,
+                                                unsigned int* p_messageLen,
+                                                struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* payload,
+                                                        unsigned int payload_len,
+                                                        unsigned int remainingCaplen,
+                                                        unsigned int cidLengthsInBytes,
+                                                        unsigned int* p_messageLen,
+                                                        struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
+                                             unsigned int payload_len,
+                                             unsigned int remainingCaplen,
+                                             uint32_t version,
+                                             int* p_0rttAttempted,
+                                             struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parsecids(const unsigned char* payload,
+                                       unsigned int payload_len,
+                                       unsigned int remainingCaplen,
+                                       uint8_t cidLengths,
+                                       int longForm,
+                                       int* p_destinationCidLengthKnown,
+                                       struct spindump_quic_connectionid* p_destinationCid,
+                                       int* p_sourceCidPresent,
+                                       struct spindump_quic_connectionid* p_sourceCid,
+                                       struct spindump_stats* stats);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -75,60 +125,6 @@ spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
   spindump_assert(id1 != 0);
   spindump_assert(id2 != 0);
   return(memcmp(id1,id2->id,id2->len) == 0);
-}
-
-#ifdef SPINDUMP_DEBUG
-
-//
-// Return a string describing a particular QUIC message
-//
-
-static const char*
-spindump_analyze_quic_parser_typetostring(enum spindump_quic_message_type type) {
-  switch (type) {
-  case spindump_quic_message_type_data: return("data");
-  case spindump_quic_message_type_initial: return("initial");
-  case spindump_quic_message_type_versionnegotiation: return("version negotiation");
-  case spindump_quic_message_type_retry: return("retry");
-  case spindump_quic_message_type_other: return("other");
-  default:
-    spindump_errorf("invalid QUIC message type %u", type);
-    return("invalid");
-  }
-}
-
-#endif // SPINDUMP_DEBUG
-
-//
-// Determine the length of a QUIC Connection ID based on the nibble
-// that describes its length. The QUIC specification says that 0 maps
-// to zero 0 length, but for all other lengths the value is the nibble
-// value + 3.
-//
-
-static unsigned int
-spindump_analyze_quic_parser_onecidlength(uint8_t value) {
-  spindump_assert(value < 16);
-  if (value == 0) {
-    return(0);
-  } else {
-    return(value + 3);
-  }
-}
-
-//
-// Helper function to parse Connection IDs from a QUIC long-form message.
-//
-
-static void
-spindump_analyze_quic_parser_cidlengths(uint8_t lengthsbyte,
-                                        unsigned int* p_destinationLength,
-                                        unsigned int* p_sourceLength) {
-  *p_destinationLength = spindump_analyze_quic_parser_onecidlength(lengthsbyte >> 4);
-  *p_sourceLength = spindump_analyze_quic_parser_onecidlength(lengthsbyte & 0x0F);
-  spindump_deepdebugf("CID lengths destination = %u, source = %u",
-                      *p_destinationLength,
-                      *p_sourceLength);
 }
 
 //
@@ -336,6 +332,7 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
                                    int* p_hasVersion,
                                    uint32_t* p_version,
                                    int* p_mayHaveSpinBit,
+                                   int* p_0rttAttempted,
                                    int* p_destinationCidLengthKnown,
                                    struct spindump_quic_connectionid* p_destinationCid,
                                    int* p_sourceCidPresent,
@@ -351,15 +348,18 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   spindump_assert(p_hasVersion != 0);
   spindump_assert(p_version != 0);
   spindump_assert(p_mayHaveSpinBit != 0);
+  spindump_assert(p_0rttAttempted != 0);
   spindump_assert(p_destinationCid != 0);
   spindump_assert(p_sourceCid != 0);
-
+  spindump_assert(stats != 0);
+  
   //
   // Initialize output parameters
   // 
   
   *p_version = 0;
   *p_mayHaveSpinBit = 0;
+  *p_0rttAttempted = 0;
   *p_destinationCidLengthKnown = 0;
   memset(p_destinationCid,0,sizeof(*p_destinationCid));
   *p_sourceCidPresent = 0;
@@ -376,42 +376,41 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
     return(0);
   }
   
-  int longForm = 0;
   uint32_t version = spindump_quic_version_unknown;
   uint32_t originalVersion = spindump_quic_version_unknown;
   
   //
   // Parse initial byte
-  // 
+  //
   
   uint8_t headerByte;
-  spindump_protocols_quic_header_decode(payload,&headerByte);
-
-  if ((headerByte & spindump_quic_byte_header_alwaysunset) == 0) {
-          //This is Google QUIC, likely Q043 or below
-          //Google will use the ietf version from Q044
-          spindump_deepdebugf("QUIC Google QUIC packet first byte = %02x (payload %02x)", headerByte, payload[0]);
-
-          return
-          spindump_analyze_quic_parser_parse_google_quic(payload,
-                                           payload_len,
-                                           remainingCaplen,
-                                           p_hasVersion,
-                                           p_version,
-                                           p_mayHaveSpinBit,
-                                           p_destinationCidLengthKnown,
-                                           p_destinationCid,
-                                           p_sourceCidPresent,
-                                           p_sourceCid,
-                                           p_type,
-                                           stats);
+  int googleQuic;
+  int longForm;
+  
+  if (!spindump_analyze_quic_parse_parseheaderbyte(payload,
+                                                   payload_len,
+                                                   remainingCaplen,
+                                                   &headerByte,
+                                                   &longForm,
+                                                   &googleQuic,
+                                                   stats)) {
+    return(0);
   }
-
-  if ((headerByte & spindump_quic_byte_header_form_draft16) == spindump_quic_byte_form_long_draft16) {
-    longForm = 1;
-    spindump_deepdebugf("QUIC long form packet first byte = %02x (payload %02x)", headerByte, payload[0]);
-  } else {
-    spindump_deepdebugf("QUIC short form packet first byte = %02x (payload %02x)", headerByte, payload[0]);
+  
+  if (googleQuic) {
+    return(spindump_analyze_quic_parser_parse_google_quic(payload,
+                                                          payload_len,
+                                                          remainingCaplen,
+                                                          p_hasVersion,
+                                                          p_version,
+                                                          p_mayHaveSpinBit,
+                                                          p_0rttAttempted,
+                                                          p_destinationCidLengthKnown,
+                                                          p_destinationCid,
+                                                          p_sourceCidPresent,
+                                                          p_sourceCid,
+                                                          p_type,
+                                                          stats));
   }
   
   //
@@ -419,80 +418,17 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // 
   
   struct spindump_quic quic;
-  quic.u.shortheader.qh_byte = headerByte;
-  if (longForm) {
-    if (payload_len < 6 || remainingCaplen < 6) {
-      stats->notEnoughPacketForQuicHdr++;
-      return(0);
-    }
-    spindump_protocols_quic_longheader_decode(payload,&quic);
-    version =
-      originalVersion = ((((uint32_t)quic.u.longheader.qh_version[0]) << 24) +
-                         (((uint32_t)quic.u.longheader.qh_version[1]) << 16) +
-                         (((uint32_t)quic.u.longheader.qh_version[2]) << 8) +
-                         (((uint32_t)quic.u.longheader.qh_version[3]) << 0));
-    spindump_deepdebugf("QUIC long form packet version = %lx", version);
-    if (spindump_quic_version_isforcenegot(version)) {
-      version = spindump_quic_version_forcenegotiation;
-    }
-    switch (version) {
-      
-    case spindump_quic_version_rfc:
-      // OK// 
-      spindump_deepdebugf("QUIC version rfc ok");
-      break;
-      
-    case spindump_quic_version_draft20:
-    case spindump_quic_version_draft19:
-    case spindump_quic_version_draft18:
-    case spindump_quic_version_draft17:
-    case spindump_quic_version_draft16:
-    case spindump_quic_version_quant19:
-    case spindump_quic_version_quant20:
-    case spindump_quic_version_huitema:
-    case spindump_quic_version_mozilla:
-      // OK// 
-      spindump_deepdebugf("QUIC version ok");
-      break;
-      
-    case spindump_quic_version_draft15:
-    case spindump_quic_version_draft14:
-    case spindump_quic_version_draft13:
-    case spindump_quic_version_draft12:
-    case spindump_quic_version_draft11:
-    case spindump_quic_version_draft10:
-    case spindump_quic_version_draft09:
-    case spindump_quic_version_draft08:
-    case spindump_quic_version_draft07:
-    case spindump_quic_version_draft06:
-    case spindump_quic_version_draft05:
-    case spindump_quic_version_draft04:
-    case spindump_quic_version_draft03:
-    case spindump_quic_version_draft02:
-    case spindump_quic_version_draft01:
-    case spindump_quic_version_draft00:
-      spindump_deepdebugf("QUIC version !ok");
-      version = spindump_quic_version_unknown;
-      stats->unsupportedQuicVersion++;
-      return(0);
-      
-    case spindump_quic_version_negotiation:
-      spindump_deepdebugf("QUIC version negotiation");
-      version = spindump_quic_version_negotiation;
-      break;
-      
-    case spindump_quic_version_forcenegotiation:
-      spindump_deepdebugf("QUIC forcing version negotiation");
-      version = spindump_quic_version_negotiation;
-      break;
-      
-    default:
-      spindump_deepdebugf("QUIC version just not recognised !ok (ver = %lx)", version);
-      version = spindump_quic_version_unknown;
-      stats->unrecognisedQuicVersion++;
-      return(0);
-      
-    }
+  memset(&quic,0,sizeof(quic));
+  if (longForm &&
+      !spindump_analyze_quic_parser_parseversionnumber(payload,
+                                                       payload_len,
+                                                       remainingCaplen,
+                                                       headerByte,
+                                                       &version,
+                                                       &originalVersion,
+                                                       &quic,
+                                                       stats)) {
+    return(0);
   }
   
   //
@@ -501,125 +437,48 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   
   enum spindump_quic_message_type type = spindump_quic_message_type_data;
   uint8_t messageType;
-  if (longForm) {
-    switch (version) {
-      
-    case spindump_quic_version_rfc:
-    case spindump_quic_version_draft20:
-    case spindump_quic_version_draft19:
-    case spindump_quic_version_draft18:
-    case spindump_quic_version_draft17:
-    case spindump_quic_version_quant20:
-    case spindump_quic_version_quant19:
-    case spindump_quic_version_huitema:
-    case spindump_quic_version_mozilla:
-      messageType = headerByte & spindump_quic_byte_type;
-      spindump_deepdebugf("QUIC v18 message type %02x", messageType);
-      switch (messageType) {
-      case spindump_quic_byte_type_initial:
-        type = spindump_quic_message_type_initial;
-        spindump_deepdebugf("QUIC message type = initial");
-        break;
-      case spindump_quic_byte_type_0rttprotected:
-        spindump_deepdebugf("QUIC message type = 0rttprotected");
-        type = spindump_quic_message_type_other;
-        // stats->unsupportedQuicType++; 
-        // return(0);
-        break;
-      case spindump_quic_byte_type_handshake:
-        spindump_deepdebugf("QUIC message type = handshake");
-        type = spindump_quic_message_type_other;
-        // stats->unsupportedQuicType++;
-        // return(0);
-        break;
-      case spindump_quic_byte_type_retry:
-        spindump_deepdebugf("QUIC message type = retry");
-        type = spindump_quic_message_type_retry;
-        // return(0);
-        break;
-      default:
-        stats->unrecognisedQuicType++;
-        return(0);
-      }
-      break;
-      
-    case spindump_quic_version_draft16:
-      messageType = headerByte & spindump_quic_byte_type_draft16;
-      spindump_deepdebugf("QUIC v17 message type %02x", messageType);
-      switch (messageType) {
-      case spindump_quic_byte_type_initial_draft16:
-        type = spindump_quic_message_type_initial;
-        spindump_deepdebugf("QUIC message type = initial");
-        break;
-      case spindump_quic_byte_type_0rttprotected_draft16:
-        spindump_deepdebugf("QUIC message type = 0rttprotected");
-        type = spindump_quic_message_type_other;
-        // stats->unsupportedQuicType++;
-        // return(0);
-        break;
-      case spindump_quic_byte_type_handshake_draft16:
-        spindump_deepdebugf("QUIC message type = handshake");
-        type = spindump_quic_message_type_other;
-        // stats->unsupportedQuicType++;
-        // return(0);
-        break;
-      case spindump_quic_byte_type_retry_draft16:
-        spindump_deepdebugf("QUIC message type = retry");
-        type = spindump_quic_message_type_retry;
-        // return(0);
-        break;
-      default:
-        stats->unrecognisedQuicType++;
-        return(0);
-      }
-      break;
-      
-    case spindump_quic_version_negotiation:
-        type = spindump_quic_message_type_versionnegotiation;
-        spindump_deepdebugf("QUIC message type = versionnegotiation");
-        break;
-        
-    case spindump_quic_version_forcenegotiation:
-      type = spindump_quic_message_type_initial;
-      spindump_deepdebugf("QUIC message type = initial (via forced negotiation)");
-      break;
-      
-    default:
-      spindump_debugf("invalid version %lx", version);
-      stats->unrecognisedQuicVersion++;
-      return(0);
-      
-    }
+  if (longForm &&
+      !spindump_analyze_quic_parser_parsemessagetype(headerByte,
+                                                     version,
+                                                     &type,
+                                                     &messageType,
+                                                     p_0rttAttempted,
+                                                     stats)) {
+    return(0);
   }
   
   //
   // Parse connection IDs
   // 
+
+  if (!spindump_analyze_quic_parser_parsecids(payload,
+                                              payload_len,
+                                              remainingCaplen,
+                                              quic.u.longheader.qh_cidLengths,
+                                              longForm,
+                                              p_destinationCidLengthKnown,
+                                              p_destinationCid,
+                                              p_sourceCidPresent,
+                                              p_sourceCid,
+                                              stats)) {
+    return(0);
+  }
   
-  if (longForm) {
-    unsigned int destLen;
-    unsigned int sourceLen;
-    spindump_analyze_quic_parser_cidlengths(quic.u.longheader.qh_cidLengths,
-                                            &destLen,
-                                            &sourceLen);
-    if (payload_len < 6 + destLen + sourceLen ||
-        remainingCaplen < 6 + destLen + sourceLen) {
-      spindump_deepdebugf("not enough bytes in packet for dest & source CIDs");
-      stats->notEnoughPacketForQuicHdr++;
-      return(0);
+  //
+  // If this QUIC packet was not a 0-RTT packet, check to see if
+  // there's a 0-RTT packet later in the same IP packet
+  //
+
+  if (longForm && *p_0rttAttempted == 0) {
+    int ans = spindump_analyze_quic_parser_seekquicpackets(payload,
+                                                           payload_len,
+                                                           remainingCaplen,
+                                                           originalVersion,
+                                                           p_0rttAttempted,
+                                                           stats);
+    if (!ans) {
+      spindump_deepdebugf("note: could not seek QUIC packet to the end");
     }
-    *p_destinationCidLengthKnown = 1;
-    p_destinationCid->len = destLen;
-    memcpy(p_destinationCid->id,payload + spindump_quic_longheader_length,destLen);
-    *p_sourceCidPresent = 1;
-    p_sourceCid->len = sourceLen;
-    memcpy(p_sourceCid->id,&((payload + spindump_quic_longheader_length)[destLen]),sourceLen);
-    spindump_deepdebugf("destination CID = %s", spindump_connection_quicconnectionid_tostring(p_destinationCid));
-    spindump_deepdebugf("source CID = %s", spindump_connection_quicconnectionid_tostring(p_sourceCid));
-  } else {
-    *p_destinationCidLengthKnown = 0;
-    memcpy(p_destinationCid->id,payload + spindump_quic_header_length,spindump_min(18,payload_len-1));
-    *p_sourceCidPresent = 0;
   }
   
   //
@@ -629,12 +488,13 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   *p_hasVersion = longForm;
   *p_mayHaveSpinBit = !longForm;
   spindump_deepdebugf("may have spin bit = %u (based on long form being %u)", *p_mayHaveSpinBit, longForm);
+  spindump_deepdebugf("may have 0-rtt = %u (based on seeking QUIC packets)", *p_0rttAttempted);
   *p_version = originalVersion;
   *p_type = type;
   spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %lx, type = %s",
                       longForm,
                       version,
-                      spindump_analyze_quic_parser_typetostring(type));
+                      spindump_analyze_quic_parser_util_typetostring(type));
   spindump_deepdebugf("destination cid = %s (length known %u)",
                       spindump_connection_quicconnectionid_tostring(p_destinationCid),
                       *p_destinationCidLengthKnown);
@@ -655,125 +515,860 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
 
 int
 spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
-                                   unsigned int payload_len,
-                                   unsigned int remainingCaplen,
-                                   int* p_hasVersion,
-                                   uint32_t* p_version,
-                                   int* p_mayHaveSpinBit,
-                                   int* p_destinationCidLengthKnown,
-                                   struct spindump_quic_connectionid* p_destinationCid,
-                                   int* p_sourceCidPresent,
-                                   struct spindump_quic_connectionid* p_sourceCid,
-                                   enum spindump_quic_message_type* p_type,
-                                   struct spindump_stats* stats) {
-          //Assumes all inits in spindump_analyze_quic_parser_parse has happened
-          //*p_version = 0;
-          //*p_mayHaveSpinBit = 0;
-          //*p_destinationCidLengthKnown = 0;
-          //memset(p_destinationCid,0,sizeof(*p_destinationCid));
-          //*p_sourceCidPresent = 0;
-          //memset(p_sourceCid,0,sizeof(*p_sourceCid));
-          //*p_type = spindump_quic_message_type_other;
+                                               unsigned int payload_len,
+                                               unsigned int remainingCaplen,
+                                               int* p_hasVersion,
+                                               uint32_t* p_version,
+                                               int* p_mayHaveSpinBit,
+                                               int* p_0rttAttempted,
+                                               int* p_destinationCidLengthKnown,
+                                               struct spindump_quic_connectionid* p_destinationCid,
+                                               int* p_sourceCidPresent,
+                                               struct spindump_quic_connectionid* p_sourceCid,
+                                               enum spindump_quic_message_type* p_type,
+                                               struct spindump_stats* stats) {
 
-          uint32_t version = spindump_quic_version_unknown;
-          uint32_t googleVersion = spindump_quic_version_unknown;
+  //
+  // Assumes all inits in spindump_analyze_quic_parser_parse has
+  // happened, ie setting *p_version, *p_mayHaveSpinBit,
+  // *p_0rttAttempted, *p_destinationCidLengthKnown,
+  // *p_destinationCid, *p_sourceCidPresent, *p_sourceCid, and
+  // *p_type.
+  //
+  
+  uint32_t version = spindump_quic_version_unknown;
+  uint32_t googleVersion = spindump_quic_version_unknown;
+  
+  //
+  // Parse initial byte
+  //
+  
+  uint8_t publicFlags; //It is called publicFlags in GQUIC
+  spindump_protocols_quic_header_decode(payload,&publicFlags);
 
-          //
-          // Parse initial byte
-          //
+  //
+  // At this point we are "pretty sure" it is Google QUIC
+  //
+  
+  int hasVersion = (publicFlags & 0x01) ? 1 : 0;
 
-          uint8_t publicFlags; //It is called publicFlags in GQUIC
-          spindump_protocols_quic_header_decode(payload,&publicFlags);
+  //
+  // Internal only to determine the position of version
+  // will not return CID to avoid issues
+  //
+  
+  int hasCid = (publicFlags & 0x08) ? 1 : 0;
 
-          //at this point we are "pretty sure" it is Google QUIC
-          int hasVersion = (publicFlags & 0x01) ? 1 : 0;
-          //internal only to determine the position of version
-          //will not return CID to avoid issues
-          int hasCid = (publicFlags & 0x08) ? 1 : 0;
-          // Indicates the presence of a 32 byte diversification nonce in the header.
-          int hasDiversificationNonce = (publicFlags & 0x04) ? 1 : 0;
+  //
+  // Indicates the presence of a 32 byte diversification nonce in the header.
+  //
 
-          //
-          // Parse version number first
-          // Even though it is not the first header field, the rest might not be valid if the version is not
-          //
+  int hasDiversificationNonce = (publicFlags & 0x04) ? 1 : 0;
 
-          if (hasVersion) {
-            unsigned int versionPosition = hasCid ? 9 : 1; //cid is 8 bytes
-            if (payload_len < versionPosition + 4 || remainingCaplen < versionPosition + 4) { //version is 4 bytes ASCII
-              stats->notEnoughPacketForQuicHdr++;
-              return(0);
-            }
-            version =
-                     ((((uint32_t)payload[versionPosition+0]) << 24) +
-                     (((uint32_t)payload[versionPosition+1]) << 16) +
-                     (((uint32_t)payload[versionPosition+2]) << 8) +
-                     (((uint32_t)payload[versionPosition+3]) << 0));
-            spindump_deepdebugf("QUIC Google QUIC packet version = %lx", version);
+  //
+  // Parse version number first
+  // Even though it is not the first header field, the rest might not be valid if the version is not
+  //
+  
+  if (hasVersion) {
+    unsigned int versionPosition = hasCid ? 9 : 1; //cid is 8 bytes
+    if (payload_len < versionPosition + 4 || remainingCaplen < versionPosition + 4) { //version is 4 bytes ASCII
+      stats->notEnoughPacketForQuicHdr++;
+      return(0);
+    }
+    version =
+      ((((uint32_t)payload[versionPosition+0]) << 24) +
+       (((uint32_t)payload[versionPosition+1]) << 16) +
+       (((uint32_t)payload[versionPosition+2]) << 8) +
+       (((uint32_t)payload[versionPosition+3]) << 0));
+    spindump_deepdebugf("QUIC Google QUIC packet version = %lx", version);
+    
+    googleVersion=spindump_analyze_quic_parser_getgoogleversion(version);
+    if (googleVersion == spindump_quic_version_unknown) {
+      spindump_deepdebugf("QUIC Google version number !ok");
+      version = spindump_quic_version_unknown;
+      stats->unsupportedQuicVersion++;
+      return(0);
+    }
+    spindump_deepdebugf("QUIC Google QUIC packet numeral version = %u", (unsigned int)googleVersion);
+  }
 
-            googleVersion=spindump_analyze_quic_parser_getgoogleversion(version);
-            if (googleVersion == spindump_quic_version_unknown) {
-              spindump_deepdebugf("QUIC Google version number !ok");
-              version = spindump_quic_version_unknown;
-              stats->unsupportedQuicVersion++;
-              return(0);
-            }
-            spindump_deepdebugf("QUIC Google QUIC packet numeral version = %u", (unsigned int)googleVersion);
-          }
+  //
+  // set p_sourceCid to Google CID
+  //
+  
+  if (hasCid) {
+    if (payload_len < 9 || remainingCaplen < 9) {
+      stats->notEnoughPacketForQuicHdr++;
+      return(0);
+    }
+    
+    *p_sourceCidPresent = 1;
+    p_sourceCid->len = 8;
+    memcpy(p_sourceCid->id,&(payload[1]),p_sourceCid->len);
+    
+    //p_destinationCid set to 0 (1 byte long) only if source cid is present
+    *p_destinationCidLengthKnown = 1;
+    p_destinationCid->len = 1;
+    p_destinationCid->id[0] = 0;
+  }
+  
+  uint32_t sequenceNumber = 0;
+  if ((publicFlags & 0x30) == 0 ) { //only determine SN for 1 byte encoding, we only check SN=1, which is anyway 1 byte (normally)
+    unsigned int snPosition = 1;
+    if (hasVersion) snPosition +=4;
+    if (hasCid) snPosition+=8;
+    if (hasDiversificationNonce) snPosition+=32;
+    const unsigned int snLength=1; // (publicFlags & 0x30) == 0
+    if (payload_len < snPosition + snLength || remainingCaplen < snPosition + snLength) {
+      stats->notEnoughPacketForQuicHdr++;
+      return(0);
+    }
 
-          //set p_sourceCid to Google CID
-          if (hasCid) {
-            if (payload_len < 9 || remainingCaplen < 9) {
-              stats->notEnoughPacketForQuicHdr++;
-              return(0);
-            }
+    //
+    // After Q039, Integers and floating numbers are written in big
+    // endian (before little endian) as this is a single byte that
+    // does not matter however, has to be updated if multi-byte SNs
+    // are to be supported
+    //
+    
+    sequenceNumber = ((uint32_t)payload[snPosition]);
+  }
+  
+  enum spindump_quic_message_type type = spindump_quic_message_type_data;
 
-            *p_sourceCidPresent = 1;
-            p_sourceCid->len = 8;
-            memcpy(p_sourceCid->id,&(payload[1]),p_sourceCid->len);
+  //
+  // A simple hack: spindump_quic_message_type_initial if SN==1
+  //
+  
+  if (sequenceNumber == 1) {
+    type = spindump_quic_message_type_initial;
+    spindump_deepdebugf("QUIC Google QUIC packet with SN=1, treated as initial message");
+  }
+  
+  //
+  // All seems ok.
+  //
+  
+  *p_hasVersion = hasVersion;
+  *p_mayHaveSpinBit = 0;
+  *p_version = version;
+  *p_type = type;
+  spindump_deepdebugf("successfully parsed the Google QUIC packet, version = %lx, sn = %lx, type = %s",
+                      version,
+                      sequenceNumber,
+                      spindump_analyze_quic_parser_util_typetostring(type));
+  return(1);
+}
 
-            //p_destinationCid set to 0 (1 byte long) only if source cid is present
-            *p_destinationCidLengthKnown = 1;
-            p_destinationCid->len = 1;
-            p_destinationCid->id[0] = 0;
-          }
+//
+// Helper function to parse through a sequence coalesced QUIC messages
+// in a single UDP/IP packet. We're doing this primarily to scan for
+// 0-RTT messages.
+//
 
-          uint32_t sequenceNumber = 0;
-          if ((publicFlags & 0x30) == 0 ) { //only determine SN for 1 byte encoding, we only check SN=1, which is anyway 1 byte (normally)
-            unsigned int snPosition = 1;
-            if (hasVersion) snPosition +=4;
-            if (hasCid) snPosition+=8;
-            if (hasDiversificationNonce) snPosition+=32;
-            const unsigned int snLength=1; // (publicFlags & 0x30) == 0
-            if (payload_len < snPosition + snLength || remainingCaplen < snPosition + snLength) {
-              stats->notEnoughPacketForQuicHdr++;
-              return(0);
-            }
-            //After Q039, Integers and floating numbers are written in big endian (before little endian)
-            //as this is a single byte that does not matter however, has to be updated if multi-byte SNs are to be supported
-            sequenceNumber = ((uint32_t)payload[snPosition]);
-          }
+static int
+spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
+                                             unsigned int payload_len,
+                                             unsigned int remainingCaplen,
+                                             uint32_t version,
+                                             int* p_0rttAttempted,
+                                             struct spindump_stats* stats) {
+  
+  //
+  // Make some checks
+  // 
+  
+  spindump_assert(payload != 0);
+  spindump_assert(p_0rttAttempted != 0);
+  spindump_assert(stats != 0);
+  
+  //
+  // Initialize output parameters
+  // 
+  
+  *p_0rttAttempted = 0;
 
-          enum spindump_quic_message_type type = spindump_quic_message_type_data;
-          //A simple hack: spindump_quic_message_type_initial if SN==1
-          if (sequenceNumber == 1) {
-            type = spindump_quic_message_type_initial;
-            spindump_deepdebugf("QUIC Google QUIC packet with SN=1, treated as initial message");
-          }
+  while (1) {
+    
+    //
+    // Look at the packet, determine whether the format is long (initial) exchange
+    // or short (data phase).
+    // 
+    
+    if (payload_len < 1 || remainingCaplen < 1) {
+      stats->notEnoughPacketForQuicHdr++;
+      return(0);
+    }
+    
+    //
+    // Parse initial byte
+    // 
+    
+    uint8_t headerByte;
+    int longForm;
+    int googleQuic;
+    if (!spindump_analyze_quic_parse_parseheaderbyte(payload,
+                                                     payload_len,
+                                                     remainingCaplen,
+                                                     &headerByte,
+                                                     &longForm,
+                                                     &googleQuic,
+                                                     stats)) {
+      return(0);
+    }
 
-          //
-          // All seems ok.
-          //
+    //
+    // Quit if Google QUIC
+    //
+    
+    if (googleQuic) {
+      stats->notAbleToHandleGoogleQuicCoalescing++;
+      return(0);
+    }
 
-          *p_hasVersion = hasVersion;
-          *p_mayHaveSpinBit = 0;
-          *p_version = version;
-          *p_type = type;
-          spindump_deepdebugf("successfully parsed the Google QUIC packet, version = %lx, sn = %lx, type = %s",
-                              version,
-                              sequenceNumber,
-                              spindump_analyze_quic_parser_typetostring(type));
-          return(1);
+    //
+    // Quit if short form
+    //
+
+    if (!longForm) {
+      return(1);
+    }
+    
+    //
+    // Parse version number
+    //
+    
+    struct spindump_quic quic;
+    uint32_t originalVersion = spindump_quic_version_unknown;
+    if (!spindump_analyze_quic_parser_parseversionnumber(payload,
+                                                         payload_len,
+                                                         remainingCaplen,
+                                                         headerByte,
+                                                         &version,
+                                                         &originalVersion,
+                                                         &quic,
+                                                         stats)) {
+      return(0);
+    }
+    
+    //
+    // Parse message type
+    // 
+    
+    enum spindump_quic_message_type type = spindump_quic_message_type_data;
+    uint8_t messageType;
+    int here0rttAttempted = 0;
+    
+    if (longForm &&
+        !spindump_analyze_quic_parser_parsemessagetype(headerByte,
+                                                       version,
+                                                       &type,
+                                                       &messageType,
+                                                       &here0rttAttempted,
+                                                       stats)) {
+      return(0);
+    }
+    
+    if (here0rttAttempted) {
+      spindump_deepdebugf("saw a 0-RTT attempt in seeked header");
+      *p_0rttAttempted = 1;
+    }
+    
+    //
+    // Parse connection IDs
+    // 
+    
+    int destinationCidLengthKnown;
+    struct spindump_quic_connectionid destinationCid;
+    int sourceCidPresent;
+    struct spindump_quic_connectionid sourceCid;
+    if (!spindump_analyze_quic_parser_parsecids(payload,
+                                                payload_len,
+                                                remainingCaplen,
+                                                quic.u.longheader.qh_cidLengths,
+                                                longForm,
+                                                &destinationCidLengthKnown,
+                                                &destinationCid,
+                                                &sourceCidPresent,
+                                                &sourceCid,
+                                                stats)) {
+      return(0);
+    }
+    
+    //
+    // Parse the rest of this message and find out how long the message is
+    //
+    
+    unsigned int messageLen;
+    unsigned int cidLengthsInBytes = 0;
+    if (destinationCidLengthKnown) cidLengthsInBytes += destinationCid.len;
+    if (sourceCidPresent) cidLengthsInBytes += sourceCid.len;
+    
+    if (!spindump_analyze_quic_parser_parsemessagelength(payload,
+                                                         payload_len,
+                                                         remainingCaplen,
+                                                         version,
+                                                         type,
+                                                         cidLengthsInBytes,
+                                                         &messageLen,
+                                                         stats)) {
+      return(0);
+    }
+    
+    //
+    // See if we have enough packet left to look at the next message in
+    // this UDP/IP packet.
+    //
+    
+    spindump_deepdeepdebugf("seeking QUIC packets: message length %u out of %u/%u",
+                            messageLen, payload_len, remainingCaplen);
+    if (messageLen == payload_len) {
+      spindump_deepdeepdebugf("seeking QUIC packets: just one");
+      break;
+    } else if (messageLen > payload_len) {
+      spindump_deepdeepdebugf("seeking QUIC packets: payload too short for this packet");
+      return(0);
+    } else if (messageLen > remainingCaplen) {
+      spindump_deepdeepdebugf("seeking QUIC packets: capture length too short for this packet");
+      return(0);
+    } else {
+      spindump_deepdeepdebugf("seeking QUIC packets: continuing");
+      payload += messageLen;
+      payload_len -= messageLen;
+      remainingCaplen -= messageLen;
+      continue;
+    }
+    
+  }
+  
+  //
+  // Done, end
+  //
+  
+  return(1);
+}
+
+//
+// Helper function to parse an entire message and determine its length
+//
+
+static int
+spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
+                                                unsigned int payload_len,
+                                                unsigned int remainingCaplen,
+                                                uint32_t version,
+                                                enum spindump_quic_message_type type,
+                                                unsigned int cidLengthsInBytes,
+                                                unsigned int* p_messageLen,
+                                                struct spindump_stats* stats) {
+
+  //
+  // Sanity checks and debugs
+  //
+  
+  spindump_assert(payload != 0);
+  spindump_assert(p_messageLen != 0);
+  spindump_assert(stats != 0);
+  spindump_deepdeepdebugf("seeking QUIC packets: parsemessagelength with cidl = %u", cidLengthsInBytes);
+  
+  //
+  // Initialize outputs
+  //
+  
+  *p_messageLen = 0;
+  
+  //
+  // Switch based on version and message type
+  //
+  
+  switch (version) {
+  case spindump_quic_version_rfc:
+  case spindump_quic_version_draft20:
+  case spindump_quic_version_draft19:
+  case spindump_quic_version_draft18:
+  case spindump_quic_version_draft17:
+  case spindump_quic_version_quant20:
+  case spindump_quic_version_quant19:
+  case spindump_quic_version_huitema:
+  case spindump_quic_version_mozilla:
+    switch (type) {
+    case spindump_quic_message_type_initial:
+      return(spindump_analyze_quic_parser_parsemessagelength_initial(payload,
+                                                                     payload_len,
+                                                                     remainingCaplen,
+                                                                     cidLengthsInBytes,
+                                                                     p_messageLen,
+                                                                     stats));
+    case spindump_quic_message_type_0rtt:
+    case spindump_quic_message_type_versionnegotiation:
+    case spindump_quic_message_type_handshake:
+    case spindump_quic_message_type_retry:
+    case spindump_quic_message_type_other:
+    case spindump_quic_message_type_data:
+      spindump_deepdebugf("message type not supported for seeking packets");
+      return(0);
+    default:
+      spindump_errorf("invalid message type");
+      return(0);
+    }
+    
+  default:
+    spindump_deepdebugf("version not supported for seeking packets");
+    return(0);
+  }
+}
+
+//
+// Helper function to parse an entire message and determine its length
+//
+
+static int
+spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* payload,
+                                                        unsigned int payload_len,
+                                                        unsigned int remainingCaplen,
+                                                        unsigned int cidLengthsInBytes,
+                                                        unsigned int* p_messageLen,
+                                                        struct spindump_stats* stats) {
+
+  //
+  // Sanity checks and debugs
+  //
+  
+  spindump_assert(payload != 0);
+  spindump_assert(p_messageLen != 0);
+  spindump_assert(stats != 0);
+  spindump_deepdeepdebugf("seeking QUIC packets: spindump_analyze_quic_parser_parsemessagelength_initial cidl = %u",
+                          cidLengthsInBytes);
+  
+  //
+  // From the specification:
+  //
+  //  +-+-+-+-+-+-+-+-+
+  //  |1|1| 0 |R R|P P|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                         Version (32)                          |
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |DCIL(4)|SCIL(4)|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |               Destination Connection ID (0/32..144)         ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                 Source Connection ID (0/32..144)            ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                         Token Length (i)                    ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                            Token (*)                        ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                           Length (i)                        ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                    Packet Number (8/16/24/32)               ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                          Payload (*)                        ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  //                   Figure 11: Initial Packet
+  //
+
+  //
+  // Parse the token length and token
+  //
+  
+  unsigned int tokenLengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  if (tokenLengthPosition >= payload_len || tokenLengthPosition >= remainingCaplen) {
+    spindump_deepdeepdebugf("seeking QUIC packets: token not within packet");
+    stats->notEnoughPacketForQuicHdrToken++;
+    return(0);
+  }
+  unsigned int intLength;
+  uint64_t tokenLength;
+  if (!spindump_analyze_quic_parser_util_parseint(payload + tokenLengthPosition,
+                                                  payload_len - tokenLengthPosition,
+                                                  remainingCaplen - tokenLengthPosition,
+                                                  &intLength,
+                                                  &tokenLength)) {
+    spindump_deepdeepdebugf("seeking QUIC packets: token not within packet");
+    stats->notEnoughPacketForQuicHdrToken++;
+    return(0);
+  }
+  spindump_deepdeepdebugf("seeking QUIC packets: token length %u %llu", intLength, tokenLength);
+  if (tokenLength > UINT_MAX) {
+    spindump_deepdeepdebugf("seeking QUIC packets: token length insane");
+    stats->notEnoughPacketForQuicHdrToken++;
+    return(0);
+  }
+  unsigned int positionAfterToken =
+    tokenLengthPosition +
+    intLength +
+    ((unsigned int)tokenLength);
+  if (positionAfterToken >= payload_len || positionAfterToken >= remainingCaplen) {
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after token");
+    stats->notEnoughPacketForQuicHdrToken++;
+    return(0);
+  }
+  
+  //
+  // Parse the length field
+  //
+
+  uint64_t length;
+  if (!spindump_analyze_quic_parser_util_parseint(payload + positionAfterToken,
+                                                  payload_len - positionAfterToken,
+                                                  remainingCaplen - positionAfterToken,
+                                                  &intLength,
+                                                  &length)) {
+    spindump_deepdeepdebugf("seeking QUIC packets: length not within packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  spindump_deepdeepdebugf("seeking QUIC packets: packet length %u %llu", intLength, length);
+  if (length > UINT_MAX) {
+    spindump_deepdeepdebugf("seeking QUIC packets: packet length insane");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  unsigned int positionAfterLength =
+    positionAfterToken +
+    intLength +
+    ((unsigned int)length);
+  if (positionAfterLength > payload_len || positionAfterLength > remainingCaplen) {
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  //
+  // Success
+  //
+
+  *p_messageLen = positionAfterLength;
+  spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one message, length = %u",
+                          *p_messageLen);
+  return(1);
+}
+
+//
+// Helper function to parse the first byte of a QUIC message.
+//
+
+static int
+spindump_analyze_quic_parse_parseheaderbyte(const unsigned char* payload,
+                                            unsigned int payload_len,
+                                            unsigned int remainingCapLen,
+                                            uint8_t* headerByte,
+                                            int* longForm,
+                                            int* googleQuic,
+                                            struct spindump_stats* stats) {
+
+  //
+  // Initialize output parameters
+  //
+  
+  *longForm = 0;
+  *googleQuic = 0;
+  
+  //
+  // Parse first byte
+  //
+  
+  spindump_protocols_quic_header_decode(payload,headerByte);
+  
+  //
+  // Check for Google QUIC version
+  //
+  
+  if ((*headerByte & spindump_quic_byte_header_alwaysunset) == 0) {
+    
+    //
+    // This is Google QUIC, likely Q043 or below Google will use the
+    // ietf version from Q044
+    //
+    
+    spindump_deepdebugf("QUIC Google QUIC packet first byte = %02x (payload %02x)", *headerByte, payload[0]);
+    *googleQuic = 1;
+    return(1);
+  }
+
+  //
+  // Check for long or short form header
+  //
+  
+  if ((*headerByte & spindump_quic_byte_header_form_draft16) == spindump_quic_byte_form_long_draft16) {
+    *longForm = 1;
+    spindump_deepdebugf("QUIC long form packet first byte = %02x (payload %02x)", *headerByte, payload[0]);
+  } else {
+    spindump_deepdebugf("QUIC short form packet first byte = %02x (payload %02x)", *headerByte, payload[0]);
+  }
+
+  //
+  // Done
+  //
+  
+  return(1);
+}
+
+//
+// Helper function to parse a version number in a QUIC message.
+//
+
+static int
+spindump_analyze_quic_parser_parseversionnumber(const unsigned char* payload,
+                                                unsigned int payload_len,
+                                                unsigned int remainingCaplen,
+                                                uint8_t headerByte,
+                                                uint32_t* p_version,
+                                                uint32_t* p_originalVersion,
+                                                struct spindump_quic* quic,
+                                                struct spindump_stats* stats) {
+  quic->u.shortheader.qh_byte = headerByte;
+  if (payload_len < 6 || remainingCaplen < 6) {
+    stats->notEnoughPacketForQuicHdr++;
+    return(0);
+  }
+  spindump_protocols_quic_longheader_decode(payload,quic);
+  *p_version =
+    *p_originalVersion = ((((uint32_t)quic->u.longheader.qh_version[0]) << 24) +
+                          (((uint32_t)quic->u.longheader.qh_version[1]) << 16) +
+                          (((uint32_t)quic->u.longheader.qh_version[2]) << 8) +
+                          (((uint32_t)quic->u.longheader.qh_version[3]) << 0));
+  spindump_deepdebugf("QUIC long form packet version = %lx", *p_version);
+  if (spindump_quic_version_isforcenegot(*p_version)) {
+    *p_version = spindump_quic_version_forcenegotiation;
+  }
+  
+  switch (*p_version) {
+    
+  case spindump_quic_version_rfc:
+    // OK// 
+    spindump_deepdebugf("QUIC version rfc ok");
+    break;
+    
+  case spindump_quic_version_draft20:
+  case spindump_quic_version_draft19:
+  case spindump_quic_version_draft18:
+  case spindump_quic_version_draft17:
+  case spindump_quic_version_draft16:
+  case spindump_quic_version_quant19:
+  case spindump_quic_version_quant20:
+  case spindump_quic_version_huitema:
+  case spindump_quic_version_mozilla:
+    // OK// 
+    spindump_deepdebugf("QUIC version ok");
+    break;
+    
+  case spindump_quic_version_draft15:
+  case spindump_quic_version_draft14:
+  case spindump_quic_version_draft13:
+  case spindump_quic_version_draft12:
+  case spindump_quic_version_draft11:
+  case spindump_quic_version_draft10:
+  case spindump_quic_version_draft09:
+  case spindump_quic_version_draft08:
+  case spindump_quic_version_draft07:
+  case spindump_quic_version_draft06:
+  case spindump_quic_version_draft05:
+  case spindump_quic_version_draft04:
+  case spindump_quic_version_draft03:
+  case spindump_quic_version_draft02:
+  case spindump_quic_version_draft01:
+  case spindump_quic_version_draft00:
+    spindump_deepdebugf("QUIC version !ok");
+    *p_version = spindump_quic_version_unknown;
+    stats->unsupportedQuicVersion++;
+    return(0);
+    
+  case spindump_quic_version_negotiation:
+    spindump_deepdebugf("QUIC version negotiation");
+    *p_version = spindump_quic_version_negotiation;
+    break;
+    
+  case spindump_quic_version_forcenegotiation:
+    spindump_deepdebugf("QUIC forcing version negotiation");
+    *p_version = spindump_quic_version_negotiation;
+    break;
+    
+  default:
+    spindump_deepdebugf("QUIC version just not recognised !ok (ver = %lx)", *p_version);
+    *p_version = spindump_quic_version_unknown;
+    stats->unrecognisedQuicVersion++;
+    return(0);
+    
+  }
+  
+  //
+  // Parsed ok
+  //
+  
+  return(1);
+}
+
+
+//
+// Helper function to parse the message type in a QUIC message.
+//
+
+static int
+spindump_analyze_quic_parser_parsemessagetype(uint8_t headerByte,
+                                              uint32_t version,
+                                              enum spindump_quic_message_type* p_type,
+                                              uint8_t* p_messageType,
+                                              int* p_0rttAttempted,
+                                              struct spindump_stats* stats) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(p_type != 0);
+  spindump_assert(p_messageType != 0);
+  spindump_assert(p_0rttAttempted != 0);
+  spindump_assert(stats != 0);
+
+  //
+  // Initialize
+  //
+
+  *p_type = spindump_quic_message_type_other;
+  *p_messageType = 0;
+  *p_0rttAttempted = 0;
+
+  //
+  // Switch the decoding based on what version we are using
+  //
+  
+  switch (version) {
+    
+  case spindump_quic_version_rfc:
+  case spindump_quic_version_draft20:
+  case spindump_quic_version_draft19:
+  case spindump_quic_version_draft18:
+  case spindump_quic_version_draft17:
+  case spindump_quic_version_quant20:
+  case spindump_quic_version_quant19:
+  case spindump_quic_version_huitema:
+  case spindump_quic_version_mozilla:
+    *p_messageType = headerByte & spindump_quic_byte_type;
+    spindump_deepdebugf("QUIC v18 message type %02x", *p_messageType);
+    switch (*p_messageType) {
+    case spindump_quic_byte_type_initial:
+      *p_type = spindump_quic_message_type_initial;
+      spindump_deepdebugf("QUIC message type = initial");
+      break;
+    case spindump_quic_byte_type_0rttprotected:
+      spindump_deepdebugf("QUIC message type = 0rttprotected");
+      *p_type = spindump_quic_message_type_0rtt;
+      *p_0rttAttempted = 1;
+      break;
+    case spindump_quic_byte_type_handshake:
+      spindump_deepdebugf("QUIC message type = handshake");
+      *p_type = spindump_quic_message_type_handshake;
+      break;
+    case spindump_quic_byte_type_retry:
+      spindump_deepdebugf("QUIC message type = retry");
+      *p_type = spindump_quic_message_type_retry;
+      break;
+    default:
+      stats->unrecognisedQuicType++;
+      return(0);
+    }
+    break;
+    
+  case spindump_quic_version_draft16:
+    *p_messageType = headerByte & spindump_quic_byte_type_draft16;
+    spindump_deepdebugf("QUIC v17 message type %02x", *p_messageType);
+    switch (*p_messageType) {
+    case spindump_quic_byte_type_initial_draft16:
+      *p_type = spindump_quic_message_type_initial;
+      spindump_deepdebugf("QUIC message type = initial");
+      break;
+    case spindump_quic_byte_type_0rttprotected_draft16:
+      spindump_deepdebugf("QUIC message type = 0rttprotected");
+      *p_type = spindump_quic_message_type_0rtt;
+      *p_0rttAttempted = 1;
+      break;
+    case spindump_quic_byte_type_handshake_draft16:
+      spindump_deepdebugf("QUIC message type = handshake");
+      *p_type = spindump_quic_message_type_handshake;
+      break;
+    case spindump_quic_byte_type_retry_draft16:
+      spindump_deepdebugf("QUIC message type = retry");
+      *p_type = spindump_quic_message_type_retry;
+      break;
+    default:
+      stats->unrecognisedQuicType++;
+      return(0);
+    }
+    break;
+    
+  case spindump_quic_version_negotiation:
+    *p_type = spindump_quic_message_type_versionnegotiation;
+    spindump_deepdebugf("QUIC message type = versionnegotiation");
+    break;
+    
+  case spindump_quic_version_forcenegotiation:
+    *p_type = spindump_quic_message_type_initial;
+    spindump_deepdebugf("QUIC message type = initial (via forced negotiation)");
+    break;
+    
+  default:
+    spindump_debugf("invalid version %lx", version);
+    stats->unrecognisedQuicVersion++;
+    return(0);
+    
+  }
+  
+  //
+  // Ok
+  //
+  
+  return(1);
+}
+
+//
+// Helper function to parse one or two CIDs in a QUIC message.
+//
+
+static int
+spindump_analyze_quic_parser_parsecids(const unsigned char* payload,
+                                       unsigned int payload_len,
+                                       unsigned int remainingCaplen,
+                                       uint8_t cidLengths,
+                                       int longForm,
+                                       int* p_destinationCidLengthKnown,
+                                       struct spindump_quic_connectionid* p_destinationCid,
+                                       int* p_sourceCidPresent,
+                                       struct spindump_quic_connectionid* p_sourceCid,
+                                       struct spindump_stats* stats) {
+  if (longForm) {
+    unsigned int destLen;
+    unsigned int sourceLen;
+    spindump_analyze_quic_parser_util_cidlengths(cidLengths,
+                                                 &destLen,
+                                                 &sourceLen);
+    if (payload_len < 6 + destLen + sourceLen ||
+        remainingCaplen < 6 + destLen + sourceLen) {
+      spindump_deepdebugf("not enough bytes in packet for dest & source CIDs");
+      stats->notEnoughPacketForQuicHdr++;
+      return(0);
+    }
+    *p_destinationCidLengthKnown = 1;
+    p_destinationCid->len = destLen;
+    memcpy(p_destinationCid->id,payload + spindump_quic_longheader_length,destLen);
+    *p_sourceCidPresent = 1;
+    p_sourceCid->len = sourceLen;
+    memcpy(p_sourceCid->id,&((payload + spindump_quic_longheader_length)[destLen]),sourceLen);
+    spindump_deepdebugf("destination CID = %s", spindump_connection_quicconnectionid_tostring(p_destinationCid));
+    spindump_deepdebugf("source CID = %s", spindump_connection_quicconnectionid_tostring(p_sourceCid));
+  } else {
+    *p_destinationCidLengthKnown = 0;
+    memcpy(p_destinationCid->id,payload + spindump_quic_header_length,spindump_min(18,payload_len-1));
+    *p_sourceCidPresent = 0;
+  }
+
+  //
+  // Done
+  //
+  
+  return(1);
 }
 
 //
@@ -781,7 +1376,8 @@ spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
 // They look like Qddd, e.g. Q043 in ASCII
 //
 
-int spindump_analyze_quic_parser_isgoogleversion(uint32_t version) {
+int
+spindump_analyze_quic_parser_isgoogleversion(uint32_t version) {
   return ((version & spindump_quic_version_googlemask) == spindump_quic_version_google);
 }
 
@@ -941,3 +1537,4 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version) {
     }
   }
 }
+

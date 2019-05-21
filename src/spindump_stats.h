@@ -57,6 +57,9 @@ struct spindump_stats {
   unsigned int invalidTlsPacket;
   unsigned int receivedQuic;
   unsigned int notEnoughPacketForQuicHdr;
+  unsigned int notEnoughPacketForQuicHdrToken;
+  unsigned int notEnoughPacketForQuicHdrLength;
+  unsigned int notAbleToHandleGoogleQuicCoalescing;
   unsigned int unrecognisedQuicVersion;
   unsigned int unsupportedQuicVersion;
   unsigned int unrecognisedQuicType;

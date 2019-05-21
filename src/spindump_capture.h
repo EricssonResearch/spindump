@@ -62,7 +62,8 @@ char*
 spindump_capture_defaultinterface(void);
 struct spindump_capture_state*
 spindump_capture_initialize_live(const char* interface,
-                                 const char* filter);
+                                 const char* filter,
+                                 unsigned int snaplen);
 struct spindump_capture_state*
 spindump_capture_initialize_file(const char* file,
                                  const char* filter);

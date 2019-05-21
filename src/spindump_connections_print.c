@@ -955,7 +955,13 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   // 
   
   if (connection->type == spindump_connection_transport_quic) {
-    spindump_deepdeepdebugf("report_brief_notefieldval point 4");
+
+    //
+    // Add a version number for information. Also, add another version
+    // if something else than the agreed version was first attempted
+    // during the connection setup
+    //
+    
     if (connection->u.quic.version == connection->u.quic.originalVersion ||
         spindump_quic_version_isforcenegot(connection->u.quic.originalVersion)) {
       spindump_connection_addtobuf(buf,sizeof(buf),
@@ -975,6 +981,19 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
                                    "",
                                    1);
     }
+
+    //
+    // Report whether 0-RTT was attempted
+    //
+    
+    if (connection->u.quic.attempted0Rtt) {
+      spindump_connection_addtobuf(buf,sizeof(buf),"0-RTT","",1);
+    }
+    
+    //
+    // Report spin status
+    //
+    
     if (connection->u.quic.spinFromPeer1to2.totalSpins == 0 &&
         connection->u.quic.spinFromPeer2to1.totalSpins == 0) {
       spindump_deepdeepdebugf("report_brief_notefieldval point 5");
@@ -991,6 +1010,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
       spindump_deepdeepdebugf("report_brief_notefieldval point 8");
       spindump_connection_addtobuf(buf,sizeof(buf),"spinning","",1);
     }
+    
   }
 
   //

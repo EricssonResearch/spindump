@@ -97,6 +97,9 @@ spindump_stats_report(struct spindump_stats* stats,
   fprintf(file,"TLS message not parsable:               %8u\n", stats->invalidTlsPacket);
   fprintf(file,"received QUIC packets:                  %8u\n", stats->receivedQuic);
   fprintf(file,"packet not long enough for QUIC hdr:    %8u\n", stats->notEnoughPacketForQuicHdr);
+  fprintf(file,"packet not long enough for QUIC token:  %8u\n", stats->notEnoughPacketForQuicHdrToken);
+  fprintf(file,"packet not long enough for QUIC length: %8u\n", stats->notEnoughPacketForQuicHdrLength);
+  fprintf(file,"unable to parse coalesced Google QUIC:  %8u\n", stats->notAbleToHandleGoogleQuicCoalescing);
   fprintf(file,"unrecognised QUIC version:              %8u\n", stats->unrecognisedQuicVersion);
   fprintf(file,"unsupported QUIC message type:          %8u\n", stats->unsupportedQuicType);
   fprintf(file,"unrecognised QUIC message type:         %8u\n", stats->unrecognisedQuicType);

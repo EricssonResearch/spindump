@@ -170,7 +170,7 @@ struct spindump_connection {
       spindump_address side2peerAddress;            // destination address for the initial packet
       spindump_port side1peerPort;                  // source port for the initial packe
       spindump_port side2peerPort;                  // destination port for the initial packet
-      uint8_t padding1[4];                          // unused padding to align the next field properly
+      int attempted0Rtt;                            // whether connection attempted to use 0-RTT setup
       struct timeval side1initialPacket;            // the time of the initial packet from side 1
       struct timeval side2initialResponsePacket;    // the time of the initial response packet from side 2
       unsigned long initialRightRTT;                // initial packet exchange RTT in us

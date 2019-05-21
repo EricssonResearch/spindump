@@ -739,6 +739,8 @@ enum spindump_quic_message_type {
   spindump_quic_message_type_data,
   spindump_quic_message_type_initial,
   spindump_quic_message_type_versionnegotiation,
+  spindump_quic_message_type_handshake,
+  spindump_quic_message_type_0rtt,
   spindump_quic_message_type_retry,
   spindump_quic_message_type_other
 };

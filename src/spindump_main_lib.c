@@ -128,6 +128,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->interface = 0;
   config->inputFile = 0;
   config->filter = 0;
+  config->snaplen = spindump_capture_snaplen;
   config->toolmode = spindump_toolmode_visual;
   config->format = spindump_eventformatter_outputformat_text;
   config->maxReceive = 0;
@@ -270,6 +271,24 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--interface") == 0 && argc > 1) {
 
       config->interface = argv[1];
+      argc--; argv++;
+
+    } else if (strcmp(argv[0],"--snaplen") == 0 && argc > 1) {
+
+      if (!isdigit(argv[1][0])) {
+        spindump_errorf("the --snaplen argument needs to be numeric");
+        exit(1);
+      }
+
+      int arg = atoi(argv[1]);
+      
+      if (arg < 1) {
+        spindump_errorf("the --snaplen argument needs to be bigger than zero");
+        exit(1);
+      }
+      
+      config->snaplen = (unsigned int)arg;
+      
       argc--; argv++;
 
     } else if (strcmp(argv[0],"--format") == 0 && argc > 1) {
@@ -569,6 +588,7 @@ spindump_main_help(void) {
   printf("    --max-receive n         Sets a limit of how many packets the tool accepts.\n");
   printf("\n");
   printf("    --interface i           Set the interface to listen on, or the capture\n");
+  printf("    --snaplen n             How many bytes of the packet is captured (default is %u)\n", spindump_capture_snaplen);
   printf("    --input-file f          file to read from.\n");
   printf("    --remote u              Send connections information to spindump running elsewhere, at URL u\n");
   printf("    --remote-block-size n   When sending information, collect as much as n bytes of information\n");

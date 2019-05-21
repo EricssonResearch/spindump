@@ -112,7 +112,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   } else if (config->collector) {
     capturer = spindump_capture_initialize_null();
   } else {
-    capturer = spindump_capture_initialize_live(config->interface,config->filter);
+    capturer = spindump_capture_initialize_live(config->interface,config->filter,config->snaplen);
   }
   
   if (capturer == 0) exit(1);

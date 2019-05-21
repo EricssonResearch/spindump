@@ -61,6 +61,7 @@ struct spindump_main_configuration {
   char* interface;
   const char* inputFile;
   char* filter;
+  unsigned int snaplen;
   enum spindump_toolmode toolmode;
   enum spindump_eventformatter_outputformat format;
   unsigned int maxReceive;
