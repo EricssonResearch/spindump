@@ -515,22 +515,26 @@ spindump_analyze_process_null(struct spindump_analyze* state,
   memcpy(&nullInt,packet->contents,sizeof(nullInt));
 
   //
-  // Convert to correct byte-order, as per description above...
+  // We cannot simply convert to correct byte-order, as per
+  // description above, hence we need to prepare to be ready to
+  // receive in either byte order
   //
   
-  nullInt = ntohl(nullInt);
-  
   switch (nullInt) {
-  case 2:
+  case 0x00000002:
+  case 0x02000000:
     spindump_analyze_ip_decodeiphdr(state,
                                     packet,
                                     spindump_null_header_size,
                                     p_connection);
     return;
 
-  case 22:
-  case 28:
-  case 30:
+  case 0x00000016:
+  case 0x16000000:
+  case 0x0000001C:
+  case 0x1C000000:
+  case 0x0000001E:
+  case 0x1E000000:
     spindump_analyze_ip_decodeip6hdr(state,
                                      packet,
                                      spindump_null_header_size,
