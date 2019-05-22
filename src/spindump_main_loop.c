@@ -304,6 +304,8 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
   struct spindump_packet* packet = 0;
   struct spindump_main_configuration* config = &state->config;
   int more = 1;
+  int seenEof = 0;
+  int firstEof = 1;
   
   spindump_deepdebugf("main packet loop");
   while (!state->interrupt &&
@@ -328,8 +330,13 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
 
     //
     // If we are in visual mode, keep the display up even if the
-    // packets come from a PCAP file
+    // packets came from a PCAP file and we run out of more packets
+    // to read from the file
     //
+
+    if (!more && !seenEof) {
+      seenEof = 1;
+    }
     
     if (!more &&
         config->inputFile != 0 &&
@@ -343,14 +350,14 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
 
     if (config->inputFile != 0) {
       if (packet != 0) {
-               now = previousPacketTimestamp = packet->timestamp;
+        now = previousPacketTimestamp = packet->timestamp;
       } else {
-               now = previousPacketTimestamp;
+        now = previousPacketTimestamp;
       }
     } else {
       spindump_getcurrenttime(&now);
     }
-
+    
     spindump_assert(now.tv_sec > 0);
     spindump_assert(now.tv_usec <= 1000 * 1000);
 
@@ -386,7 +393,8 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
 
     if (config->toolmode == spindump_toolmode_visual &&
         (spindump_iszerotime(&previousupdate) ||
-         spindump_timediffinusecs(&now,&previousupdate) >= config->updatePeriod)) {
+         spindump_timediffinusecs(&now,&previousupdate) >= config->updatePeriod ||
+         (seenEof && firstEof))) {
       
       spindump_report_update(reporter,
                              averageMode,
@@ -396,6 +404,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                              analyzer->table,
                              spindump_analyze_getstats(analyzer));
       if (spindump_isearliertime(&now,&previousupdate)) previousupdate = now;
+      if (seenEof) firstEof = 0;
       
     }
 

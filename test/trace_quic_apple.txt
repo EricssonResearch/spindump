@@ -1,0 +1,1 @@
+A test run with draft-20 version of Apple client and server, using IPv6 on a local interface

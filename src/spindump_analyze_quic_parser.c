@@ -75,6 +75,33 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
                                                         unsigned int* p_messageLen,
                                                         struct spindump_stats* stats);
 static int
+spindump_analyze_quic_parser_parsemessagelength_0rtt(const unsigned char* payload,
+                                                     unsigned int payload_len,
+                                                     unsigned int remainingCaplen,
+                                                     unsigned int cidLengthsInBytes,
+                                                     unsigned int* p_messageLen,
+                                                     struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parsemessagelength_handshake(const unsigned char* payload,
+                                                          unsigned int payload_len,
+                                                          unsigned int remainingCaplen,
+                                                          unsigned int cidLengthsInBytes,
+                                                          unsigned int* p_messageLen,
+                                                          struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parsemessagelength_retry(const unsigned char* payload,
+                                                      unsigned int payload_len,
+                                                      unsigned int remainingCaplen,
+                                                      unsigned int cidLengthsInBytes,
+                                                      unsigned int* p_messageLen,
+                                                      struct spindump_stats* stats);
+static int
+spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(const unsigned char* payload,
+                                                                   unsigned int payload_len,
+                                                                   unsigned int remainingCaplen,
+                                                                   unsigned int* p_messageLen,
+                                                                   struct spindump_stats* stats);
+static int
 spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
                                              unsigned int payload_len,
                                              unsigned int remainingCaplen,
@@ -900,13 +927,36 @@ spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
                                                                      cidLengthsInBytes,
                                                                      p_messageLen,
                                                                      stats));
-    case spindump_quic_message_type_0rtt:
     case spindump_quic_message_type_versionnegotiation:
+      return(spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(payload,
+                                                                                payload_len,
+                                                                                remainingCaplen,
+                                                                                p_messageLen,
+                                                                                stats));
+    case spindump_quic_message_type_0rtt:
+      return(spindump_analyze_quic_parser_parsemessagelength_0rtt(payload,
+                                                                  payload_len,
+                                                                  remainingCaplen,
+                                                                  cidLengthsInBytes,
+                                                                  p_messageLen,
+                                                                  stats));
     case spindump_quic_message_type_handshake:
+      return(spindump_analyze_quic_parser_parsemessagelength_handshake(payload,
+                                                                       payload_len,
+                                                                       remainingCaplen,
+                                                                       cidLengthsInBytes,
+                                                                       p_messageLen,
+                                                                       stats));
     case spindump_quic_message_type_retry:
+      return(spindump_analyze_quic_parser_parsemessagelength_retry(payload,
+                                                                   payload_len,
+                                                                   remainingCaplen,
+                                                                   cidLengthsInBytes,
+                                                                   p_messageLen,
+                                                                   stats));
     case spindump_quic_message_type_other:
     case spindump_quic_message_type_data:
-      spindump_deepdebugf("message type not supported for seeking packets");
+      spindump_deepdebugf("message type %u not supported for seeking packets", type);
       return(0);
     default:
       spindump_errorf("invalid message type");
@@ -1041,6 +1091,350 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
   //
 
   *p_messageLen = positionAfterLength;
+  spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one message, length = %u",
+                          *p_messageLen);
+  return(1);
+}
+
+//
+// Helper function to parse an entire message and determine its length
+//
+
+static int
+spindump_analyze_quic_parser_parsemessagelength_0rtt(const unsigned char* payload,
+                                                     unsigned int payload_len,
+                                                     unsigned int remainingCaplen,
+                                                     unsigned int cidLengthsInBytes,
+                                                     unsigned int* p_messageLen,
+                                                     struct spindump_stats* stats) {
+
+  //
+  // Sanity checks and debugs
+  //
+  
+  spindump_assert(payload != 0);
+  spindump_assert(p_messageLen != 0);
+  spindump_assert(stats != 0);
+  spindump_deepdeepdebugf("seeking QUIC packets: spindump_analyze_quic_parser_parsemessagelength_0rtt cidl = %u",
+                          cidLengthsInBytes);
+  
+  //
+  // From the specification:
+  //
+  //  +-+-+-+-+-+-+-+-+
+  //  |1|1| 0 |R R|P P|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                         Version (32)                          |
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |DCIL(4)|SCIL(4)|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |               Destination Connection ID (0/32..144)         ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                 Source Connection ID (0/32..144)            ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                           Length (i)                        ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                    Packet Number (8/16/24/32)               ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                          Payload (*)                        ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  //                            0-RTT Packet
+  //
+  
+  //
+  // Parse the length field
+  //
+
+  unsigned int lengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  if (payload_len <= lengthPosition || remainingCaplen <= lengthPosition) {
+    spindump_deepdeepdebugf("seeking QUIC packets: not enough for packet length in 0-rtt packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  unsigned int intLength;
+  uint64_t length;
+  if (!spindump_analyze_quic_parser_util_parseint(payload + lengthPosition,
+                                                  payload_len - lengthPosition,
+                                                  remainingCaplen - lengthPosition,
+                                                  &intLength,
+                                                  &length)) {
+    spindump_deepdeepdebugf("seeking QUIC packets: length not within packet in 0-rtt packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  spindump_deepdeepdebugf("seeking QUIC packets: packet length %u %llu", intLength, length);
+  if (length > UINT_MAX) {
+    spindump_deepdeepdebugf("seeking QUIC packets: packet length insane in 0-rtt packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  unsigned int positionAfterLength =
+    lengthPosition +
+    intLength +
+    ((unsigned int)length);
+  if (positionAfterLength > payload_len || positionAfterLength > remainingCaplen) {
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length in 0-rtt packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  //
+  // Success
+  //
+  
+  *p_messageLen = positionAfterLength;
+  spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one 0-rtt message, length = %u",
+                          *p_messageLen);
+  return(1);
+}
+
+//
+// Helper function to parse an entire message and determine its length
+//
+
+static int
+spindump_analyze_quic_parser_parsemessagelength_handshake(const unsigned char* payload,
+                                                          unsigned int payload_len,
+                                                          unsigned int remainingCaplen,
+                                                          unsigned int cidLengthsInBytes,
+                                                          unsigned int* p_messageLen,
+                                                          struct spindump_stats* stats) {
+
+  //
+  // Sanity checks and debugs
+  //
+  
+  spindump_assert(payload != 0);
+  spindump_assert(p_messageLen != 0);
+  spindump_assert(stats != 0);
+  spindump_deepdeepdebugf("seeking QUIC packets: spindump_analyze_quic_parser_parsemessagelength_handshake cidl = %u",
+                          cidLengthsInBytes);
+  
+  //
+  // From the specification:
+  //
+  //  +-+-+-+-+-+-+-+-+
+  //  |1|1| 2 |R R|P P|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                         Version (32)                          |
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |DCIL(4)|SCIL(4)|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |               Destination Connection ID (0/32..144)         ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                 Source Connection ID (0/32..144)            ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                           Length (i)                        ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                    Packet Number (8/16/24/32)               ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                          Payload (*)                        ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  //                Figure 12: Handshake Protected Packet
+  //
+  
+  //
+  // Parse the length field
+  //
+  
+  unsigned int lengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  if (payload_len <= lengthPosition || remainingCaplen <= lengthPosition) {
+    spindump_deepdeepdebugf("seeking QUIC packets: not enough for packet length in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  unsigned int intLength;
+  uint64_t length;
+  if (!spindump_analyze_quic_parser_util_parseint(payload + lengthPosition,
+                                                  payload_len - lengthPosition,
+                                                  remainingCaplen - lengthPosition,
+                                                  &intLength,
+                                                  &length)) {
+    spindump_deepdeepdebugf("seeking QUIC packets: length not within packet in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  spindump_deepdeepdebugf("seeking QUIC packets: packet length %u %llu", intLength, length);
+  if (length > UINT_MAX) {
+    spindump_deepdeepdebugf("seeking QUIC packets: packet length insane in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  unsigned int positionAfterLength =
+    lengthPosition +
+    intLength +
+    ((unsigned int)length);
+  if (positionAfterLength > payload_len || positionAfterLength > remainingCaplen) {
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  //
+  // Success
+  //
+  
+  *p_messageLen = positionAfterLength;
+  spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one handshake message, length = %u",
+                          *p_messageLen);
+  return(1);
+}
+
+//
+// Helper function to parse an entire message and determine its length
+//
+
+static int
+spindump_analyze_quic_parser_parsemessagelength_retry(const unsigned char* payload,
+                                                      unsigned int payload_len,
+                                                      unsigned int remainingCaplen,
+                                                      unsigned int cidLengthsInBytes,
+                                                      unsigned int* p_messageLen,
+                                                      struct spindump_stats* stats) {
+  
+  //
+  // Sanity checks and debugs
+  //
+  
+  spindump_assert(payload != 0);
+  spindump_assert(p_messageLen != 0);
+  spindump_assert(stats != 0);
+  spindump_deepdeepdebugf("seeking QUIC packets: spindump_analyze_quic_parser_parsemessagelength_retry cidl = %u",
+                          cidLengthsInBytes);
+  
+  //
+  // From the specification:
+  //
+  //   0                   1                   2                   3
+  //   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //  +-+-+-+-+-+-+-+-+
+  //  |1|1| 3 | ODCIL |
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                         Version (32)                          |
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |DCIL(4)|SCIL(4)|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |               Destination Connection ID (0/32..144)         ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                 Source Connection ID (0/32..144)            ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |          Original Destination Connection ID (0/32..144)     ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                        Retry Token (*)                      ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  //                        Figure 13: Retry Packet
+  //
+  
+  //
+  // Parse the length field
+  //
+  
+  unsigned int lengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  if (payload_len <= lengthPosition || remainingCaplen <= lengthPosition) {
+    spindump_deepdeepdebugf("seeking QUIC packets: not enough for packet length in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  unsigned int intLength;
+  uint64_t length;
+  if (!spindump_analyze_quic_parser_util_parseint(payload + lengthPosition,
+                                                  payload_len - lengthPosition,
+                                                  remainingCaplen - lengthPosition,
+                                                  &intLength,
+                                                  &length)) {
+    spindump_deepdeepdebugf("seeking QUIC packets: length not within packet in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  spindump_deepdeepdebugf("seeking QUIC packets: packet length %u %llu", intLength, length);
+  if (length > UINT_MAX) {
+    spindump_deepdeepdebugf("seeking QUIC packets: packet length insane in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  unsigned int positionAfterLength =
+    lengthPosition +
+    intLength +
+    ((unsigned int)length);
+  if (positionAfterLength > payload_len || positionAfterLength > remainingCaplen) {
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length in handshake packet");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  //
+  // Success
+  //
+  
+  *p_messageLen = positionAfterLength;
+  spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one handshake message, length = %u",
+                          *p_messageLen);
+  return(1);
+}
+
+//
+// Helper function to parse an entire message and determine its length
+//
+
+static int
+spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(const unsigned char* payload,
+                                                                   unsigned int payload_len,
+                                                                   unsigned int remainingCaplen,
+                                                                   unsigned int* p_messageLen,
+                                                                   struct spindump_stats* stats) {
+  
+  //
+  // Sanity checks and debugs
+  //
+  
+  spindump_assert(payload != 0);
+  spindump_assert(p_messageLen != 0);
+  spindump_assert(stats != 0);
+  spindump_deepdeepdebugf("seeking QUIC packets: spindump_analyze_quic_parser_parsemessagelength_versionnegotiation");
+  
+  //
+  // From the specification:
+  //
+  //  +-+-+-+-+-+-+-+-+
+  //  |1|1| 0 |R R|P P|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                         Version (32)                          |
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |DCIL(4)|SCIL(4)|
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |               Destination Connection ID (0/32..144)         ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                 Source Connection ID (0/32..144)            ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                    Supported Version 1 (32)                 ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                   [Supported Version 2 (32)]                ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //                              ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //  |                   [Supported Version N (32)]                ...
+  //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  //              Figure 10: Version Negotiation Packet
+  //
+
+  if (payload_len > remainingCaplen) {
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length");
+    stats->notEnoughPacketForQuicHdrLength++;
+    return(0);
+  }
+  
+  //
+  // Success -- this packet always consumes everything until the end of the UDP packet
+  //
+  
+  *p_messageLen = payload_len;
   spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one message, length = %u",
                           *p_messageLen);
   return(1);
