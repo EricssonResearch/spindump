@@ -131,6 +131,7 @@ add_custom_command(
   COMMAND bash spindump_checksource.sh
   ARGS  2> spindump_test0.out
   DEPENDS spindump_checksource.sh
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_command(
