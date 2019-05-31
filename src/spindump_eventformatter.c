@@ -586,11 +586,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                             timestamplonglong,
                             connection->packetsFromSide1,
                             connection->packetsFromSide2,
-                            connection->bytesFromSide1,
-                            connection->bytesFromSide2,
+                            connection->bytesFromSide1.bytes,
+                            connection->bytesFromSide2.bytes,
+                            spindump_bandwidth_periodbytes2bytepersec(connection->bytesFromSide1.bytesInLastPeriod),
+                            spindump_bandwidth_periodbytes2bytepersec(connection->bytesFromSide2.bytesInLastPeriod),
                             &eventobj);
-
-
+  
   switch (event) {
 
   case spindump_analyze_event_newconnection:

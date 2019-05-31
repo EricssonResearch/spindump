@@ -62,7 +62,8 @@ add_library(spindumplib
   spindump_analyze_tcp.c
   spindump_analyze_tls_parser.c
   spindump_analyze_udp.c
-  spindump_capture.c
+  spindump_bandwidth.c 
+  spindump_capture.c 
   spindump_connections.c
   spindump_connections_new.c
   spindump_connections_print.c

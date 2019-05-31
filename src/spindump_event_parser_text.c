@@ -162,12 +162,18 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   // Additional information about the connection
   //
   
-  addtobuffer3("packets %u %u ",
+  addtobuffer3("packets %llu %llu ",
                event->packetsFromSide1,
                event->packetsFromSide2);
-  addtobuffer3("bytes %u %u",
+  addtobuffer3("bytes %llu %llu",
                event->bytesFromSide1,
                event->bytesFromSide2);
+  if (event->bandwidthFromSide1 > 0 ||
+      event->bandwidthFromSide2 > 0) {
+    addtobuffer3(" bandwidth %u %u",
+                 event->bandwidthFromSide1 * 8,
+                 event->bandwidthFromSide2 * 8);
+  }
   
   //
   // The end of the record

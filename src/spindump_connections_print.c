@@ -506,10 +506,10 @@ spindump_connection_report(struct spindump_connection* connection,
   
   fprintf(file,"  aggregated in:           %38s\n",
           spindump_connections_set_listids(&connection->aggregates));
-  fprintf(file,"  packets 1->2:            %38u\n", connection->packetsFromSide1);
-  fprintf(file,"  packets 2->1:            %38u\n", connection->packetsFromSide2);
-  fprintf(file,"  bytes 1->2:              %38u\n", connection->bytesFromSide1);
-  fprintf(file,"  bytes 2->1:              %38u\n", connection->bytesFromSide2);
+  fprintf(file,"  packets 1->2:            %38llu\n", connection->packetsFromSide1);
+  fprintf(file,"  packets 2->1:            %38llu\n", connection->packetsFromSide2);
+  fprintf(file,"  bytes 1->2:              %38llu\n", connection->bytesFromSide1.bytes);
+  fprintf(file,"  bytes 2->1:              %38llu\n", connection->bytesFromSide2.bytes);
   char rttbuf1[50];
   char rttbuf2[50];
   spindump_strlcpy(rttbuf1,

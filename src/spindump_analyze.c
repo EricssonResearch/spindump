@@ -618,7 +618,7 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
                                   int fromResponder,
                                   struct spindump_packet* packet,
                                   unsigned int ipPacketLength,
-                                        uint8_t ecnFlags) {
+                                  uint8_t ecnFlags) {
 
   //
   // Checks
@@ -629,8 +629,8 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
-        spindump_assert(ecnFlags <= 3);
-
+  spindump_assert(ecnFlags <= 3);
+  
   //
   // Update the statistics based on whether the packet was from side1
   // or side2.
@@ -639,11 +639,11 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   if (fromResponder) {
     connection->latestPacketFromSide2 = packet->timestamp;
     connection->packetsFromSide2++;
-    connection->bytesFromSide2 += ipPacketLength;
+    spindump_bandwidth_newpacket(&connection->bytesFromSide2,ipPacketLength,&packet->timestamp);
   } else {
     connection->latestPacketFromSide1 = packet->timestamp;
     connection->packetsFromSide1++;
-    connection->bytesFromSide1 += ipPacketLength;
+    spindump_bandwidth_newpacket(&connection->bytesFromSide1,ipPacketLength,&packet->timestamp);
   }
   
   int ecnCe = 0;

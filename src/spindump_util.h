@@ -62,6 +62,8 @@
 // Types --------------------------------------------------------------------------------------
 //
 
+typedef uint32_t spindump_counter_32bit;
+typedef uint64_t spindump_counter_64bit;
 typedef struct sockaddr_storage spindump_address;
 typedef struct {
   spindump_address address;

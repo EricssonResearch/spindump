@@ -950,12 +950,14 @@ spindump_analyze_event_updateinfo(struct spindump_analyze* state,
   // Update timestamps
   //
 
+  struct timeval* tv = 0;
   if (connection->packetsFromSide1 < event->packetsFromSide1) {
-    spindump_timestamp_to_timeval(event->timestamp,&connection->latestPacketFromSide1);
+    tv = &connection->latestPacketFromSide1;
   }
   if (connection->packetsFromSide2 < event->packetsFromSide2) {
-    spindump_timestamp_to_timeval(event->timestamp,&connection->latestPacketFromSide2);
+    tv = &connection->latestPacketFromSide2;
   }
+  spindump_timestamp_to_timeval(event->timestamp,tv);
   
   //
   // Update packet counters
@@ -963,6 +965,6 @@ spindump_analyze_event_updateinfo(struct spindump_analyze* state,
   
   connection->packetsFromSide1 = event->packetsFromSide1;
   connection->packetsFromSide2 = event->packetsFromSide2;
-  connection->bytesFromSide1 = event->bytesFromSide1;
-  connection->bytesFromSide2 = event->bytesFromSide2;
+  spindump_bandwidth_setcounter(&connection->bytesFromSide1,event->bytesFromSide1,tv);
+  spindump_bandwidth_setcounter(&connection->bytesFromSide2,event->bytesFromSide2,tv);
 }

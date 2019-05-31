@@ -32,6 +32,7 @@
 #include "spindump_rtt.h"
 #include "spindump_seq.h"
 #include "spindump_mid.h"
+#include "spindump_bandwidth.h"
 #include "spindump_spin_structs.h"
 
 //
@@ -95,16 +96,16 @@ struct spindump_connection {
   struct timeval creationTime;                      // when did we see the first packet?
   struct timeval latestPacketFromSide1;             // when did we see the last packet from side 1?
   struct timeval latestPacketFromSide2;             // when did we see the last packet from side 2?
-  unsigned int packetsFromSide1;                    // packet counts
-  unsigned int packetsFromSide2;                    // packet counts
-  unsigned int bytesFromSide1;                      // byte counts
-  unsigned int bytesFromSide2;                      // byte counts
-  unsigned int ect0FromInitiator;                   // ECN ECT(0) counts
-  unsigned int ect0FromResponder;                   // ECN ECT(0) counts
-  unsigned int ect1FromInitiator;                   // ECN ECT(1) counts
-  unsigned int ect1FromResponder;                   // ECN ECT(1) counts
-  unsigned int ceFromInitiator;                     // ECN CE counts
-  unsigned int ceFromResponder;                     // ECN CE counts
+  spindump_counter_64bit packetsFromSide1;          // packet counts
+  spindump_counter_64bit packetsFromSide2;          // packet counts
+  struct spindump_bandwidth bytesFromSide1;         // byte counts
+  struct spindump_bandwidth bytesFromSide2;         // byte counts
+  spindump_counter_64bit ect0FromInitiator;         // ECN ECT(0) counts
+  spindump_counter_64bit ect0FromResponder;         // ECN ECT(0) counts
+  spindump_counter_64bit ect1FromInitiator;         // ECN ECT(1) counts
+  spindump_counter_64bit ect1FromResponder;         // ECN ECT(1) counts
+  spindump_counter_64bit ceFromInitiator;           // ECN CE counts
+  spindump_counter_64bit ceFromResponder;           // ECN CE counts
   struct spindump_rtt leftRTT;                      // left-side (side 1) RTT calculations
   struct spindump_rtt rightRTT;                     // right-side (side 2) RTT calculations
   struct spindump_rtt respToInitFullRTT;            // end-to-end RTT calculations observed from responder

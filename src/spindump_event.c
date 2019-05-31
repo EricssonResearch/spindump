@@ -34,10 +34,12 @@ spindump_event_initialize(enum spindump_event_type eventType,
                           const spindump_network* responderAddress,
                           const char* session,
                           unsigned long long timestamp,
-                          unsigned int packetsFromSide1,
-                          unsigned int packetsFromSide2,
-                          unsigned int bytesFromSide1,
-                          unsigned int bytesFromSide2,
+                          spindump_counter_64bit packetsFromSide1,
+                          spindump_counter_64bit packetsFromSide2,
+                          spindump_counter_64bit bytesFromSide1,
+                          spindump_counter_64bit bytesFromSide2,
+                          spindump_counter_32bit bandwidthFromSide1,
+                          spindump_counter_32bit bandwidthFromSide2,
                           struct spindump_event* event) {
 
   //
@@ -49,6 +51,11 @@ spindump_event_initialize(enum spindump_event_type eventType,
   spindump_assert(session != 0);
   spindump_assert(strlen(session) < spindump_event_sessioidmaxlength);
   spindump_assert(event != 0);
+
+  //
+  // Construct the event
+  //
+  
   memset(event,0,sizeof(*event));
   event->eventType = eventType;
   event->connectionType = connectionType;
@@ -61,6 +68,11 @@ spindump_event_initialize(enum spindump_event_type eventType,
   event->packetsFromSide2 = packetsFromSide2;
   event->bytesFromSide1 = bytesFromSide1;
   event->bytesFromSide2 = bytesFromSide2;
+  event->bandwidthFromSide1 = bandwidthFromSide1;
+  event->bandwidthFromSide2 = bandwidthFromSide2;
+  spindump_deepdeepdebugf("new event bandwidths %u %u from bytes %u %u",
+                          bandwidthFromSide1, bandwidthFromSide2,
+                          bytesFromSide1, bytesFromSide2);
 }
 
 //
@@ -119,11 +131,13 @@ spindump_event_equal(const struct spindump_event* event1,
   if (event1->packetsFromSide2 != event2->packetsFromSide2) return(0);
   if (event1->bytesFromSide1 != event2->bytesFromSide1) return(0);
   if (event1->bytesFromSide2 != event2->bytesFromSide2) return(0);
+  if (event1->bandwidthFromSide1 != event2->bandwidthFromSide1) return(0);
+  if (event1->bandwidthFromSide2 != event2->bandwidthFromSide2) return(0);
   
   //
   // Compare type-specific fields
   //
-
+  
   switch (event1->eventType) {
   case spindump_event_type_new_connection:
     break;

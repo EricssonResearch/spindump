@@ -440,6 +440,8 @@ unittests_eventtextparser(void) {
                             0,
                             2,
                             3,
+                            1000,
+                            1000,
                             &event);
   char buf[200];
   int ret;
@@ -449,7 +451,7 @@ unittests_eventtextparser(void) {
   ret = spindump_event_parser_text_print(&event,buf,sizeof(buf),&consumed);
   spindump_assert(ret == 1);
   spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
-  const char* expected = "TCP 1.2.3.4 <-> 5.6.7.8 123:456 at 1892188800001234 new up packets 1 0 bytes 2 3\n";
+  const char* expected = "TCP 1.2.3.4 <-> 5.6.7.8 123:456 at 1892188800001234 new up packets 1 0 bytes 2 3 bandwidth 8000 8000\n";
   spindump_assert(strcmp(buf,expected) == 0);
 }
 
@@ -502,8 +504,10 @@ unittests_eventjsonparser(void) {
                             0,
                             2,
                             3,
+                            1000,
+                            1000,
                             &event1);
-  char buf[200];
+  char buf[250];
   int ret;
   size_t consumed;
   ret = spindump_event_parser_json_print(&event1,buf,1,&consumed);
@@ -514,7 +518,7 @@ unittests_eventjsonparser(void) {
   const char* expected =
     "{ \"Event\": \"new\", \"Type\": \"TCP\", \"Addrs\": [\"1.2.3.4\",\"5.6.7.8\"], "
     "\"Session\": \"123:456\", \"Ts\": 1892188800001234, \"State\": \"Starting\", "
-    "\"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3 }";
+    "\"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3, \"Bandwidth1\": 8000, \"Bandwidth2\": 8000 }";
   spindump_assert(strcmp(buf,expected) == 0);
   
   //
@@ -836,8 +840,8 @@ systemtests(void) {
   spindump_checktest(connection1->state == spindump_connection_state_established);
   spindump_checktest(connection1->packetsFromSide1 == 1);
   spindump_checktest(connection1->packetsFromSide2 == 1);
-  spindump_checktest(connection1->bytesFromSide1 == sizeof(packet1bytes) - spindump_ethernet_header_size);
-  spindump_checktest(connection1->bytesFromSide2 == sizeof(packet2bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection1->bytesFromSide1.bytes == sizeof(packet1bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection1->bytesFromSide2.bytes == sizeof(packet2bytes) - spindump_ethernet_header_size);
   spindump_checktest(connection1->leftRTT.lastRTT == spindump_rtt_infinite);
   spindump_checktest(connection1->rightRTT.lastRTT == 1);
   
@@ -906,12 +910,12 @@ systemtests(void) {
   spindump_deepdebugf("connection 2 stats paks %lu %lu bytes %lu %lu",
                       connection2->packetsFromSide1,
                       connection2->packetsFromSide2,
-                      connection2->bytesFromSide1,
-                      connection2->bytesFromSide2);
+                      connection2->bytesFromSide1.bytes,
+                      connection2->bytesFromSide2.bytes);
   spindump_checktest(connection2->packetsFromSide1 == 1);
   spindump_checktest(connection2->packetsFromSide2 == 1);
-  spindump_checktest(connection2->bytesFromSide1 == sizeof(packet3bytes) - spindump_ethernet_header_size);
-  spindump_checktest(connection2->bytesFromSide2 == sizeof(packet4bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection2->bytesFromSide1.bytes == sizeof(packet3bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection2->bytesFromSide2.bytes == sizeof(packet4bytes) - spindump_ethernet_header_size);
   spindump_checktest(connection2->leftRTT.lastRTT == spindump_rtt_infinite);
   spindump_checktest(connection2->rightRTT.lastRTT == 1);
   
@@ -982,8 +986,8 @@ systemtests(void) {
   spindump_checktest(connection3->state == spindump_connection_state_closed);
   spindump_checktest(connection3->packetsFromSide1 == 1);
   spindump_checktest(connection3->packetsFromSide2 == 1);
-  spindump_checktest(connection3->bytesFromSide1 == sizeof(packet5bytes) - spindump_ethernet_header_size);
-  spindump_checktest(connection3->bytesFromSide2 == sizeof(packet6bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection3->bytesFromSide1.bytes == sizeof(packet5bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection3->bytesFromSide2.bytes == sizeof(packet6bytes) - spindump_ethernet_header_size);
   spindump_checktest(connection3->leftRTT.lastRTT == spindump_rtt_infinite);
   spindump_checktest(connection3->rightRTT.lastRTT == 1);
   
@@ -1056,8 +1060,8 @@ systemtests(void) {
   spindump_checktest(connection4->state == spindump_connection_state_closed);
   spindump_checktest(connection4->packetsFromSide1 == 1);
   spindump_checktest(connection4->packetsFromSide2 == 1);
-  spindump_checktest(connection4->bytesFromSide1 == sizeof(packet7bytes) - spindump_ethernet_header_size);
-  spindump_checktest(connection4->bytesFromSide2 == sizeof(packet8bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection4->bytesFromSide1.bytes == sizeof(packet7bytes) - spindump_ethernet_header_size);
+  spindump_checktest(connection4->bytesFromSide2.bytes == sizeof(packet8bytes) - spindump_ethernet_header_size);
   spindump_checktest(connection4->leftRTT.lastRTT == spindump_rtt_infinite);
   spindump_checktest(connection4->rightRTT.lastRTT == 1);
 

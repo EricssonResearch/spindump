@@ -90,9 +90,9 @@ struct spindump_event_spin_value {
 
 struct spindump_event_ecn_congestion_event {
   enum spindump_direction direction;
-  unsigned int ecn0;
-  unsigned int ecn1;
-  unsigned int ce;
+  spindump_counter_64bit ecn0;
+  spindump_counter_64bit ecn1;
+  spindump_counter_64bit ce;
 };
 
 #define spindump_event_sessioidmaxlength   (18*2*2+1)
@@ -105,10 +105,12 @@ struct spindump_event {
   spindump_network responderAddress;
   char session[spindump_event_sessioidmaxlength];
   unsigned long long timestamp;
-  unsigned int packetsFromSide1;
-  unsigned int packetsFromSide2;
-  unsigned int bytesFromSide1;
-  unsigned int bytesFromSide2;
+  spindump_counter_64bit packetsFromSide1;
+  spindump_counter_64bit packetsFromSide2;
+  spindump_counter_64bit bytesFromSide1;
+  spindump_counter_64bit bytesFromSide2;
+  spindump_counter_32bit bandwidthFromSide1;
+  spindump_counter_32bit bandwidthFromSide2;
   union {
     struct spindump_event_new_connection newConnection;
     struct spindump_event_change_connection changeConnection;
@@ -132,10 +134,12 @@ spindump_event_initialize(enum spindump_event_type eventType,
                           const spindump_network* responderAddress,
                           const char* session,
                           unsigned long long timestamp,
-                          unsigned int packetsFromSide1,
-                          unsigned int packetsFromSide2,
-                          unsigned int bytesFromSide1,
-                          unsigned int bytesFromSide2,
+                          spindump_counter_64bit packetsFromSide1,
+                          spindump_counter_64bit packetsFromSide2,
+                          spindump_counter_64bit bytesFromSide1,
+                          spindump_counter_64bit bytesFromSide2,
+                          spindump_counter_32bit bandwidthFromSide1,
+                          spindump_counter_32bit bandwidthFromSide2,
                           struct spindump_event* event);
 int
 spindump_event_equal(const struct spindump_event* event1,

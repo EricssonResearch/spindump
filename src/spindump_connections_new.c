@@ -93,8 +93,8 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
   spindump_zerotime(&connection->latestPacketFromSide2);
   connection->packetsFromSide1 = 0;
   connection->packetsFromSide2 = 0;
-  connection->bytesFromSide1 = 0;
-  connection->bytesFromSide2 = 0;
+  spindump_bandwidth_initialize(&connection->bytesFromSide1);
+  spindump_bandwidth_initialize(&connection->bytesFromSide2);
   spindump_rtt_initialize(&connection->leftRTT);
   spindump_rtt_initialize(&connection->rightRTT);
   spindump_connections_set_initialize(&connection->aggregates);

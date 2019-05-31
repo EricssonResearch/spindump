@@ -478,9 +478,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   case spindump_event_type_ecn_congestion_event:
     addtobuffer2(", \"Who\": \"%s\"",
                  event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
-    addtobuffer2(", \"Ecn0\": \"%u\"", event->u.ecnCongestionEvent.ecn0);
-    addtobuffer2(", \"Ecn1\": \"%u\"", event->u.ecnCongestionEvent.ecn1);
-    addtobuffer2(", \"Ce\": \"%u\"", event->u.ecnCongestionEvent.ce);
+    addtobuffer2(", \"Ecn0\": \"%llu\"", event->u.ecnCongestionEvent.ecn0);
+    addtobuffer2(", \"Ecn1\": \"%llu\"", event->u.ecnCongestionEvent.ecn1);
+    addtobuffer2(", \"Ce\": \"%llu\"", event->u.ecnCongestionEvent.ce);
     break;
     
   default:
@@ -491,14 +491,21 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   // Additional information about the connection
   //
   
-  addtobuffer2(", \"Packets1\": %u",
+  addtobuffer2(", \"Packets1\": %llu",
                event->packetsFromSide1);
-  addtobuffer2(", \"Packets2\": %u",
+  addtobuffer2(", \"Packets2\": %llu",
                event->packetsFromSide2);
-  addtobuffer2(", \"Bytes1\": %u",
+  addtobuffer2(", \"Bytes1\": %llu",
                event->bytesFromSide1);
-  addtobuffer2(", \"Bytes2\": %u",
+  addtobuffer2(", \"Bytes2\": %llu",
                event->bytesFromSide2);
+  if (event->bandwidthFromSide1 > 0 ||
+      event->bandwidthFromSide2 > 0) {
+    addtobuffer2(", \"Bandwidth1\": %u",
+                 event->bandwidthFromSide1 * 8);
+    addtobuffer2(", \"Bandwidth2\": %u",
+                 event->bandwidthFromSide2 * 8);
+  }
   
   //
   // The end of the record
