@@ -439,14 +439,26 @@ spindump_event_parser_json_print(const struct spindump_event* event,
     if (event->u.newRttMeasurement.measurement == spindump_measurement_type_bidirectional) {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
         addtobuffer2(", \"Left_rtt\": %lu", event->u.newRttMeasurement.rtt);
+        if (event->u.newRttMeasurement.avgRtt > 0) {
+          addtobuffer2(", \"Avg_Left_rtt\": %lu", event->u.newRttMeasurement.avgRtt);
+        }
       } else {
         addtobuffer2(", \"Right_rtt\": %lu", event->u.newRttMeasurement.rtt);
+        if (event->u.newRttMeasurement.avgRtt > 0) {
+          addtobuffer2(", \"Avg_right_rtt\": %lu", event->u.newRttMeasurement.avgRtt);
+        }
       }
     } else {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
         addtobuffer2(", \"Full_rtt_initiator\": %lu", event->u.newRttMeasurement.rtt);
+        if (event->u.newRttMeasurement.avgRtt > 0) {
+          addtobuffer2(", \"Avg_full_rtt_initiator\": %lu", event->u.newRttMeasurement.avgRtt);
+        }
       } else {
         addtobuffer2(", \"Full_rtt_responder\": %lu", event->u.newRttMeasurement.rtt);
+        if (event->u.newRttMeasurement.avgRtt > 0) {
+          addtobuffer2(", \"Avg_full_rtt_responder\": %lu", event->u.newRttMeasurement.avgRtt);
+        }
       }
     }
     break;

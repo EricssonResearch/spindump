@@ -75,6 +75,7 @@ struct spindump_event_new_rtt_measurement {
   enum spindump_measurement_type measurement;
   enum spindump_direction direction;
   unsigned long rtt;
+  unsigned long avgRtt;
 };
 
 struct spindump_event_spin_flip {

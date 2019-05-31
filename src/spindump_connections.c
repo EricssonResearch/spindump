@@ -41,9 +41,9 @@
 //
 
 static int
-spindump_connections_setisclosed(struct spindump_connection_set* set);
+spindump_connections_setisclosed(const struct spindump_connection_set* set);
 static int
-spindump_connections_setisestablishing(struct spindump_connection_set* set);
+spindump_connections_setisestablishing(const struct spindump_connection_set* set);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -419,7 +419,7 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
 //
 
 static int
-spindump_connections_setisclosed(struct spindump_connection_set* set) {
+spindump_connections_setisclosed(const struct spindump_connection_set* set) {
   unsigned int i;
 
   for (i = 0; i < set->nConnections; i++) {
@@ -438,7 +438,7 @@ spindump_connections_setisclosed(struct spindump_connection_set* set) {
 //
 
 int
-spindump_connections_isclosed(struct spindump_connection* connection) {
+spindump_connections_isclosed(const struct spindump_connection* connection) {
 
   //
   // Sanity checks
@@ -463,7 +463,7 @@ spindump_connections_isclosed(struct spindump_connection* connection) {
 //
 
 static int
-spindump_connections_setisestablishing(struct spindump_connection_set* set) {
+spindump_connections_setisestablishing(const struct spindump_connection_set* set) {
   unsigned int i;
 
   for (i = 0; i < set->nConnections; i++) {
@@ -482,7 +482,7 @@ spindump_connections_setisestablishing(struct spindump_connection_set* set) {
 //
 
 int
-spindump_connections_isestablishing(struct spindump_connection* connection) {
+spindump_connections_isestablishing(const struct spindump_connection* connection) {
 
   //
   // Sanity checks
@@ -508,7 +508,7 @@ spindump_connections_isestablishing(struct spindump_connection* connection) {
 //
 
 int
-spindump_connections_isaggregate(struct spindump_connection* connection) {
+spindump_connections_isaggregate(const struct spindump_connection* connection) {
   spindump_assert(connection != 0);
   switch (connection->type) {
   case spindump_connection_transport_tcp:
@@ -536,8 +536,8 @@ spindump_connections_isaggregate(struct spindump_connection* connection) {
 // Note: This function is not thread safe.
 //
 
-struct spindump_connection_set*
-spindump_connections_aggregateset(struct spindump_connection* connection) {
+const struct spindump_connection_set*
+spindump_connections_aggregateset(const struct spindump_connection* connection) {
 
   //
   // Sanity checks

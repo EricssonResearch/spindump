@@ -30,6 +30,7 @@ spindump=$srcdir/spindump
 
 traces="trace_icmpv4_short
         trace_icmpv6_short
+        trace_ping_aggregate_average
         trace_tcp_short
         trace_tcp_short_json trace_dns
         trace_quic_v18_short_spin

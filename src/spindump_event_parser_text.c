@@ -132,6 +132,9 @@ spindump_event_parser_text_print(const struct spindump_event* event,
         addtobuffer2("full (responder) %lu ", event->u.newRttMeasurement.rtt);
       }
     }
+    if (event->u.newRttMeasurement.avgRtt > 0) {
+      addtobuffer2("avg %lu ", event->u.newRttMeasurement.avgRtt);
+    }
     break;
     
   case spindump_event_type_spin_flip:

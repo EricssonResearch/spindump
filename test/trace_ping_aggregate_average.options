@@ -1,0 +1,1 @@
+--textual --format json --aggregate-mode --average-mode --aggregate 10.30.0.167 195.140.0.0/16 --aggregate 10.30.0.167 212.16.100.0/24

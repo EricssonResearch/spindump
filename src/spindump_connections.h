@@ -281,13 +281,13 @@ int
 spindump_connection_statestring_to_state(const char* string,
                                          enum spindump_connection_state* state);
 int
-spindump_connections_isaggregate(struct spindump_connection* connection);
-struct spindump_connection_set*
-spindump_connections_aggregateset(struct spindump_connection* connection);
+spindump_connections_isaggregate(const struct spindump_connection* connection);
+const struct spindump_connection_set*
+spindump_connections_aggregateset(const struct spindump_connection* connection);
 int
-spindump_connections_isclosed(struct spindump_connection* connection);
+spindump_connections_isclosed(const struct spindump_connection* connection);
 int
-spindump_connections_isestablishing(struct spindump_connection* connection);
+spindump_connections_isestablishing(const struct spindump_connection* connection);
 int
 spindump_connections_matches_aggregate_connection(struct spindump_connection* connection,
                                                   struct spindump_connection* aggregate);

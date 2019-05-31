@@ -135,6 +135,7 @@ spindump_event_equal(const struct spindump_event* event1,
     if (event1->u.newRttMeasurement.measurement != event2->u.newRttMeasurement.measurement) return(0);
     if (event1->u.newRttMeasurement.direction != event2->u.newRttMeasurement.direction) return(0);
     if (event1->u.newRttMeasurement.rtt != event2->u.newRttMeasurement.rtt) return(0);
+    if (event1->u.newRttMeasurement.avgRtt != event2->u.newRttMeasurement.avgRtt) return(0);
     break;
   case spindump_event_type_spin_flip:
     if (event1->u.spinFlip.direction != event2->u.spinFlip.direction) return(0);

@@ -69,6 +69,8 @@ struct spindump_main_configuration {
   int reverseDns;
   int reportSpins;
   int reportSpinFlips;
+  int averageMode;
+  int aggregateMode;
   int anonymizeLeft;
   int anonymizeRight;
   unsigned long long updatePeriod;

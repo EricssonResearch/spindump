@@ -66,7 +66,9 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int reportSpins,
                                    int reportSpinFlips,
                                    int anonymizeLeft,
-                                   int anonymizeRight);
+                                   int anonymizeRight,
+                                   int aggregatesOnly,
+                                   int averageRtts);
 static const char*
 spindump_eventformatter_mediatype(enum spindump_eventformatter_outputformat format);
 static void
@@ -85,7 +87,9 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int reportSpins,
                                    int reportSpinFlips,
                                    int anonymizeLeft,
-                                   int anonymizeRight) {
+                                   int anonymizeRight,
+                                   int aggregatesOnly,
+                                   int averageRtts) {
   
   //
   // Allocate an object
@@ -116,7 +120,10 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   formatter->reportSpinFlips = reportSpinFlips;
   formatter->anonymizeLeft = anonymizeLeft;
   formatter->anonymizeRight = anonymizeRight;
-
+  formatter->aggregatesOnly = aggregatesOnly;
+  formatter->averageRtts = averageRtts;
+  spindump_deepdeepdebugf("spindump_eventformatter_initialize: averageRtts set to %u", formatter->averageRtts);
+  
   //
   // Register a handler for relevant events
   //
@@ -143,7 +150,9 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         int reportSpins,
                                         int reportSpinFlips,
                                         int anonymizeLeft,
-                                        int anonymizeRight) {
+                                        int anonymizeRight,
+                                        int aggregatesOnly,
+                                        int averageRtts) {
   
   //
   // Call the basic eventformatter initialization
@@ -155,7 +164,9 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                                                                  reportSpins,
                                                                                  reportSpinFlips,
                                                                                  anonymizeLeft,
-                                                                                 anonymizeRight);
+                                                                                 anonymizeRight,
+                                                                                 aggregatesOnly,
+                                                                                 averageRtts);
   if (formatter == 0) {
     return(0);
   }
@@ -189,7 +200,9 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           int reportSpins,
                                           int reportSpinFlips,
                                           int anonymizeLeft,
-                                          int anonymizeRight) {
+                                          int anonymizeRight,
+                                          int aggregatesOnly,
+                                          int averageRtts) {
   
   //
   // Call the basic eventformatter initialization
@@ -202,7 +215,9 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                                                                  reportSpins,
                                                                                  reportSpinFlips,
                                                                                  anonymizeLeft,
-                                                                                 anonymizeRight);
+                                                                                 anonymizeRight,
+                                                                                 aggregatesOnly,
+                                                                                 averageRtts);
   if (formatter == 0) {
     return(0);
   }
@@ -458,6 +473,10 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   // Sanity checks
   //
 
+  spindump_assert(state != 0);
+  spindump_assert(handlerData != 0);
+  spindump_assert(connection != 0);
+  
   //
   // Dig up the relevant data from the handlerData pointer etc
   //
@@ -465,6 +484,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)handlerData;
   char session[spindump_event_sessioidmaxlength];
   spindump_connection_sessionstring(connection,session,sizeof(session));
+
+  //
+  // Check if we need to care about this event
+  //
+  
+  if (formatter->aggregatesOnly && !spindump_connections_isaggregate(connection)) return;
   
   //
   // Construct the time stamp
@@ -578,24 +603,47 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
     eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
     eventobj.u.newRttMeasurement.rtt = connection->leftRTT.lastRTT;
+    eventobj.u.newRttMeasurement.avgRtt = 0;
+    if (formatter->averageRtts) {
+      spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT);
+      eventobj.u.newRttMeasurement.avgRtt = connection->leftRTT.lastMovingAvgRTT;
+    }
     break;
     
   case spindump_analyze_event_newrightrttmeasurement:
     eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
     eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
     eventobj.u.newRttMeasurement.rtt = connection->rightRTT.lastRTT;
+    eventobj.u.newRttMeasurement.avgRtt = 0;
+    if (formatter->averageRtts) {
+      spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT);
+      eventobj.u.newRttMeasurement.avgRtt = connection->rightRTT.lastMovingAvgRTT;
+    }
+    spindump_deepdeepdebugf("eventobj.avgRtt = %lu, averageRtts = %u",
+                            eventobj.u.newRttMeasurement.avgRtt,
+                            formatter->averageRtts);
     break;
     
   case spindump_analyze_event_newinitrespfullrttmeasurement:
     eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
     eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
     eventobj.u.newRttMeasurement.rtt = connection->initToRespFullRTT.lastRTT;
+    eventobj.u.newRttMeasurement.avgRtt = 0;
+    if (formatter->averageRtts) {
+      spindump_rtt_calculateLastMovingAvgRTT(&connection->initToRespFullRTT);
+      eventobj.u.newRttMeasurement.avgRtt = connection->initToRespFullRTT.lastMovingAvgRTT;
+    }
     break;
 
   case spindump_analyze_event_newrespinitfullrttmeasurement:
     eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
     eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
     eventobj.u.newRttMeasurement.rtt = connection->respToInitFullRTT.lastRTT;
+    eventobj.u.newRttMeasurement.avgRtt = 0;
+    if (formatter->averageRtts) {
+      spindump_rtt_calculateLastMovingAvgRTT(&connection->respToInitFullRTT);
+      eventobj.u.newRttMeasurement.avgRtt = connection->respToInitFullRTT.lastMovingAvgRTT;
+    }
     break;
 
   case spindump_analyze_event_initiatorspinflip:

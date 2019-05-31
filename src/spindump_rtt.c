@@ -119,7 +119,7 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt) {
   
   spindump_debugf("new calculated avg RTT = %lu us (n = %u)",
                   lastMovingAvgRTT, n);
-  
+  rtt->lastMovingAvgRTT = lastMovingAvgRTT;
   return(lastMovingAvgRTT);
 }
 

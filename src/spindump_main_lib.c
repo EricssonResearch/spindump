@@ -206,6 +206,22 @@ spindump_main_processargs(int argc,
 
       config->showStats = 0;
 
+    } else if (strcmp(argv[0],"--average-mode") == 0) {
+
+      config->averageMode = 1;
+
+    } else if (strcmp(argv[0],"--no-average-mode") == 0) {
+
+      config->averageMode = 0;
+
+    } else if (strcmp(argv[0],"--aggregate-mode") == 0) {
+
+      config->aggregateMode = 1;
+
+    } else if (strcmp(argv[0],"--no-aggregate-mode") == 0) {
+
+      config->aggregateMode = 0;
+
     } else if (strcmp(argv[0],"--names") == 0) {
 
       config->reverseDns = 1;
@@ -578,6 +594,11 @@ spindump_main_help(void) {
   printf("    --not-anonymize-left\n");
   printf("    --anonymize-right\n");
   printf("    --not-anonymize-right\n");
+  printf("\n");
+  printf("    --average-mode          Display (or report in output or HTTP-delivered update) average\n");
+  printf("    --no-average-mode       values instead of specific instantaneous values. Default is not.\n");
+  printf("    --aggregate-mode        Display (or report) aggregates only, not individal connections.\n");
+  printf("    --no-aggregate-mode     Default is to report individual connections.\n");
   printf("\n");
   printf("    --no-stats              Produces statistics at the end of the execution.\n");
   printf("    --stats\n");

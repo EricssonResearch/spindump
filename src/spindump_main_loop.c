@@ -154,8 +154,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // Initialize the user interface
   //
 
-  int averageMode = 0;
-  int aggregateMode = 0;
+  int averageMode = state->config.averageMode;
+  int aggregateMode = state->config.aggregateMode;
   int closedMode = 1;
   int udpMode = 0;
   struct spindump_reverse_dns* querier =
@@ -212,7 +212,9 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                                         config->reportSpins,
                                                         config->reportSpinFlips,
                                                         config->anonymizeLeft,
-                                                        config->anonymizeRight);
+                                                        config->anonymizeRight,
+                                                        config->aggregateMode,
+                                                        config->averageMode);
   }
   
   if (config->nRemotes > 0) {
@@ -225,7 +227,9 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                                                 config->reportSpins,
                                                                 config->reportSpinFlips,
                                                                 config->anonymizeLeft,
-                                                                config->anonymizeRight);
+                                                                config->anonymizeRight,
+                                                                config->aggregateMode,
+                                                                config->averageMode);
   }
 
   //

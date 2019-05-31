@@ -87,6 +87,13 @@ Sets the tool to either report or not report individual spin bit values or spin 
 
 The first pair sets the debugging output on/off. Note that in the visual or textual output modes, all debugging information goes to the file spindump.debug in the current working directory. The second and third sets the extensive or very extensive internal debugging output on/off.
 
+    --average-mode
+    --no-average-mode
+    --aggregate-mode 
+    --no-aggregate-mode 
+
+The --average-mode option causes the tool to display (or report in output or HTTP-delivered update) average values instead of specific instantaneous values. Default is to report instantaneous values. The  --aggregate-mode option causes the tool to display (or report) aggregates only, not individal connections. The default is to report individual connections.
+
     --no-stats
     --stats
 

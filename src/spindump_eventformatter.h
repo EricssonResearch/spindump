@@ -69,6 +69,8 @@ struct spindump_eventformatter {
   int reportSpinFlips;
   int anonymizeLeft;
   int anonymizeRight;
+  int aggregatesOnly;
+  int averageRtts;
   enum spindump_eventformatter_outputformat format;
   size_t preambleLength;
   size_t postambleLength;
@@ -86,7 +88,9 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         int reportSpins,
                                         int reportSpinFlips,
                                         int anonymizeLeft,
-                                        int anonymizeRight);
+                                        int anonymizeRight,
+                                        int aggregatesOnly,
+                                        int averageRtts);
 struct spindump_eventformatter*
 spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           enum spindump_eventformatter_outputformat format,
@@ -97,7 +101,9 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           int reportSpins,
                                           int reportSpinFlips,
                                           int anonymizeLeft,
-                                          int anonymizeRight);
+                                          int anonymizeRight,
+                                          int aggregatesOnly,
+                                          int averageRtts);
 void
 spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter);
 void
