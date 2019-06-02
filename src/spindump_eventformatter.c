@@ -794,6 +794,7 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
     //
     
     fwrite(data,length,1,formatter->file);
+    fflush(formatter->file);
     
   } else if (formatter->nRemotes > 0) {
     
