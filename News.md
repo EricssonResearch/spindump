@@ -4,6 +4,14 @@
 
 Spindump can now report bandwidth data (bytes/sec) for connections and aggregated connections. The bandwith data is visible in the textual and JSON output, not currently on screen (due to lack of screen real estate).
 
+## Support for Draft 20
+
+Spindump supports draft version 20 QUIC now, as a result of hacking at the QUIC interop in London, May 2019.
+
+## Distributed measurements
+
+Spindump now reads its own output sent as JSON from another Spindump instance; this can be used to aggregate data at a central point from multiple collection points.
+
 ## Spaces not tabs (April 2019)
 
 Spindump code now uses spaces, not tabs for indents. Please configure your editor appropriately! For instance, on emacs I added the following line to my .emacs file:

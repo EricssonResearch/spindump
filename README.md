@@ -14,7 +14,7 @@ The tool builds on the Spindump Library, which is a small, simple, and extensibl
 
 ## News!!!
 
-Spindump code now uses spaces, not tabs for indents. Please configure your editor appropriately! Spindump now supports Google QUIC as implemented in Chrome, has improved documentation, and its security has improved with a privilege downgrade on Linux. Spindump is also now able to send collected information to a selected web server or another Spindump instance. 
+Spindump can now report bandwidth data (bytes/sec) for connections and aggregated connections. Spindump supports draft version 20 QUIC now, as a result of hacking at the QUIC interop in London, May 2019. Spindump now reads its own output sent as JSON from another Spindump instance; this can be used to aggregate data at a central point from multiple collection points. Spindump now supports Google QUIC as implemented in Chrome, has improved documentation, and its security has improved with a privilege downgrade on Linux. Spindump is also now able to send collected information to a selected web server or another Spindump instance. 
 
 See the [news](https://github.com/EricssonResearch/spindump/blob/master/News.md) page for more details!
 
