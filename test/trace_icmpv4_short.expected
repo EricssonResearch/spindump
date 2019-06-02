@@ -1,3 +1,3 @@
 ICMP 31.133.149.35 <-> 212.16.98.51 48895 at 1553417873690045 new starting packets 0 0 bytes 0 0
-ICMP 31.133.149.35 <-> 212.16.98.51 48895 at 1553417873728020 measurement up right 37975 packets 1 0 bytes 84 0 bandwidth 672 0
-ICMP 31.133.149.35 <-> 212.16.98.51 48895 at 1553417874732523 measurement up right 37859 packets 2 1 bytes 168 84 bandwidth 672 672
+ICMP 31.133.149.35 <-> 212.16.98.51 48895 at 1553417873728020 measurement up right 37975 packets 1 0 bytes 84 0 bandwidth 84 0
+ICMP 31.133.149.35 <-> 212.16.98.51 48895 at 1553417874732523 measurement up right 37859 packets 2 1 bytes 168 84 bandwidth 84 84

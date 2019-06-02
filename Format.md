@@ -51,8 +51,9 @@ The other fields depend on the type of an event and connection. These fields can
    * The field "Value" specifies the value of the spin bit.
    * The field "Transition" specifies the spin bit transition, which is either "0-1" or "1-0". 
    * The field "Who" specifies from which direction did the information come from, "initiator" or "responder".
-   * The field "Packets" specifies the number of packets (both directions) that have been seen on this connection. 
-   * The field "Bytes" specifies the number of packets (both directions) that have been seen on this connection. 
+   * The fields "Packets1" and "Packets2" specify the number of packets (in initiator and responder direction) that have been seen on this connection. 
+   * The fields "Bytes1" and "Bytes2" specify the number of packets (in initiator and responder direction) that have been seen on this connection.
+   * The field "Bandwidth1" and "Bandwidth2" specify the bandwidth of a connection (in initiator and responder direction) as calculated periodically for each second. The number represents number of bytes per second.
    * The fields "Ect0", "ect1" and "ce" specify ECN event counters for ECN(0), ECN(1), and CE events.
 
 ## Binary format

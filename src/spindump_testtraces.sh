@@ -55,6 +55,7 @@ traces="trace_icmpv4_short
 # Loop through test cases
 #
 
+RESULT=0
 unset CPUPROFILE
 
 for trace in $traces
@@ -88,8 +89,8 @@ do
     then
         echo "  run ok..."
     else
-        echo "**run failed -- exit"
-        exit 1
+        echo "**run failed"
+        RESULT=1
     fi
 
     #
@@ -110,24 +111,24 @@ do
     then
         nop=nop
     else
-        echo "**expected results file $corr does not exist -- exit"
-        exit 1
+        echo "**expected results file $corr does not exist"
+        RESULT=1
     fi
     
     if diff $out $corr > /dev/null
     then
         echo "  results correct"
     else
-        echo "**results incorrect -- exit"
-        exit 1
+        echo "**results incorrect"
+        RESULT=1
     fi
     
     if [ -f $descr ]
     then
         nop=nop
     else
-        echo "**test description file $descr does not exist -- exit"
-        exit 1
+        echo "**test description file $descr does not exist"
+        RESULT=1
     fi
 
     #
@@ -143,9 +144,15 @@ do
         then
             echo "  run ok..."
         else
-            echo "**run failed -- exit"
-            exit 1
+            echo "**run failed"
+            RESULT=1
         fi
         unset CPUPROFILE
     fi
 done
+
+#
+# Done. Exit with 1 if there was an error
+#
+
+exit $RESULT

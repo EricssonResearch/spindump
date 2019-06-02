@@ -171,8 +171,8 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   if (event->bandwidthFromSide1 > 0 ||
       event->bandwidthFromSide2 > 0) {
     addtobuffer3(" bandwidth %u %u",
-                 event->bandwidthFromSide1 * 8,
-                 event->bandwidthFromSide2 * 8);
+                 event->bandwidthFromSide1,
+                 event->bandwidthFromSide2);
   }
   
   //
