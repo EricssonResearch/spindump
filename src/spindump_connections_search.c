@@ -112,6 +112,8 @@ spindump_connections_match(struct spindump_connection* connection,
     }
   }
   
+  spindump_deepdeepdebugf("icmp type match ok");
+  
   //
   // Source and destination addresses
   // 
@@ -216,13 +218,16 @@ spindump_connections_match(struct spindump_connection* connection,
   case spindump_connection_searchcriteria_srcdst_both_hostnetwork:
     spindump_connections_getnetworks(connection,&side1network,&side2network);
     if (!spindump_network_ishost(&side1network)) {
+      spindump_deepdeepdebugf("match fails because side1 is not a host");
       return(0);
     }
     side1address = &side1network.address;
     if (!spindump_address_equal(side1address,&criteria->side1address)) {
+      spindump_deepdeepdebugf("match fails because side1 is not equal");
       return(0);
     }
     if (!spindump_network_equal(&side2network,&criteria->side2network)) {
+      spindump_deepdeepdebugf("match fails because side 2 is not equal");  
       return(0);
     }
     *fromResponder = 0;
@@ -232,9 +237,11 @@ spindump_connections_match(struct spindump_connection* connection,
   case spindump_connection_searchcriteria_srcdst_both_networknetwork:
     spindump_connections_getnetworks(connection,&side1network,&side2network);
     if (!spindump_network_equal(&side1network,&criteria->side1network)) {
+      spindump_deepdeepdebugf("match fails because side1 network is not equal to criteria");  
       return(0);
     }
     if (!spindump_network_equal(&side2network,&criteria->side2network)) {
+      spindump_deepdeepdebugf("match fails because side2 network is not equal to criteria");  
       return(0);
     }
     *fromResponder = 0;
@@ -246,7 +253,7 @@ spindump_connections_match(struct spindump_connection* connection,
     return(0);
     
   }
-
+  
   spindump_deepdeepdebugf("address match ok");
   
   //
@@ -1140,7 +1147,7 @@ spindump_connections_searchconnection_aggregate_networknetwork(const spindump_ne
   criteria.matchType = 1;
   criteria.type = spindump_connection_aggregate_networknetwork;
   
-  criteria.matchAddresses = spindump_connection_searchcriteria_srcdst_both_hostnetwork;
+  criteria.matchAddresses = spindump_connection_searchcriteria_srcdst_both_networknetwork;
   criteria.side1network = *side1network;
   criteria.side2network = *side2network;
   
