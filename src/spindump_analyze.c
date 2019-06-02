@@ -173,6 +173,7 @@ spindump_analyze_registerhandler(struct spindump_analyze* state,
   state->handlers[state->nHandlers].eventmask = eventmask;
   state->handlers[state->nHandlers].function = handler;
   state->handlers[state->nHandlers].handlerData = handlerData;
+  spindump_deepdeepdebugf("registered %uth handler %lx for %u", state->nHandlers, handler, eventmask);
   state->nHandlers++;
 }
 
@@ -327,12 +328,15 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
 
   spindump_assert(state != 0);
   spindump_assert((event & spindump_analyze_event_alllegal) == event);
-  spindump_assert(event == spindump_analyze_event_connectiondelete ||
-                  packet == 0 ||
-                  spindump_packet_isvalid(packet));
+  spindump_assert((packet != 0 && spindump_packet_isvalid(packet)) ||
+                  event == spindump_analyze_event_connectiondelete ||
+                  event == spindump_analyze_event_newconnection);
   spindump_assert(connection != 0);
-  spindump_deepdebugf("calling handlers for event %x (%s)",
-                      event, spindump_analyze_eventtostring(event));
+  spindump_deepdebugf("calling handlers for event %x (%s) for connection %u of type %u",
+                      event,
+                      spindump_analyze_eventtostring(event),
+                      connection->id,
+                      connection->type);
 
   //
   // Scan through the registered handlers and execute them if they
@@ -344,7 +348,7 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
     if ((handler->eventmask & event) != 0) {
       spindump_assert(spindump_analyze_max_handlers == spindump_connection_max_handlers);
       spindump_assert(i < spindump_connection_max_handlers);
-      spindump_deepdebugf("calling handler %x", handler->eventmask);
+      spindump_deepdebugf("calling handler %x (%lx)", handler->eventmask, handler->function);
       (*(handler->function))(state,
                              handler->handlerData,
                              &connection->handlerConnectionDatas[i],

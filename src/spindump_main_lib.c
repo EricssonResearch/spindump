@@ -62,6 +62,7 @@ spindump_main_initialize(void) {
   // Calculate size and allocate state
   //
 
+  spindump_deepdeepdebugf("spindump_main_initialize");
   unsigned int size = sizeof(struct spindump_main_state);
   struct spindump_main_state* state = (struct spindump_main_state*)spindump_malloc(size);
   if (state == 0) {
@@ -95,6 +96,7 @@ spindump_main_uninitialize(struct spindump_main_state* state) {
   // Checks
   //
 
+  spindump_deepdeepdebugf("spindump_main_uninitialize");
   spindump_assert(state != 0);
 
   //
@@ -124,6 +126,7 @@ spindump_main_uninitialize(struct spindump_main_state* state) {
 
 static void
 spindump_main_configuration_defaultvalues(struct spindump_main_configuration* config) {
+  spindump_deepdeepdebugf("spindump_main_configuration_defaultvalues");
   memset(config,0,sizeof(*config));
   config->interface = 0;
   config->inputFile = 0;
@@ -155,9 +158,11 @@ spindump_main_processargs(int argc,
                           char** argv,
                           struct spindump_main_configuration* config) {
   
+  spindump_deepdeepdebugf("spindump_main_processargs");
   argc--; argv++;
   while (argc > 0) {
     
+    spindump_deepdeepdebugf("spindump_main_processarg %s", argv[0]);
     if (strcmp(argv[0],"--version") == 0) {
 
       printf("version 0.30 March 23, 2019\n");
@@ -391,7 +396,8 @@ spindump_main_processargs(int argc,
 
       memset(&side1address,0,sizeof(side1address));
       memset(&side1network,0,sizeof(side1network));
-      
+
+      spindump_deepdeepdebugf("aggregate parsing side1 = %s, host = %u", side1string, side1ishost);
       if (side1ishost) {
         if (!spindump_address_fromstring(&side1address,side1string)) {
           spindump_errorf("expected an address as first argument for --aggregate, got %s", side1string);
@@ -414,6 +420,8 @@ spindump_main_processargs(int argc,
 
       argc--; argv++;
 
+      spindump_deepdeepdebugf("aggregate parsing second arg %s", argv[0]);
+      
       //
       // Determine if we need a second argument (we don't if it is a
       // group). Get the second of the two arguments
@@ -425,6 +433,8 @@ spindump_main_processargs(int argc,
 
       memset(&side2address,0,sizeof(side2address));
       memset(&side2network,0,sizeof(side2network));
+      
+      spindump_deepdeepdebugf("aggregate parsing side1isgroup = %u side2 host = %u", side1isgroup, side2ishost);
       
       if (!side1isgroup) {
 
@@ -539,7 +549,8 @@ spindump_main_processargs(int argc,
     argc--; argv++;
 
   }
-
+  
+  spindump_deepdeepdebugf("spindump_main args processed");
 }
 
 //

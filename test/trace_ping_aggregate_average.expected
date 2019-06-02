@@ -1,4 +1,6 @@
 [
+{ "Event": "new", "Type": "H2NET", "Addrs": ["10.30.0.167","195.140.0.0/16"], "Session": "0 sessions", "Ts": 1559468793720105, "State": "Static", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
+{ "Event": "new", "Type": "H2NET", "Addrs": ["10.30.0.167","212.16.100.0/24"], "Session": "0 sessions", "Ts": 1559468793720134, "State": "Static", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
 { "Event": "measurement", "Type": "H2NET", "Addrs": ["10.30.0.167","195.140.0.0/16"], "Session": "1 sessions", "Ts": 1559283552230569, "State": "Static", "Right_rtt": 20850, "Avg_right_rtt": 20850, "Packets1": 1, "Packets2": 0, "Bytes1": 1428, "Bytes2": 0, "Bandwidth1": 1428, "Bandwidth2": 0 },
 { "Event": "measurement", "Type": "H2NET", "Addrs": ["10.30.0.167","195.140.0.0/16"], "Session": "1 sessions", "Ts": 1559283553233186, "State": "Static", "Right_rtt": 21935, "Avg_right_rtt": 21392, "Packets1": 2, "Packets2": 1, "Bytes1": 2856, "Bytes2": 1428, "Bandwidth1": 1428, "Bandwidth2": 1428 },
 { "Event": "measurement", "Type": "H2NET", "Addrs": ["10.30.0.167","195.140.0.0/16"], "Session": "1 sessions", "Ts": 1559283554237287, "State": "Static", "Right_rtt": 20800, "Avg_right_rtt": 21195, "Packets1": 3, "Packets2": 2, "Bytes1": 4284, "Bytes2": 2856, "Bandwidth1": 1428, "Bandwidth2": 1428 },

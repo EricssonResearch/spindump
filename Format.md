@@ -12,6 +12,16 @@ Each data submission is a HTTP POST to an URL. By default, in Spindump those URL
 
 Each data submission comes with a HTTP body part, formatted in a given way. Two formats are currently supported, application/text for the textual format and application/json for the JSON format. These are described in the next sections.
 
+### Starting Spindump in distributed mode
+
+To send data from a Spindump instance to a web server, give the command like this:
+
+    spindump --remote-block-size 0 --silent --format json --remote http://localhost:5040/data/1
+
+if you have a Spindump instance listening in on these posts in the same machine. On the other end, where these messages will be received, start Spindump as follows:
+
+    spindump --collector
+
 ## Textual format
 
 The textual format is simply a human-readable, textual (ASCII) format. It is used by default, or when the --format text option has been specified.

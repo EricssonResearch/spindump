@@ -127,7 +127,9 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   //
   // Register a handler for relevant events
   //
-  
+
+  spindump_deepdeepdebugf("spindump_eventformatter_initialize registering a handler %lx (spindump_eventformatter_measurement_one)",
+                          spindump_eventformatter_measurement_one);
   spindump_analyze_registerhandler(analyzer,
                                    spindump_analyze_event_alllegal,
                                    0,
@@ -472,7 +474,9 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   //
   // Sanity checks
   //
-
+  
+  spindump_deepdeepdebugf("spindump_eventformatter_measurement_one called for event %u", event);
+  
   spindump_assert(state != 0);
   spindump_assert(handlerData != 0);
   spindump_assert(connection != 0);
@@ -480,7 +484,8 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   //
   // Dig up the relevant data from the handlerData pointer etc
   //
-  
+
+  spindump_deepdeepdebugf("point 1");
   struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)handlerData;
   char session[spindump_event_sessioidmaxlength];
   spindump_connection_sessionstring(connection,session,sizeof(session));
@@ -489,15 +494,26 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   // Check if we need to care about this event
   //
   
+  spindump_deepdeepdebugf("point 2");
   if (formatter->aggregatesOnly && !spindump_connections_isaggregate(connection)) return;
   
   //
   // Construct the time stamp
   //
   
-  unsigned long long timestamplonglong =
-    ((unsigned long long)packet->timestamp.tv_sec) * 1000 * 1000 +
-    (unsigned long long)packet->timestamp.tv_usec;
+  spindump_deepdeepdebugf("point 3");
+  unsigned long long timestamplonglong;
+  if (packet != 0) {
+    timestamplonglong =
+      ((unsigned long long)packet->timestamp.tv_sec) * 1000 * 1000 +
+      (unsigned long long)packet->timestamp.tv_usec;
+  } else {
+    struct timeval now;
+    spindump_getcurrenttime(&now);
+    timestamplonglong =
+      ((unsigned long long)now.tv_sec) * 1000 * 1000 +
+      (unsigned long long)now.tv_usec;
+  }
   
   //
   // Determine event type

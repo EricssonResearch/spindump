@@ -92,21 +92,17 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // Initialize packet analyzer
   //
 
+  spindump_deepdeepdebugf("main loop, analyzer initialization");
   struct spindump_analyze* analyzer = spindump_analyze_initialize();
   if (analyzer == 0) exit(1);
 
-  //
-  // Initialize aggregate collection, as specifie earlier
-  //
-
-  spindump_main_loop_initialize_aggregates(config,analyzer);
-  
   //
   // Initialize the capture interface
   //
 
   struct spindump_capture_state* capturer = 0;
 
+  spindump_deepdeepdebugf("main loop, capturer initialization");
   if (config->inputFile != 0) {
     capturer = spindump_capture_initialize_file(config->inputFile,config->filter);
   } else if (config->collector) {
@@ -123,6 +119,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // running root).
   //
 
+  spindump_deepdeepdebugf("main loop, privilege demotion");
   uid_t euid = geteuid();
   if (euid == 0) {
 
@@ -154,6 +151,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // Initialize the user interface
   //
 
+  spindump_deepdeepdebugf("main loop, UI initialization");
   int averageMode = state->config.averageMode;
   int aggregateMode = state->config.aggregateMode;
   int closedMode = 1;
@@ -189,6 +187,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // Draw screen once before waiting for packets
   //
 
+  spindump_deepdeepdebugf("main loop, entering first report update");
   spindump_report_update(reporter,
                          averageMode,
                          aggregateMode,
@@ -202,6 +201,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // track new RTT measurements.
   //
 
+  spindump_deepdeepdebugf("main loop, entering eventformatter initialization");
   struct spindump_eventformatter* formatter = 0;
   struct spindump_eventformatter* remoteFormatter = 0;
   if (config->toolmode == spindump_toolmode_textual) {
@@ -232,6 +232,13 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                                                 config->averageMode);
   }
 
+  //
+  // Initialize aggregate collection, as specified earlier
+  //
+
+  spindump_deepdeepdebugf("main loop operation, entering aggregate creation");
+  spindump_main_loop_initialize_aggregates(config,analyzer);
+  
   //
   // Enter the main packet-waiting-loop
   //
@@ -472,11 +479,13 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                          struct spindump_analyze* analyzer) {
   struct timeval startTime;
   spindump_getcurrenttime(&startTime);
+  spindump_deepdeepdebugf("spindump_main_loop_initialize_aggregate %u", config->nAggregates);
   for (unsigned int i = 0; i < config->nAggregates; i++) {
     struct spindump_main_aggregate* aggregate = &config->aggregates[i];
     spindump_assert(spindump_isbool(aggregate->ismulticastgroup));
     spindump_assert(spindump_isbool(aggregate->side1ishost));
     spindump_assert(spindump_isbool(aggregate->side2ishost));
+    spindump_deepdeepdebugf("spindump_main_loop_initialize_aggregate no %u", i);
     struct spindump_connection* aggregateConnection = 0;
     if (aggregate->ismulticastgroup) {
       aggregateConnection = spindump_connections_newconnection_aggregate_multicastgroup(&aggregate->side1address,
@@ -510,6 +519,7 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
     }
     if (aggregateConnection != 0) {
       spindump_deepdebugf("created a manually configured aggregate connection %u", aggregateConnection->id);
+      spindump_analyze_process_handlers(analyzer,spindump_analyze_event_newconnection,0,aggregateConnection);
     }
   }
 }

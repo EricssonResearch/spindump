@@ -99,8 +99,9 @@ do
     #
 
     awk '
-      /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; }
-      /.*/ { print $0; }
+      /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
+      /Event.: .new.*H2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
+      /.*/ { print $0; next; }
     ' < $outpre > $out
     
     #
