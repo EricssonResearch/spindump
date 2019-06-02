@@ -431,6 +431,7 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
                                              const struct spindump_event* event,
                                              struct spindump_connection** p_connection) {
   struct timeval when;
+  spindump_deepdeepdebugf("spindump_analyze_processevent_new_connection");
   spindump_timestamp_to_timeval(event->timestamp,&when);
   spindump_port side1port;
   spindump_port side2port;
@@ -676,7 +677,9 @@ spindump_analyze_processevent_new_rtt_measurement(struct spindump_analyze* state
     0;
   struct timeval sent;
   struct timeval rcvd;
+  spindump_deepdeepdebugf("spindump_analyze_processevent_new_rttmeasurement 1");
   spindump_timestamp_to_timeval(timestampEarlier,&sent);
+  spindump_deepdeepdebugf("spindump_analyze_processevent_new_rttmeasurement 2");
   spindump_timestamp_to_timeval(timestamp,&rcvd);
   int right = (event->u.newRttMeasurement.direction == spindump_direction_fromresponder);
   int unidirectional = (event->u.newRttMeasurement.measurement == spindump_measurement_type_unidirectional);
@@ -953,11 +956,14 @@ spindump_analyze_event_updateinfo(struct spindump_analyze* state,
   struct timeval* tv = 0;
   if (connection->packetsFromSide1 < event->packetsFromSide1) {
     tv = &connection->latestPacketFromSide1;
+    spindump_deepdeepdebugf("spindump_analyze_processevent_updateinfo 1");
+    spindump_timestamp_to_timeval(event->timestamp,tv);
   }
   if (connection->packetsFromSide2 < event->packetsFromSide2) {
     tv = &connection->latestPacketFromSide2;
+    spindump_deepdeepdebugf("spindump_analyze_processevent_updateinfo 2");
+    spindump_timestamp_to_timeval(event->timestamp,tv);
   }
-  spindump_timestamp_to_timeval(event->timestamp,tv);
   
   //
   // Update packet counters
@@ -965,6 +971,16 @@ spindump_analyze_event_updateinfo(struct spindump_analyze* state,
   
   connection->packetsFromSide1 = event->packetsFromSide1;
   connection->packetsFromSide2 = event->packetsFromSide2;
+  if (tv == 0) {
+    tv = &connection->creationTime;
+  }
   spindump_bandwidth_setcounter(&connection->bytesFromSide1,event->bytesFromSide1,tv);
   spindump_bandwidth_setcounter(&connection->bytesFromSide2,event->bytesFromSide2,tv);
+
+  //
+  // Update bandwidth numbers
+  //
+  
+  connection->bytesFromSide1.bytesInLastPeriod = event->bandwidthFromSide1;
+  connection->bytesFromSide2.bytesInLastPeriod = event->bandwidthFromSide2;
 }

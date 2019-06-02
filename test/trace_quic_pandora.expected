@@ -124,6 +124,5 @@
 { "Event": "new", "Type": "UDP", "Addrs": ["192.168.203.175","192.168.203.255"], "Session": "17500:17500", "Ts": 1558446418963013, "State": "Starting", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
 { "Event": "new", "Type": "UDP", "Addrs": ["192.168.203.175","224.0.0.1"], "Session": "55487:1337", "Ts": 1558446444398924, "State": "Starting", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
 { "Event": "delete", "Type": "UDP", "Addrs": ["192.168.203.175","192.168.203.255"], "Session": "17500:17500", "State": "Starting", "Packets1": 1, "Packets2": 0, "Bytes1": 334, "Bytes2": 0, "Bandwidth1": 334, "Bandwidth2": 0 },
-{ "Event": "delete", "Type": "UDP", "Addrs": ["192.168.203.175","192.168.203.255"], "Session": "17500:17500", "State": "Starting", "Packets1": 1, "Packets2": 0, "Bytes1": 334, "Bytes2": 0, "Bandwidth1": 334, "Bandwidth2": 0 },
 { "Event": "new", "Type": "UDP", "Addrs": ["192.168.203.175","192.168.203.255"], "Session": "17500:17500", "Ts": 1558446449004746, "State": "Starting", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 }
 ]

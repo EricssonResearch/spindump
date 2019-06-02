@@ -552,7 +552,7 @@ unittests_eventjsonparser(void) {
   const char* jsonInput1 =
     "{ \"Event\": \"new\", \"Type\": \"QUIC\", \"Addrs\": [\"1.2.3.4\",\"5.6.7.8\"], "
     "\"Session\": \"aabbccdd:eeff0011223344556677 (12:4560)\", \"Ts\": 1892188800001234, \"State\": \"Starting\", "
-    "\"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3 }";
+    "\"Packets1\": 1, \"Packets2\": 0, \"Bytes1\": 2, \"Bytes2\": 3, \"Bandwidth\": 2, \"Bandwidth2\": 3 }";
   ret = spindump_json_parse(&eventschema,0,&jsonInput1);
   spindump_assert(ret == 1);
   json = parsedRecord;

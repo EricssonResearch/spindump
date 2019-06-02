@@ -177,6 +177,16 @@ static struct spindump_json_schema fieldbytes2schema = {
   .callback = 0
 };
 
+static struct spindump_json_schema fieldbandwidth1schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldbandwidth2schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
 static struct spindump_json_schema fieldecn0schema = {
   .type = spindump_json_schema_type_integer,
   .callback = 0
@@ -197,7 +207,7 @@ static struct spindump_json_schema recordschema = {
   .callback = 0,
   .u = {
     .record = {
-      .nFields = 12,
+      .nFields = 22,
       .fields = {
         { .required = 1, .name = "Event", .schema = &fieldeventschema },
         { .required = 1, .name = "Type", .schema = &fieldtypeschema },
@@ -216,6 +226,8 @@ static struct spindump_json_schema recordschema = {
         { .required = 1, .name = "Packets2", .schema = &fieldpackets2schema },
         { .required = 1, .name = "Bytes1", .schema = &fieldbytes1schema },
         { .required = 1, .name = "Bytes2", .schema = &fieldbytes2schema },
+        { .required = 0, .name = "Bandwidth1", .schema = &fieldbandwidth1schema },
+        { .required = 0, .name = "Bandwidth2", .schema = &fieldbandwidth2schema },
         { .required = 0, .name = "Ecn0", .schema = &fieldecn0schema },
         { .required = 0, .name = "Ecn1", .schema = &fieldecn1schema },
         { .required = 0, .name = "Ce", .schema = &fieldceschema }

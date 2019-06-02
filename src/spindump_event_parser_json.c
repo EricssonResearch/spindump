@@ -134,6 +134,20 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
   event->bytesFromSide1 = (unsigned int)bytes1;
   unsigned long long bytes2 = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Bytes2",json));
   event->bytesFromSide2 = (unsigned int)bytes2;
+  const struct spindump_json_value* bandwidth1Elem = spindump_json_value_getfield("Bandwidth1",json);
+  if (bandwidth1Elem != 0) {
+    unsigned long long bandwidth1 = spindump_json_value_getinteger(bandwidth1Elem);
+    event->bandwidthFromSide1 = (unsigned int)bandwidth1;
+  } else {
+    event->bandwidthFromSide1 = 0;
+  }
+  const struct spindump_json_value* bandwidth2Elem = spindump_json_value_getfield("Bandwidth2",json);
+  if (bandwidth2Elem != 0) {
+    unsigned long long bandwidth2 = spindump_json_value_getinteger(bandwidth2Elem);
+    event->bandwidthFromSide2 = (unsigned int)bandwidth2;
+  } else {
+    event->bandwidthFromSide2 = 0;
+  }
   
   //
   // Get the rest of the fields based on the type of event

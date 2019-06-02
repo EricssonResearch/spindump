@@ -194,6 +194,8 @@ spindump_timeval_to_timestamp(const struct timeval* timev,
 void
 spindump_timestamp_to_timeval(const unsigned long long timestamp,
                               struct timeval* timev) {
+  spindump_deepdeepdebugf("spindump_timestamp_to_timeval %llu %lx",
+                          timestamp, timev);
   spindump_assert(timestamp != 0);
   spindump_assert(timev != 0);
   timev->tv_sec = timestamp / (1000*1000);
