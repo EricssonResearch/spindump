@@ -65,13 +65,6 @@ spindump_connections_lastaction(struct spindump_connection* connection,
     return(0);
   } else if (spindump_iszerotime(&connection->latestPacketFromSide2)) {
     spindump_assert(!spindump_iszerotime(&connection->latestPacketFromSide1));
-#if 0
-    spindump_deepdebugf("spindump_connections_lastaction now %lu:%lu, latestside1 %lu:%lu",
-                        now->tv_sec,
-                        now->tv_usec,
-                        connection->latestPacketFromSide1.tv_sec,
-                        connection->latestPacketFromSide1.tv_usec);
-#endif
     diff = spindump_timediffinusecs(now,&connection->latestPacketFromSide1);
     return(diff);
   } else {

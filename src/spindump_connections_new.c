@@ -88,6 +88,7 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
   
   connection->type = type;
   connection->manuallyCreated = manuallyCreated;
+  connection->remote = 0;
   connection->creationTime = *when;
   connection->latestPacketFromSide1 = *when;
   spindump_zerotime(&connection->latestPacketFromSide2);

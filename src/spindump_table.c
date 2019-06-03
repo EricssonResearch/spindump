@@ -210,7 +210,8 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
     spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed");
     stats->connectionsDeletedInactive++;
     
-  } else if (lastAction >= (unsigned long long)(spindump_connection_inactive_timeout)) {
+  } else if (lastAction >= (unsigned long long)(spindump_connection_inactive_timeout) &&
+             !connection->remote) {
     
     spindump_connectionstable_deleteconnection(connection,table,analyzer,"inactive");
     stats->connectionsDeletedInactive++;

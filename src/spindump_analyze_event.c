@@ -569,6 +569,7 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
   spindump_deepdeepdebugf("spindump_analyze_processevent_new_connection update");
   
   if (*p_connection != 0) {
+    (*p_connection)->remote = 1;
     spindump_analyze_event_updateinfo(state,*p_connection,event);
   }
   

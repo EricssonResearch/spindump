@@ -91,6 +91,7 @@ struct spindump_connection {
   enum spindump_connection_type type;               // the type of the connection (tcp, icmp, aggregate, etc)
   enum spindump_connection_state state;             // current state (establishing/established/etc)
   int manuallyCreated;                              // was this entry created by management action or dynamically?
+  int remote;                                       // was this entry created by a remote Spindump instance?
   int deleted;                                      // is the connection closed/deleted (but not yet removed)?
   uint8_t padding[4];                               // unused padding to align the next field properly
   struct timeval creationTime;                      // when did we see the first packet?
