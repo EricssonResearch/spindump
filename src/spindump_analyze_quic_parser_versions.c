@@ -35,8 +35,6 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
-static const struct spindump_quic_versiondescr*
-spindump_analyze_quic_parser_version_findversion(uint32_t version);
 static void
 spindump_analyze_quic_parser_version_fixedname(uint32_t version,
                                                const char* basename,
@@ -47,41 +45,59 @@ spindump_analyze_quic_parser_version_googlename(uint32_t version,
                                                const char* basename,
                                                char* buf,
                                                size_t bufsize);
+static int
+spindump_analyze_quic_parser_version_messagefunction17(uint32_t version,
+                                                       uint8_t headerByte,
+                                                       enum spindump_quic_message_type* type);
+static int
+spindump_analyze_quic_parser_version_messagefunction16(uint32_t version,
+                                                       uint8_t headerByte,
+                                                       enum spindump_quic_message_type* type);
+static int
+spindump_analyze_quic_parser_version_messagefunctiongoogle(uint32_t version,
+                                                           uint8_t headerByte,
+                                                           enum spindump_quic_message_type* type);
 
 //
 // Variables ----------------------------------------------------------------------------------
 //
 
+#define fixednamefn spindump_analyze_quic_parser_version_fixedname
+#define googlenamefn spindump_analyze_quic_parser_version_googlename
+#define messagefunc17 spindump_analyze_quic_parser_version_messagefunction17
+#define messagefunc16 spindump_analyze_quic_parser_version_messagefunction16
+#define messagefuncgo spindump_analyze_quic_parser_version_messagefunctiongoogle
+
 static const struct spindump_quic_versiondescr versions[] = {
-  //      version number              function to generate a name       basename supported?    
-  { spindump_quic_version_rfc,     spindump_analyze_quic_parser_version_fixedname, "RFC",    1 },
-  { spindump_quic_version_draft20, spindump_analyze_quic_parser_version_fixedname, "v20",    1 },
-  { spindump_quic_version_draft19, spindump_analyze_quic_parser_version_fixedname, "v19",    1 },
-  { spindump_quic_version_draft18, spindump_analyze_quic_parser_version_fixedname, "v18",    1 },
-  { spindump_quic_version_draft17, spindump_analyze_quic_parser_version_fixedname, "v17",    1 },
-  { spindump_quic_version_draft16, spindump_analyze_quic_parser_version_fixedname, "v16",    1 },
-  { spindump_quic_version_draft15, spindump_analyze_quic_parser_version_fixedname, "v15",    1 },
-  { spindump_quic_version_draft14, spindump_analyze_quic_parser_version_fixedname, "v14",    1 },
-  { spindump_quic_version_draft13, spindump_analyze_quic_parser_version_fixedname, "v13",    1 },
-  { spindump_quic_version_draft12, spindump_analyze_quic_parser_version_fixedname, "v12",    1 },
-  { spindump_quic_version_draft11, spindump_analyze_quic_parser_version_fixedname, "v11",    1 },
-  { spindump_quic_version_draft10, spindump_analyze_quic_parser_version_fixedname, "v10",    1 },
-  { spindump_quic_version_draft09, spindump_analyze_quic_parser_version_fixedname, "v09",    1 },
-  { spindump_quic_version_draft08, spindump_analyze_quic_parser_version_fixedname, "v08",    1 },
-  { spindump_quic_version_draft07, spindump_analyze_quic_parser_version_fixedname, "v07",    1 },
-  { spindump_quic_version_draft06, spindump_analyze_quic_parser_version_fixedname, "v06",    1 },
-  { spindump_quic_version_draft05, spindump_analyze_quic_parser_version_fixedname, "v05",    1 },
-  { spindump_quic_version_draft04, spindump_analyze_quic_parser_version_fixedname, "v04",    1 },
-  { spindump_quic_version_draft03, spindump_analyze_quic_parser_version_fixedname, "v03",    1 },
-  { spindump_quic_version_draft02, spindump_analyze_quic_parser_version_fixedname, "v02",    1 },
-  { spindump_quic_version_draft01, spindump_analyze_quic_parser_version_fixedname, "v01",    1 },
-  { spindump_quic_version_draft00, spindump_analyze_quic_parser_version_fixedname, "v00",    1 },
-  { spindump_quic_version_quant20, spindump_analyze_quic_parser_version_fixedname, "v.qn20", 1 },
-  { spindump_quic_version_quant19, spindump_analyze_quic_parser_version_fixedname, "v.qn19", 1 },
-  { spindump_quic_version_huitema, spindump_analyze_quic_parser_version_fixedname, "v.huit", 1 },
-  { spindump_quic_version_mozilla, spindump_analyze_quic_parser_version_fixedname, "v.moz",  1 },
-  { spindump_quic_version_google,  spindump_analyze_quic_parser_version_googlename, "g.",    1 },
-  { spindump_quic_version_unknown, 0,                                               0,       0 }
+  //      version number              function to generate a name                basename  supported?  function to get message
+  { spindump_quic_version_rfc,     fixednamefn,  "RFC",    1,  messagefunc17 },
+  { spindump_quic_version_draft20, fixednamefn,  "v20",    1,  messagefunc17 },
+  { spindump_quic_version_draft19, fixednamefn,  "v19",    1,  messagefunc17 },
+  { spindump_quic_version_draft18, fixednamefn,  "v18",    1,  messagefunc17 },
+  { spindump_quic_version_draft17, fixednamefn,  "v17",    1,  messagefunc17 },
+  { spindump_quic_version_draft16, fixednamefn,  "v16",    1,  messagefunc16 },
+  { spindump_quic_version_draft15, fixednamefn,  "v15",    0,  0 },
+  { spindump_quic_version_draft14, fixednamefn,  "v14",    0,  0 },
+  { spindump_quic_version_draft13, fixednamefn,  "v13",    0,  0 },
+  { spindump_quic_version_draft12, fixednamefn,  "v12",    0,  0 },
+  { spindump_quic_version_draft11, fixednamefn,  "v11",    0,  0 },
+  { spindump_quic_version_draft10, fixednamefn,  "v10",    0,  0 },
+  { spindump_quic_version_draft09, fixednamefn,  "v09",    0,  0 },
+  { spindump_quic_version_draft08, fixednamefn,  "v08",    0,  0 },
+  { spindump_quic_version_draft07, fixednamefn,  "v07",    0,  0 },
+  { spindump_quic_version_draft06, fixednamefn,  "v06",    0,  0 },
+  { spindump_quic_version_draft05, fixednamefn,  "v05",    0,  0 },
+  { spindump_quic_version_draft04, fixednamefn,  "v04",    0,  0 },
+  { spindump_quic_version_draft03, fixednamefn,  "v03",    0,  0 },
+  { spindump_quic_version_draft02, fixednamefn,  "v02",    0,  0 },
+  { spindump_quic_version_draft01, fixednamefn,  "v01",    0,  0 },
+  { spindump_quic_version_draft00, fixednamefn,  "v00",    0,  0 },
+  { spindump_quic_version_quant20, fixednamefn,  "v.qn20", 1,  messagefunc17 },
+  { spindump_quic_version_quant19, fixednamefn,  "v.qn19", 1,  messagefunc17 },
+  { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,  messagefunc17 },
+  { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,  messagefunc17 },
+  { spindump_quic_version_google,  googlenamefn, "g.",     1,  messagefuncgo },
+  { spindump_quic_version_unknown, 0,            0,        0,  0 }
 };
   
 //
@@ -92,7 +108,7 @@ static const struct spindump_quic_versiondescr versions[] = {
 // Find a version structure, or return 0 if none is founds
 //
 
-static const struct spindump_quic_versiondescr*
+const struct spindump_quic_versiondescr*
 spindump_analyze_quic_parser_version_findversion(uint32_t version) {
   const struct spindump_quic_versiondescr* search = &versions[0];
   while (search->version != spindump_quic_version_unknown) {
@@ -196,4 +212,60 @@ spindump_analyze_quic_parser_version_googlename(uint32_t version,
   snprintf(buf,bufsize-1,"%s%u",
            basename,
            (unsigned int)spindump_analyze_quic_parser_getgoogleversion(version));
+}
+
+static int
+spindump_analyze_quic_parser_version_messagefunction17(uint32_t version,
+                                                       uint8_t headerByte,
+                                                       enum spindump_quic_message_type* type) {
+  uint8_t messageType = headerByte & spindump_quic_byte_type;
+  spindump_deepdebugf("looking at v17-20 message type %02x", messageType);
+  switch (messageType) {
+  case spindump_quic_byte_type_initial:
+    *type = spindump_quic_message_type_initial;
+    return(1);
+  case spindump_quic_byte_type_0rttprotected:
+    *type = spindump_quic_message_type_0rtt;
+    return(1);
+  case spindump_quic_byte_type_handshake:
+    *type = spindump_quic_message_type_handshake;
+    return(1);
+  case spindump_quic_byte_type_retry:
+    *type = spindump_quic_message_type_retry;
+    return(1);
+  default:
+    return(0);
+  }
+}
+
+static int
+spindump_analyze_quic_parser_version_messagefunction16(uint32_t version,
+                                                       uint8_t headerByte,
+                                                       enum spindump_quic_message_type* type) {
+  uint8_t messageType = headerByte & spindump_quic_byte_type_draft16;
+  spindump_deepdebugf("looking at v16 message type %02x", messageType);
+  switch (messageType) {
+  case spindump_quic_byte_type_initial_draft16:
+    *type = spindump_quic_message_type_initial;
+    return(1);
+  case spindump_quic_byte_type_0rttprotected_draft16:
+    *type = spindump_quic_message_type_0rtt;
+    return(1);
+  case spindump_quic_byte_type_handshake_draft16:
+    *type = spindump_quic_message_type_handshake;
+    return(1);
+  case spindump_quic_byte_type_retry_draft16:
+    *type = spindump_quic_message_type_retry;
+    return(1);
+  default:
+    return(0);
+  }
+}
+
+static int
+spindump_analyze_quic_parser_version_messagefunctiongoogle(uint32_t version,
+                                                           uint8_t headerByte,
+                                                           enum spindump_quic_message_type* type) {
+  *type = spindump_quic_message_type_initial;
+  return(1);
 }

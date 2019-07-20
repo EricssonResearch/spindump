@@ -200,95 +200,23 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   if (spindump_quic_version_isforcenegot(version)) {
     version = spindump_quic_version_forcenegotiation;
   }
-  switch (version) {
-  case spindump_quic_version_rfc:
-  case spindump_quic_version_draft20:
-  case spindump_quic_version_draft19:
-  case spindump_quic_version_draft18:
-  case spindump_quic_version_draft17:
-  case spindump_quic_version_draft16:
-  case spindump_quic_version_draft15:
-  case spindump_quic_version_draft14:
-  case spindump_quic_version_draft13:
-  case spindump_quic_version_draft12:
-  case spindump_quic_version_draft11:
-  case spindump_quic_version_draft10:
-  case spindump_quic_version_draft09:
-  case spindump_quic_version_draft08:
-  case spindump_quic_version_draft07:
-  case spindump_quic_version_draft06:
-  case spindump_quic_version_draft05:
-  case spindump_quic_version_draft04:
-  case spindump_quic_version_draft03:
-  case spindump_quic_version_draft02:
-  case spindump_quic_version_draft01:
-  case spindump_quic_version_draft00:
-  case spindump_quic_version_quant19:
-  case spindump_quic_version_quant20:
-  case spindump_quic_version_huitema:
-  case spindump_quic_version_mozilla:
-  case spindump_quic_version_negotiation:
-  case spindump_quic_version_forcenegotiation:
-    break;
-  default:
+  const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(version);
+  if (version != spindump_quic_version_negotiation &&
+      version != spindump_quic_version_forcenegotiation &&
+      descriptor == 0) {
     return(0);
   }
   
   //
   // Look at the message type
   // 
-  
-  uint8_t messageType;
-  switch (version) {
-    
-  case spindump_quic_version_rfc:
-  case spindump_quic_version_draft20:
-  case spindump_quic_version_draft19:
-  case spindump_quic_version_draft18:
-  case spindump_quic_version_draft17:
-  case spindump_quic_version_quant20:
-  case spindump_quic_version_quant19:
-  case spindump_quic_version_huitema:
-  case spindump_quic_version_mozilla:
-    messageType = headerByte & spindump_quic_byte_type;
-    spindump_deepdebugf("looking at v17-20 message type %02x", messageType);
-    switch (messageType) {
-    case spindump_quic_byte_type_initial:
-    case spindump_quic_byte_type_0rttprotected:
-      break;
-    case spindump_quic_byte_type_handshake:
-    case spindump_quic_byte_type_retry:
-      break;
-    default:
-      return(0);
-    }
-    break;
-    
-  case spindump_quic_version_draft16:
-    messageType = headerByte & spindump_quic_byte_type_draft16;
-    spindump_deepdebugf("looking at v16 message type %02x", messageType);
-    switch (messageType) {
-    case spindump_quic_byte_type_initial_draft16:
-    case spindump_quic_byte_type_0rttprotected_draft16:
-      break;
-    case spindump_quic_byte_type_handshake_draft16:
-    case spindump_quic_byte_type_retry_draft16:
-      break;
-    default:
-      return(0);
-    }
-    break;
 
-  case spindump_quic_version_negotiation:
-    spindump_deepdebugf("looking at a version negotiation message");
-    break;
-    
-  case spindump_quic_version_forcenegotiation:
-    spindump_deepdebugf("looking at a version negotiation-forcing message");
-    break;
-    
-  default:
-    return(0);
+  if (descriptor != 0 && descriptor->supported) {
+    enum spindump_quic_message_type type;
+    if (!(*(descriptor->messagetypefunction))(version,headerByte,&type)) {
+      return(0);
+    }
   }
   
   //

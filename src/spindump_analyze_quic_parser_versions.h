@@ -83,12 +83,17 @@ typedef void
                                                  const char* basename,
                                                  char* buf,
                                                  size_t bufsize);
+typedef int
+(*spindump_analyze_quic_parser_version_messagetypefunc)(uint32_t version,
+                                                        uint8_t headerByte,
+                                                        enum spindump_quic_message_type* type);
 
 struct spindump_quic_versiondescr {
   uint32_t version;
   spindump_analyze_quic_parser_version_namefunc namefunction;
   const char* basename;
   int supported;
+  spindump_analyze_quic_parser_version_messagetypefunc messagetypefunction;
 };
 
 //
@@ -104,5 +109,7 @@ int
 spindump_analyze_quic_parser_isgoogleversion(uint32_t version);
 uint32_t
 spindump_analyze_quic_parser_getgoogleversion(uint32_t version);
+const struct spindump_quic_versiondescr*
+spindump_analyze_quic_parser_version_findversion(uint32_t version);
 
 #endif // SPINDUMP_ANALYZE_QUIC_PARSER_VERSIONS_H
