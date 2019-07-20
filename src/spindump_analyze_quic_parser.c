@@ -1500,86 +1500,39 @@ spindump_analyze_quic_parser_parsemessagetype(uint8_t headerByte,
   //
   // Switch the decoding based on what version we are using
   //
-  
-  switch (version) {
+
+  if (version == spindump_quic_version_negotiation) {
     
-  case spindump_quic_version_rfc:
-  case spindump_quic_version_draft20:
-  case spindump_quic_version_draft19:
-  case spindump_quic_version_draft18:
-  case spindump_quic_version_draft17:
-  case spindump_quic_version_quant20:
-  case spindump_quic_version_quant19:
-  case spindump_quic_version_huitema:
-  case spindump_quic_version_mozilla:
-    *p_messageType = headerByte & spindump_quic_byte_type;
-    spindump_deepdebugf("QUIC v18 message type %02x", *p_messageType);
-    switch (*p_messageType) {
-    case spindump_quic_byte_type_initial:
-      *p_type = spindump_quic_message_type_initial;
-      spindump_deepdebugf("QUIC message type = initial");
-      break;
-    case spindump_quic_byte_type_0rttprotected:
-      spindump_deepdebugf("QUIC message type = 0rttprotected");
-      *p_type = spindump_quic_message_type_0rtt;
-      *p_0rttAttempted = 1;
-      break;
-    case spindump_quic_byte_type_handshake:
-      spindump_deepdebugf("QUIC message type = handshake");
-      *p_type = spindump_quic_message_type_handshake;
-      break;
-    case spindump_quic_byte_type_retry:
-      spindump_deepdebugf("QUIC message type = retry");
-      *p_type = spindump_quic_message_type_retry;
-      break;
-    default:
-      stats->unrecognisedQuicType++;
-      return(0);
-    }
-    break;
-    
-  case spindump_quic_version_draft16:
-    *p_messageType = headerByte & spindump_quic_byte_type_draft16;
-    spindump_deepdebugf("QUIC v17 message type %02x", *p_messageType);
-    switch (*p_messageType) {
-    case spindump_quic_byte_type_initial_draft16:
-      *p_type = spindump_quic_message_type_initial;
-      spindump_deepdebugf("QUIC message type = initial");
-      break;
-    case spindump_quic_byte_type_0rttprotected_draft16:
-      spindump_deepdebugf("QUIC message type = 0rttprotected");
-      *p_type = spindump_quic_message_type_0rtt;
-      *p_0rttAttempted = 1;
-      break;
-    case spindump_quic_byte_type_handshake_draft16:
-      spindump_deepdebugf("QUIC message type = handshake");
-      *p_type = spindump_quic_message_type_handshake;
-      break;
-    case spindump_quic_byte_type_retry_draft16:
-      spindump_deepdebugf("QUIC message type = retry");
-      *p_type = spindump_quic_message_type_retry;
-      break;
-    default:
-      stats->unrecognisedQuicType++;
-      return(0);
-    }
-    break;
-    
-  case spindump_quic_version_negotiation:
     *p_type = spindump_quic_message_type_versionnegotiation;
     spindump_deepdebugf("QUIC message type = versionnegotiation");
-    break;
     
-  case spindump_quic_version_forcenegotiation:
+  } else if (version == spindump_quic_version_forcenegotiation) {
+    
     *p_type = spindump_quic_message_type_initial;
     spindump_deepdebugf("QUIC message type = initial (via forced negotiation)");
-    break;
+
+  } else {
     
-  default:
-    spindump_debugf("invalid version %lx", version);
-    stats->unrecognisedQuicVersion++;
-    return(0);
+    //
+    // All other versions. First look up from the database of versions
+    // what this version is and if it is recognised.
+    //
     
+    const struct spindump_quic_versiondescr* descriptor =
+      spindump_analyze_quic_parser_version_findversion(version);
+    if (descriptor != 0) {
+      if ((*(descriptor->messagetypefunction))(version,headerByte,p_type)) {
+        if (*p_type == spindump_quic_message_type_0rtt) {
+          *p_0rttAttempted = 1;
+        }
+      } else {
+        stats->unrecognisedQuicType++;
+        return(0);
+      }
+    } else {
+      stats->unrecognisedQuicVersion++;
+      return(0);
+    }
   }
   
   //
