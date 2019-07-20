@@ -98,6 +98,7 @@ spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
 static const struct spindump_quic_versiondescr versions[] = {
   //      version number            get name   basename supported? getmessage     parselengths   getspinbit
   { spindump_quic_version_rfc,     fixednamefn,  "RFC",    1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft21, fixednamefn,  "v21",    1,    messagefunc17,  parselengths17,  spinbit17 },
   { spindump_quic_version_draft20, fixednamefn,  "v20",    1,    messagefunc17,  parselengths17,  spinbit17 },
   { spindump_quic_version_draft19, fixednamefn,  "v19",    1,    messagefunc17,  parselengths17,  spinbit17 },
   { spindump_quic_version_draft18, fixednamefn,  "v18",    1,    messagefunc17,  parselengths17,  spinbit17 },
