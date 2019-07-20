@@ -182,7 +182,7 @@ struct spindump_connection {
       struct spindump_spintracker spinFromPeer2to1; // tracking spin bit flips from side 2 to 1
       struct spindump_rtloss1tracker rtloss1FromPeer1to2;       // tracking round trip loss from side 1 to 2
       struct spindump_rtloss1tracker rtloss1FromPeer2to1;       // tracking round trip loss from side 2 to 1
-      uint8_t padding2[8];                          // unused padding to align the structure size properly
+      //uint8_t padding2[8];                          // unused padding to align the structure size properly
     } quic;
 
     struct {
