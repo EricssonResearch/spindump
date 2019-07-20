@@ -47,7 +47,8 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
                                                 struct spindump_spintracker* otherDirectionTracker,
                                                 struct timeval* ts,
                                                 int spin,
-                                                int fromResponder);
+                                                int fromResponder,
+                                                int *isFlip);
 void
 spindump_spintracker_uninitialize(struct spindump_spintracker* tracker);
 

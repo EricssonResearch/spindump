@@ -381,6 +381,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   //
 
   int spin;
+  int isFlip=0;
   spindump_deepdebugf("checking for the spin bit (may have = %u)", mayHaveSpinBit);
   if (spindump_analyze_quic_parser_getspinbit(udpPayload,
                                               size_udppayload,
@@ -396,7 +397,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       &connection->u.quic.spinFromPeer1to2,
                                                       &packet->timestamp,
                                                       spin,
-                                                      fromResponder);
+                                                      fromResponder,
+                                                      &isFlip);
     } else {
       spindump_spintracker_observespinandcalculatertt(state,
                                                       packet,
@@ -405,7 +407,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       &connection->u.quic.spinFromPeer2to1,
                                                       &packet->timestamp,
                                                       spin,
-                                                      fromResponder);
+                                                      fromResponder,
+                                                      &isFlip);
     }
   }
 
