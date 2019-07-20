@@ -156,7 +156,8 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
                                                 struct spindump_spintracker* otherDirectionTracker,
                                                 struct timeval* ts,
                                                 int spin,
-                                                int fromResponder) {
+                                                int fromResponder,
+                                                int *isFlip) {
   int spin0to1;
   if (spindump_spintracker_observespin(state,
                                        packet,
@@ -167,6 +168,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
                                        fromResponder,
                                        &spin0to1)) {
     
+    *isFlip=1;
     //
     // Try to match the spin flip with the most recent matching flip in the other direction.
     // Responder spin flips match with equal flips, initiator flips match with inverse flips.
