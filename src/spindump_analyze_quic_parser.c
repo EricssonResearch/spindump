@@ -200,6 +200,12 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   if (spindump_quic_version_isforcenegot(version)) {
     version = spindump_quic_version_forcenegotiation;
   }
+
+  //
+  // Look up from the database of versions what this version is
+  // and if it is recognised.
+  //
+  
   const struct spindump_quic_versiondescr* descriptor =
     spindump_analyze_quic_parser_version_findversion(version);
   if (version != spindump_quic_version_negotiation &&
@@ -1428,63 +1434,30 @@ spindump_analyze_quic_parser_parseversionnumber(const unsigned char* payload,
     *p_version = spindump_quic_version_forcenegotiation;
   }
   
-  switch (*p_version) {
-    
-  case spindump_quic_version_rfc:
-    // OK// 
-    spindump_deepdebugf("QUIC version rfc ok");
-    break;
-    
-  case spindump_quic_version_draft20:
-  case spindump_quic_version_draft19:
-  case spindump_quic_version_draft18:
-  case spindump_quic_version_draft17:
-  case spindump_quic_version_draft16:
-  case spindump_quic_version_quant19:
-  case spindump_quic_version_quant20:
-  case spindump_quic_version_huitema:
-  case spindump_quic_version_mozilla:
-    // OK// 
-    spindump_deepdebugf("QUIC version ok");
-    break;
-    
-  case spindump_quic_version_draft15:
-  case spindump_quic_version_draft14:
-  case spindump_quic_version_draft13:
-  case spindump_quic_version_draft12:
-  case spindump_quic_version_draft11:
-  case spindump_quic_version_draft10:
-  case spindump_quic_version_draft09:
-  case spindump_quic_version_draft08:
-  case spindump_quic_version_draft07:
-  case spindump_quic_version_draft06:
-  case spindump_quic_version_draft05:
-  case spindump_quic_version_draft04:
-  case spindump_quic_version_draft03:
-  case spindump_quic_version_draft02:
-  case spindump_quic_version_draft01:
-  case spindump_quic_version_draft00:
-    spindump_deepdebugf("QUIC version !ok");
-    *p_version = spindump_quic_version_unknown;
-    stats->unsupportedQuicVersion++;
-    return(0);
-    
-  case spindump_quic_version_negotiation:
+  //
+  // Look up from the database of versions what this version is
+  // and if it is recognised.
+  //
+  
+  if (*p_version == spindump_quic_version_negotiation) {
     spindump_deepdebugf("QUIC version negotiation");
     *p_version = spindump_quic_version_negotiation;
-    break;
-    
-  case spindump_quic_version_forcenegotiation:
+  } else if (*p_version == spindump_quic_version_forcenegotiation) {
     spindump_deepdebugf("QUIC forcing version negotiation");
     *p_version = spindump_quic_version_negotiation;
-    break;
-    
-  default:
-    spindump_deepdebugf("QUIC version just not recognised !ok (ver = %lx)", *p_version);
-    *p_version = spindump_quic_version_unknown;
-    stats->unrecognisedQuicVersion++;
-    return(0);
-    
+  } else {
+    const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(*p_version);
+    if (descriptor == 0) {
+      spindump_deepdebugf("QUIC version just not recognised !ok (ver = %lx)", *p_version);
+      *p_version = spindump_quic_version_unknown;
+      stats->unrecognisedQuicVersion++;
+      return(0);
+    } else if (!descriptor->supported) {
+      *p_version = spindump_quic_version_unknown;
+      stats->unsupportedQuicVersion++;
+      return(0);
+    }
   }
   
   //
