@@ -217,12 +217,10 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   //
   // Look at the message type
   // 
-
-  if (descriptor != 0 && descriptor->supported) {
-    enum spindump_quic_message_type type;
-    if (!(*(descriptor->messagetypefunction))(version,headerByte,&type)) {
-      return(0);
-    }
+  
+  enum spindump_quic_message_type type;
+  if (!spindump_analyze_quic_parser_version_messagetypefunction(version,headerByte,&type)) {
+    return(0);
   }
   
   //

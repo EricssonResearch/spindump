@@ -282,3 +282,23 @@ spindump_analyze_quic_parser_version_messagefunctiongoogle(uint32_t version,
   *type = spindump_quic_message_type_initial;
   return(1);
 }
+
+//
+// Determine what the message type for this packet is, based on
+// version and the header byte. Return 1 if the type was able to be
+// determined, 0 otherwise. Set the output parameter type
+// appropriately if successful.
+//
+
+int
+spindump_analyze_quic_parser_version_messagetypefunction(uint32_t version,
+                                                         uint8_t headerByte,
+                                                         enum spindump_quic_message_type* p_type) {
+  const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(version);
+  if (descriptor == 0 || !descriptor->supported) {
+    return(0);
+  } else {
+    return((*(descriptor->messagetypefunction))(version,headerByte,p_type));
+  }
+}

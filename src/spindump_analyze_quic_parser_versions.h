@@ -120,5 +120,9 @@ uint32_t
 spindump_analyze_quic_parser_getgoogleversion(uint32_t version);
 const struct spindump_quic_versiondescr*
 spindump_analyze_quic_parser_version_findversion(uint32_t version);
+int
+spindump_analyze_quic_parser_version_messagetypefunction(uint32_t version,
+                                                         uint8_t headerByte,
+                                                         enum spindump_quic_message_type* p_type);
 
 #endif // SPINDUMP_ANALYZE_QUIC_PARSER_VERSIONS_H
