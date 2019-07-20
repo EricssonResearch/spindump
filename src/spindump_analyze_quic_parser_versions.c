@@ -291,14 +291,38 @@ spindump_analyze_quic_parser_version_messagefunctiongoogle(uint32_t version,
 //
 
 int
-spindump_analyze_quic_parser_version_messagetypefunction(uint32_t version,
-                                                         uint8_t headerByte,
-                                                         enum spindump_quic_message_type* p_type) {
+spindump_analyze_quic_parser_version_getmessagetype(uint32_t version,
+                                                    uint8_t headerByte,
+                                                    enum spindump_quic_message_type* p_type) {
   const struct spindump_quic_versiondescr* descriptor =
     spindump_analyze_quic_parser_version_findversion(version);
   if (descriptor == 0 || !descriptor->supported) {
     return(0);
   } else {
     return((*(descriptor->messagetypefunction))(version,headerByte,p_type));
+  }
+}
+
+int
+spindump_analyze_quic_parser_version_parselengths(uint32_t version,
+                                                  const unsigned char* payload,
+                                                  unsigned int payload_len,
+                                                  unsigned int remainingCaplen,
+                                                  enum spindump_quic_message_type type,
+                                                  unsigned int cidLengthsInBytes,
+                                                  unsigned int* p_messageLen,
+                                                  struct spindump_stats* stats) {
+  const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(version);
+  if (descriptor != 0 && descriptor->supported && descriptor->parselengthsfunction != 0) {
+    return((*(descriptor->parselengthsfunction))(payload,
+                                                 payload_len,
+                                                 remainingCaplen,
+                                                 type,
+                                                 cidLengthsInBytes,
+                                                 p_messageLen,
+                                                 stats));
+  } else {
+    return(0);
   }
 }

@@ -219,7 +219,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   // 
   
   enum spindump_quic_message_type type;
-  if (!spindump_analyze_quic_parser_version_messagetypefunction(version,headerByte,&type)) {
+  if (!spindump_analyze_quic_parser_version_getmessagetype(version,headerByte,&type)) {
     return(0);
   }
   
@@ -809,23 +809,17 @@ spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
   *p_messageLen = 0;
   
   //
-  // Switch based on version and message type
+  // Switch based on version and message type and then find out the lengths
   //
 
-  const struct spindump_quic_versiondescr* descriptor =
-    spindump_analyze_quic_parser_version_findversion(version);
-  if (descriptor != 0 && descriptor->supported && descriptor->parselengthsfunction != 0) {
-    return((*(descriptor->parselengthsfunction))(payload,
-                                                 payload_len,
-                                                 remainingCaplen,
-                                                 type,
-                                                 cidLengthsInBytes,
-                                                 p_messageLen,
-                                                 stats));
-  } else {
-    spindump_deepdebugf("version not supported for seeking packets");
-    return(0);
-  }
+  return(spindump_analyze_quic_parser_version_parselengths(version,
+                                                           payload,
+                                                           payload_len,
+                                                           remainingCaplen,
+                                                           type,
+                                                           cidLengthsInBytes,
+                                                           p_messageLen,
+                                                           stats));
 }
 
 int
@@ -1524,20 +1518,13 @@ spindump_analyze_quic_parser_parsemessagetype(uint8_t headerByte,
     // All other versions. First look up from the database of versions
     // what this version is and if it is recognised.
     //
-    
-    const struct spindump_quic_versiondescr* descriptor =
-      spindump_analyze_quic_parser_version_findversion(version);
-    if (descriptor != 0) {
-      if ((*(descriptor->messagetypefunction))(version,headerByte,p_type)) {
-        if (*p_type == spindump_quic_message_type_0rtt) {
-          *p_0rttAttempted = 1;
-        }
-      } else {
-        stats->unrecognisedQuicType++;
-        return(0);
+
+    if (spindump_analyze_quic_parser_version_getmessagetype(version,headerByte,p_type)) {
+      if (*p_type == spindump_quic_message_type_0rtt) {
+        *p_0rttAttempted = 1;
       }
     } else {
-      stats->unrecognisedQuicVersion++;
+      stats->unrecognisedQuicType++;
       return(0);
     }
   }
