@@ -34,6 +34,7 @@
 #include "spindump_mid.h"
 #include "spindump_bandwidth.h"
 #include "spindump_spin_structs.h"
+#include "spindump_rtloss1_structs.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------

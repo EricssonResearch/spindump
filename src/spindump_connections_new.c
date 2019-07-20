@@ -36,6 +36,7 @@
 #include "spindump_stats.h"
 #include "spindump_analyze_quic_parser.h"
 #include "spindump_spin.h"
+#include "spindump_rtloss1.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
