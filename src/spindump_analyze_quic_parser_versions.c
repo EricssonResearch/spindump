@@ -118,15 +118,16 @@ spindump_analyze_quic_parser_version_findversion(uint32_t version) {
 // Note: This function is not thread safe.
 //
 
-const char*
-spindump_analyze_quic_parser_versiontostring(uint32_t version) {
+void
+spindump_analyze_quic_parser_versiontostring(uint32_t version,
+                                             char* buf,
+                                             size_t bufsize) {
 
   //
-  // Reserve space for the name
+  // Clear the buffer
   //
   
-  static char buf[20];
-  memset(buf,0,sizeof(buf));
+  memset(buf,0,bufsize);
   
   //
   // Find a version descriptor
@@ -135,16 +136,14 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version) {
   const struct spindump_quic_versiondescr* descriptor =
     spindump_analyze_quic_parser_version_findversion(version);
   if (version == 0) {
-    snprintf(buf,sizeof(buf)-1,"v.0x%08x", version);
+    snprintf(buf,bufsize-1,"v.0x%08x", version);
   } else {
-    (*(descriptor->namefunction))(version,descriptor->basename,buf,sizeof(buf));
+    (*(descriptor->namefunction))(version,descriptor->basename,buf,bufsize);
   }
 
   //
-  // Return the result
+  // Done
   //
-  
-  return(buf);
 }
 
 //

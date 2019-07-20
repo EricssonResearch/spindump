@@ -965,18 +965,23 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
     
     if (connection->u.quic.version == connection->u.quic.originalVersion ||
         spindump_quic_version_isforcenegot(connection->u.quic.originalVersion)) {
+      char versionstring[20];
+      spindump_analyze_quic_parser_versiontostring(connection->u.quic.version,versionstring,sizeof(versionstring));
       spindump_connection_addtobuf(buf,sizeof(buf),
-                                   spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
+                                   versionstring,
                                    "",
                                    1);
     } else {
       char vbuf[50];
-      const char* orig = spindump_analyze_quic_parser_versiontostring(connection->u.quic.originalVersion);
-      if (strncmp(orig,"v.",2) == 0) orig += 2;
+      char orig[20];
+      spindump_analyze_quic_parser_versiontostring(connection->u.quic.originalVersion,orig,sizeof(orig));
+      char* origptr = (strncmp(orig,"v.",2) == 0) ? &orig[2] : &orig[0];
       memset(vbuf,0,sizeof(vbuf));
+      char newver[20];
+      spindump_analyze_quic_parser_versiontostring(connection->u.quic.version,newver,sizeof(newver));
       snprintf(vbuf,sizeof(vbuf)-1,"%s(%s)",
-               spindump_analyze_quic_parser_versiontostring(connection->u.quic.version),
-               orig);
+               newver,
+               origptr);
       spindump_connection_addtobuf(buf,sizeof(buf),
                                    vbuf,
                                    "",

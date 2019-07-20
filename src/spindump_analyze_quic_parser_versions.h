@@ -95,8 +95,10 @@ struct spindump_quic_versiondescr {
 // External API interface to this module ------------------------------------------------------
 //
 
-const char*
-spindump_analyze_quic_parser_versiontostring(uint32_t version);
+void
+spindump_analyze_quic_parser_versiontostring(uint32_t version,
+                                             char* buf,
+                                             size_t bufsize);
 #define spindump_quic_version_isforcenegot(v)  (((v) & spindump_quic_version_forcenegotmask) == spindump_quic_version_forcenegotiation)
 int
 spindump_analyze_quic_parser_isgoogleversion(uint32_t version);
