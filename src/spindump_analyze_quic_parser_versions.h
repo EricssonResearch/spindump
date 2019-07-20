@@ -28,6 +28,7 @@
 #include "spindump_protocols.h"
 #include "spindump_analyze_quic_parser.h"
 #include "spindump_analyze_quic_parser_util.h"
+#include "spindump_extrameas.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -101,6 +102,12 @@ typedef int
                                                             uint8_t headerByte,
                                                             int* p_spinValue);
 
+typedef int
+(*spindump_analyze_quic_parser_version_getextrameasfunc)(uint32_t version,
+                                                         uint8_t headerByte,
+                                                         struct spindump_extrameas* p_extrameasValue);
+
+
 struct spindump_quic_versiondescr {
   uint32_t version;
   spindump_analyze_quic_parser_version_namefunc namefunction;
@@ -109,6 +116,7 @@ struct spindump_quic_versiondescr {
   spindump_analyze_quic_parser_version_messagetypefunc messagetypefunction;
   spindump_analyze_quic_parser_version_parsemessagelengthfunc parselengthsfunction;
   spindump_analyze_quic_parser_version_getspinbitvaluefunc spinbitvaluefunction;
+  //spindump_analyze_quic_parser_version_getextrameasfunc extrameasvaluefunction;
 };
 
 //

@@ -18,6 +18,18 @@
 #ifndef SPINDUMP_EXTRAMEAS_H_
 #define SPINDUMP_EXTRAMEAS_H_
 
+#include <stdint.h>
+
+#define spindump_extrameas_rtloss1 0x01 // Telecom Italia loss measurement bits
+
+typedef uint8_t spindump_extrameas_int;
+
+struct spindump_extrameas {
+  spindump_extrameas_int extrameasbits;  //extra measurement bits, e.g. different loss bits
+  spindump_extrameas_int isvalid;        //telling whether a given extra bit is present
+};
+
+
 
 
 #endif /* SPINDUMP_EXTRAMEAS_H_ */
