@@ -110,6 +110,9 @@ static const struct spindump_quic_versiondescr versions[] = {
 
 const struct spindump_quic_versiondescr*
 spindump_analyze_quic_parser_version_findversion(uint32_t version) {
+  if ((version & spindump_quic_version_googlemask) == spindump_quic_version_google) {
+    version = spindump_quic_version_google;
+  }
   const struct spindump_quic_versiondescr* search = &versions[0];
   while (search->version != spindump_quic_version_unknown) {
     if (search->version == version) {
@@ -140,9 +143,17 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version,
                                              size_t bufsize) {
 
   //
+  // Sanity checks
+  //
+
+  spindump_assert(buf != 0);
+  spindump_assert(bufsize > 0);
+  
+  //
   // Clear the buffer
   //
   
+  spindump_deepdeepdebugf("versiontostring %08x %u", version, bufsize);
   memset(buf,0,bufsize);
   
   //
@@ -151,7 +162,8 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version,
 
   const struct spindump_quic_versiondescr* descriptor =
     spindump_analyze_quic_parser_version_findversion(version);
-  if (version == 0) {
+  spindump_deepdeepdebugf("versiontostring got a descriptor %lx", descriptor);
+  if (descriptor == 0) {
     snprintf(buf,bufsize-1,"v.0x%08x", version);
   } else {
     (*(descriptor->namefunction))(version,descriptor->basename,buf,bufsize);

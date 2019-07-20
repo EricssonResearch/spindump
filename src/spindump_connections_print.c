@@ -934,12 +934,14 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   spindump_deepdeepdebugf("report_brief_notefieldval point 1");
   static char buf[spindump_connection_report_brief_notefieldval_length_val+1];
   memset(buf,0,sizeof(buf));
+  spindump_deepdeepdebugf("report_brief_notefieldval point 1b");
   
   //
   // Check connection status
   // 
 
   if (connection->packetsFromSide2 == 0) {
+    spindump_deepdeepdebugf("report_brief_notefieldval point 1c");
     if (connection->type == spindump_connection_transport_quic ||
         connection->type == spindump_connection_transport_dns ||
         connection->type == spindump_connection_transport_coap) {
@@ -950,7 +952,8 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
       spindump_connection_addtobuf(buf,sizeof(buf),"no response","",0);
     }
   }
-
+  spindump_deepdeepdebugf("report_brief_notefieldval point 1d");
+  
   //
   // QUIC-specific notes
   // 
@@ -965,6 +968,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
     
     if (connection->u.quic.version == connection->u.quic.originalVersion ||
         spindump_quic_version_isforcenegot(connection->u.quic.originalVersion)) {
+      spindump_deepdeepdebugf("report_brief_notefieldval point vs 1");
       char versionstring[20];
       spindump_analyze_quic_parser_versiontostring(connection->u.quic.version,versionstring,sizeof(versionstring));
       spindump_connection_addtobuf(buf,sizeof(buf),
@@ -972,20 +976,27 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
                                    "",
                                    1);
     } else {
+      
+      spindump_deepdeepdebugf("report_brief_notefieldval point vsn 1");
       char vbuf[50];
       char orig[20];
       spindump_analyze_quic_parser_versiontostring(connection->u.quic.originalVersion,orig,sizeof(orig));
+      spindump_deepdeepdebugf("report_brief_notefieldval point vsn 2");
       char* origptr = (strncmp(orig,"v.",2) == 0) ? &orig[2] : &orig[0];
       memset(vbuf,0,sizeof(vbuf));
       char newver[20];
+      spindump_deepdeepdebugf("report_brief_notefieldval point vsn 3");
       spindump_analyze_quic_parser_versiontostring(connection->u.quic.version,newver,sizeof(newver));
+      spindump_deepdeepdebugf("report_brief_notefieldval point vsn 4");
       snprintf(vbuf,sizeof(vbuf)-1,"%s(%s)",
                newver,
                origptr);
+      spindump_deepdeepdebugf("report_brief_notefieldval point vsn 5");
       spindump_connection_addtobuf(buf,sizeof(buf),
                                    vbuf,
                                    "",
                                    1);
+      spindump_deepdeepdebugf("report_brief_notefieldval point vsn 6");
     }
 
     //
