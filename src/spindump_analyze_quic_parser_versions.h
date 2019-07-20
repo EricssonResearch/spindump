@@ -68,6 +68,8 @@
 #define spindump_quic_version_draft00          0xff000000
 #define spindump_quic_version_quant19          0x45474713
 #define spindump_quic_version_quant20          0x45474714
+#define spindump_quic_version_quant21          0x45474715
+#define spindump_quic_version_quant22          0x45474716
 #define spindump_quic_version_huitema          0x50435131
 #define spindump_quic_version_mozilla          0xf123f0c5
 #define spindump_quic_version_googlemask       0xfff0f0f0
@@ -108,6 +110,7 @@ struct spindump_quic_versiondescr {
   spindump_analyze_quic_parser_version_namefunc namefunction;
   const char* basename;
   int supported;
+  int longCidLength;
   spindump_analyze_quic_parser_version_messagetypefunc messagetypefunction;
   spindump_analyze_quic_parser_version_parsemessagelengthfunc parselengthsfunction;
   spindump_analyze_quic_parser_version_getspinbitvaluefunc spinbitvaluefunction;
@@ -145,5 +148,7 @@ int
 spindump_analyze_quic_parser_version_getspinbitvalue(uint32_t version,
                                                      uint8_t headerByte,
                                                      int* p_spinValue);
+int
+spindump_analyze_quic_parser_version_useslongcidlength(uint32_t version);
 
 #endif // SPINDUMP_ANALYZE_QUIC_PARSER_VERSIONS_H

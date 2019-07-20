@@ -110,7 +110,8 @@ spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
                                              int* p_0rttAttempted,
                                              struct spindump_stats* stats);
 static int
-spindump_analyze_quic_parser_parsecids(const unsigned char* payload,
+spindump_analyze_quic_parser_parsecids(uint32_t version,
+                                       const unsigned char* payload,
                                        unsigned int payload_len,
                                        unsigned int remainingCaplen,
                                        uint8_t cidLengths,
@@ -381,7 +382,8 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // Parse connection IDs
   // 
 
-  if (!spindump_analyze_quic_parser_parsecids(payload,
+  if (!spindump_analyze_quic_parser_parsecids(version,
+                                              payload,
                                               payload_len,
                                               remainingCaplen,
                                               quic.u.longheader.qh_cidLengths,
@@ -713,7 +715,8 @@ spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
     struct spindump_quic_connectionid destinationCid;
     int sourceCidPresent;
     struct spindump_quic_connectionid sourceCid;
-    if (!spindump_analyze_quic_parser_parsecids(payload,
+    if (!spindump_analyze_quic_parser_parsecids(version,
+                                                payload,
                                                 payload_len,
                                                 remainingCaplen,
                                                 quic.u.longheader.qh_cidLengths,
@@ -1541,7 +1544,8 @@ spindump_analyze_quic_parser_parsemessagetype(uint8_t headerByte,
 //
 
 static int
-spindump_analyze_quic_parser_parsecids(const unsigned char* payload,
+spindump_analyze_quic_parser_parsecids(uint32_t version,
+                                       const unsigned char* payload,
                                        unsigned int payload_len,
                                        unsigned int remainingCaplen,
                                        uint8_t cidLengths,
@@ -1554,9 +1558,16 @@ spindump_analyze_quic_parser_parsecids(const unsigned char* payload,
   if (longForm) {
     unsigned int destLen;
     unsigned int sourceLen;
-    spindump_analyze_quic_parser_util_cidlengths(cidLengths,
-                                                 &destLen,
-                                                 &sourceLen);
+    int longCids = spindump_analyze_quic_parser_version_useslongcidlength(version);
+    if (longCids) {
+      // barf...
+      destLen = 0;
+      sourceLen = 0;
+    } else {
+      spindump_analyze_quic_parser_util_cidlengths(cidLengths,
+                                                   &destLen,
+                                                   &sourceLen);
+    }
     if (payload_len < 6 + destLen + sourceLen ||
         remainingCaplen < 6 + destLen + sourceLen) {
       spindump_deepdebugf("not enough bytes in packet for dest & source CIDs");
