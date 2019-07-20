@@ -96,36 +96,40 @@ spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
 //
 
 static const struct spindump_quic_versiondescr versions[] = {
-  //      version number            get name   basename supported? getmessage     parselengths   getspinbit
-  { spindump_quic_version_rfc,     fixednamefn,  "RFC",    1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_draft20, fixednamefn,  "v20",    1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_draft19, fixednamefn,  "v19",    1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_draft18, fixednamefn,  "v18",    1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_draft17, fixednamefn,  "v17",    1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_draft16, fixednamefn,  "v16",    1,    messagefunc16,  0,               spinbit16 },
-  { spindump_quic_version_draft15, fixednamefn,  "v15",    0,    0,              0,               0         },
-  { spindump_quic_version_draft14, fixednamefn,  "v14",    0,    0,              0,               0         },
-  { spindump_quic_version_draft13, fixednamefn,  "v13",    0,    0,              0,               0         },
-  { spindump_quic_version_draft12, fixednamefn,  "v12",    0,    0,              0,               0         },
-  { spindump_quic_version_draft11, fixednamefn,  "v11",    0,    0,              0,               0         },
-  { spindump_quic_version_draft10, fixednamefn,  "v10",    0,    0,              0,               0         },
-  { spindump_quic_version_draft09, fixednamefn,  "v09",    0,    0,              0,               0         },
-  { spindump_quic_version_draft08, fixednamefn,  "v08",    0,    0,              0,               0         },
-  { spindump_quic_version_draft07, fixednamefn,  "v07",    0,    0,              0,               0         },
-  { spindump_quic_version_draft06, fixednamefn,  "v06",    0,    0,              0,               0         },
-  { spindump_quic_version_draft05, fixednamefn,  "v05",    0,    0,              0,               0         },
-  { spindump_quic_version_draft04, fixednamefn,  "v04",    0,    0,              0,               0         },
-  { spindump_quic_version_draft03, fixednamefn,  "v03",    0,    0,              0,               0         },
-  { spindump_quic_version_draft02, fixednamefn,  "v02",    0,    0,              0,               0         },
-  { spindump_quic_version_draft01, fixednamefn,  "v01",    0,    0,              0,               0         },
-  { spindump_quic_version_draft00, fixednamefn,  "v00",    0,    0,              0,               0         },
-  { spindump_quic_version_quant20, fixednamefn,  "v.qn20", 1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_quant19, fixednamefn,  "v.qn19", 1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_google,  googlenamefn, "g.",     1,    messagefuncgo,  0,               0         },
-  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,    messagefunc17,  parselengths17,  spinbit17 },
-  { spindump_quic_version_unknown, 0,            0,        0,    0,              0,               0         }
+  //      version number            get name   basename supported? LongCIDs? getmessage     parselengths   getspinbit
+  { spindump_quic_version_rfc,     fixednamefn,  "RFC",    1,        1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft22, fixednamefn,  "v22",    1,        1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft21, fixednamefn,  "v21",    1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft20, fixednamefn,  "v20",    1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft19, fixednamefn,  "v19",    1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft18, fixednamefn,  "v18",    1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft17, fixednamefn,  "v17",    1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft16, fixednamefn,  "v16",    1,        0,    messagefunc16,  0,               spinbit16 },
+  { spindump_quic_version_draft15, fixednamefn,  "v15",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft14, fixednamefn,  "v14",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft13, fixednamefn,  "v13",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft12, fixednamefn,  "v12",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft11, fixednamefn,  "v11",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft10, fixednamefn,  "v10",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft09, fixednamefn,  "v09",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft08, fixednamefn,  "v08",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft07, fixednamefn,  "v07",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft06, fixednamefn,  "v06",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft05, fixednamefn,  "v05",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft04, fixednamefn,  "v04",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft03, fixednamefn,  "v03",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft02, fixednamefn,  "v02",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft01, fixednamefn,  "v01",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_draft00, fixednamefn,  "v00",    0,        0,    0,              0,               0         },
+  { spindump_quic_version_quant22, fixednamefn,  "v.qn22", 1,        1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_quant21, fixednamefn,  "v.qn21", 1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_quant20, fixednamefn,  "v.qn20", 1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_quant19, fixednamefn,  "v.qn19", 1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_google,  googlenamefn, "g.",     1,        0,    messagefuncgo,  0,               0         },
+  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,        0,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_unknown, 0,            0,        0,        0,    0,              0,               0         }
 };
   
 //
@@ -420,5 +424,17 @@ spindump_analyze_quic_parser_version_getspinbitvalue(uint32_t version,
   } else {
     return(0);
   }
+}
+
+//
+// Find out if the version uses short (draft-21 and before) or long
+// (draft-22 and onwards) CID length design.
+//
+
+int
+spindump_analyze_quic_parser_version_useslongcidlength(uint32_t version) {
+  const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(version);
+  return(descriptor != 0 && descriptor->longCidLength);
 }
 

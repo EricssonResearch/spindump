@@ -42,5 +42,7 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
                                                 int isFlip);
 void
 spindump_rtloss1tracker_initialize(struct spindump_rtloss1tracker* tracker);
+void
+spindump_rtloss1tracker_uninitialize(struct spindump_rtloss1tracker* tracker);
 
 #endif

@@ -100,4 +100,4 @@ void
 spindump_rtloss1tracker_uninitialize(struct spindump_rtloss1tracker* tracker) {
   spindump_assert(tracker != 0);
   // no-op//
-} 
+}
