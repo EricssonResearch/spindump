@@ -813,63 +813,72 @@ spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
   //
   // Switch based on version and message type
   //
-  
-  switch (version) {
-  case spindump_quic_version_rfc:
-  case spindump_quic_version_draft20:
-  case spindump_quic_version_draft19:
-  case spindump_quic_version_draft18:
-  case spindump_quic_version_draft17:
-  case spindump_quic_version_quant20:
-  case spindump_quic_version_quant19:
-  case spindump_quic_version_huitema:
-  case spindump_quic_version_mozilla:
-    switch (type) {
-    case spindump_quic_message_type_initial:
-      return(spindump_analyze_quic_parser_parsemessagelength_initial(payload,
-                                                                     payload_len,
-                                                                     remainingCaplen,
-                                                                     cidLengthsInBytes,
-                                                                     p_messageLen,
-                                                                     stats));
-    case spindump_quic_message_type_versionnegotiation:
-      return(spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(payload,
-                                                                                payload_len,
-                                                                                remainingCaplen,
-                                                                                p_messageLen,
-                                                                                stats));
-    case spindump_quic_message_type_0rtt:
-      return(spindump_analyze_quic_parser_parsemessagelength_0rtt(payload,
-                                                                  payload_len,
-                                                                  remainingCaplen,
-                                                                  cidLengthsInBytes,
-                                                                  p_messageLen,
-                                                                  stats));
-    case spindump_quic_message_type_handshake:
-      return(spindump_analyze_quic_parser_parsemessagelength_handshake(payload,
-                                                                       payload_len,
-                                                                       remainingCaplen,
-                                                                       cidLengthsInBytes,
-                                                                       p_messageLen,
-                                                                       stats));
-    case spindump_quic_message_type_retry:
-      return(spindump_analyze_quic_parser_parsemessagelength_retry(payload,
+
+  const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(version);
+  if (descriptor != 0 && descriptor->supported && descriptor->parselengthsfunction != 0) {
+    return((*(descriptor->parselengthsfunction))(payload,
+                                                 payload_len,
+                                                 remainingCaplen,
+                                                 type,
+                                                 cidLengthsInBytes,
+                                                 p_messageLen,
+                                                 stats));
+  } else {
+    spindump_deepdebugf("version not supported for seeking packets");
+    return(0);
+  }
+}
+
+int
+spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* payload,
+                                                        unsigned int payload_len,
+                                                        unsigned int remainingCaplen,
+                                                        enum spindump_quic_message_type type,
+                                                        unsigned int cidLengthsInBytes,
+                                                        unsigned int* p_messageLen,
+                                                        struct spindump_stats* stats) {
+  switch (type) {
+  case spindump_quic_message_type_initial:
+    return(spindump_analyze_quic_parser_parsemessagelength_initial(payload,
                                                                    payload_len,
                                                                    remainingCaplen,
                                                                    cidLengthsInBytes,
                                                                    p_messageLen,
                                                                    stats));
-    case spindump_quic_message_type_other:
-    case spindump_quic_message_type_data:
-      spindump_deepdebugf("message type %u not supported for seeking packets", type);
-      return(0);
-    default:
-      spindump_errorf("invalid message type");
-      return(0);
-    }
-    
+  case spindump_quic_message_type_versionnegotiation:
+    return(spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(payload,
+                                                                              payload_len,
+                                                                              remainingCaplen,
+                                                                              p_messageLen,
+                                                                              stats));
+  case spindump_quic_message_type_0rtt:
+    return(spindump_analyze_quic_parser_parsemessagelength_0rtt(payload,
+                                                                payload_len,
+                                                                remainingCaplen,
+                                                                cidLengthsInBytes,
+                                                                p_messageLen,
+                                                                stats));
+  case spindump_quic_message_type_handshake:
+    return(spindump_analyze_quic_parser_parsemessagelength_handshake(payload,
+                                                                     payload_len,
+                                                                     remainingCaplen,
+                                                                     cidLengthsInBytes,
+                                                                     p_messageLen,
+                                                                     stats));
+  case spindump_quic_message_type_retry:
+    return(spindump_analyze_quic_parser_parsemessagelength_retry(payload,
+                                                                 payload_len,
+                                                                 remainingCaplen,
+                                                                 cidLengthsInBytes,
+                                                                 p_messageLen,
+                                                                 stats));
+  case spindump_quic_message_type_other:
+  case spindump_quic_message_type_data:
+    spindump_deepdebugf("message type %u not supported for seeking packets", type);
+    return(0);
   default:
-    spindump_deepdebugf("version not supported for seeking packets");
+    spindump_errorf("invalid message type");
     return(0);
   }
 }

@@ -87,6 +87,14 @@ typedef int
 (*spindump_analyze_quic_parser_version_messagetypefunc)(uint32_t version,
                                                         uint8_t headerByte,
                                                         enum spindump_quic_message_type* type);
+typedef int
+(*spindump_analyze_quic_parser_version_parsemessagelength)(const unsigned char* payload,
+                                                           unsigned int payload_len,
+                                                           unsigned int remainingCaplen,
+                                                           enum spindump_quic_message_type type,
+                                                           unsigned int cidLengthsInBytes,
+                                                           unsigned int* p_messageLen,
+                                                           struct spindump_stats* stats);
 
 struct spindump_quic_versiondescr {
   uint32_t version;
@@ -94,6 +102,7 @@ struct spindump_quic_versiondescr {
   const char* basename;
   int supported;
   spindump_analyze_quic_parser_version_messagetypefunc messagetypefunction;
+  spindump_analyze_quic_parser_version_parsemessagelength parselengthsfunction;
 };
 
 //
