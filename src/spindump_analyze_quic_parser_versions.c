@@ -124,6 +124,7 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,    messagefunc17,  parselengths17,  spinbit17 },
   { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,    messagefunc17,  parselengths17,  spinbit17 },
   { spindump_quic_version_google,  googlenamefn, "g.",     1,    messagefuncgo,  0,               0         },
+  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,    messagefunc17,  parselengths17,  spinbit17 },
   { spindump_quic_version_unknown, 0,            0,        0,    0,              0,               0         }
 };
   
