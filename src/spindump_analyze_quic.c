@@ -410,6 +410,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       fromResponder,
                                                       &isFlip);
     }
+    if (spindump_analyze_quic_parser_getrtloss1bit(udpPayload,
+                                                   size_udppayload,
+                                                   connection->u.quic.version,
+                                                   fromResponder)) {
+    }
   }
 
   //
