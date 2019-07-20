@@ -1556,20 +1556,41 @@ spindump_analyze_quic_parser_parsecids(uint32_t version,
                                        struct spindump_quic_connectionid* p_sourceCid,
                                        struct spindump_stats* stats) {
   if (longForm) {
+    
     unsigned int destLen;
     unsigned int sourceLen;
     int longCids = spindump_analyze_quic_parser_version_useslongcidlength(version);
+    
+    unsigned int packetHeaderSoFar =
+      1 +                   // for first byte
+      4;                    // for version number
+    unsigned int packetHeaderSoFarWithFirstCIDLength =
+      packetHeaderSoFar +   // for first byte and version number
+      1;                    // for CID lengths or the first CID length
+    unsigned int packetHeaderSoFarWithBothCIDLengths =
+      packetHeaderSoFarWithFirstCIDLength +   // for first byte and version number and first CID length
+      (longCids ? 1 : 0);                     // for CID lengths
+
+    int ans;
     if (longCids) {
-      // barf...
-      destLen = 0;
-      sourceLen = 0;
+      ans = spindump_analyze_quic_parser_util_cidlengths_long(cidLengths,
+                                                              payload + packetHeaderSoFarWithFirstCIDLength,
+                                                              (payload_len >= packetHeaderSoFarWithFirstCIDLength ?
+                                                               payload_len - packetHeaderSoFarWithFirstCIDLength :
+                                                               0),
+                                                              (remainingCaplen >= packetHeaderSoFarWithFirstCIDLength ?
+                                                               remainingCaplen - packetHeaderSoFarWithFirstCIDLength :
+                                                               0),
+                                                              &destLen,
+                                                              &sourceLen);
     } else {
-      spindump_analyze_quic_parser_util_cidlengths(cidLengths,
-                                                   &destLen,
-                                                   &sourceLen);
+      ans = spindump_analyze_quic_parser_util_cidlengths_short(cidLengths,
+                                                               &destLen,
+                                                               &sourceLen);
     }
-    if (payload_len < 6 + destLen + sourceLen ||
-        remainingCaplen < 6 + destLen + sourceLen) {
+    if (!ans ||
+        payload_len < packetHeaderSoFarWithBothCIDLengths + destLen + sourceLen ||
+        remainingCaplen < packetHeaderSoFarWithBothCIDLengths + destLen + sourceLen) {
       spindump_deepdebugf("not enough bytes in packet for dest & source CIDs");
       stats->notEnoughPacketForQuicHdr++;
       return(0);
