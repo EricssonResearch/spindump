@@ -1,0 +1,1 @@
+A simple test with draft 22. Using Quant and a 100K transfer, so spin bit should be spinning.

@@ -58,15 +58,65 @@ spindump_analyze_quic_parser_util_onecidlength(uint8_t value) {
 // Helper function to parse Connection IDs from a QUIC long-form message.
 //
 
-void
-spindump_analyze_quic_parser_util_cidlengths(uint8_t lengthsbyte,
-                                             unsigned int* p_destinationLength,
-                                             unsigned int* p_sourceLength) {
+int
+spindump_analyze_quic_parser_util_cidlengths_short(uint8_t lengthsbyte,
+                                                   unsigned int* p_destinationLength,
+                                                   unsigned int* p_sourceLength) {
   *p_destinationLength = spindump_analyze_quic_parser_util_onecidlength(lengthsbyte >> 4);
   *p_sourceLength = spindump_analyze_quic_parser_util_onecidlength(lengthsbyte & 0x0F);
   spindump_deepdebugf("CID lengths destination = %u, source = %u",
                       *p_destinationLength,
                       *p_sourceLength);
+  return(1);
+}
+
+int
+spindump_analyze_quic_parser_util_cidlengths_long(uint8_t firstlengthbyte,
+                                                  const unsigned char* payload,
+                                                  unsigned int payload_len,
+                                                  unsigned int remainingCaplen,
+                                                  unsigned int* p_destinationLength,
+                                                  unsigned int* p_sourceLength) {
+
+  //
+  // Copy the first length (destination CID), given to us in the first
+  // byte
+  //
+  
+  *p_destinationLength = firstlengthbyte;
+
+  //
+  // Check that the indicated length number of bytes actually remains
+  // in the packet, otherwise we fail. After the number of indicated
+  // bytes there also has to be the other CID length field (1
+  // byte). So expecting indicated length + 1 bytes.
+  //
+  
+  if (payload_len < 1+(unsigned int)*p_destinationLength ||
+      remainingCaplen < 1+(unsigned int)*p_destinationLength) {
+    return(0);
+  }
+  
+  //
+  // Copy the second length (source CID), given to us in the byte that follows the
+  //
+
+  *p_sourceLength = payload[*p_destinationLength];
+  
+  //
+  // Check that the second CID still fits in the packet.
+  //
+  
+  if (payload_len < 1+(unsigned int)*p_destinationLength+(unsigned int)*p_sourceLength ||
+      remainingCaplen < 1+(unsigned int)*p_destinationLength+(unsigned int)*p_sourceLength) {
+    return(0);
+  }
+  
+  //
+  // All good. Success.
+  //
+  
+  return(1);
 }
 
 int

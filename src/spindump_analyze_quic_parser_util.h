@@ -38,10 +38,17 @@
 
 unsigned int
 spindump_analyze_quic_parser_util_onecidlength(uint8_t value);
-void
-spindump_analyze_quic_parser_util_cidlengths(uint8_t lengthsbyte,
-                                             unsigned int* p_destinationLength,
-                                             unsigned int* p_sourceLength);
+int
+spindump_analyze_quic_parser_util_cidlengths_short(uint8_t lengthsbyte,
+                                                   unsigned int* p_destinationLength,
+                                                   unsigned int* p_sourceLength);
+int
+spindump_analyze_quic_parser_util_cidlengths_long(uint8_t firstlengthbyte,
+                                                  const unsigned char* payload,
+                                                  unsigned int payload_len,
+                                                  unsigned int remainingCaplen,
+                                                  unsigned int* p_destinationLength,
+                                                  unsigned int* p_sourceLength);
 int
 spindump_analyze_quic_parser_util_parseint(const unsigned char* buffer,
                                            unsigned int bufferLength,

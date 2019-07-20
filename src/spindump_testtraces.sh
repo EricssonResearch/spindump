@@ -41,6 +41,8 @@ traces="trace_icmpv4_short
         trace_quic_v20_medium_quant
         trace_quic_v20_no0rtt_quant
         trace_quic_v20_0rtt_quant  
+        trace_quic_v22_quant_short
+        trace_quic_v22_quant_long
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
