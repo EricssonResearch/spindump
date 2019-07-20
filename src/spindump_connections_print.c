@@ -292,7 +292,7 @@ spindump_connection_report_coap(struct spindump_connection* connection,
 const char*
 spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id) {
   spindump_assert(id != 0);
-  spindump_assert(id->len <= 18);
+  spindump_assert(id->len <= 255);
   static char buf[50];
   memset(buf,0,sizeof(buf));
   if (id->len == 0) return("null");
