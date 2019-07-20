@@ -57,9 +57,21 @@ static int
 spindump_analyze_quic_parser_version_messagefunctiongoogle(uint32_t version,
                                                            uint8_t headerByte,
                                                            enum spindump_quic_message_type* type);
+static int
+spindump_analyze_quic_parser_version_getspinbitvalue_draft17(uint32_t version,
+                                                             uint8_t headerByte,
+                                                             int* p_spinValue);
+static int
+spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
+                                                             uint8_t headerByte,
+                                                             int* p_spinValue);
 
 //
 // Variables ----------------------------------------------------------------------------------
+//
+
+//
+// Some shorthands
 //
 
 #define fixednamefn spindump_analyze_quic_parser_version_fixedname
@@ -68,37 +80,51 @@ spindump_analyze_quic_parser_version_messagefunctiongoogle(uint32_t version,
 #define messagefunc16 spindump_analyze_quic_parser_version_messagefunction16
 #define messagefuncgo spindump_analyze_quic_parser_version_messagefunctiongoogle
 #define parselengths17 spindump_analyze_quic_parser_parsemessagelength_pertype
+#define spinbit17 spindump_analyze_quic_parser_version_getspinbitvalue_draft17
+#define spinbit16 spindump_analyze_quic_parser_version_getspinbitvalue_draft16
+
+//
+// The following table determines the version-dependent behaviour of
+// the QUIC parser. The first field is the version number, whereas the
+// rest of the fields are parameters and function pointers to get Spin
+// bit values, determine what the printable name of a version number
+// might be, etc.
+//
+// You need to update this table when adding a new version! Depending
+// on what the new version does, you may be able to use existing
+// functions and settings from other draft versions, though.
+//
 
 static const struct spindump_quic_versiondescr versions[] = {
-  //      version number            get name   basename supported? getmessage     parselengths
-  { spindump_quic_version_rfc,     fixednamefn,  "RFC",    1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_draft20, fixednamefn,  "v20",    1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_draft19, fixednamefn,  "v19",    1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_draft18, fixednamefn,  "v18",    1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_draft17, fixednamefn,  "v17",    1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_draft16, fixednamefn,  "v16",    1,    messagefunc16,  0              },
-  { spindump_quic_version_draft15, fixednamefn,  "v15",    0,    0,              0              },
-  { spindump_quic_version_draft14, fixednamefn,  "v14",    0,    0,              0              },
-  { spindump_quic_version_draft13, fixednamefn,  "v13",    0,    0,              0              },
-  { spindump_quic_version_draft12, fixednamefn,  "v12",    0,    0,              0              },
-  { spindump_quic_version_draft11, fixednamefn,  "v11",    0,    0,              0              },
-  { spindump_quic_version_draft10, fixednamefn,  "v10",    0,    0,              0              },
-  { spindump_quic_version_draft09, fixednamefn,  "v09",    0,    0,              0              },
-  { spindump_quic_version_draft08, fixednamefn,  "v08",    0,    0,              0              },
-  { spindump_quic_version_draft07, fixednamefn,  "v07",    0,    0,              0              },
-  { spindump_quic_version_draft06, fixednamefn,  "v06",    0,    0,              0              },
-  { spindump_quic_version_draft05, fixednamefn,  "v05",    0,    0,              0              },
-  { spindump_quic_version_draft04, fixednamefn,  "v04",    0,    0,              0              },
-  { spindump_quic_version_draft03, fixednamefn,  "v03",    0,    0,              0              },
-  { spindump_quic_version_draft02, fixednamefn,  "v02",    0,    0,              0              },
-  { spindump_quic_version_draft01, fixednamefn,  "v01",    0,    0,              0              },
-  { spindump_quic_version_draft00, fixednamefn,  "v00",    0,    0,              0              },
-  { spindump_quic_version_quant20, fixednamefn,  "v.qn20", 1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_quant19, fixednamefn,  "v.qn19", 1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,    messagefunc17,  parselengths17 },
-  { spindump_quic_version_google,  googlenamefn, "g.",     1,    messagefuncgo,  0              },
-  { spindump_quic_version_unknown, 0,            0,        0,    0,              0              }
+  //      version number            get name   basename supported? getmessage     parselengths   getspinbit
+  { spindump_quic_version_rfc,     fixednamefn,  "RFC",    1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft20, fixednamefn,  "v20",    1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft19, fixednamefn,  "v19",    1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft18, fixednamefn,  "v18",    1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft17, fixednamefn,  "v17",    1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_draft16, fixednamefn,  "v16",    1,    messagefunc16,  0,               spinbit16 },
+  { spindump_quic_version_draft15, fixednamefn,  "v15",    0,    0,              0,               0         },
+  { spindump_quic_version_draft14, fixednamefn,  "v14",    0,    0,              0,               0         },
+  { spindump_quic_version_draft13, fixednamefn,  "v13",    0,    0,              0,               0         },
+  { spindump_quic_version_draft12, fixednamefn,  "v12",    0,    0,              0,               0         },
+  { spindump_quic_version_draft11, fixednamefn,  "v11",    0,    0,              0,               0         },
+  { spindump_quic_version_draft10, fixednamefn,  "v10",    0,    0,              0,               0         },
+  { spindump_quic_version_draft09, fixednamefn,  "v09",    0,    0,              0,               0         },
+  { spindump_quic_version_draft08, fixednamefn,  "v08",    0,    0,              0,               0         },
+  { spindump_quic_version_draft07, fixednamefn,  "v07",    0,    0,              0,               0         },
+  { spindump_quic_version_draft06, fixednamefn,  "v06",    0,    0,              0,               0         },
+  { spindump_quic_version_draft05, fixednamefn,  "v05",    0,    0,              0,               0         },
+  { spindump_quic_version_draft04, fixednamefn,  "v04",    0,    0,              0,               0         },
+  { spindump_quic_version_draft03, fixednamefn,  "v03",    0,    0,              0,               0         },
+  { spindump_quic_version_draft02, fixednamefn,  "v02",    0,    0,              0,               0         },
+  { spindump_quic_version_draft01, fixednamefn,  "v01",    0,    0,              0,               0         },
+  { spindump_quic_version_draft00, fixednamefn,  "v00",    0,    0,              0,               0         },
+  { spindump_quic_version_quant20, fixednamefn,  "v.qn20", 1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_quant19, fixednamefn,  "v.qn19", 1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,    messagefunc17,  parselengths17,  spinbit17 },
+  { spindump_quic_version_google,  googlenamefn, "g.",     1,    messagefuncgo,  0,               0         },
+  { spindump_quic_version_unknown, 0,            0,        0,    0,              0,               0         }
 };
   
 //
@@ -203,6 +229,10 @@ spindump_analyze_quic_parser_getgoogleversion(uint32_t version) {
   return 100*d100+10*d10+d1;
 }
 
+//
+// Get the name of the version, for one of the versions that have fixed names
+//
+
 static void
 spindump_analyze_quic_parser_version_fixedname(uint32_t version,
                                                const char* basename,
@@ -215,6 +245,10 @@ spindump_analyze_quic_parser_version_fixedname(uint32_t version,
   strncpy(buf,basename,bufsize-1);
 }
 
+//
+// Get the name of the version, for one of the Google QUIC versions
+//
+
 static void
 spindump_analyze_quic_parser_version_googlename(uint32_t version,
                                                const char* basename,
@@ -226,6 +260,10 @@ spindump_analyze_quic_parser_version_googlename(uint32_t version,
            basename,
            (unsigned int)spindump_analyze_quic_parser_getgoogleversion(version));
 }
+
+//
+// Get what the message type is in a draft-17 - draft-20 QUIC message
+//
 
 static int
 spindump_analyze_quic_parser_version_messagefunction17(uint32_t version,
@@ -251,6 +289,10 @@ spindump_analyze_quic_parser_version_messagefunction17(uint32_t version,
   }
 }
 
+//
+// Get what the message type is in a draft-16 QUIC message
+//
+
 static int
 spindump_analyze_quic_parser_version_messagefunction16(uint32_t version,
                                                        uint8_t headerByte,
@@ -274,6 +316,10 @@ spindump_analyze_quic_parser_version_messagefunction16(uint32_t version,
     return(0);
   }
 }
+
+//
+// Get what the message type is in a Google QUIC message
+//
 
 static int
 spindump_analyze_quic_parser_version_messagefunctiongoogle(uint32_t version,
@@ -303,6 +349,10 @@ spindump_analyze_quic_parser_version_getmessagetype(uint32_t version,
   }
 }
 
+//
+// Parse packet lengths of a particular message. This will depend on version.
+//
+
 int
 spindump_analyze_quic_parser_version_parselengths(uint32_t version,
                                                   const unsigned char* payload,
@@ -326,3 +376,48 @@ spindump_analyze_quic_parser_version_parselengths(uint32_t version,
     return(0);
   }
 }
+
+//
+// Get the value of the spin bit for draft-17 - draft-20 and other
+// similar version short packets.
+//
+
+static int
+spindump_analyze_quic_parser_version_getspinbitvalue_draft17(uint32_t version,
+                                                             uint8_t headerByte,
+                                                             int* p_spinValue) {
+  *p_spinValue = ((headerByte & spindump_quic_byte_spin) != 0);
+  return(1);
+}
+
+//
+// Get the value of the spin bit for draft-16 and other similar version short packets.
+//
+
+static int
+spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
+                                                             uint8_t headerByte,
+                                                             int* p_spinValue) {
+  *p_spinValue = ((headerByte & spindump_quic_byte_spin_draft16) != 0);
+  return(1);
+}
+
+//
+// Get the value of the spin bit for this packet. The packet must be a
+// short form packet. Depending on version, the bit may be in a
+// different place.
+//
+
+int
+spindump_analyze_quic_parser_version_getspinbitvalue(uint32_t version,
+                                                     uint8_t headerByte,
+                                                     int* p_spinValue) {
+  const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(version);
+  if (descriptor != 0 && descriptor->supported && descriptor->spinbitvaluefunction != 0) {
+    return((*(descriptor->spinbitvaluefunction))(version,headerByte,p_spinValue));
+  } else {
+    return(0);
+  }
+}
+

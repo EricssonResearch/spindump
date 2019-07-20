@@ -1606,38 +1606,26 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
   
   if (payload_len < 1) return(0);
   uint8_t firstByte = payload[0];
+  
   if (mayHaveSpinBit == 0) {
+    
     spindump_deepdebugf("SPIN not parseable for the long version header");
     return(0);
-  } else if (version == spindump_quic_version_rfc ||
-             version == spindump_quic_version_draft20 ||
-             version == spindump_quic_version_draft19 ||
-             version == spindump_quic_version_draft18 ||
-             version == spindump_quic_version_draft17 ||
-             version == spindump_quic_version_mozilla ||
-             version == spindump_quic_version_quant20 ||
-             version == spindump_quic_version_quant19 ||
-             version == spindump_quic_version_huitema) {
-    int altSpin = ((firstByte & spindump_quic_byte_spin_draft16) != 0);
-    *p_spin = ((firstByte & spindump_quic_byte_spin) != 0);
-    spindump_deepdebugf("SPIN = %u (draft 18) from %s (as an aside, draft 16 spin would be %u)",
-                        *p_spin,
-                        fromResponder ? "responder" : "initiator",
-                        altSpin);
-#ifdef SPINBITCONFUSION
-    *p_spin = altSpin;
-#endif
-    return(1);
-  } else if (version == spindump_quic_version_draft16) {
-    *p_spin = ((firstByte & spindump_quic_byte_spin_draft16) != 0);
-    spindump_deepdebugf("SPIN = %u (draft 16) from %s",
-                        *p_spin,
-                        fromResponder ? "responder" : "initiator");
-    return(1);
+    
   } else {
-    spindump_deepdebugf("SPIN not parseable for this version (%lx)", version);
-    return(0);
+
+    if (spindump_analyze_quic_parser_version_getspinbitvalue(version,firstByte,p_spin)) {
+      spindump_deepdebugf("SPIN = %u (v.%08x) from %s",
+                          *p_spin, version,
+                          fromResponder ? "responder" : "initiator");
+      return(1);
+    } else {
+      spindump_deepdebugf("SPIN not parseable for this version (%lx)", version);
+      return(0);
+    }
+
   }
+  
 }
 
 

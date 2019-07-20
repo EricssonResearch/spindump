@@ -88,13 +88,17 @@ typedef int
                                                         uint8_t headerByte,
                                                         enum spindump_quic_message_type* type);
 typedef int
-(*spindump_analyze_quic_parser_version_parsemessagelength)(const unsigned char* payload,
-                                                           unsigned int payload_len,
-                                                           unsigned int remainingCaplen,
-                                                           enum spindump_quic_message_type type,
-                                                           unsigned int cidLengthsInBytes,
-                                                           unsigned int* p_messageLen,
-                                                           struct spindump_stats* stats);
+(*spindump_analyze_quic_parser_version_parsemessagelengthfunc)(const unsigned char* payload,
+                                                               unsigned int payload_len,
+                                                               unsigned int remainingCaplen,
+                                                               enum spindump_quic_message_type type,
+                                                               unsigned int cidLengthsInBytes,
+                                                               unsigned int* p_messageLen,
+                                                               struct spindump_stats* stats);
+typedef int
+(*spindump_analyze_quic_parser_version_getspinbitvaluefunc)(uint32_t version,
+                                                            uint8_t headerByte,
+                                                            int* p_spinValue);
 
 struct spindump_quic_versiondescr {
   uint32_t version;
@@ -102,7 +106,8 @@ struct spindump_quic_versiondescr {
   const char* basename;
   int supported;
   spindump_analyze_quic_parser_version_messagetypefunc messagetypefunction;
-  spindump_analyze_quic_parser_version_parsemessagelength parselengthsfunction;
+  spindump_analyze_quic_parser_version_parsemessagelengthfunc parselengthsfunction;
+  spindump_analyze_quic_parser_version_getspinbitvaluefunc spinbitvaluefunction;
 };
 
 //
@@ -133,5 +138,9 @@ spindump_analyze_quic_parser_version_parselengths(uint32_t version,
                                                   unsigned int cidLengthsInBytes,
                                                   unsigned int* p_messageLen,
                                                   struct spindump_stats* stats);
+int
+spindump_analyze_quic_parser_version_getspinbitvalue(uint32_t version,
+                                                     uint8_t headerByte,
+                                                     int* p_spinValue);
 
 #endif // SPINDUMP_ANALYZE_QUIC_PARSER_VERSIONS_H
