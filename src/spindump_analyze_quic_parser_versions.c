@@ -426,6 +426,21 @@ spindump_analyze_quic_parser_version_getspinbitvalue(uint32_t version,
   }
 }
 
+int
+spindump_analyze_quic_parser_version_getextrameas(uint32_t version,
+                                                 uint8_t headerByte,
+                                                 int spin,
+                                                 struct spindump_extrameas* p_extrameasValue){
+  /*const struct spindump_quic_versiondescr* descriptor =
+    spindump_analyze_quic_parser_version_findversion(version);
+  if (descriptor != 0 && descriptor->supported && descriptor->spinbitvaluefunction != 0) {
+    return((*(descriptor->spinbitvaluefunction))(version,headerByte,p_spinValue));
+  } else {
+    return(0);
+  }*/
+  return(0);
+}
+
 //
 // Find out if the version uses short (draft-21 and before) or long
 // (draft-22 and onwards) CID length design.

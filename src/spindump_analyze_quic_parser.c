@@ -1640,6 +1640,50 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
 }
 
 //
+// This is the xth entry point to the QUIC parser.
+// this determines the extra measurements present in the packet
+// typically using the reserved bits.
+// If the function succeeds in retrieving any extra measurement
+// value, it returns 1, otherwise 0.
+//
+// The output parameter is p_extrameas.
+//
+
+int
+spindump_analyze_quic_parser_getextrameas(const unsigned char* payload,
+                                          unsigned int payload_len,
+                                          int longform,
+                                          uint32_t version,
+                                          int fromResponder,
+                                          int spin,
+                                          struct spindump_extrameas* p_extrameas) {
+  spindump_assert(payload != 0);
+  spindump_assert(spindump_isbool(longform));
+
+  if (payload_len < 1) return(0);
+  uint8_t firstByte = payload[0];
+
+  if (longform == 0) {
+
+    spindump_deepdebugf("Reserved bits are not parseable for the long version header");
+    return(0);
+
+  } else {
+    if (spindump_analyze_quic_parser_version_getextrameas(version,firstByte,spin,p_extrameas)) {
+      //TODO: debug print needed here
+      /*spindump_deepdebugf("SPIN = %u (v.%08x) from %s",
+                          *p_spin, version,
+                          fromResponder ? "responder" : "initiator");*/
+      return(1);
+    } else {
+      spindump_deepdebugf("Reserved bits are not parseable for this version (%lx)", version);
+      return(0);
+    }
+
+  }
+}
+
+//
 // This is only called if a spin bit was successfully found,
 // i.e. for shortform packets with the the right packet value.
 // this extracts the rtloss1bit as specified in

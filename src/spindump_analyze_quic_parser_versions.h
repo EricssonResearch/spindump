@@ -156,6 +156,13 @@ int
 spindump_analyze_quic_parser_version_getspinbitvalue(uint32_t version,
                                                      uint8_t headerByte,
                                                      int* p_spinValue);
+
+int
+spindump_analyze_quic_parser_version_getextrameas(uint32_t version,
+                                                 uint8_t headerByte,
+                                                 int spin,
+                                                 struct spindump_extrameas* p_extrameasValue);
+
 int
 spindump_analyze_quic_parser_version_useslongcidlength(uint32_t version);
 

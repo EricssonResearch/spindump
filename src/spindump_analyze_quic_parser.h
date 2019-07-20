@@ -26,6 +26,7 @@
 #include "spindump_protocols.h"
 #include "spindump_connections.h"
 #include "spindump_stats.h"
+#include "spindump_extrameas.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -87,6 +88,16 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
                                         uint32_t version,
                                         int fromResponder,
                                         int* p_spin);
+
+int
+spindump_analyze_quic_parser_getextrameas(const unsigned char* payload,
+                                          unsigned int payload_len,
+                                          int longform,
+                                          uint32_t version,
+                                          int fromResponder,
+                                          int spin,
+                                          struct spindump_extrameas* p_extrameas);
+
 
 int
 spindump_analyze_quic_parser_getrtloss1bit(const unsigned char* payload,
