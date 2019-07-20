@@ -109,6 +109,7 @@ typedef int
 typedef int
 (*spindump_analyze_quic_parser_version_getextrameasfunc)(uint32_t version,
                                                          uint8_t headerByte,
+                                                         int spin,
                                                          struct spindump_extrameas* p_extrameasValue);
 
 
@@ -121,7 +122,7 @@ struct spindump_quic_versiondescr {
   spindump_analyze_quic_parser_version_messagetypefunc messagetypefunction;
   spindump_analyze_quic_parser_version_parsemessagelengthfunc parselengthsfunction;
   spindump_analyze_quic_parser_version_getspinbitvaluefunc spinbitvaluefunction;
-  //spindump_analyze_quic_parser_version_getextrameasfunc extrameasvaluefunction;
+  spindump_analyze_quic_parser_version_getextrameasfunc extrameasvaluefunction;
 };
 
 //
