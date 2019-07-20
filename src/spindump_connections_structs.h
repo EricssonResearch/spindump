@@ -179,6 +179,8 @@ struct spindump_connection {
       unsigned long initialLeftRTT;                 // initial packet exchange RTT in us (only available sometimes)
       struct spindump_spintracker spinFromPeer1to2; // tracking spin bit flips from side 1 to 2
       struct spindump_spintracker spinFromPeer2to1; // tracking spin bit flips from side 2 to 1
+      struct spindump_rtloss1tracker rtloss1FromPeer1to2;       // tracking round trip loss from side 1 to 2
+      struct spindump_rtloss1tracker rtloss1FromPeer2to1;       // tracking round trip loss from side 2 to 1
       uint8_t padding2[8];                          // unused padding to align the structure size properly
     } quic;
 

@@ -129,6 +129,8 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
   case spindump_connection_transport_quic:
     spindump_spintracker_initialize(&connection->u.quic.spinFromPeer1to2);
     spindump_spintracker_initialize(&connection->u.quic.spinFromPeer2to1);
+    spindump_rtloss1tracker_initialize(&connection->u.quic.rtloss1FromPeer1to2);
+    spindump_rtloss1tracker_initialize(&connection->u.quic.rtloss1FromPeer2to1);
     connection->u.quic.side1initialPacket = *when;
     spindump_zerotime(&connection->u.quic.side2initialResponsePacket);
     connection->u.quic.initialRightRTT = spindump_rtt_infinite;
