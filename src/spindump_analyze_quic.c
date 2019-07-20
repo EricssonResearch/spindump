@@ -25,6 +25,7 @@
 #include "spindump_analyze.h"
 #include "spindump_analyze_quic.h"
 #include "spindump_analyze_quic_parser.h"
+#include "spindump_analyze_quic_parser_util.h"
 #include "spindump_spin.h"
 
 //

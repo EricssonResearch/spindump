@@ -48,6 +48,12 @@ spindump_analyze_quic_parser_util_parseint(const unsigned char* buffer,
                                            unsigned int bufferRemainingCaplen,
                                            unsigned int* integerLength,
                                            uint64_t* integer);
+int
+spindump_analyze_quic_quicidequal(struct spindump_quic_connectionid* id1,
+                                  struct spindump_quic_connectionid* id2);
+int
+spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
+                                         struct spindump_quic_connectionid* id2);
 #ifdef SPINDUMP_DEBUG
 const char*
 spindump_analyze_quic_parser_util_typetostring(enum spindump_quic_message_type type);

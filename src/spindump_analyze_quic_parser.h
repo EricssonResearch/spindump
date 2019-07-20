@@ -47,14 +47,6 @@
 // External API interface to this module ------------------------------------------------------
 //
 
-const char*
-spindump_analyze_quic_parser_versiontostring(uint32_t version);
-int
-spindump_analyze_quic_quicidequal(struct spindump_quic_connectionid* id1,
-                                  struct spindump_quic_connectionid* id2);
-int
-spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
-                                         struct spindump_quic_connectionid* id2);
 int
 spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
                                                    unsigned int payload_len,
@@ -88,10 +80,6 @@ spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
                                                struct spindump_quic_connectionid* p_sourceCid,
                                                enum spindump_quic_message_type* p_type,
                                                struct spindump_stats* stats);
-int
-spindump_analyze_quic_parser_isgoogleversion(uint32_t version);
-uint32_t
-spindump_analyze_quic_parser_getgoogleversion(uint32_t version);
 int
 spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
                                         unsigned int payload_len,

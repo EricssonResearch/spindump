@@ -37,6 +37,7 @@
 #include "spindump_table.h"
 #include "spindump_stats.h"
 #include "spindump_analyze_quic_parser.h"
+#include "spindump_analyze_quic_parser_versions.h"
 #include "spindump_analyze_tls_parser.h"
 #include "spindump_analyze.h"
 #include "spindump_spin.h"

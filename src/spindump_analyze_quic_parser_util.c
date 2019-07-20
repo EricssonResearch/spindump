@@ -206,3 +206,33 @@ spindump_analyze_quic_parser_util_typetostring(enum spindump_quic_message_type t
 }
 
 #endif // SPINDUMP_DEBUG
+
+//
+// Compare two QUIC Connection IDs. Return 1 if they are equal (same
+// length, same content).
+//
+
+int
+spindump_analyze_quic_quicidequal(struct spindump_quic_connectionid* id1,
+                                  struct spindump_quic_connectionid* id2) {
+  spindump_assert(id1 != 0);
+  spindump_assert(id2 != 0);
+  return(id1->len == id2->len &&
+         memcmp(id1->id,id2->id,id2->len) == 0);
+}
+
+//
+// Compare two QUIC Connection IDs. Return 1 if they are equal (same
+// length, same content), but allow the first identifier to be of
+// unknown length. So if all the bytes of the second identifier match
+// the byte string in the first, we're return 1. This means that a
+// zero-length identifier will match anything.
+//
+
+int
+spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
+                                        struct spindump_quic_connectionid* id2) {
+  spindump_assert(id1 != 0);
+  spindump_assert(id2 != 0);
+  return(memcmp(id1,id2->id,id2->len) == 0);
+}

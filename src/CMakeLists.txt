@@ -59,6 +59,7 @@ add_library(spindumplib
   spindump_analyze_quic.c
   spindump_analyze_quic_parser.c 
   spindump_analyze_quic_parser_util.c 
+  spindump_analyze_quic_parser_versions.c 
   spindump_analyze_tcp.c
   spindump_analyze_tls_parser.c
   spindump_analyze_udp.c

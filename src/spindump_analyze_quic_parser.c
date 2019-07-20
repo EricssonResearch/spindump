@@ -29,6 +29,7 @@
 #include "spindump_analyze_quic.h"
 #include "spindump_analyze_quic_parser.h"
 #include "spindump_analyze_quic_parser_util.h"
+#include "spindump_analyze_quic_parser_versions.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -123,36 +124,6 @@ spindump_analyze_quic_parser_parsecids(const unsigned char* payload,
 //
 // Actual code --------------------------------------------------------------------------------
 //
-
-//
-// Compare two QUIC Connection IDs. Return 1 if they are equal (same
-// length, same content).
-//
-
-int
-spindump_analyze_quic_quicidequal(struct spindump_quic_connectionid* id1,
-                                  struct spindump_quic_connectionid* id2) {
-  spindump_assert(id1 != 0);
-  spindump_assert(id2 != 0);
-  return(id1->len == id2->len &&
-         memcmp(id1->id,id2->id,id2->len) == 0);
-}
-
-//
-// Compare two QUIC Connection IDs. Return 1 if they are equal (same
-// length, same content), but allow the first identifier to be of
-// unknown length. So if all the bytes of the second identifier match
-// the byte string in the first, we're return 1. This means that a
-// zero-length identifier will match anything.
-//
-
-int
-spindump_analyze_quic_partialquicidequal(const unsigned char* id1,
-                                        struct spindump_quic_connectionid* id2) {
-  spindump_assert(id1 != 0);
-  spindump_assert(id2 != 0);
-  return(memcmp(id1,id2->id,id2->len) == 0);
-}
 
 //
 // Look to see if an UDP packet is a likely QUIC packet. This check is
@@ -1766,34 +1737,6 @@ spindump_analyze_quic_parser_parsecids(const unsigned char* payload,
 }
 
 //
-// Checks whether this version number likely belongs to Google
-// They look like Qddd, e.g. Q043 in ASCII
-//
-
-int
-spindump_analyze_quic_parser_isgoogleversion(uint32_t version) {
-  return ((version & spindump_quic_version_googlemask) == spindump_quic_version_google);
-}
-
-//
-// Determines the google numeric version from the version data
-// returns spindump_quic_version_unknown if the version data is a non-valid google version number
-//
-
-uint32_t
-spindump_analyze_quic_parser_getgoogleversion(uint32_t version) {
-  const unsigned char mask = 0x30;
-  uint32_t d100= ((version >> 16) & 0xff) ^ mask;
-  uint32_t d10= ((version >> 8) & 0xff) ^ mask;
-  uint32_t d1= ((version >> 0) & 0xff) ^ mask;
-
-  // this part makes sure that the Google version number is Q followed by 3 digits in ASCII
-  if ( d100>9 || d10>9 || d1>9 || ((version >> 24) & 0xff) != 'Q') return(spindump_quic_version_unknown);
-
-  return 100*d100+10*d10+d1;
-}
-
-//
 // This is the third entry point to the QUIC parser. If a packet has
 // been determined to be a QUIC packet, this function determines its
 // Spin bit value. If the function succeeds in retrieving a Spin bit
@@ -1849,86 +1792,4 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
   }
 }
 
-//
-// Return a string representation of a QUIC version number, e.g., "v17".
-// The returned string need not be freed, but it will not surive the next call
-// to this function.
-//
-// Note: This function is not thread safe.
-//
-
-const char*
-spindump_analyze_quic_parser_versiontostring(uint32_t version) {
-  //check first if it is a google version
-  if (spindump_analyze_quic_parser_isgoogleversion(version)) {
-    static char buf[20];
-    memset(buf,0,sizeof(buf));
-    snprintf(buf,sizeof(buf)-1,"v.g%u", (unsigned int)spindump_analyze_quic_parser_getgoogleversion(version) );
-    return(buf);
-  }
-
-  switch (version) {
-  case spindump_quic_version_rfc:
-    return("rfc");
-  case spindump_quic_version_draft20:
-    return("v20");
-  case spindump_quic_version_draft19:
-    return("v19");
-  case spindump_quic_version_draft18:
-    return("v18");
-  case spindump_quic_version_draft17:
-    return("v17");
-  case spindump_quic_version_draft16:
-    return("v16");
-  case spindump_quic_version_draft15:
-    return("v15");
-  case spindump_quic_version_draft14:
-    return("v14");
-  case spindump_quic_version_draft13:
-    return("v13");
-  case spindump_quic_version_draft12:
-    return("v12");
-  case spindump_quic_version_draft11:
-    return("v11");
-  case spindump_quic_version_draft10:
-    return("v10");
-  case spindump_quic_version_draft09:
-    return("v09");
-  case spindump_quic_version_draft08:
-    return("v08");
-  case spindump_quic_version_draft07:
-    return("v07");
-  case spindump_quic_version_draft06:
-    return("v06");
-  case spindump_quic_version_draft05:
-    return("v05");
-  case spindump_quic_version_draft04:
-    return("v04");
-  case spindump_quic_version_draft03:
-    return("v03");
-  case spindump_quic_version_draft02:
-    return("v02");
-  case spindump_quic_version_draft01:
-    return("v01");
-  case spindump_quic_version_draft00:
-    return("v00");
-  case spindump_quic_version_quant20:
-    return("v.qn20");
-  case spindump_quic_version_quant19:
-    return("v.qn19");
-  case spindump_quic_version_huitema:
-    return("v.huit");
-  case spindump_quic_version_mozilla:
-    return("v.moz");
-  case spindump_quic_version_negotiation:
-    return("v.tbd");
-  default:
-    {
-      static char buf[20];
-      memset(buf,0,sizeof(buf));
-      snprintf(buf,sizeof(buf)-1,"v.0x%08x", version);
-      return(buf);
-    }
-  }
-}
 
