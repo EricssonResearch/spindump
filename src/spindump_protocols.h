@@ -688,6 +688,12 @@ struct spindump_tcp {
 };
 
 //
+// Telecom Italia loss measurement bits
+//
+
+#define spindump_quic_byte_rtloss1             0x08
+
+//
 // Draft 17 (and later) high order bits
 //
 

@@ -27,6 +27,7 @@
 #include "spindump_analyze_quic_parser.h"
 #include "spindump_analyze_quic_parser_util.h"
 #include "spindump_spin.h"
+#include "spindump_rtloss1.h"
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -409,6 +410,21 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       spin,
                                                       fromResponder,
                                                       &isFlip);
+    }
+    int rtloss1;
+    if (spindump_analyze_quic_parser_getrtloss1bit(udpPayload,
+                                                   size_udppayload,
+                                                   connection->u.quic.version,
+                                                   fromResponder,
+                                                   &rtloss1)) {
+      
+      spindump_rtloss1tracker_observeandcalculateloss(state,
+                                                      packet,
+                                                      connection,
+                                                      &packet->timestamp,
+                                                      fromResponder,
+                                                      rtloss1,
+                                                      isFlip);
     }
   }
 

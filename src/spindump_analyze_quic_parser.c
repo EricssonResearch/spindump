@@ -1648,7 +1648,13 @@ spindump_analyze_quic_parser_getrtloss1bit(const unsigned char* payload,
                                            int fromResponder,
                                            int* p_rtloss1) {
 
-  return 0;
+  //TODO: integrate to the parser_versions stuff.
+  //but is OK for the time being
+  if (version != spindump_quic_version_titrlo1) return 0;
+
+  uint8_t headerByte = payload[0];
+  *p_rtloss1 = ((headerByte & spindump_quic_byte_rtloss1) != 0);
+  return(1);
 }
 
 
