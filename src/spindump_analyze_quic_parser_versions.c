@@ -445,7 +445,7 @@ spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1(uint32_t versio
 }
 
 //
-// Get the value of the qrloss1 bits for
+// Get the value of the qrloss bits for
 // https://tools.ietf.org/html/draft-ferrieuxhamchaoui-quic-lossbits-00
 //
 
