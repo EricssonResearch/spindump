@@ -1704,33 +1704,3 @@ spindump_analyze_quic_parser_getextrameas(const unsigned char* payload,
   }
 }
 
-//
-// This is only called if a spin bit was successfully found,
-// i.e. for shortform packets with the the right packet value.
-// this extracts the rtloss1bit as specified in
-// https://tools.ietf.org/html/draft-cfb-ippm-spinbit-new-measurements-01#section-6.1
-// The only supported version at the moment is TBD
-// If the function succeeds in retrieving a rtloss1 bit
-// value, it returns 1, otherwise 0.
-//
-// The output parameter is p_rtloss1, which will hold the value of the
-// rtloss1 bit (either 0 or 1).
-//
-
-int
-spindump_analyze_quic_parser_getrtloss1bit(const unsigned char* payload,
-                                           unsigned int payload_len,
-                                           uint32_t version,
-                                           int fromResponder,
-                                           int* p_rtloss1) {
-
-  //TODO: integrate to the parser_versions stuff.
-  //but is OK for the time being
-  if (version != spindump_quic_version_titrlo1) return 0;
-
-  uint8_t headerByte = payload[0];
-  *p_rtloss1 = ((headerByte & spindump_quic_byte_rtloss1) != 0);
-  return(1);
-}
-
-

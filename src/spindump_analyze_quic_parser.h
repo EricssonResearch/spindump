@@ -98,14 +98,6 @@ spindump_analyze_quic_parser_getextrameas(const unsigned char* payload,
                                           int spin,
                                           struct spindump_extrameas* p_extrameas);
 
-
-int
-spindump_analyze_quic_parser_getrtloss1bit(const unsigned char* payload,
-                                           unsigned int payload_len,
-                                           uint32_t version,
-                                           int fromResponder,
-                                           int* p_rtloss1);
-
 int
 spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* payload,
                                                         unsigned int payload_len,
