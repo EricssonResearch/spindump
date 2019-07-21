@@ -195,10 +195,9 @@ spindump_capture_initialize_aux(const char* interface,
   if (interface != 0) {
     
     if (pcap_lookupnet(interface, &state->ourAddress, &state->ourNetmask, errbuf) == -1) {
-      spindump_errorf("couldn't get netmask for device %s: %s", interface, errbuf);
-      pcap_close(state->handle);
-      spindump_free(state);
-      return(0);
+      spindump_warnf("couldn't get netmask for device %s: %s", interface, errbuf);
+      state->ourAddress = 0x7f000001;
+      state->ourNetmask = 0xff000000;
     }
   } else {
     state->ourAddress = 0x7f000001;
