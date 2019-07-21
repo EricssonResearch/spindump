@@ -109,6 +109,8 @@ struct spindump_connection {
   spindump_counter_64bit ect1FromResponder;         // ECN ECT(1) counts
   spindump_counter_64bit ceFromInitiator;           // ECN CE counts
   spindump_counter_64bit ceFromResponder;           // ECN CE counts
+  struct spindump_rtloss1 rtLossesFrom1to2;         // RT lossrate measured in UL
+  struct spindump_rtloss1 rtLossesFrom2to1;         // RT lossrate measured in DL
   struct spindump_rtt leftRTT;                      // left-side (side 1) RTT calculations
   struct spindump_rtt rightRTT;                     // right-side (side 2) RTT calculations
   struct spindump_rtt respToInitFullRTT;            // end-to-end RTT calculations observed from responder

@@ -17,7 +17,18 @@
 
 #include <stdlib.h>
 #include "spindump_rtloss1.h"
+#include "spindump_analyze.h"
 
+//
+// Function Prototypes
+//
+
+void 
+spindump_rtloss1_setaveragelossrate(struct spindump_rtloss1stats* lossStats);
+
+//
+// Actual Code
+//
 
 void
 spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
@@ -28,10 +39,12 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
                                                 int lossbit,
                                                 int isFlip) {
   struct spindump_rtloss1tracker* tracker;
-  if (fromResponder)
+  if (fromResponder) {
     tracker = &connection->u.quic.rtloss1FromPeer2to1;
-  else
+  }
+  else {
     tracker = &connection->u.quic.rtloss1FromPeer1to2;
+  }
   if (isFlip) {
     if (tracker->isLastSpinPeriodEmpty) {
 
@@ -47,9 +60,13 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
              * RFL:  0
              * LOST: tracker->previousCounter
              */
+            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / tracker->markedPktCounter;
+            
+
             // realign phases
-            if (tracker->previousCounter > 0)
+            if (tracker->previousCounter > 0) {
               tracker->reflectionPhase = 0;
+            }
               
           } 
           else {
@@ -63,6 +80,31 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
              * RFL:  losses
              * LOST: tracker->currentCounter
              */
+            
+            //
+            // Calculate loss rates and update connection statistics
+            //
+
+            tracker->lossStats.recentLossRates[tracker->lossStats.currentIndex++] = (float)losses / tracker->previousCounter;
+            tracker->lossStats.currentIndex %= spindump_rtloss1_n;
+            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / tracker->markedPktCounter;
+            spindump_rtloss1_setaveragelossrate(&tracker->lossStats);
+
+            if (fromResponder) {
+              connection->rtLossesFrom2to1 = tracker->lossStats.rates;
+            }
+            else {
+              connection->rtLossesFrom1to2 = tracker->lossStats.rates; 
+            }
+
+            // Call handlers if any
+
+            spindump_analyze_process_handlers(state,
+                                              fromResponder ? spindump_analyze_event_responderrtloss1measurement
+                                              : spindump_analyze_event_initiatorrtloss1measurement,
+                                              packet,
+                                              connection);  
+
           }
         }
         tracker->previousCounter = tracker->currentCounter;
@@ -83,6 +125,21 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
   }
 }
 
+void
+spindump_rtloss1_setaveragelossrate(struct spindump_rtloss1stats* lossStats) {
+  
+  int n = 0;
+  float sum = 0;
+
+  for (int i = 0; i < spindump_rtloss1_n; ++i) {
+    float rr = lossStats->recentLossRates[i];
+    if (rr < spindump_rtloss1_maxrate) {
+      sum += rr;
+      ++n;
+    }    
+  }
+  lossStats->rates.averageLossRate = sum / n;
+}
 
 //
 // Initialize the loss tracker object

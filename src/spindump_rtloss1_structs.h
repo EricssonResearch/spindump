@@ -25,18 +25,40 @@
 #include <stdint.h>
 #include <time.h>
 
+//
+// Parameters ---------------------------------------------------------------------------------
+//
+
+#define spindump_rtloss1_n       20
+#define spindump_rtloss1_maxrate 1.0
+
+//
+// Data Structures ----------------------------------------------------------------------------
+//
+
+struct spindump_rtloss1 {
+  float averageLossRate;
+  float totalLossRate;
+};
+
+struct spindump_rtloss1stats {
+  struct spindump_rtloss1 rates;
+  float recentLossRates[spindump_rtloss1_n];
+  int currentIndex;
+};
+
 struct spindump_rtloss1tracker {
-    int reflectionPhase;
-    int isLastSpinPeriodEmpty;
-    uint32_t currentCounter;
-    uint32_t previousCounter;
-    struct timeval lastLossTime;
-    // Stats fields
-    uint32_t totalPktCounter;
-    uint32_t markedPktCounter;
-    uint32_t generatedPktCounter;
-    uint32_t reflectedPktCounter;
-    uint32_t lostPackets;
+  int reflectionPhase;
+  int isLastSpinPeriodEmpty;
+  uint32_t currentCounter;
+  uint32_t previousCounter;
+  struct timeval lastLossTime;
+  // Stats fields
+  uint32_t markedPktCounter;
+  uint32_t generatedPktCounter;
+  uint32_t reflectedPktCounter;
+  uint32_t lostPackets;
+  struct spindump_rtloss1stats lossStats;
 };
 
 #endif

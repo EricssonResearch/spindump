@@ -52,6 +52,9 @@ spindump_event_parser_json_parse_aux_spin_value(const struct spindump_json_value
 static int
 spindump_event_parser_json_parse_aux_ecn_congestion_event(const struct spindump_json_value* json,
                                                           struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_rtloss1_measurement(const struct spindump_json_value* json,
+                                                          struct spindump_event* event);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -193,6 +196,12 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
     
   case spindump_event_type_ecn_congestion_event:
     if (!spindump_event_parser_json_parse_aux_ecn_congestion_event(json,event)) {
+      return(0);
+    }
+    break;
+
+  case spindump_event_type_rtloss1_measurement:
+    if (!spindump_event_parser_json_parse_aux_rtloss1_measurement(json,event)) {
       return(0);
     }
     break;
@@ -385,6 +394,40 @@ spindump_event_parser_json_parse_aux_ecn_congestion_event(const struct spindump_
   return(1);
 }
 
+static int
+spindump_event_parser_json_parse_aux_rtloss1_measurement(const struct spindump_json_value* json,
+                                                struct spindump_event* event) {
+  const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
+  const struct spindump_json_value* avgField = spindump_json_value_getfield("Avg_loss",json);
+  const struct spindump_json_value* totField = spindump_json_value_getfield("Tot_loss",json);
+  
+  if (whoField == 0 || avgField == 0 || totField == 0) {
+    spindump_errorf("rtloss1 event does not have the necessary JSON fields");
+    return(0);
+  }
+
+  const char* avgValue = spindump_json_value_getstring(avgField);
+  const char* totValue = spindump_json_value_getstring(totField);
+  const char* whoValue = spindump_json_value_getstring(whoField);
+
+  // Implement validity check
+  memset(event->u.rtloss1Measurement.avgLoss, '\0', sizeof(event->u.rtloss1Measurement.avgLoss));
+  strcpy(event->u.rtloss1Measurement.avgLoss, avgValue);
+
+  memset(event->u.rtloss1Measurement.totLoss, '\0', sizeof(event->u.rtloss1Measurement.totLoss));
+  strcpy(event->u.rtloss1Measurement.totLoss, totValue);
+
+  if (strcasecmp(whoValue,"initiator") == 0) {
+    event->u.rtloss1Measurement.direction = spindump_direction_frominitiator;
+  } else if (strcasecmp(whoValue,"responder") == 0) {
+    event->u.rtloss1Measurement.direction = spindump_direction_fromresponder;
+  } else {
+    spindump_errorf("rtloss1 value direction does not have the right value in JSON: %s", whoValue);
+    return(0);
+  }
+  return(1);
+}
+
 //
 // Take an event description in the input parameter "event", and print
 // it out as a JSON-formatted Spindump event. The printed version will
@@ -495,6 +538,13 @@ spindump_event_parser_json_print(const struct spindump_event* event,
     addtobuffer2(", \"Ecn0\": \"%llu\"", event->u.ecnCongestionEvent.ecn0);
     addtobuffer2(", \"Ecn1\": \"%llu\"", event->u.ecnCongestionEvent.ecn1);
     addtobuffer2(", \"Ce\": \"%llu\"", event->u.ecnCongestionEvent.ce);
+    break;
+
+  case spindump_event_type_rtloss1_measurement:
+    addtobuffer2(", \"Who\": \"%s\"",
+                 event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");  
+    addtobuffer2(", \"Avg_loss\": \"%s\"", event->u.rtloss1Measurement.avgLoss);
+    addtobuffer2(", \"Tot_loss\": \"%s\"", event->u.rtloss1Measurement.totLoss);
     break;
     
   default:
