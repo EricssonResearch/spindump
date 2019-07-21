@@ -1,0 +1,23 @@
+UDP 31.133.154.150 <-> 31.133.159.255 62222:137 at 1563725619402951 new starting packets 0 0 bytes 0 0
+UDP 31.133.154.150 <-> 31.133.159.255 59378:137 at 1563725619577455 new starting packets 0 0 bytes 0 0
+UDP 31.133.154.150 <-> 31.133.159.255 137:137 at 1563725619614919 new starting packets 0 0 bytes 0 0
+UDP 31.133.154.150 <-> 31.133.159.255 138:138 at 1563725619615458 new starting packets 0 0 bytes 0 0
+UDP 31.133.154.150 <-> 224.0.0.251 5353:5353 at 1563725622042170 new starting packets 0 0 bytes 0 0
+UDP fe80::842:9373:f1d:3887 <-> ff02::fb 5353:5353 at 1563725622042208 new starting packets 0 0 bytes 0 0
+QUIC ::1 <-> ::1 5833c3a48191188708cce4-null (59379:4443) at 1563725624369088 new starting packets 0 0 bytes 0 0
+QUIC ::1 <-> ::1 5833c3a48191188708cce4-cce4e763cb7726b208ba88 (59379:4443) at 1563725624369472 measurement up right 384 packets 1 0 bytes 1280 0 bandwidth 1280 0
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370110 measurement up left 93 packets 3 21 bytes 1829 26880 bandwidth 1829 26880
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370154 measurement up right 44 packets 4 21 bytes 1932 26880 bandwidth 1932 26880
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370154 measurement up full (responder) 137 packets 4 21 bytes 1932 26880 bandwidth 1932 26880
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370289 measurement up left 135 packets 5 31 bytes 2035 39680 bandwidth 2035 39680
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370289 measurement up full (initiator) 179 packets 5 31 bytes 2035 39680 bandwidth 2035 39680
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370360 measurement up right 71 packets 7 35 bytes 2241 44800 bandwidth 2241 44800
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370360 measurement up full (responder) 206 packets 7 35 bytes 2241 44800 bandwidth 2241 44800
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370481 measurement up left 121 packets 8 46 bytes 2344 58880 bandwidth 2344 58880
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370481 measurement up full (initiator) 192 packets 8 46 bytes 2344 58880 bandwidth 2344 58880
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370584 measurement up right 103 packets 10 55 bytes 2550 70400 bandwidth 2550 70400
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370584 measurement up full (responder) 224 packets 10 55 bytes 2550 70400 bandwidth 2550 70400
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370751 measurement up left 167 packets 12 69 bytes 2756 87964 bandwidth 2756 87964
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370751 measurement up full (initiator) 270 packets 12 69 bytes 2756 87964 bandwidth 2756 87964
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624371015 measurement up right 264 packets 15 69 bytes 3048 87964 bandwidth 3048 87964
+QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624371015 measurement up full (responder) 431 packets 15 69 bytes 3048 87964 bandwidth 3048 87964
