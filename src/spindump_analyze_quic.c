@@ -424,7 +424,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                   fromResponder,
                                                   spin,
                                                   &extrameas)) {
-      if (extrameas.extrameasbits & spindump_extrameas_rtloss1) {
+
+      if (extrameas.isvalid & spindump_extrameas_rtloss1) {
         spindump_rtloss1tracker_observeandcalculateloss(state,
                                                         packet,
                                                         connection,
@@ -434,6 +435,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                         isFlip);
 
       }
+
+      if (extrameas.isvalid & spindump_extrameas_qrloss_bit1) {
+        //TODO: the calculate function.
+      }
+
     }
   }
 
