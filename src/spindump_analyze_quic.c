@@ -28,6 +28,7 @@
 #include "spindump_analyze_quic_parser_util.h"
 #include "spindump_spin.h"
 #include "spindump_rtloss1.h"
+#include "spindump_qrloss.h"
 #include "spindump_extrameas.h"
 
 //
@@ -437,9 +438,13 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
       }
 
       if (extrameas.isvalid & spindump_extrameas_qrloss_bit1) {
-        //TODO: the calculate function.
+        spindump_qrlosstracker_observeandcalculateloss(state,
+                                                        packet,
+                                                        connection,
+                                                        &packet->timestamp,
+                                                        fromResponder,
+                                                        extrameas.extrameasbits);
       }
-
     }
   }
 
