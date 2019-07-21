@@ -1,0 +1,6 @@
+UDP 31.133.154.150 <-> 31.133.159.255 57017:137 at 1563727560104715 new starting packets 0 0 bytes 0 0
+UDP 31.133.154.150 <-> 31.133.159.255 137:137 at 1563727560190853 new starting packets 0 0 bytes 0 0
+UDP 31.133.154.150 <-> 31.133.159.255 61651:137 at 1563727560192706 new starting packets 0 0 bytes 0 0
+UDP 31.133.154.150 <-> 31.133.159.255 138:138 at 1563727561388640 new starting packets 0 0 bytes 0 0
+QUIC ::1 <-> ::1 08b4025e6a0e13da-fadd086a0b1d7c72 (61652:4443) at 1563727565000969 new starting packets 0 0 bytes 0 0
+QUIC ::1 <-> ::1 08b4025e6a0e13da-08c3d9bb6e608f67 (61652:4443) at 1563727565001352 measurement up right 383 packets 1 0 bytes 1280 0 bandwidth 1280 0
