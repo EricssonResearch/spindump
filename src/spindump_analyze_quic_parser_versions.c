@@ -66,6 +66,12 @@ spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
                                                              uint8_t headerByte,
                                                              int* p_spinValue);
 
+static int
+spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1(uint32_t version,
+                                                                 uint8_t headerByte,
+                                                                 int spin,
+                                                                 struct spindump_extrameas* p_extrameasValue);
+
 //
 // Variables ----------------------------------------------------------------------------------
 //
@@ -82,6 +88,7 @@ spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
 #define parselengths17 spindump_analyze_quic_parser_parsemessagelength_pertype
 #define spinbit17 spindump_analyze_quic_parser_version_getspinbitvalue_draft17
 #define spinbit16 spindump_analyze_quic_parser_version_getspinbitvalue_draft16
+#define emtrloss1 spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1
 
 //
 // The following table determines the version-dependent behaviour of
@@ -128,7 +135,7 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_google,  googlenamefn, "g.",     1,        0,    messagefuncgo,  0,               0        , 0          },
-  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emtrloss1  },
   { spindump_quic_version_unknown, 0,            0,        0,        0,    0,              0,               0        , 0          }
 };
   
@@ -405,6 +412,27 @@ spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
                                                              int* p_spinValue) {
   *p_spinValue = ((headerByte & spindump_quic_byte_spin_draft16) != 0);
   return(1);
+}
+
+//
+// Get the value of the rtloss1 bit for
+// https://tools.ietf.org/html/draft-cfb-ippm-spinbit-new-measurements-01#section-6.1
+//
+
+static int
+spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1(uint32_t version,
+                                                                 uint8_t headerByte,
+                                                                 int spin,
+                                                                 struct spindump_extrameas* p_extrameasValue) {
+  int retval;
+  int reserved2=0;
+  retval = spindump_analyze_quic_parser_reserved2(version,headerByte,&reserved2);
+  if (!retval) return 0;
+
+  p_extrameasValue->isvalid = p_extrameasValue->isvalid | spindump_extrameas_rtloss1;
+  if (reserved2) p_extrameasValue->extrameasbits = p_extrameasValue->extrameasbits | spindump_extrameas_rtloss1;
+
+  return 1;
 }
 
 //

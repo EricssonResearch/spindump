@@ -20,3 +20,19 @@
 
 
 
+int
+spindump_analyze_quic_parser_reserved1(uint32_t version,
+                                       uint8_t headerByte,
+                                       int* p_reserved1){
+  *p_reserved1 = ((headerByte & spindump_quic_byte_reserved1) != 0);
+  return(1);
+}
+
+int
+spindump_analyze_quic_parser_reserved2(uint32_t version,
+                                       uint8_t headerByte,
+                                       int* p_reserved2){
+  *p_reserved2 = ((headerByte & spindump_quic_byte_reserved2) != 0);
+  return(1);
+}
+
