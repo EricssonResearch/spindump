@@ -11,12 +11,12 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2019 BY ERICSSON RESEARCH
-//  AUTHOR: MARCUS IHLAR AND FABIO BULGARELLA
+//  AUTHOR: ALEXANDRE FERRIEUX
 //
 //
 
-#ifndef SPINDUMP_RTLOSS1_STRUCTS_H
-#define SPINDUMP_RTLOSS1_STRUCTS_H
+#ifndef SPINDUMP_QR_STRUCTS_H
+#define SPINDUMP_QR_STRUCTS_H
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -25,40 +25,9 @@
 #include <stdint.h>
 #include <time.h>
 
-//
-// Parameters ---------------------------------------------------------------------------------
-//
-
-#define spindump_rtloss1_n       20
-#define spindump_rtloss1_maxrate 1.0
-
-//
-// Data Structures ----------------------------------------------------------------------------
-//
-
-struct spindump_rtloss1 {
-  float averageLossRate;
-  float totalLossRate;
-};
-
-struct spindump_rtloss1stats {
-  struct spindump_rtloss1 rates;
-  float recentLossRates[spindump_rtloss1_n];
-  int currentIndex;
-};
-
-struct spindump_rtloss1tracker {
-  int reflectionPhase;
-  int isLastSpinPeriodEmpty;
-  uint32_t currentCounter;
-  uint32_t previousCounter;
-  struct timeval lastLossTime;
-  // Stats fields
-  uint32_t markedPktCounter;
-  uint32_t generatedPktCounter;
-  uint32_t reflectedPktCounter;
-  uint32_t lostPackets;
-  struct spindump_rtloss1stats lossStats;
+struct spindump_qrlosstracker {
+  uint32_t qrank,qcur,qcnt;
+  uint32_t qloss,rloss;
 };
 
 #endif

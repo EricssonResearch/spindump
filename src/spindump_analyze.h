@@ -37,7 +37,7 @@
 // Data types ---------------------------------------------------------------------------------
 //
 
-typedef uint16_t spindump_analyze_event;
+typedef uint32_t spindump_analyze_event;
 #define spindump_analyze_event_newconnection                         1
 #define spindump_analyze_event_changeconnection                      2
 #define spindump_analyze_event_connectiondelete                      4
@@ -54,8 +54,10 @@ typedef uint16_t spindump_analyze_event;
 #define spindump_analyze_event_statechange                        8192
 #define spindump_analyze_event_initiatorecnce                    16384
 #define spindump_analyze_event_responderecnce                    32768
+#define spindump_analyze_event_initiatorrtloss1measurement       65536
+#define spindump_analyze_event_responderrtloss1measurement      131072  
 
-#define spindump_analyze_event_alllegal                          65535
+#define spindump_analyze_event_alllegal                         262143
 
 struct spindump_analyze;
 struct spindump_event;

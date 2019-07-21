@@ -35,6 +35,7 @@
 #include "spindump_bandwidth.h"
 #include "spindump_spin_structs.h"
 #include "spindump_rtloss1_structs.h"
+#include "spindump_qrloss_structs.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -108,6 +109,8 @@ struct spindump_connection {
   spindump_counter_64bit ect1FromResponder;         // ECN ECT(1) counts
   spindump_counter_64bit ceFromInitiator;           // ECN CE counts
   spindump_counter_64bit ceFromResponder;           // ECN CE counts
+  struct spindump_rtloss1 rtLossesFrom1to2;         // RT lossrate measured in UL
+  struct spindump_rtloss1 rtLossesFrom2to1;         // RT lossrate measured in DL
   struct spindump_rtt leftRTT;                      // left-side (side 1) RTT calculations
   struct spindump_rtt rightRTT;                     // right-side (side 2) RTT calculations
   struct spindump_rtt respToInitFullRTT;            // end-to-end RTT calculations observed from responder
@@ -182,6 +185,8 @@ struct spindump_connection {
       struct spindump_spintracker spinFromPeer2to1; // tracking spin bit flips from side 2 to 1
       struct spindump_rtloss1tracker rtloss1FromPeer1to2;       // tracking round trip loss from side 1 to 2
       struct spindump_rtloss1tracker rtloss1FromPeer2to1;       // tracking round trip loss from side 2 to 1
+      struct spindump_qrlosstracker qrFromPeer1to2;       // tracking QR from side 1 to 2
+      struct spindump_qrlosstracker qrFromPeer2to1;       // tracking QR from side 2 to 1
       //uint8_t padding2[8];                          // unused padding to align the structure size properly
     } quic;
 
