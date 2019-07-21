@@ -1,0 +1,2 @@
+QUIC ::1 <-> ::1 aa73b2f7599246c508ceeb-null (49313:4443) at 1563724803062069 new starting packets 0 0 bytes 0 0
+QUIC ::1 <-> ::1 aa73b2f7599246c508ceeb-ceeb1d4433d3537208047a (49313:4443) at 1563724803062443 measurement up right 374 packets 1 0 bytes 1280 0 bandwidth 1280 0
