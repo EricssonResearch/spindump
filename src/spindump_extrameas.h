@@ -33,6 +33,9 @@ struct spindump_extrameas {
   spindump_extrameas_int isvalid;        //telling whether a given extra bit is present
 };
 
+void
+spindump_extrameas_init(struct spindump_extrameas* p_extrameas);
+
 int
 spindump_analyze_quic_parser_reserved1(uint32_t version,
                                        uint8_t headerByte,

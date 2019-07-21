@@ -36,3 +36,9 @@ spindump_analyze_quic_parser_reserved2(uint32_t version,
   return(1);
 }
 
+void
+spindump_extrameas_init(struct spindump_extrameas* p_extrameas){
+  p_extrameas->extrameasbits =0;
+  p_extrameas->isvalid=0;
+}
+

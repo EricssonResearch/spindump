@@ -28,6 +28,7 @@
 #include "spindump_analyze_quic_parser_util.h"
 #include "spindump_spin.h"
 #include "spindump_rtloss1.h"
+#include "spindump_extrameas.h"
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -411,20 +412,28 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       fromResponder,
                                                       &isFlip);
     }
-    int rtloss1;
-    if (spindump_analyze_quic_parser_getrtloss1bit(udpPayload,
-                                                   size_udppayload,
-                                                   connection->u.quic.version,
-                                                   fromResponder,
-                                                   &rtloss1)) {
-      
-      spindump_rtloss1tracker_observeandcalculateloss(state,
-                                                      packet,
-                                                      connection,
-                                                      &packet->timestamp,
-                                                      fromResponder,
-                                                      rtloss1,
-                                                      isFlip);
+
+    struct spindump_extrameas extrameas;
+    spindump_extrameas_init(&extrameas);
+
+    // check whether the Reserved bits are used in this version
+    if (spindump_analyze_quic_parser_getextrameas(udpPayload,
+                                                  size_udppayload,
+                                                  mayHaveSpinBit,
+                                                  connection->u.quic.version,
+                                                  fromResponder,
+                                                  spin,
+                                                  &extrameas)) {
+      if (extrameas.extrameasbits & spindump_extrameas_rtloss1) {
+        spindump_rtloss1tracker_observeandcalculateloss(state,
+                                                        packet,
+                                                        connection,
+                                                        &packet->timestamp,
+                                                        fromResponder,
+                                                        extrameas.extrameasbits & spindump_extrameas_rtloss1?1:0,
+                                                        isFlip);
+
+      }
     }
   }
 
