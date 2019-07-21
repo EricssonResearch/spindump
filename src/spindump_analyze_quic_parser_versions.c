@@ -466,7 +466,6 @@ spindump_analyze_quic_parser_version_getextrameas(uint32_t version,
   } else {
     return(0);
   }
-  return(0);
 }
 
 //

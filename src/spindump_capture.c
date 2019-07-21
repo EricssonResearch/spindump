@@ -314,7 +314,7 @@ spindump_capture_nextpacket(struct spindump_capture_state* state,
   }
   
   //
-  // Otherwise. ait for the next packet
+  // Otherwise, wait for the next packet
   // 
   
   struct spindump_packet* packet = &state->currentPacket;
