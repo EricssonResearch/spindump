@@ -144,7 +144,7 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_google,  googlenamefn, "g.",     1,        0,    messagefuncgo,  0,               0        , 0          },
   { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emtrloss1  },
-  { spindump_quic_version_orqrlos, fixednamefn,  "v.til1", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emqrloss   },
+  { spindump_quic_version_orqrlos, fixednamefn,  "v.orql", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emqrloss   },
   { spindump_quic_version_unknown, 0,            0,        0,        0,    0,              0,               0        , 0          }
 };
   
