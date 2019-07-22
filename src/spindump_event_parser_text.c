@@ -165,6 +165,18 @@ spindump_event_parser_text_print(const struct spindump_event* event,
                    event->u.rtloss1Measurement.totLoss);
     }
     break;
+
+  case spindump_event_type_qrloss_measurement:
+    if (event->u.qrlossMeasurement.direction == spindump_direction_frominitiator) {
+      addtobuffer3("Upstream loss %s, E2E loss %s (initiator) ",
+                   event->u.qrlossMeasurement.qLoss,
+                   event->u.qrlossMeasurement.rLoss);  
+    } else {
+      addtobuffer3("Upstream loss %s, E2E loss %s (responder) ",
+                   event->u.qrlossMeasurement.qLoss,
+                   event->u.qrlossMeasurement.rLoss); 
+    }
+    break;
     
   default:
     spindump_errorf("invalid event type");

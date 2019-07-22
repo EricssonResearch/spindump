@@ -70,6 +70,7 @@ struct spindump_main_configuration {
   int reportSpins;
   int reportSpinFlips;
   int reportRtLoss;
+  int reportQrLoss;
   int averageMode;
   int aggregateMode;
   int anonymizeLeft;

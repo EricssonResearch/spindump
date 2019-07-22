@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include "spindump_qrloss.h"
 #include "spindump_extrameas.h"
+#include "spindump_analyze.h"
+
 
 #define QPERIOD 64
 
@@ -46,10 +48,10 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
   //
 
   if ((!tracker->qcnt)&&(!tracker->qrank)) { 
-    tracker->qcur=q;
+    tracker->qcur = q;
     tracker->qcnt++;
 
-  } else if (q==tracker->qcur) {
+  } else if (q == tracker->qcur) {
     tracker->qcnt++;
   } else {
     
@@ -58,12 +60,30 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
     //
 
     tracker->qloss += (QPERIOD-tracker->qcnt);
-    tracker->qcur=q;
-    tracker->qcnt=1;
+    tracker->qcur = q;
+    tracker->qcnt = 1;
     tracker->qrank++;
+
+    if (fromResponder) {
+      connection->qLossesFrom2to1 = (float)tracker->qloss / tracker->qrank;
+    } else {
+      connection->qLossesFrom1to2 = (float)tracker->qloss / tracker->qrank; 
+    }
+
+    spindump_analyze_process_handlers(state,
+                                  fromResponder ? spindump_analyze_event_responderqrlossmeasurement
+                                  : spindump_analyze_event_initiatorqrlossmeasurement,
+                                  packet,
+                                  connection);
   }
 
-  tracker->rloss+=(r!=0);
+  tracker->rloss += (r != 0);
+
+  if (fromResponder) {
+    connection->rLossesFrom2to1 = (float)tracker->rloss / tracker->qrank;
+  } else {
+    connection->rLossesFrom1to2 = (float)tracker->rloss / tracker->qrank; 
+  }
 }
 
 //

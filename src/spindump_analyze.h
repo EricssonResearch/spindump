@@ -55,9 +55,11 @@ typedef uint32_t spindump_analyze_event;
 #define spindump_analyze_event_initiatorecnce                    16384
 #define spindump_analyze_event_responderecnce                    32768
 #define spindump_analyze_event_initiatorrtloss1measurement       65536
-#define spindump_analyze_event_responderrtloss1measurement      131072  
+#define spindump_analyze_event_responderrtloss1measurement      131072
+#define spindump_analyze_event_initiatorqrlossmeasurement       262144
+#define spindump_analyze_event_responderqrlossmeasurement       524288
 
-#define spindump_analyze_event_alllegal                         262143
+#define spindump_analyze_event_alllegal                        1048575
 
 struct spindump_analyze;
 struct spindump_event;
