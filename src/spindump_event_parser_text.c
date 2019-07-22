@@ -153,6 +153,18 @@ spindump_event_parser_text_print(const struct spindump_event* event,
     addtobuffer2("%s ",
                  event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
     break;
+
+  case spindump_event_type_rtloss1_measurement:
+    if (event->u.rtloss1Measurement.direction == spindump_direction_frominitiator) {
+      addtobuffer3("Moving avg loss %s, Session avg loss %s (initiator) ",
+                   event->u.rtloss1Measurement.avgLoss,
+                   event->u.rtloss1Measurement.totLoss);  
+    } else {
+      addtobuffer3("Moving avg loss %s, Session avg loss %s (responder) ",
+                   event->u.rtloss1Measurement.avgLoss,
+                   event->u.rtloss1Measurement.totLoss);
+    }
+    break;
     
   default:
     spindump_errorf("invalid event type");

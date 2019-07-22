@@ -29,7 +29,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_rtloss1_n       20
+#define spindump_rtloss1_n       10
 #define spindump_rtloss1_maxrate 1.0
 
 //

@@ -725,8 +725,8 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_responderrtloss1measurement:
     eventobj.u.ecnCongestionEvent.direction = spindump_direction_fromresponder;
-    sprintf(eventobj.u.rtloss1Measurement.avgLoss, "%.3f", connection->rtLossesFrom1to2.averageLossRate*100);
-    sprintf(eventobj.u.rtloss1Measurement.totLoss, "%.3f", connection->rtLossesFrom1to2.totalLossRate*100);
+    sprintf(eventobj.u.rtloss1Measurement.avgLoss, "%.3f", connection->rtLossesFrom2to1.averageLossRate*100);
+    sprintf(eventobj.u.rtloss1Measurement.totLoss, "%.3f", connection->rtLossesFrom2to1.totalLossRate*100);
     break;
 
   default:
