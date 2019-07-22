@@ -33,25 +33,38 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
     tracker = &connection->u.quic.qrFromPeer2to1;
   else
     tracker = &connection->u.quic.qrFromPeer1to2;
+  
+  // 
+  // Let's extract the sQuare and Retransmit bits
+  //
 
   uint q=((extrameas & spindump_extrameas_qrloss_bit1)!=0);
   uint r=((extrameas & spindump_extrameas_qrloss_bit2)!=0);
 
-  if ((!tracker->qcnt)&&(!tracker->qrank)) { // real first
+  //
+  // Is this the first packet?
+  //
+
+  if ((!tracker->qcnt)&&(!tracker->qrank)) { 
     tracker->qcur=q;
     tracker->qcnt++;
+
+  } else if (q==tracker->qcur) {
+    tracker->qcnt++;
   } else {
-    if (q==tracker->qcur) tracker->qcnt++;
-    else {
-      tracker->qloss += (QPERIOD-tracker->qcnt);
-      tracker->qcur=q;
-      tracker->qcnt=1;
-      tracker->qrank++;
-    }
+    
+    // 
+    // End of square half-period, let's calculate upstream loss and report loss.
+    //
+
+    tracker->qloss += (QPERIOD-tracker->qcnt);
+    tracker->qcur=q;
+    tracker->qcnt=1;
+    tracker->qrank++;
   }
+
   tracker->rloss+=(r!=0);
 }
-
 
 //
 // Initialize the loss tracker object

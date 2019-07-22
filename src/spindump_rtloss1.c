@@ -68,8 +68,7 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
               tracker->reflectionPhase = 0;
             }
               
-          } 
-          else {
+          } else {
             uint32_t losses = tracker->previousCounter - tracker->currentCounter;
             tracker->lostPackets += losses;
             tracker->generatedPktCounter += tracker->previousCounter;
@@ -87,13 +86,12 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
 
             tracker->lossStats.recentLossRates[tracker->lossStats.currentIndex++] = (float)losses / tracker->previousCounter;
             tracker->lossStats.currentIndex %= spindump_rtloss1_n;
-            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / tracker->markedPktCounter;
+            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / tracker->generatedPktCounter;
             spindump_rtloss1_setaveragelossrate(&tracker->lossStats);
 
             if (fromResponder) {
               connection->rtLossesFrom2to1 = tracker->lossStats.rates;
-            }
-            else {
+            } else {
               connection->rtLossesFrom1to2 = tracker->lossStats.rates; 
             }
 
@@ -104,7 +102,6 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
                                               : spindump_analyze_event_initiatorrtloss1measurement,
                                               packet,
                                               connection);  
-
           }
         }
         tracker->previousCounter = tracker->currentCounter;

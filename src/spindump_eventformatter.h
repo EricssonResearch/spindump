@@ -67,6 +67,7 @@ struct spindump_eventformatter {
   struct spindump_reverse_dns* querier;
   int reportSpins;
   int reportSpinFlips;
+  int reportRtLoss;
   int anonymizeLeft;
   int anonymizeRight;
   int aggregatesOnly;
@@ -87,6 +88,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         struct spindump_reverse_dns* querier,
                                         int reportSpins,
                                         int reportSpinFlips,
+                                        int reportRtLoss,
                                         int anonymizeLeft,
                                         int anonymizeRight,
                                         int aggregatesOnly,
@@ -100,6 +102,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           struct spindump_reverse_dns* querier,
                                           int reportSpins,
                                           int reportSpinFlips,
+                                          int reportRtLoss,
                                           int anonymizeLeft,
                                           int anonymizeRight,
                                           int aggregatesOnly,
