@@ -265,7 +265,7 @@ spindump_main_processargs(int argc,
 
       config->reportQrLoss = 1;
 
-    } else if (strcmp(argv[0],"--not-report-qt-loss") == 0) {
+    } else if (strcmp(argv[0],"--not-report-qr-loss") == 0) {
 
       config->reportQrLoss = 0;
 
@@ -616,6 +616,11 @@ spindump_main_help(void) {
   printf("    --not-report-spins\n");
   printf("    --report-spin-flips     Report individual spin bit changes in --textual mode.\n");
   printf("    --not-report-spin-flips\n");
+  printf("\n");
+  printf("    --report-rt-loss        Report roundtrip loss in --textual mode.\n");
+  printf("    --not-rt-loss\n");
+  printf("    --report-qr-loss        Report unidirectional loss in --textual mode.\n");
+  printf("    --not-report-qr-loss\n");
   printf("\n");
   printf("    --anonymize             Anonymization control.\n");
   printf("    --not-anonymize\n");

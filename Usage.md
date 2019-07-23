@@ -78,6 +78,13 @@ Sets the tool to use always addresses (--addresses) or when possible, DNS names 
 
 Sets the tool to either report or not report individual spin bit values or spin bit value flips for QUIC connections, when using the --textual mode. The default is to not report either the spin values (as there is one per each packet) or spin value flips.
 
+    --report-rt-loss
+    --not-report-rt-loss
+    --report-qr-loss
+    --not-report-qr-loss
+
+Sets the tool to either report or not report round-trip loss rates or unidirectional loss rates for QUIC connections based on two experimental algorithms, when using the --textual mode. The default is to not report packet loss rates.
+
     --debug
     --no-debug
     --deepdebug
