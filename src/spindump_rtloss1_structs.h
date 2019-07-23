@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <time.h>
+#include "spindump_util.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -50,14 +51,14 @@ struct spindump_rtloss1stats {
 struct spindump_rtloss1tracker {
   int reflectionPhase;
   int isLastSpinPeriodEmpty;
-  uint32_t currentCounter;
-  uint32_t previousCounter;
+  spindump_counter_32bit currentCounter;
+  spindump_counter_32bit previousCounter;
   struct timeval lastLossTime;
   // Stats fields
-  uint32_t markedPktCounter;
-  uint32_t generatedPktCounter;
-  uint32_t reflectedPktCounter;
-  uint32_t lostPackets;
+  spindump_counter_32bit markedPktCounter;
+  spindump_counter_32bit generatedPktCounter;
+  spindump_counter_32bit reflectedPktCounter;
+  spindump_counter_32bit lostPackets;
   struct spindump_rtloss1stats lossStats;
 };
 

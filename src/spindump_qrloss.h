@@ -11,7 +11,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2019 BY ERICSSON RESEARCH
-//  AUTHOR: ALEXANDRE FERRIEUX
+//  AUTHOR: ALEXANDRE FERRIEUX AND MARCUS IHLAR
 //
 //
 

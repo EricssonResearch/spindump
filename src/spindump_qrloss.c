@@ -11,7 +11,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2019 BY ERICSSON RESEARCH
-//  AUTHOR: ALEXANDRE FERRIEUX
+//  AUTHOR: ALEXANDRE FERRIEUX AND MARCUS IHLAR
 //
 //
 
@@ -19,7 +19,7 @@
 #include "spindump_qrloss.h"
 #include "spindump_extrameas.h"
 #include "spindump_analyze.h"
-
+#include "spindump_util.h"
 
 #define QPERIOD 64
 
@@ -65,9 +65,9 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
     tracker->qrank++;
 
     if (fromResponder) {
-      connection->qLossesFrom2to1 = (float)tracker->qloss / tracker->qrank;
+      connection->qLossesFrom2to1 = (float)tracker->qloss / connection->packetsFromSide1;
     } else {
-      connection->qLossesFrom1to2 = (float)tracker->qloss / tracker->qrank; 
+      connection->qLossesFrom1to2 = (float)tracker->qloss / connection->packetsFromSide1; 
     }
 
     spindump_analyze_process_handlers(state,
@@ -76,13 +76,12 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
                                   packet,
                                   connection);
   }
-
   tracker->rloss += (r != 0);
 
   if (fromResponder) {
-    connection->rLossesFrom2to1 = (float)tracker->rloss / tracker->qrank;
+    connection->rLossesFrom2to1 = (float)tracker->rloss / connection->packetsFromSide2;
   } else {
-    connection->rLossesFrom1to2 = (float)tracker->rloss / tracker->qrank; 
+    connection->rLossesFrom1to2 = (float)tracker->rloss / connection->packetsFromSide1; 
   }
 }
 

@@ -11,7 +11,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2019 BY ERICSSON RESEARCH
-//  AUTHOR: ALEXANDRE FERRIEUX
+//  AUTHOR: ALEXANDRE FERRIEUX AND MARCUS IHLAR
 //
 //
 
@@ -24,10 +24,14 @@
 
 #include <stdint.h>
 #include <time.h>
+#include "spindump_util.h"
 
 struct spindump_qrlosstracker {
-  uint32_t qrank,qcur,qcnt;
-  uint32_t qloss,rloss;
+  spindump_counter_32bit qrank;
+  spindump_counter_32bit qcur;
+  spindump_counter_32bit qcnt;
+  spindump_counter_32bit qloss;
+  spindump_counter_32bit rloss;
 };
 
 #endif
