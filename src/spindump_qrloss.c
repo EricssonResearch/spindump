@@ -65,7 +65,7 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
     tracker->qrank++;
 
     if (fromResponder) {
-      connection->qLossesFrom2to1 = (float)tracker->qloss / connection->packetsFromSide1;
+      connection->qLossesFrom2to1 = (float)tracker->qloss / connection->packetsFromSide2;
     } else {
       connection->qLossesFrom1to2 = (float)tracker->qloss / connection->packetsFromSide1; 
     }
