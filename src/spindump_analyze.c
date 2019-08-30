@@ -326,19 +326,17 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
   // Checks
   //
 
-  spindump_assert(state != 0);
   spindump_assert((event & spindump_analyze_event_alllegal) == event);
   spindump_assert(connection != 0);
-  spindump_assert((packet != 0 && spindump_packet_isvalid(packet)) ||
-                  event == spindump_analyze_event_connectiondelete ||
-                  event == spindump_analyze_event_newconnection ||
-                  spindump_connections_isaggregate(connection));
-  spindump_deepdebugf("calling handlers for event %x (%s) for connection %u of type %u",
+  spindump_deepdebugf("calling handlers for event %x (%s) for connection %u of type %u packet %lx",
                       event,
                       spindump_analyze_eventtostring(event),
                       connection->id,
-                      connection->type);
-
+                      connection->type,
+                      packet);
+  spindump_assert(state != 0);
+  spindump_assert(packet == 0 || spindump_packet_isvalid(packet));
+  
   //
   // Scan through the registered handlers and execute them if they
   // match this event

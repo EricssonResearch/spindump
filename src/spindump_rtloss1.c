@@ -130,7 +130,7 @@ spindump_rtloss1_setaveragelossrate(struct spindump_rtloss1stats* lossStats) {
 
   for (int i = 0; i < spindump_rtloss1_n; ++i) {
     float rr = lossStats->recentLossRates[i];
-    if (rr < spindump_rtloss1_maxrate) {
+    if (((double)rr) < (double)spindump_rtloss1_maxrate) {
       sum += rr;
       ++n;
     }    

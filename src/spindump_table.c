@@ -207,7 +207,7 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
                         lastAction,
                         spindump_connection_establishing_timeout,
                         (unsigned long long)(spindump_connection_establishing_timeout));
-    spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed");
+    spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed connection attempt");
     stats->connectionsDeletedInactive++;
     
   } else if (lastAction >= (unsigned long long)(spindump_connection_inactive_timeout) &&
@@ -296,10 +296,12 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
   struct spindump_packet dummy;
   memset(&dummy,0,sizeof(dummy));
   spindump_getcurrenttime(&dummy.timestamp);
+  spindump_deepdeepdebugf("delete calling handlers");
   spindump_analyze_process_handlers(analyzer,
                                     spindump_analyze_event_connectiondelete,
                                     &dummy,
                                     connection);
+  spindump_deepdeepdebugf("delete calling handlers... done");
   
   //
   // Delete the connection from the table

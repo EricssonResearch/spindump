@@ -70,6 +70,14 @@ static void
 spindump_analyze_processevent_ecn_congestion_event(struct spindump_analyze* state,
                                                    const struct spindump_event* event,
                                                    struct spindump_connection** p_connection);
+static void
+spindump_analyze_processevent_rtloss1_measurement(struct spindump_analyze* state,
+                                                  const struct spindump_event* event,
+                                                  struct spindump_connection** p_connection);
+static void
+spindump_analyze_processevent_qrloss_measurement(struct spindump_analyze* state,
+                                                 const struct spindump_event* event,
+                                                 struct spindump_connection** p_connection);
 static int
 spindump_analyze_event_parseicmpsessionid(const struct spindump_event* event,
                                           uint16_t* p_peerId);
@@ -154,6 +162,12 @@ spindump_analyze_processevent(struct spindump_analyze* state,
     break;
   case spindump_event_type_ecn_congestion_event:
     spindump_analyze_processevent_ecn_congestion_event(state,event,p_connection);
+    break;
+  case spindump_event_type_qrloss_measurement:
+    spindump_analyze_processevent_qrloss_measurement(state,event,p_connection);
+    break;
+  case spindump_event_type_rtloss1_measurement:
+    spindump_analyze_processevent_rtloss1_measurement(state,event,p_connection);
     break;
   default:
     spindump_errorf("invalid event type %u", event->eventType);
@@ -775,6 +789,66 @@ static void
 spindump_analyze_processevent_ecn_congestion_event(struct spindump_analyze* state,
                                                    const struct spindump_event* event,
                                                    struct spindump_connection** p_connection) {
+  // ... TBD
+  
+  *p_connection = spindump_analyze_processevent_find_connection(state,event);
+  if (*p_connection == 0) return;
+  
+  //
+  // Did we find a connection in the end? If yes, update other
+  // information (statistics, state) from the event to the connection
+  // object.
+  //
+
+  spindump_analyze_event_updateinfo(state,*p_connection,event);
+}
+
+//
+// Process an event of type "RT Loss1 Measurement" from another
+// instance of Spindump somewhere else. Update statistics and make any
+// other necessary changes in the local database of connections.
+//
+// The parameter state is the analyzer data structure, event is the
+// incoming event, and p_connection is an output parameter, in the end
+// pointing to either 0 if no affected connection could be identified,
+// or a pointer to the connection object from the connection table of
+// the analyzer.
+//
+
+static void
+spindump_analyze_processevent_rtloss1_measurement(struct spindump_analyze* state,
+                                                  const struct spindump_event* event,
+                                                  struct spindump_connection** p_connection) {
+  // ... TBD
+  
+  *p_connection = spindump_analyze_processevent_find_connection(state,event);
+  if (*p_connection == 0) return;
+  
+  //
+  // Did we find a connection in the end? If yes, update other
+  // information (statistics, state) from the event to the connection
+  // object.
+  //
+
+  spindump_analyze_event_updateinfo(state,*p_connection,event);
+}
+
+//
+// Process an event of type "QR Loss Measurement" from another
+// instance of Spindump somewhere else. Update statistics and make any
+// other necessary changes in the local database of connections.
+//
+// The parameter state is the analyzer data structure, event is the
+// incoming event, and p_connection is an output parameter, in the end
+// pointing to either 0 if no affected connection could be identified,
+// or a pointer to the connection object from the connection table of
+// the analyzer.
+//
+
+static void
+spindump_analyze_processevent_qrloss_measurement(struct spindump_analyze* state,
+                                                 const struct spindump_event* event,
+                                                 struct spindump_connection** p_connection) {
   // ... TBD
   
   *p_connection = spindump_analyze_processevent_find_connection(state,event);
