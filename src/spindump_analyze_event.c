@@ -102,6 +102,14 @@ static void
 spindump_analyze_event_updateinfo(struct spindump_analyze* state,
                                   struct spindump_connection* connection,
                                   const struct spindump_event* event);
+static void
+spindump_analyze_event_updateinfo_aggregate(struct spindump_analyze* state,
+                                            struct spindump_connection* connection,
+                                            spindump_counter_64bit fromSide1Diff,
+                                            spindump_counter_64bit fromSide2Diff,
+                                            spindump_counter_64bit bytesFromSide1Diff,
+                                            spindump_counter_64bit bytesFromSide2Diff,
+                                            struct timeval* when);
 static int
 spindump_analyze_event_charbytetobyte(char ch1,
                                       char ch2,
@@ -1043,19 +1051,114 @@ spindump_analyze_event_updateinfo(struct spindump_analyze* state,
   //
   // Update packet counters
   //
-  
+
+  spindump_counter_64bit fromSide1Diff = event->packetsFromSide1 - connection->packetsFromSide1;
+  spindump_counter_64bit fromSide2Diff = event->packetsFromSide2 - connection->packetsFromSide2;
   connection->packetsFromSide1 = event->packetsFromSide1;
   connection->packetsFromSide2 = event->packetsFromSide2;
   if (tv == 0) {
     tv = &connection->creationTime;
   }
-  spindump_bandwidth_setcounter(&connection->bytesFromSide1,event->bytesFromSide1,tv);
-  spindump_bandwidth_setcounter(&connection->bytesFromSide2,event->bytesFromSide2,tv);
 
   //
   // Update bandwidth numbers
   //
-  
+
+  spindump_counter_64bit bytesFromSide1Diff = event->bytesFromSide1 - connection->bytesFromSide1.bytes;
+  spindump_counter_64bit bytesFromSide2Diff = event->bytesFromSide2 - connection->bytesFromSide2.bytes;
+  spindump_bandwidth_setcounter(&connection->bytesFromSide1,event->bytesFromSide1,tv);
+  spindump_bandwidth_setcounter(&connection->bytesFromSide2,event->bytesFromSide2,tv);
   connection->bytesFromSide1.bytesInLastPeriod = event->bandwidthFromSide1;
   connection->bytesFromSide2.bytesInLastPeriod = event->bandwidthFromSide2;
+  
+  //
+  // Loop through any possible aggregated connections this connection
+  // belongs to, and report the same measurement udpates there.
+  //
+
+  struct spindump_connection_set_iterator iter;
+  for (spindump_connection_set_iterator_initialize(&connection->aggregates,&iter);
+       !spindump_connection_set_iterator_end(&iter);
+       ) {
+
+    struct spindump_connection* aggregate = spindump_connection_set_iterator_next(&iter);
+    spindump_assert(aggregate != 0);
+    struct timeval when;
+    spindump_timestamp_to_timeval(event->timestamp,&when);
+    spindump_analyze_event_updateinfo_aggregate(state,
+                                                aggregate,
+                                                fromSide1Diff,fromSide2Diff,
+                                                bytesFromSide1Diff,bytesFromSide2Diff,
+                                                &when);
+    
+  }
+
+}
+
+//
+// Process the packet counter and other general statistics for each
+// aggregate of a connection. The additional packet and byte counter
+// data and event timestamp are given as input, as the event for a
+// specific connection does not carry the total amount of packets and
+// bytes for the entire aggregate.
+//
+
+static void
+spindump_analyze_event_updateinfo_aggregate(struct spindump_analyze* state,
+                                            struct spindump_connection* connection,
+                                            spindump_counter_64bit fromSide1Diff,
+                                            spindump_counter_64bit fromSide2Diff,
+                                            spindump_counter_64bit bytesFromSide1Diff,
+                                            spindump_counter_64bit bytesFromSide2Diff,
+                                            struct timeval* when) {
+  
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(state != 0);
+  spindump_assert(connection != 0);
+  spindump_assert(when != 0);
+
+  //
+  // Update timestamps
+  //
+  
+  if (fromSide1Diff > 0) connection->latestPacketFromSide1 = *when;
+  if (fromSide2Diff > 0) connection->latestPacketFromSide2 = *when;
+  
+  //
+  // Update packet counters
+  //
+  
+  connection->packetsFromSide1 += fromSide1Diff;
+  connection->packetsFromSide2 += fromSide2Diff;
+  
+  //
+  // Update bandwidth numbers
+  //
+  
+  spindump_bandwidth_newpacket(&connection->bytesFromSide1,(unsigned int)bytesFromSide1Diff,when);
+  spindump_bandwidth_newpacket(&connection->bytesFromSide2,(unsigned int)bytesFromSide2Diff,when);
+  
+  //
+  // Loop through any possible aggregated connections this aggregate
+  // connection belongs to, and report the same measurement udpates
+  // there.
+  //
+  
+  struct spindump_connection_set_iterator iter;
+  for (spindump_connection_set_iterator_initialize(&connection->aggregates,&iter);
+       !spindump_connection_set_iterator_end(&iter);
+       ) {
+    
+    struct spindump_connection* aggregate = spindump_connection_set_iterator_next(&iter);
+    spindump_assert(aggregate != 0);
+    spindump_analyze_event_updateinfo_aggregate(state,
+                                                aggregate,
+                                                fromSide1Diff,fromSide2Diff,
+                                                bytesFromSide1Diff,bytesFromSide2Diff,
+                                                when);
+    
+  }
 }
