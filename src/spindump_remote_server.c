@@ -202,6 +202,11 @@ static struct spindump_json_schema fieldceschema = {
   .callback = 0
 };
 
+static struct spindump_json_schema fieldnotesschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
 static struct spindump_json_schema recordschema = {
   .type = spindump_json_schema_type_record,
   .callback = 0,
@@ -230,7 +235,8 @@ static struct spindump_json_schema recordschema = {
         { .required = 0, .name = "Bandwidth2", .schema = &fieldbandwidth2schema },
         { .required = 0, .name = "Ecn0", .schema = &fieldecn0schema },
         { .required = 0, .name = "Ecn1", .schema = &fieldecn1schema },
-        { .required = 0, .name = "Ce", .schema = &fieldceschema }
+        { .required = 0, .name = "Ce", .schema = &fieldceschema },
+        { .required = 0, .name = "Notes", .schema = &fieldnotesschema }
       }
     }
   }

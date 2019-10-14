@@ -442,6 +442,7 @@ unittests_eventtextparser(void) {
                             3,
                             1000,
                             1000,
+                            0,
                             &event);
   char buf[200];
   int ret;
@@ -506,6 +507,7 @@ unittests_eventjsonparser(void) {
                             3,
                             1000,
                             1000,
+                            0,
                             &event1);
   char buf[250];
   int ret;

@@ -40,6 +40,7 @@ spindump_event_initialize(enum spindump_event_type eventType,
                           spindump_counter_64bit bytesFromSide2,
                           spindump_counter_32bit bandwidthFromSide1,
                           spindump_counter_32bit bandwidthFromSide2,
+                          const char* notes,
                           struct spindump_event* event) {
 
   //
@@ -70,6 +71,9 @@ spindump_event_initialize(enum spindump_event_type eventType,
   event->bytesFromSide2 = bytesFromSide2;
   event->bandwidthFromSide1 = bandwidthFromSide1;
   event->bandwidthFromSide2 = bandwidthFromSide2;
+  if (notes != 0) {
+    strncpy(event->notes,notes,sizeof(event->notes)-1);
+  }
   spindump_deepdeepdebugf("new event bandwidths %u %u from bytes %u %u",
                           bandwidthFromSide1, bandwidthFromSide2,
                           bytesFromSide1, bytesFromSide2);

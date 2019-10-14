@@ -336,6 +336,10 @@ unsigned int
 spindump_connection_report_brief_sessionsize(unsigned int linelen);
 unsigned int
 spindump_connection_report_brief_variablesize(unsigned int linelen);
+void
+spindump_connection_report_brief_notefieldval(struct spindump_connection* connection,
+                                              unsigned bufsiz,
+                                              char* buf);
 unsigned long long
 spindump_connections_lastaction(struct spindump_connection* connection,
                                 const struct timeval* now);

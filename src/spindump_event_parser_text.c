@@ -76,9 +76,10 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   // Some utilities to put strings onto the buffer
   //
   
-#define addtobuffer1(x)     snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x)
-#define addtobuffer2(x,y)   snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y)
-#define addtobuffer3(x,y,z) snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z)
+#define addtobuffer1(x)       snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x)
+#define addtobuffer2(x,y)     snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y)
+#define addtobuffer3(x,y,z)   snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z)
+#define addtobuffer4(x,y,z,v) snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z,v)
 
   //
   // Basic information about the connection
@@ -197,6 +198,14 @@ spindump_event_parser_text_print(const struct spindump_event* event,
     addtobuffer3(" bandwidth %u %u",
                  event->bandwidthFromSide1,
                  event->bandwidthFromSide2);
+  }
+  
+  //
+  // Notes, if so desired
+  //
+
+  if (event->notes[0] != 0) {
+    addtobuffer4(" note %c%s%c", 34, event->notes, 34);
   }
   
   //

@@ -58,8 +58,10 @@ spindump_connection_addtobuf(char* buf,
                              const char* text,
                              const char* value,
                              int compress);
-static const char*
-spindump_connection_report_brief_notefieldval(struct spindump_connection* connection);
+void
+spindump_connection_report_brief_notefieldval(struct spindump_connection* connection,
+                                              unsigned bufsiz,
+                                              char* buf);
 static void
 spindump_connection_report_udp(struct spindump_connection* connection,
                                FILE* file,
@@ -915,26 +917,25 @@ spindump_connection_addtobuf(char* buf,
 //
 // Return the value of the note field in the spindump --visual mode.
 //
-// Note: This function is not thread safe.
-//
 
-static const char*
-spindump_connection_report_brief_notefieldval(struct spindump_connection* connection) {
+void
+spindump_connection_report_brief_notefieldval(struct spindump_connection* connection,
+                                              unsigned bufsiz,
+                                              char* buf) {
 
   //
   // Checks
   // 
   
   spindump_assert(connection != 0);
-
+  spindump_assert(buf != 0);
+  spindump_assert(bufsiz > 1);
+  
   //
   // Setup a buffer to hold the note
   // 
 
-  spindump_deepdeepdebugf("report_brief_notefieldval point 1");
-  static char buf[spindump_connection_report_brief_notefieldval_length_val+1];
-  memset(buf,0,sizeof(buf));
-  spindump_deepdeepdebugf("report_brief_notefieldval point 1b");
+  memset(buf,0,bufsiz);
   
   //
   // Check connection status
@@ -946,10 +947,10 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
         connection->type == spindump_connection_transport_dns ||
         connection->type == spindump_connection_transport_coap) {
       spindump_deepdeepdebugf("report_brief_notefieldval point 2");
-      spindump_connection_addtobuf(buf,sizeof(buf),"no rsp","",1);
+      spindump_connection_addtobuf(buf,bufsiz,"no rsp","",1);
     } else {
       spindump_deepdeepdebugf("report_brief_notefieldval point 3");
-      spindump_connection_addtobuf(buf,sizeof(buf),"no response","",0);
+      spindump_connection_addtobuf(buf,bufsiz,"no response","",0);
     }
   }
   spindump_deepdeepdebugf("report_brief_notefieldval point 1d");
@@ -971,7 +972,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
       spindump_deepdeepdebugf("report_brief_notefieldval point vs 1");
       char versionstring[20];
       spindump_analyze_quic_parser_versiontostring(connection->u.quic.version,versionstring,sizeof(versionstring));
-      spindump_connection_addtobuf(buf,sizeof(buf),
+      spindump_connection_addtobuf(buf,bufsiz,
                                    versionstring,
                                    "",
                                    1);
@@ -992,7 +993,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
                newver,
                origptr);
       spindump_deepdeepdebugf("report_brief_notefieldval point vsn 5");
-      spindump_connection_addtobuf(buf,sizeof(buf),
+      spindump_connection_addtobuf(buf,bufsiz,
                                    vbuf,
                                    "",
                                    1);
@@ -1004,7 +1005,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
     //
     
     if (connection->u.quic.attempted0Rtt) {
-      spindump_connection_addtobuf(buf,sizeof(buf),"0-RTT","",1);
+      spindump_connection_addtobuf(buf,bufsiz,"0-RTT","",1);
     }
     
     //
@@ -1014,18 +1015,18 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
     if (connection->u.quic.spinFromPeer1to2.totalSpins == 0 &&
         connection->u.quic.spinFromPeer2to1.totalSpins == 0) {
       spindump_deepdeepdebugf("report_brief_notefieldval point 5");
-      spindump_connection_addtobuf(buf,sizeof(buf),"no spin","",1);
+      spindump_connection_addtobuf(buf,bufsiz,"no spin","",1);
     } else if (connection->u.quic.spinFromPeer1to2.totalSpins != 0 &&
                connection->u.quic.spinFromPeer2to1.totalSpins == 0) {
       spindump_deepdeepdebugf("report_brief_notefieldval point 6");
-      spindump_connection_addtobuf(buf,sizeof(buf),"no R-spin","",1);
+      spindump_connection_addtobuf(buf,bufsiz,"no R-spin","",1);
     } else if (connection->u.quic.spinFromPeer1to2.totalSpins == 0 &&
                connection->u.quic.spinFromPeer2to1.totalSpins != 0) {
       spindump_deepdeepdebugf("report_brief_notefieldval point 7");
-      spindump_connection_addtobuf(buf,sizeof(buf),"no I-spin","",1);
+      spindump_connection_addtobuf(buf,bufsiz,"no I-spin","",1);
     } else {
       spindump_deepdeepdebugf("report_brief_notefieldval point 8");
-      spindump_connection_addtobuf(buf,sizeof(buf),"spinning","",1);
+      spindump_connection_addtobuf(buf,bufsiz,"spinning","",1);
     }
     
   }
@@ -1037,7 +1038,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   if (connection->type == spindump_connection_transport_dns) {
     if (connection->u.dns.lastQueriedName[0] != 0) {
       spindump_deepdeepdebugf("report_brief_notefieldval point 9");
-      spindump_connection_addtobuf(buf,sizeof(buf),"Q ",connection->u.dns.lastQueriedName,1);
+      spindump_connection_addtobuf(buf,bufsiz,"Q ",connection->u.dns.lastQueriedName,1);
     }
   }
   
@@ -1049,7 +1050,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
     if (connection->u.coap.dtls) {
       spindump_deepdeepdebugf("report_brief_notefieldval point 10");
       const char* versionString = spindump_analyze_tls_parser_versiontostring(connection->u.coap.dtlsVersion);
-      spindump_connection_addtobuf(buf,sizeof(buf),"DTLS ",versionString,1);
+      spindump_connection_addtobuf(buf,bufsiz,"DTLS ",versionString,1);
     }
   }
   
@@ -1058,7 +1059,6 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   // 
   
   spindump_deepdeepdebugf("report_brief_notefieldval point 999");
-  return(buf);
 }
 
 //
@@ -1120,9 +1120,11 @@ spindump_connection_report_brief(struct spindump_connection* connection,
   spindump_deepdeepdebugf("report_brief point 5");
   if (spindump_connection_report_brief_isnotefield(linelen)) {
     spindump_deepdeepdebugf("report_brief point 5b");
+    char notebuf[spindump_connection_report_brief_notefieldval_length_val+1];
+    spindump_connection_report_brief_notefieldval(connection,sizeof(notebuf),notebuf);
     snprintf(buf + strlen(buf),bufsiz - strlen(buf),"  %-*s",
              spindump_connection_report_brief_notefieldval_length_val,
-             spindump_connection_report_brief_notefieldval(connection));
+             notebuf);
   }
   spindump_deepdeepdebugf("report_brief point 6");
 }

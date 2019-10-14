@@ -52,6 +52,7 @@ traces="trace_icmpv4_short
         trace_quic_v23_picoquic_25k
         trace_quic_v23_picoquic_25k_noh3
         trace_quic_v23_picoquic_25k_keyupd
+        trace_quic_v23_picoquic_25k_cidchange
         trace_quic_v23_picoquicquant_10k_versneg
         trace_quic_v23_picoquicquant_10k_0rtt
         trace_quic_fail1_quant
@@ -159,7 +160,7 @@ do
         CPUPROFILE=$profilefile
         export CPUPROFILE
         echo "  running performance tests..."
-        if $spindump --input-file $pcap --silent $opts > /dev/null
+        if $spindump --input-file $pcap --silent --not-report-notes $opts > /dev/null
         then
             echo "  run ok..."
         else

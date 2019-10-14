@@ -154,6 +154,16 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
   } else {
     event->bandwidthFromSide2 = 0;
   }
+
+  //
+  // Get the optional fields
+  //
+  
+  const struct spindump_json_value* notes = spindump_json_value_getfield("Notes",json);
+  if (notes != 0) {
+    const char* notesString = spindump_json_value_getstring(notes);
+    strncpy(event->notes,notesString,sizeof(event->notes)-1);
+  }
   
   //
   // Get the rest of the fields based on the type of event
@@ -519,6 +529,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
                event->timestamp);
   addtobuffer2("\"State\": \"%s\"",
                spindump_connection_statestring_plain(event->state));
+  if (event->notes[0] != 0) {
+    addtobuffer2(", \"Notes\": \"%s\"", event->notes);
+  }
   
   //
   // The variable part that depends on which event we have

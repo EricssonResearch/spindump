@@ -141,6 +141,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->reportSpinFlips = 0;
   config->reportRtLoss = 0;
   config->reportQrLoss = 0;
+  config->reportNotes = 1;
   config->anonymizeLeft = 0;
   config->anonymizeRight = 0;
   config->updatePeriod = 500 * 1000; // 0.5s
@@ -268,6 +269,14 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--not-report-qr-loss") == 0) {
 
       config->reportQrLoss = 0;
+
+    } else if (strcmp(argv[0],"--report-notes") == 0) {
+
+      config->reportNotes = 1;
+
+    } else if (strcmp(argv[0],"--not-report-notes") == 0) {
+
+      config->reportNotes = 0;
 
     } else if (strcmp(argv[0],"--anonymize") == 0) {
 

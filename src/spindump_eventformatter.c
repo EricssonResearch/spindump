@@ -67,6 +67,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int reportSpinFlips,
                                    int reportRtLoss,
                                    int reportQrLoss,
+                                   int reportNotes,
                                    int anonymizeLeft,
                                    int anonymizeRight,
                                    int aggregatesOnly,
@@ -90,6 +91,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int reportSpinFlips,
                                    int reportRtLoss,
                                    int reportQrLoss,
+                                   int reportNotes,
                                    int anonymizeLeft,
                                    int anonymizeRight,
                                    int aggregatesOnly,
@@ -124,6 +126,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   formatter->reportSpinFlips = reportSpinFlips;
   formatter->reportRtLoss = reportRtLoss;
   formatter->reportQrLoss = reportQrLoss;
+  formatter->reportNotes = reportNotes;
   formatter->anonymizeLeft = anonymizeLeft;
   formatter->anonymizeRight = anonymizeRight;
   formatter->aggregatesOnly = aggregatesOnly;
@@ -159,6 +162,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         int reportSpinFlips,
                                         int reportRtLoss,
                                         int reportQrLoss,
+                                        int reportNotes,
                                         int anonymizeLeft,
                                         int anonymizeRight,
                                         int aggregatesOnly,
@@ -175,6 +179,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                                                                  reportSpinFlips,
                                                                                  reportRtLoss,
                                                                                  reportQrLoss,
+                                                                                 reportNotes,
                                                                                  anonymizeLeft,
                                                                                  anonymizeRight,
                                                                                  aggregatesOnly,
@@ -213,6 +218,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           int reportSpinFlips,
                                           int reportRtLoss,
                                           int reportQrLoss,
+                                          int reportNotes,
                                           int anonymizeLeft,
                                           int anonymizeRight,
                                           int aggregatesOnly,
@@ -230,6 +236,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                                                                  reportSpinFlips,
                                                                                  reportRtLoss,
                                                                                  reportQrLoss,
+                                                                                 reportNotes,
                                                                                  anonymizeLeft,
                                                                                  anonymizeRight,
                                                                                  aggregatesOnly,
@@ -653,6 +660,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   spindump_network initiatorAddress;
   spindump_network responderAddress;
   spindump_connections_getnetworks(connection,&initiatorAddress,&responderAddress);
+  const char* notes = 0;
+  char notesbuf[sizeof(eventobj.notes)];
+  if (formatter->reportNotes) {
+    spindump_connection_report_brief_notefieldval(connection,sizeof(notesbuf),notesbuf);
+    notes = &notesbuf[0];
+  }
   spindump_event_initialize(eventType,
                             connection->type,
                             connection->state,
@@ -666,6 +679,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                             connection->bytesFromSide2.bytes,
                             spindump_bandwidth_periodbytes2bytepersec(connection->bytesFromSide1.bytesInLastPeriod),
                             spindump_bandwidth_periodbytes2bytepersec(connection->bytesFromSide2.bytesInLastPeriod),
+                            notes,
                             &eventobj);
   spindump_deepdeepdebugf("point 7");
   switch (event) {
