@@ -1,0 +1,1 @@
+Picoquic against picoquic, wrong  version number. Should result in version negotiation packet but no further traffic.

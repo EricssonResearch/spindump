@@ -50,6 +50,9 @@ traces="trace_icmpv4_short
         trace_quic_v23_picoquic_5k
         trace_quic_v23_picoquic_25k
         trace_quic_v23_picoquic_25k_noh3
+        trace_quic_v23_picoquic_1k_versneg
+        trace_quic_v23_picoquicquant_10k_versneg
+        trace_quic_v23_picoquicquant_10k_0rtt
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
