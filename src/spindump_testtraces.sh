@@ -47,6 +47,9 @@ traces="trace_icmpv4_short
         trace_quic_v22_picoquic_long
         trace_quic_v22_picoquic_h3
         trace_quic_v23_quant_2k
+        trace_quic_v23_picoquic_5k
+        trace_quic_v23_picoquic_25k
+        trace_quic_v23_picoquic_25k_noh3
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
