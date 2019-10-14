@@ -100,7 +100,7 @@ do
     # Now run it!
     #
     
-    if $spindump --input-file $pcap --textual --format text $opts > $outpre
+    if $spindump --input-file $pcap --textual --format text --not-report-notes $opts > $outpre
     then
         echo "  run ok..."
     else

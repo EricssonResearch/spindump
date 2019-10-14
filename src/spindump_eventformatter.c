@@ -662,6 +662,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   spindump_connections_getnetworks(connection,&initiatorAddress,&responderAddress);
   const char* notes = 0;
   char notesbuf[sizeof(eventobj.notes)];
+  spindump_deepdeepdebugf("reportNotes in eventformatter = %u", formatter->reportNotes);
   if (formatter->reportNotes) {
     spindump_connection_report_brief_notefieldval(connection,sizeof(notesbuf),notesbuf);
     notes = &notesbuf[0];
