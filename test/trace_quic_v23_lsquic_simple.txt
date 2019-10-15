@@ -1,0 +1,1 @@
+A simple run with Lsquic client to Quant server. This succeeds in handshake, but then fails because Quant server does not support HTTP3.
