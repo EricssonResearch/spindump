@@ -1,0 +1,2 @@
+Picoquic client against the Pandora server. Three attempts: regular connection, with retry, and then with HTTP/3 (which I think should fail, as Pandora does not support that yet). The commands that were used are:
+
