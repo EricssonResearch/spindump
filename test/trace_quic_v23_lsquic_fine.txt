@@ -1,0 +1,1 @@
+Three fine runs of 10K file transfer with Lsquic to a Picoquic server on the Internet. Using the command "http_client -H test.privateoctopus.com -s 34.238.92.221:4433 -p /10000". This worked well, given that the -H option was now supplied (needs to be supplied, otherwise the client would crash).

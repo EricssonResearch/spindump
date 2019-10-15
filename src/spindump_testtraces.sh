@@ -57,6 +57,7 @@ traces="trace_icmpv4_short
         trace_quic_v23_picoquicquant_10k_0rtt
         trace_quic_v23_lsquic_simple
         trace_quic_v23_lsquic_complex
+        trace_quic_v23_lsquic_fine
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
