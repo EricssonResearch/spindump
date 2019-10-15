@@ -1,6 +1,6 @@
 # Connection  API
 
-The main data structure in Spindump is the connection object. Its usage and examples are described in the [Library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md).
+The main data structure in Spindump is the connection object. Its usage and examples are described in the [Library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md). See also the [Analyzer API](https://github.com/EricssonResearch/spindump/blob/master/doc/api/analyzer.md)
 
 The detailed data structure is as follows:
 

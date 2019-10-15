@@ -1,6 +1,6 @@
 # Analyzer API
 
-The main API in Spindump is the analyzer library. Its usage and examples are described in the [Library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md). See also the [connection object API](https://github.com/EricssonResearch/spindump/blob/master/connection.md).
+The main API in Spindump is the analyzer library. Its usage and examples are described in the [Library API definition](https://github.com/EricssonResearch/spindump/blob/master/Library.md). See also the [connection object API](https://github.com/EricssonResearch/spindump/blob/master/doc/api/connection.md).
 
 The detailed API functions are as follows:
 
@@ -172,7 +172,7 @@ Some of the allocation sizes can be changed in the relevant header files or thro
 
 A command line option for the compiler could set this to, say 10:
 
-    -Dspindump_seqtracker_nstored=10
+     -Dspindump_seqtracker_nstored=10
 
 and this would affect the memory consumption for a connection object.
 

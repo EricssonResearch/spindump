@@ -106,7 +106,7 @@ Note that if the handlers allocate memory on a per-connection basis, they also n
 
 ## Library API
 
-See the API functions in the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/analyzer.md):
+See the API functions in the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/doc/api/analyzer.md):
 
 * spindump_analyze_initialize -- This function creates an object to represent an analyzer.
 * spindump_analyze_uninitialize  -- Destroy the analyzer resources and memory object.
@@ -125,7 +125,7 @@ This object represents a single connection observed by the analyzer. The full de
 * connection->leftRTT is the number of microsends for the RTT part that is between the initiator (client) and the measurement point 
 * connection->rightRTT is the number of microsends for the RTT part that is between the responder (server) and the measurement point 
 
-The full description can be found from the [Connection API definition](https://github.com/EricssonResearch/spindump/blob/master/connection.md):
+The full description can be found from the [Connection API definition](https://github.com/EricssonResearch/spindump/blob/master/doc/api/connection.md):
 
 ## Events
 
@@ -154,8 +154,8 @@ The currently defined events that can be caught are:
 
 These can be mixed together in one handler by ORing them together. The pseudo-event "spindump_analyze_event_alllegal" represents all of the events.
 
-For more information see again the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/analyzer.md).
+For more information see again the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/doc/api/analyzer.md).
 
 ## Memory allocation
 
-The library allocates memory as needed using malloc and free, and upon calling the analyzer uninitialization function, no allocated memory remains. For more information and ways to tailor the allocation system, see again the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/analyzer.md).
+The library allocates memory as needed using malloc and free, and upon calling the analyzer uninitialization function, no allocated memory remains. For more information and ways to tailor the allocation system, see again the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/doc/api/analyzer.md).
