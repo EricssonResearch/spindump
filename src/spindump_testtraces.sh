@@ -58,6 +58,8 @@ traces="trace_icmpv4_short
         trace_quic_v23_lsquic_simple
         trace_quic_v23_lsquic_complex
         trace_quic_v23_lsquic_fine
+        trace_quic_v23_aiortc
+        trace_quic_v23_aiortc_spin
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
@@ -66,7 +68,8 @@ traces="trace_icmpv4_short
         trace_quic_bug_ls 
         trace_tunnel_interface_ping
         trace_tcp_medium_snap80
-        trace_tcp_large_snap80"
+        trace_tcp_large_snap80
+        trace_empty"
 
 #
 # Loop through test cases

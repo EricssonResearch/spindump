@@ -1,0 +1,5 @@
+A test with the Lsquic client against the Aiortc implementation on the web. Using  the command:
+
+   ./lsquic/http_client -H quic.aiortc.org -s quic.aiortc.org:443 -p /50000 
+   
+which tests a regular connection, and successfully generates spin.

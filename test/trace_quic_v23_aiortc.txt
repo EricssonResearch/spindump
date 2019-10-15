@@ -1,0 +1,6 @@
+A test with the Lsquic client against the Aiortc implementation on the web. Using  the commands:
+
+   ./lsquic/http_client -H quic.aiortc.org -s quic.aiortc.org:443 -p /5000 
+   ./lsquic/http_client -H quic.aiortc.org -s quic.aiortc.org:4434 -p /5000 
+   
+which tests a regular connection and another one with stateless retry.
