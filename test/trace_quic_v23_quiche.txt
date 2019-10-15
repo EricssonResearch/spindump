@@ -1,0 +1,4 @@
+A test between Picoquic client and Quiche QUIC server implementation. Using both plain QUIC and H3. The commands used for this:
+
+    ./picoquic/picoquicdemo -l ./test.log -L -a "hq-23" -v ff000017 quic.tech 4433 /5000
+    ./picoquic/picoquicdemo -l ./test.log -L -a "h3-23" -v ff000017 quic.tech 8443 /25000
