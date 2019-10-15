@@ -60,6 +60,9 @@ traces="trace_icmpv4_short
         trace_quic_v23_lsquic_fine
         trace_quic_v23_aiortc
         trace_quic_v23_aiortc_spin
+        trace_quic_v23_ats
+        trace_quic_v23_ats_retry
+        trace_quic_v23_ats_readdr
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google

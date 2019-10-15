@@ -1,0 +1,5 @@
+UDP 172.16.114.251 <-> 67.192.246.159 54753:4443 at 1571173123450702 new starting packets 0 0 bytes 0 0 note "No response"
+QUIC 172.16.114.251 <-> 67.192.246.159 0810cb787e0e691a-968b0e1da6e7a2689cb7b101d6c34a5dc48c50 (64882:4434) at 1571173128132446 new starting packets 0 0 bytes 0 0 note "No rsp,v23,no spin"
+QUIC 172.16.114.251 <-> 67.192.246.159 10cb787e0e691a1d-1218e11624479e5bf64d7762145fa68429bd (64882:4434) at 1571173128332841 measurement starting left 599 packets 2 1 bytes 2456 121 bandwidth 2456 121 note "V23,no spin"
+QUIC 172.16.114.251 <-> 67.192.246.159 10cb787e0e691a1d-12bd4bb466dfea8f3f8c9acab1a357b4a5c5 (64882:4434) at 1571173128544231 measurement up right 211390 packets 3 2 bytes 3684 242 bandwidth 3684 242 note "V23,no spin"
+QUIC 172.16.114.251 <-> 67.192.246.159 10cb787e0e691a1d-12bd4bb466dfea8f3f8c9acab1a357b4a5c5 (64882:4434) at 1571173128964071 spinflip up 0-1 initiator packets 11 14 bytes 4667 13109 bandwidth 4667 13109 note "V23,no R-spin"

@@ -1,0 +1,5 @@
+A simple test of the ATS QUIC implementation, using regular 0-RTT connection setup, three separate connections. The client is Lsquic, the server is ATS. The following Lsquic commands were used:
+
+   ./lsquic/http_client -H quic.ogre.com -s quic.ogre.com:4433 -p /en/latest/
+   ./lsquic/http_client -H quic.ogre.com -s quic.ogre.com:4433 -p /en/latest/
+   ./lsquic/http_client -H quic.ogre.com -s quic.ogre.com:4433 -p /en/latest/

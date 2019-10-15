@@ -1,0 +1,3 @@
+A test of the ATS QUIC implementation, using address migration. The client is Lsquic, the server is ATS. The following Lsquic command was used:
+
+    . /lsquic/http_client -H quic.ogre.com -s quic.ogre.com:4443 -p /en/latest/admin-guide/introduction.en.html
