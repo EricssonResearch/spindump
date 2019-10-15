@@ -1,0 +1,4 @@
+A test using the Picoquic client and the Facebook "Mvfst" (Move Fast) QUIC implementation. Using the following commands:
+
+    ./picoquic/picoquicdemo -l ./test.log -L -a "h3-23" -v ff000017 fb.mvfst.net 4433 /5000
+    ./picoquic/picoquicdemo -l ./test.log -L -a "h3-23" -v ff000017 fb.mvfst.net 4433 /50000
