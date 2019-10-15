@@ -1,0 +1,4 @@
+A test between the Cloudflare QUIC implementation (server) and the Picoquic implementation (client). And first attempting the wrong port without response. Using the following commands
+
+    ./picoquic/picoquicdemo -l ./test.log -L -a "h3-23" -v ff000017 cloudflare-quic.com 4433 /50000
+    ./picoquic/picoquicdemo -l ./test.log -L -a "h3-23" -v ff000017 cloudflare-quic.com 443 /50000

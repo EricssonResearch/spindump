@@ -67,6 +67,7 @@ traces="trace_icmpv4_short
         trace_quic_v23_msquic_h3
         trace_quic_v23_mvfst_h3
         trace_quic_v23_ngtcp2
+        trace_quic_v23_cf
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
