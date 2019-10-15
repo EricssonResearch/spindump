@@ -106,68 +106,15 @@ Note that if the handlers allocate memory on a per-connection basis, they also n
 
 ## Library API
 
-The following is a detailed description of the library functionality.
+See the API functions in the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/analyzer.md):
 
-### API function spindump_analyze_initialize
+* spindump_analyze_initialize -- This function creates an object to represent an analyzer.
+* spindump_analyze_uninitialize  -- Destroy the analyzer resources and memory object.
+* spindump_analyze_registerhandler -- This function should be called to register a handler for events.
+* spindump_analyze_unregisterhandler -- This function should be called to de-register a handler that was previously registered.
+* callback interface -- The user's function gets called when the relevant event happens.
 
-This function creates an object to represent an analyzer. It allocates memory as needed. It returns a non-NULL object pointer if the creation was successful, and NULL otherwise.
-
-The prototype:
-
-    struct spindump_analyze*
-    spindump_analyze_initialize(void);
-
-### API function spindump_analyze_uninitialize
-
-Destroy the analyzer resources and memory object.
-
-The prototype:
-
-    void
-    spindump_analyze_uninitialize(struct spindump_analyze* state);
-
-### API function spindump_analyze_registerhandler
-
-This function should be called to register a handler as discussed above. 
-
-The prototype: 
-
-    void
-    spindump_analyze_registerhandler(struct spindump_analyze* state,
-    				 spindump_analyze_event eventmask,
-    				 struct spindump_connection* connection,
-    				 spindump_analyze_handler handler,
-    				 void* handlerData);
-
-### API function spindump_analyze_unregisterhandler
-
-This function should be called to de-register a handler that was previously registered.
-
-The prototype: 
-
-    void
-    spindump_analyze_unregisterhandler(struct spindump_analyze* state,
-    				   spindump_analyze_event eventmask,
-    				   struct spindump_connection* connection,
-    				   spindump_analyze_handler handler,
-    				   void* handlerData);
-
-### API handler callback interface
-
-The user's function gets called when the relevant event happens. The interface is:
-
-    void myhandler(struct spindump_analyze* state,
-                   void* handlerData,
-                   void** handlerConnectionData,
-                   spindump_analyze_event event,
-                   struct spindump_packet* packet,
-                   struct spindump_connection* connection);
-
-Here "myhandler" is the user's function and it will get as parameters the analyzer object, the handler data pointer supplied upon registration, a pointer to a pointer that the handler can use to store some information relating to this handler for the specific connection in question, the event, a pointer to the packet, and a pointer to the connection object.
-
-Note that the packet may be 0, in case the callback is being made when the packet is not locally available, such as when the update is due to a remotely delivered event.
-
-### API data structure struct spindump_connection
+## API data structure struct spindump_connection
 
 This object represents a single connection observed by the analyzer. The full description of that object needs to be added later, but here are some of the key fields that are relevant:
 
@@ -178,220 +125,37 @@ This object represents a single connection observed by the analyzer. The full de
 * connection->leftRTT is the number of microsends for the RTT part that is between the initiator (client) and the measurement point 
 * connection->rightRTT is the number of microsends for the RTT part that is between the responder (server) and the measurement point 
 
-The description is in src/spindump_connections_structs.h and the most relevant pare are reproduced below:
+The full description can be found from the [Connection API definition](https://github.com/EricssonResearch/spindump/blob/master/connection.md):
 
-    struct spindump_connection {
-      unsigned int id;                                  // sequentially allocated descriptive id for the connection
-      enum spindump_connection_type type;               // the type of the connection (tcp, icmp, aggregate, etc)
-      enum spindump_connection_state state;             // current state (establishing/established/etc)
-      struct timeval creationTime;                      // when did we see the first packet?
-      struct timeval latestPacketFromSide1;             // when did we see the last packet from side 1?
-      struct timeval latestPacketFromSide2;             // when did we see the last packet from side 2?
-      unsigned int packetsFromSide1;                    // packet counts
-      unsigned int packetsFromSide2;                    // packet counts
-      unsigned int bytesFromSide1;                      // byte counts
-      unsigned int bytesFromSide2;                      // byte counts
-      unsigned int ect0FromInitiator;                   // ECN ECT(0) counts
-      unsigned int ect0FromResponder;                   // ECN ECT(0) counts
-      unsigned int ect1FromInitiator;                   // ECN ECT(1) counts
-      unsigned int ect1FromResponder;                   // ECN ECT(1) counts
-      unsigned int ceFromInitiator;                     // ECN CE counts
-      unsigned int ceFromResponder;                     // ECN CE counts
-      struct spindump_rtt leftRTT;                      // left-side (side 1) RTT calculations
-      struct spindump_rtt rightRTT;                     // right-side (side 2) RTT calculations
-      struct spindump_rtt respToInitFullRTT;            // end-to-end RTT calculations observed from responder
-      struct spindump_rtt initToRespFullRTT;            // end-to-end RTT calculations observed from initiator
-      ...
-      union {
-    
-        struct {
-          spindump_address side1peerAddress;            // source address for the initial packet
-          spindump_address side2peerAddress;            // destination address for the initial packet
-          spindump_port side1peerPort;                  // source port for the initial packe
-          spindump_port side2peerPort;                  // destination port for the initial packet
-          struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
-          struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
-    	  ...
-        } tcp;
-    
-        struct {
-          spindump_address side1peerAddress;            // source address for the initial packet
-          spindump_address side2peerAddress;            // destination address for the initial packet
-          spindump_port side1peerPort;                  // source port for the initial packe
-          spindump_port side2peerPort;                  // destination port for the initial packet
-          ...
-        } udp;
-    
-        struct {
-          spindump_address side1peerAddress;            // source address for the initial packet
-          spindump_address side2peerAddress;            // destination address for the initial packet
-          spindump_port side1peerPort;                  // source port for the initial packe
-          spindump_port side2peerPort;                  // destination port for the initial packet
-          struct spindump_messageidtracker side1MIDs;   // when did we see message IDs from side1?
-          struct spindump_messageidtracker side2MIDs;   // when did we see message IDs from side2?
-          ...
-        } dns;
-    
-        struct {
-          spindump_address side1peerAddress;            // source address for the initial packet
-          spindump_address side2peerAddress;            // destination address for the initial packet
-          spindump_port side1peerPort;                  // source port for the initial packe
-          spindump_port side2peerPort;                  // destination port for the initial packet
-          struct spindump_messageidtracker side1MIDs;   // when did we see message IDs from side1?
-          struct spindump_messageidtracker side2MIDs;   // when did we see message IDs from side2?
-    	  ...
-        } coap;
-    
-        struct {
-          uint32_t version;                             // QUIC version
-          struct
-          spindump_quic_connectionid peer1ConnectionID; // source connection id of the initial packet
-          struct
-          spindump_quic_connectionid peer2ConnectionID; // source connection id of the initial response packet
-          spindump_address side1peerAddress;            // source address for the initial packet
-          spindump_address side2peerAddress;            // destination address for the initial packet
-          spindump_port side1peerPort;                  // source port for the initial packe
-          spindump_port side2peerPort;                  // destination port for the initial packet
-          unsigned long initialRightRTT;                // initial packet exchange RTT in us
-          unsigned long initialLeftRTT;                 // initial packet exchange RTT in us (only available sometimes)
-          ... 
-        } quic;
-    
-        struct {
-          spindump_address side1peerAddress;            // source address for the initial packet
-          spindump_address side2peerAddress;            // destination address for the initial packet
-    	  ... 
-        } icmp;
-    
-        struct {
-          spindump_address side1peerAddress;            // address of host on side 1
-          spindump_address side2peerAddress;            // address of host on side 2
-    	  ... 
-        } aggregatehostpair;
-    
-        struct {
-          spindump_address side1peerAddress;            // address of host on side 1
-          spindump_network side2Network;                // network address on side 2
-    	  ... 
-        } aggregatehostnetwork;
-    
-        struct {
-          spindump_network side1Network;                // network address on side 1
-          spindump_network side2Network;                // network address on side 2
-          ...
-        } aggregatenetworknetwork;
-    
-        struct {
-          spindump_address group;                       // multicast group address
-    	  ... 
-        } aggregatemulticastgroup;
-    
-      } u;
-    
-    };
-
-### Events
+## Events
 
 The currently defined events that can be caught are:
 
-    #define spindump_analyze_event_newconnection		             1
-    #define spindump_analyze_event_changeconnection		             2
-    #define spindump_analyze_event_connectiondelete		             4
-    #define spindump_analyze_event_newleftrttmeasurement	             8
-    #define spindump_analyze_event_newrightrttmeasurement	            16
+    #define spindump_analyze_event_newconnection                         1
+    #define spindump_analyze_event_changeconnection                      2
+    #define spindump_analyze_event_connectiondelete                      4
+    #define spindump_analyze_event_newleftrttmeasurement                 8
+    #define spindump_analyze_event_newrightrttmeasurement               16
     #define spindump_analyze_event_newinitrespfullrttmeasurement        32
     #define spindump_analyze_event_newrespinitfullrttmeasurement        64
-    #define spindump_analyze_event_initiatorspinflip	           128
-    #define spindump_analyze_event_responderspinflip	           256
-    #define spindump_analyze_event_initiatorspinvalue	           512
+    #define spindump_analyze_event_initiatorspinflip                   128
+    #define spindump_analyze_event_responderspinflip                   256
+    #define spindump_analyze_event_initiatorspinvalue                  512
     #define spindump_analyze_event_responderspinvalue                 1024
     #define spindump_analyze_event_newpacket                          2048
     #define spindump_analyze_event_firstresponsepacket                4096
     #define spindump_analyze_event_statechange                        8192
     #define spindump_analyze_event_initiatorecnce                    16384
     #define spindump_analyze_event_responderecnce                    32768
+    #define spindump_analyze_event_initiatorrtloss1measurement       65536
+    #define spindump_analyze_event_responderrtloss1measurement      131072
+    #define spindump_analyze_event_initiatorqrlossmeasurement       262144
+    #define spindump_analyze_event_responderqrlossmeasurement       524288
 
 These can be mixed together in one handler by ORing them together. The pseudo-event "spindump_analyze_event_alllegal" represents all of the events.
 
-The events are as follows:
+For more information see again the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/analyzer.md).
 
-#### spindump_analyze_event_newconnection
+## Memory allocation
 
-Called when there's a new connection.
-
-#### spindump_analyze_event_changeconnection
-
-Called when the 5-tuple or other session identifiers of a connection change.
-
-#### spindump_analyze_event_connectiondelete
-
-Called when a connection is terminated explicitly or when it is cleaned up by the analyzer due to lack of activity.
-
-#### spindump_analyze_event_newleftrttmeasurement
-
-Called when there's a new RTT measurement between the measurement point and the initiator (client) of a connection. 
-
-#### spindump_analyze_event_newrightrttmeasurement
-
-Called when there's a new RTT measurement between the measurement point and the responder (server) of a connection. 
-
-#### spindump_analyze_event_newinitrespfullrttmeasurement
-
-Called when there's a new RTT measurement for a QUIC connection, a full roundtrip RTT value is as measured from spin bit flips coming from the initiator (client). 
-
-#### spindump_analyze_event_newrespinitfullrttmeasurement
-
-Called when there's a new RTT measurement for a QUIC connection, a full roundtrip RTT value is as measured from spin bit flips coming from the responder (server).
-
-#### spindump_analyze_event_initiatorspinflip
-
-Called when there's a spin bit flip coming from the responder (server). 
-
-#### spindump_analyze_event_responderspinflip
-
-Called when there's a spin bit flip coming from the initiator (client). 
-
-#### spindump_analyze_event_initiatorspinvalue
-
-Called whenever there's a spin bit value in a QUIC connection from the initiator (client).
-
-#### spindump_analyze_event_responderspinvalue
-
-Called whenever there's a spin bit value in a QUIC connection from the responder (server).
-
-#### spindump_analyze_event_newpacket
-
-Called whenever there's a new packet.
-
-#### spindump_analyze_event_firstresponsepacket
-
-Called when a connection attempt has seen the first response packet from the responder.
-
-#### spindump_analyze_event_statechange
-
-Called when the state of a connection changes, typically from ESTABLISHING to ESTABLISHED. 
-
-#### spindump_analyze_event_initiatorecnce
-
-Called when there's an ECN congestion event from the initiator (client) of a connection. 
-
-#### spindump_analyze_event_responderecnce
-
-Called when there's an ECN congestion event from the responder (server) of a connection. 
-
-### Memory allocation
-
-The library allocates memory as needed using malloc and free, and upon calling the analyzer uninitialization function, no allocated memory remains. Some of the allocation sizes can be changed in the relevant header files or through -D flag settings in the makefiles. For instance, the default number of sequence numbers stored for tracking TCP ACKs and COAP requests is 50, as defined in src/spindump_seq.h:
-
-    #ifndef spindump_seqtracker_nstored
-    #define spindump_seqtracker_nstored		50
-    #endif
-
-A command line option for the compiler could set this to, say 10:
-
-    -Dspindump_seqtracker_nstored=10
-
-and this would affect the memory consumption for a connection object.
-
-A listing of what parameters can be modified is a currently listed feature request (issue #81), as is some kind of parametrization to allow library user to specify what allocation/free functions to use (issue #82).
-
+The library allocates memory as needed using malloc and free, and upon calling the analyzer uninitialization function, no allocated memory remains. For more information and ways to tailor the allocation system, see again the [Analyzer API definition](https://github.com/EricssonResearch/spindump/blob/master/analyzer.md).

@@ -116,7 +116,7 @@ spindump_json_parse_record_aux_addtofields(char* fieldName,
 //
 // Parse a given input as JSON of a given type. Callbacks in the type
 // definition will be called when the input is read correctly, and the
-// "data" parqmeter is one of the parameters passed to the callbacks.
+// "data" parameter is one of the parameters passed to the callbacks.
 //
 // This function returns 1 upon successful parsing, and 0 upon
 // failure.
