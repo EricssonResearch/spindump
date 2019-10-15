@@ -1,0 +1,5 @@
+QUIC 172.16.114.251 <-> 138.91.188.147 084597f82e118d69-6cb94caec17128d6 (54224:4433) at 1571176079150243 new starting packets 0 0 bytes 0 0 note "No rsp,v23,no spin"
+QUIC 172.16.114.251 <-> 138.91.188.147 084597f82e118d69-086cb94caec17128 (54224:4433) at 1571176079157203 measurement up right 6960 packets 1 0 bytes 1280 0 bandwidth 1280 0 note "No rsp,v23,no spin"
+QUIC 172.16.114.251 <-> 138.91.188.147 081f37468e36dce4-9f8810a0e9530e44 (54326:4434) at 1571176084566062 new starting packets 0 0 bytes 0 0 note "No rsp,v23,no spin"
+QUIC 172.16.114.251 <-> 138.91.188.147 1f37468e36dce440-08a7d1934cf193cd (54326:4434) at 1571176084573179 measurement starting left 415 packets 1 1 bytes 1280 128 bandwidth 1280 128 note "V23,no spin"
+QUIC 172.16.114.251 <-> 138.91.188.147 1f37468e36dce440-08a7d1934cf193cd (54326:4434) at 1571176084578422 measurement up right 5243 packets 2 1 bytes 2560 128 bandwidth 2560 128 note "V23,no spin"
