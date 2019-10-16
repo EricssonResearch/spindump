@@ -1,0 +1,4 @@
+A test between picquic client and the f5 QUIC server in the network. Commands that were used:
+
+    ./picoquic/picoquicdemo -l ./test.log -L -a "h3-23" -v ff000017 f5quic.com 4433 /5000
+    ./picoquic/picoquicdemo -l ./test.log -L -a "h3-23" -v ff000017 f5quic.com 4433 /50000

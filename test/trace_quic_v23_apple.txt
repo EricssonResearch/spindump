@@ -1,0 +1,2 @@
+
+A test between two Apple QUIC endpoints, provided by rpaulo on October 16, 2019. This is two normal connections. Spin bit is spinning.

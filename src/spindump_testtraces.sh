@@ -71,6 +71,10 @@ traces="trace_icmpv4_short
         trace_quic_v23_pandora
         trace_quic_v23_quiche
         trace_quic_v23_quicly
+        trace_quic_v23_gquic
+        trace_quic_v23_quinn
+        trace_quic_v23_f5
+        trace_quic_v23_apple
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
@@ -100,6 +104,7 @@ do
     #
     
     pcap=$testdir/$trace.pcap
+    pcapng=$testdir/$trace.pcapng
     descr=$testdir/$trace.txt
     outpre=$testdir/$trace.out.pre
     out=$testdir/$trace.out
@@ -112,7 +117,11 @@ do
     then
         opts=`cat $optsfile`
     fi
-
+    if [ -f $pcapng ]
+    then
+        pcap=$pcapng
+    fi
+    
     #
     # Now run it!
     #
