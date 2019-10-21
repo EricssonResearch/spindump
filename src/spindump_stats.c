@@ -110,6 +110,7 @@ spindump_stats_report(struct spindump_stats* stats,
   fprintf(file,"protocol not supported:                 %8u\n", stats->protocolNotSupported);
   fprintf(file,"unsupported Ethertype:                  %8u\n", stats->unsupportedEthertype);
   fprintf(file,"unsupported Nulltype:                   %8u\n", stats->unsupportedNulltype);
+  fprintf(file,"invalid RTT:                            %8u\n", stats->invalidRtt);
   fprintf(file,"connections:                            %8u\n", stats->connections);
   fprintf(file,"connections, ICMP:                      %8u\n", stats->connectionsIcmp);
   fprintf(file,"connections, TCP:                       %8u\n", stats->connectionsTcp);

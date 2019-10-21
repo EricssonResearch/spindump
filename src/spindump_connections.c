@@ -328,7 +328,7 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   spindump_assert(sent != 0);
   spindump_assert(rcvd != 0);
   spindump_assert(why != 0);
-  
+
   //
   // Calculate the RTT
   //
@@ -340,6 +340,16 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   unsigned long long diff = spindump_timediffinusecs(rcvd,sent);
   unsigned long ret;
 
+  //
+  // Check for reasonable range
+  //
+   
+  if (diff > spindump_rtt_maxlegal) {
+    spindump_deepdeepdebugf("RTT value %llu exceeds sane values", diff);
+    state->stats->invalidRtt++;
+    return(0);
+  }
+  
   //
   // Store in connection in suitable form
   //

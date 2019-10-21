@@ -84,6 +84,7 @@ traces="trace_icmpv4_short
         trace_tunnel_interface_ping
         trace_tcp_medium_snap80
         trace_tcp_large_snap80
+        trace_ping_tooold
         trace_empty"
 
 #
@@ -127,7 +128,7 @@ do
     #
     
     if $spindump --input-file $pcap --textual --format text --not-report-notes $opts > $outpre
-    then
+     then
         echo "  run ok..."
     else
         echo "**run failed"

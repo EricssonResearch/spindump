@@ -71,6 +71,7 @@ struct spindump_stats {
   unsigned int protocolNotSupported;
   unsigned int unsupportedEthertype;
   unsigned int unsupportedNulltype;
+  unsigned int invalidRtt;
   unsigned int connections;
   unsigned int connectionsIcmp;
   unsigned int connectionsTcp;

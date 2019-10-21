@@ -53,14 +53,20 @@ spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
                             unsigned long long timediff) {
   
   //
-  // Update the base measurement
+  // Sanity checks and normalization
   // 
   
   if (timediff > spindump_rtt_max) {
-    rtt->lastRTT = spindump_rtt_max;
+    timediff = spindump_rtt_max;
   } else {
-    rtt->lastRTT = (unsigned long)timediff;
+    timediff = (unsigned long)timediff;
   }
+
+  //
+  // Update the base measurement
+  // 
+  
+  rtt->lastRTT = (unsigned long)timediff;
   
   //
   // Update the table for moving average
