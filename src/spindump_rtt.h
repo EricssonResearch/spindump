@@ -31,7 +31,7 @@
 
 #define spindump_rtt_infinite        0xffffffff
 #define spindump_rtt_max             0xfffffffe
-#define spindump_rtt_maxlegal    (60*1000*1000)  /* 60s */
+#define spindump_rtt_maxlegal    (60*1000*1000)  /* 60s or 60M us */
 
 struct spindump_rtt {
   unsigned long lastRTT;                     // in usecs, spindump_rtt_infinite if not set

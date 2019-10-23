@@ -1,0 +1,1 @@
+Testing the --bandwidth-period option with PING traffic. In this fourth test, we set the bandwidth period to 5s (5 000 000 us), but only include the shorter packets of the two parallel pings.

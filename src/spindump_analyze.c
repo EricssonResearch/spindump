@@ -62,7 +62,7 @@ spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* st
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize(void) {
+spindump_analyze_initialize(unsigned long long bandwidthMeasurementPeriod) {
 
   //
   // Checks
@@ -93,7 +93,7 @@ spindump_analyze_initialize(void) {
   //
 
   memset(state,0,size);
-  state->table = spindump_connectionstable_initialize();
+  state->table = spindump_connectionstable_initialize(bandwidthMeasurementPeriod);
   if (state->table == 0) {
     spindump_free(state);
     return(0);
@@ -633,6 +633,9 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(ecnFlags <= 3);
+  spindump_deepdeepdebugf("pakstats got a packet of length %u for a connection of type %s",
+                          ipPacketLength,
+                          spindump_connection_type_to_string(connection->type));
   
   //
   // Update the statistics based on whether the packet was from side1
@@ -722,6 +725,7 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
 
     struct spindump_connection* aggregate = spindump_connection_set_iterator_next(&iter);
     spindump_assert(aggregate != 0);
+    spindump_deepdeepdebugf("pakstats recursing to an aggregate for a packet of length %u", ipPacketLength);
     spindump_analyze_process_pakstats(state,aggregate,fromResponder,packet,ipPacketLength,ecnFlags);
 
   }

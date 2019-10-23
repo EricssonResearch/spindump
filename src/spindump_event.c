@@ -38,8 +38,8 @@ spindump_event_initialize(enum spindump_event_type eventType,
                           spindump_counter_64bit packetsFromSide2,
                           spindump_counter_64bit bytesFromSide1,
                           spindump_counter_64bit bytesFromSide2,
-                          spindump_counter_32bit bandwidthFromSide1,
-                          spindump_counter_32bit bandwidthFromSide2,
+                          spindump_counter_64bit bandwidthFromSide1,
+                          spindump_counter_64bit bandwidthFromSide2,
                           const char* notes,
                           struct spindump_event* event) {
 

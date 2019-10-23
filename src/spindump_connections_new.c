@@ -44,7 +44,8 @@
 //
 
 static void
-spindump_connections_newconnection_aux(struct spindump_connection* connection,
+spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
+                                       struct spindump_connection* connection,
                                        enum spindump_connection_type type,
                                        const struct timeval* when,
                                        int manuallyCreated);
@@ -64,7 +65,8 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
 //
 
 static void
-spindump_connections_newconnection_aux(struct spindump_connection* connection,
+spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
+                                       struct spindump_connection* connection,
                                        enum spindump_connection_type type,
                                        const struct timeval* when,
                                        int manuallyCreated) {
@@ -96,8 +98,8 @@ spindump_connections_newconnection_aux(struct spindump_connection* connection,
   spindump_zerotime(&connection->latestPacketFromSide2);
   connection->packetsFromSide1 = 0;
   connection->packetsFromSide2 = 0;
-  spindump_bandwidth_initialize(&connection->bytesFromSide1);
-  spindump_bandwidth_initialize(&connection->bytesFromSide2);
+  spindump_bandwidth_initialize(&connection->bytesFromSide1,table->bandwidthMeasurementPeriod);
+  spindump_bandwidth_initialize(&connection->bytesFromSide2,table->bandwidthMeasurementPeriod);
   spindump_rtt_initialize(&connection->leftRTT);
   spindump_rtt_initialize(&connection->rightRTT);
   spindump_connections_set_initialize(&connection->aggregates);
@@ -277,7 +279,7 @@ spindump_connections_newconnection(struct spindump_connectionstable* table,
   // Initialize counters etc
   // 
   
-  spindump_connections_newconnection_aux(connection,type,when,manuallyCreated);
+  spindump_connections_newconnection_aux(table,connection,type,when,manuallyCreated);
   
   //
   // Look for a place in the connections table

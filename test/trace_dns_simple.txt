@@ -1,0 +1,1 @@
+Simple DNS example, just one A query and one result.

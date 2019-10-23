@@ -37,6 +37,7 @@
 #include "spindump_eventformatter.h"
 #include "spindump_main.h"
 #include "spindump_main_lib.h"
+#include "spindump_bandwidth.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -145,6 +146,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->anonymizeLeft = 0;
   config->anonymizeRight = 0;
   config->updatePeriod = 500 * 1000; // 0.5s
+  config->bandwidthMeasurementPeriod = spindump_bandwidth_period_default;
   config->nAggregates = 0;
   config->remoteBlockSize = 16 * 1024;
   config->nRemotes = 0;
@@ -168,7 +170,7 @@ spindump_main_processargs(int argc,
     spindump_deepdeepdebugf("spindump_main_processarg %s", argv[0]);
     if (strcmp(argv[0],"--version") == 0) {
 
-      printf("version 0.50 June 1, 2019\n");
+      printf("version 0.70 October 21, 2019\n");
       exit(0);
 
     } else if (strcmp(argv[0],"--help") == 0) {
@@ -399,6 +401,24 @@ spindump_main_processargs(int argc,
       config->maxReceive = (unsigned int)atoi(argv[1]);
       argc--; argv++;
       
+    } else if (strcmp(argv[0],"--bandwidth-period") == 0 && argc > 1) {
+
+      if (!isdigit(argv[1][0])) {
+        spindump_errorf("the --bandwidth-period argument needs to be numeric");
+        exit(1);
+      }
+
+      int arg = atoi(argv[1]);
+      
+      if (arg < 1) {
+        spindump_errorf("the --bandwidth-period argument needs to be bigger than zero");
+        exit(1);
+      }
+      
+      config->bandwidthMeasurementPeriod = (unsigned long long)arg;
+      
+      argc--; argv++;
+      
     } else if (strcmp(argv[0],"--aggregate") == 0 && argc > 1) {
 
       //
@@ -576,8 +596,6 @@ spindump_main_processargs(int argc,
     argc--; argv++;
 
   }
-  
-  spindump_deepdeepdebugf("spindump_main args processed");
 }
 
 //
@@ -650,6 +668,11 @@ spindump_main_help(void) {
   printf("                            p1 to p2. Pattern is either an address or a network prefix.\n");
   printf("\n");
   printf("    --max-receive n         Sets a limit of how many packets the tool accepts.\n");
+  printf("\n");
+  printf("    --bandwidth-period n    Sets the length of bandwidth measurement period, in\n");
+  printf("                            microseconds. The default is %llu or %.2f.\n",
+         (unsigned long long)spindump_bandwidth_period_default,
+         (spindump_bandwidth_period_default * 1.0) / 1000000.0);
   printf("\n");
   printf("    --interface i           Set the interface to listen on, or the capture\n");
   printf("    --snaplen n             How many bytes of the packet is captured (default is %u)\n", spindump_capture_snaplen);

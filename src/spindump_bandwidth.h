@@ -30,18 +30,18 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_bandwidth_period                     (1 * 1000 * 1000) // 1M us or 1s
-#define spindump_bandwidth_periodbytes2bytepersec(b)  ((b) / (spindump_bandwidth_period / (1 * 1000 * 1000)))
+#define spindump_bandwidth_period_default             (1 * 1000 * 1000) // 1M us or 1s
 
 //
 // Data structures ----------------------------------------------------------------------------
 //
 
 struct spindump_bandwidth {
+  unsigned long long     period;             // measurement period in microseconds
   spindump_counter_64bit bytes;              // all bytes, ever
-  spindump_counter_32bit bytesInLastPeriod;  // bytes during the last completed period
+  spindump_counter_64bit bytesInLastPeriod;  // bytes during the last completed period
   struct timeval         thisPeriodStart;    // start of the current (uncompleted) period
-  spindump_counter_32bit bytesInThisPeriod;  // bytes during the current (uncompleted) period
+  spindump_counter_64bit bytesInThisPeriod;  // bytes during the current (uncompleted) period
   unsigned int           periods;            // how many periods we've seen
 };
 
@@ -50,7 +50,8 @@ struct spindump_bandwidth {
 //
 
 void
-spindump_bandwidth_initialize(struct spindump_bandwidth* bandwidth);
+spindump_bandwidth_initialize(struct spindump_bandwidth* bandwidth,
+                              unsigned long long period);
 void
 spindump_bandwidth_setcounter(struct spindump_bandwidth* bandwidth,
                               spindump_counter_64bit bytes,
@@ -61,5 +62,7 @@ spindump_bandwidth_newpacket(struct spindump_bandwidth* bandwidth,
                              const struct timeval* timestamp);
 void
 spindump_bandwidth_uninitialize(struct spindump_bandwidth* bandwidth);
+spindump_counter_64bit
+spindump_bandwidth_periodbytes_to_bytespersec(const struct spindump_bandwidth* bandwidth);
 
 #endif // SPINDUMP_BANDWIDTH_H

@@ -30,7 +30,14 @@ spindump=$srcdir/spindump
 
 traces="trace_icmpv4_short
         trace_icmpv6_short
+        trace_dns_simple
+        trace_dns
         trace_ping_aggregate_average
+        trace_ping_bandwidthperiods1
+        trace_ping_bandwidthperiods2
+        trace_ping_bandwidthperiods3
+        trace_ping_bandwidthperiods4
+        trace_ping_bandwidthperiods5
         trace_tcp_short
         trace_tcp_short_json trace_dns
         trace_quic_v18_short_spin
@@ -93,6 +100,7 @@ traces="trace_icmpv4_short
 
 RESULT=0
 FAILCTR=0
+FAILED=""
 unset CPUPROFILE
 
 for trace in $traces
@@ -134,6 +142,7 @@ do
         echo "**run failed"
         RESULT=1
         FAILCTR=`expr $FAILCTR + 1`
+        if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
     fi
 
     #
@@ -144,6 +153,9 @@ do
     awk '
       /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*H2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
+      /Event.: .new.*HOSTS.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
+      /^H2NET.* new .*/ { gsub(/ at [0-9]+ /," "); print $0; next; }
+      /^HOSTS.* new .*/ { gsub(/ at [0-9]+ /," "); print $0; next; }
       /.*/ { print $0; next; }
     ' < $outpre > $out
     
@@ -158,6 +170,7 @@ do
         echo "**expected results file $corr does not exist"
         RESULT=1
         FAILCTR=`expr $FAILCTR + 1`
+        if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
     fi
     
     if diff $out $corr > /dev/null
@@ -167,6 +180,7 @@ do
         echo "**results incorrect"
         RESULT=1
         FAILCTR=`expr $FAILCTR + 1`
+        if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
     fi
     
     if [ -f $descr ]
@@ -176,6 +190,7 @@ do
         echo "**test description file $descr does not exist"
         RESULT=1
         FAILCTR=`expr $FAILCTR + 1`
+        if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
     fi
 
     #
@@ -194,6 +209,7 @@ do
             echo "**run failed"
             RESULT=1
             FAILCTR=`expr $FAILCTR + 1`
+            if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
         fi
         unset CPUPROFILE
     fi
@@ -206,7 +222,7 @@ done
 echo ''
 if [ $RESULT = 1 ]
 then
-    echo '**** some tests failed'
+    echo '**** some tests ('$FAILCTR', '$FAILED') failed'
 else
     echo 'all tests ok'
 fi

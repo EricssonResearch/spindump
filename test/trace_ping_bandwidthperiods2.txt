@@ -1,0 +1,1 @@
+Testing the --bandwidth-period option with PING traffic. In this second test, we set the bandwidth period to 0.1s (100 000 us).

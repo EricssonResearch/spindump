@@ -1,0 +1,1 @@
+Testing the --bandwidth-period option with PING traffic. In this first test, we have no special period set, i.e. using the default 1s period.

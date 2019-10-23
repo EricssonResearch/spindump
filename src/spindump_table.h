@@ -42,7 +42,7 @@ struct spindump_analyze;
 //
 
 struct spindump_connectionstable*
-spindump_connectionstable_initialize(void);
+spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeriod);
 void
 spindump_connectionstable_uninitialize(struct spindump_connectionstable* table);
 int

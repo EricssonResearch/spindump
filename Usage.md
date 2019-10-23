@@ -101,6 +101,10 @@ The first pair sets the debugging output on/off. Note that in the visual or text
 
 The --average-mode option causes the tool to display (or report in output or HTTP-delivered update) average values instead of specific instantaneous values. Default is to report instantaneous values. The  --aggregate-mode option causes the tool to display (or report) aggregates only, not individal connections. The default is to report individual connections.
 
+   --bandwidth-period n
+
+This option sets the measurement period for bandwidth. Each connection is measured for bandwidth in periods, with the number of bytes sent on a connection during that period counted together. Bandwidth numbers are always presented in bytes/s but when traffic varies over time, a shorter measurement period will produce a more variable bandwidth numbers, whereas a longer period will produce a smoother measurement. The option takes an argument, the length of the period in microseconds. The default is 1000000 or 1s.
+
     --no-stats
     --stats
 

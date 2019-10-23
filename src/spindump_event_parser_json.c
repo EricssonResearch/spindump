@@ -628,9 +628,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
                event->bytesFromSide2);
   if (event->bandwidthFromSide1 > 0 ||
       event->bandwidthFromSide2 > 0) {
-    addtobuffer2(", \"Bandwidth1\": %u",
+    addtobuffer2(", \"Bandwidth1\": %llu",
                  event->bandwidthFromSide1);
-    addtobuffer2(", \"Bandwidth2\": %u",
+    addtobuffer2(", \"Bandwidth2\": %llu",
                  event->bandwidthFromSide2);
   }
   

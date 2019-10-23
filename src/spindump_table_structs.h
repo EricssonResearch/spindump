@@ -39,6 +39,7 @@
 //
 
 struct spindump_connectionstable {
+  unsigned long long bandwidthMeasurementPeriod;
   struct timeval lastPeriodicCheck;
   unsigned int nConnections;
   unsigned int maxNConnections;

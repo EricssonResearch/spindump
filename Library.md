@@ -14,8 +14,10 @@ The library has a number of functions, and can be used to build complex function
 
 The API definition for this library can be found from spindump_analyze.h. But the main function are analyzer initialization, handing a packet to it, and de-initialization. First, you need to initialize the analyzer, like this:
 
-    struct spindump_analyze* analyzer = spindump_analyze_initialize();
+    struct spindump_analyze* analyzer = spindump_analyze_initialize(10000000);
     if (analyzer == 0) { /* ... handle error */ }
+
+Here the "1000000" is a configuration argument to the analyzer, telling it to measure bandwidth numbers in a period of 1s (a million microseconds).
 
 Then, you probably want to feed packets to the analyzer in some kind of loop. The analyzer needs to know the actual Ethernet message frame  received as an octet string, but also a timestamp of when it was received, the length of the frame, and how much of the message was captured if the frame is not stored in its entirety. Here's an example implementation of a packet reception loop that feeds the analyzer:
 

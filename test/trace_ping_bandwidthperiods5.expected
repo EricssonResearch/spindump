@@ -1,0 +1,21 @@
+HOSTS 10.0.1.36 <-> 212.16.100.1 0 sessions new static packets 0 0 bytes 0 0
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746859995979 measurement static right 7720 packets 1 0 bytes 1028 0 bandwidth 206 0
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746861000447 measurement static right 7180 packets 2 1 bytes 2056 1028 bandwidth 411 206
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746862006744 measurement static right 8825 packets 3 2 bytes 3084 2056 bandwidth 617 411
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746863012223 measurement static right 13015 packets 4 3 bytes 4112 3084 bandwidth 822 617
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746864012797 measurement static right 8429 packets 5 4 bytes 5140 4112 bandwidth 1028 822
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746865083568 measurement static right 78815 packets 6 5 bytes 6168 5140 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746866073640 measurement static right 65993 packets 7 6 bytes 7196 6168 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746867016944 measurement static right 6874 packets 8 7 bytes 8224 7196 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746868022058 measurement static right 7129 packets 9 8 bytes 9252 8224 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746869027413 measurement static right 7236 packets 10 9 bytes 10280 9252 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746870030888 measurement static right 6692 packets 11 10 bytes 11308 10280 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746871038427 measurement static right 9670 packets 12 11 bytes 12336 11308 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746872040820 measurement static right 8050 packets 13 12 bytes 13364 12336 bandwidth 1028 1234
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746873045443 measurement static right 8051 packets 14 13 bytes 14392 13364 bandwidth 1028 1234
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746874049578 measurement static right 9599 packets 15 14 bytes 15420 14392 bandwidth 1028 1234
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746875086518 measurement static right 43962 packets 16 15 bytes 16448 15420 bandwidth 1028 1234
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746876054329 measurement static right 7900 packets 17 16 bytes 17476 16448 bandwidth 1028 1234
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746877055031 measurement static right 7179 packets 18 17 bytes 18504 17476 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746878061232 measurement static right 8181 packets 19 18 bytes 19532 18504 bandwidth 1028 1028
+HOSTS 10.0.1.36 <-> 212.16.100.1 1 sessions at 1571746879066743 measurement static right 8928 packets 20 19 bytes 20560 19532 bandwidth 1028 1028

@@ -77,6 +77,7 @@ struct spindump_main_configuration {
   int anonymizeLeft;
   int anonymizeRight;
   unsigned long long updatePeriod;
+  unsigned long long bandwidthMeasurementPeriod;
   unsigned int nAggregates;
   struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
   unsigned long remoteBlockSize;

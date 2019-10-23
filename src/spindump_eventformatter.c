@@ -667,6 +667,19 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     spindump_connection_report_brief_notefieldval(connection,sizeof(notesbuf),notesbuf);
     notes = &notesbuf[0];
   }
+  spindump_deepdeepdebugf("calling spindump_event_initialize and bandwidth calculations from spindump_eventformatter_measurement_one");
+  spindump_deepdeepdebugf("going to print out debug");
+  spindump_deepdeepdebugf("current and last bytes from side1 %llu %llu and from side2 %llu %llu",
+                          connection->bytesFromSide1.bytesInThisPeriod,
+                          connection->bytesFromSide1.bytesInLastPeriod,
+                          connection->bytesFromSide2.bytesInThisPeriod,
+                          connection->bytesFromSide2.bytesInLastPeriod);
+  spindump_deepdeepdebugf("calling spindump_event_initialize");
+  spindump_deepdeepdebugf("calling spindump_event_initialize, really but first pb2bps");
+  spindump_counter_64bit bw1 = spindump_bandwidth_periodbytes_to_bytespersec(&connection->bytesFromSide1);
+  spindump_deepdeepdebugf("calling spindump_event_initialize, really and now second pb2bps");
+  spindump_counter_64bit bw2 = spindump_bandwidth_periodbytes_to_bytespersec(&connection->bytesFromSide2);
+  spindump_deepdeepdebugf("calling spindump_event_initialize, really really");
   spindump_event_initialize(eventType,
                             connection->type,
                             connection->state,
@@ -678,11 +691,14 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                             connection->packetsFromSide2,
                             connection->bytesFromSide1.bytes,
                             connection->bytesFromSide2.bytes,
-                            spindump_bandwidth_periodbytes2bytepersec(connection->bytesFromSide1.bytesInLastPeriod),
-                            spindump_bandwidth_periodbytes2bytepersec(connection->bytesFromSide2.bytesInLastPeriod),
+                            bw1,
+                            bw2,
                             notes,
                             &eventobj);
   spindump_deepdeepdebugf("point 7");
+  spindump_deepdeepdebugf("point 7, 2nd");
+  spindump_deepdeepdebugf("point 7, 3rd");
+  spindump_deepdeepdebugf("point 7, 4th");
   switch (event) {
 
   case spindump_analyze_event_newconnection:

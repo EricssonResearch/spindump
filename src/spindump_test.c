@@ -218,10 +218,10 @@ unittests_table(void) {
   // Creation and deletion of the table itself
   //
   
-  struct spindump_connectionstable* table = spindump_connectionstable_initialize();
+  struct spindump_connectionstable* table = spindump_connectionstable_initialize(1000000);
   spindump_checktest(table != 0);
   spindump_connectionstable_uninitialize(table);
-  table = spindump_connectionstable_initialize();
+  table = spindump_connectionstable_initialize(1000000);
   spindump_checktest(table != 0);
 
   //
@@ -782,7 +782,7 @@ systemtests(void) {
   // Analyzer tests -- ICMP
   //
   
-  struct spindump_analyze* analyzer = spindump_analyze_initialize();
+  struct spindump_analyze* analyzer = spindump_analyze_initialize(1000000);
   spindump_checktest(analyzer != 0);
   struct spindump_packet packet1;
   struct spindump_connection* connection1 = 0;

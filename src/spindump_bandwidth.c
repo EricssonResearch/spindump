@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "spindump_util.h"
 #include "spindump_bandwidth.h"
 
@@ -35,9 +36,11 @@
 //
 
 void
-spindump_bandwidth_initialize(struct spindump_bandwidth* bandwidth) {
+spindump_bandwidth_initialize(struct spindump_bandwidth* bandwidth,
+                              unsigned long long period) {
   spindump_assert(bandwidth != 0);
   memset(bandwidth,0,sizeof(*bandwidth));
+  bandwidth->period = period;
 }
 
 //
@@ -55,6 +58,7 @@ spindump_bandwidth_newpacket(struct spindump_bandwidth* bandwidth,
   
   spindump_assert(bandwidth != 0);
   spindump_assert(timestamp != 0);
+  spindump_deepdeepdebugf("entering spindump_bandwidth_newpacket");
   
   //
   // Update the whole counter
@@ -70,13 +74,23 @@ spindump_bandwidth_newpacket(struct spindump_bandwidth* bandwidth,
     bandwidth->thisPeriodStart = *timestamp;
   }
   unsigned long long diff = spindump_timediffinusecs(timestamp,&bandwidth->thisPeriodStart);
-  if (diff < spindump_bandwidth_period) {
+  if (diff < bandwidth->period) {
+    spindump_deepdeepdebugf("increasing bandwidth for current period by %u to %llu (last period %llu, currently in %uth period)",
+                            bytes, bandwidth->bytesInThisPeriod, bandwidth->bytesInLastPeriod, bandwidth->periods);
     bandwidth->bytesInThisPeriod += bytes;
   } else {
+    spindump_deepdeepdebugf("switching bandwidth calculation period (%llu us) after %llu us, %llu bytes in the now completed %uth period",
+                            bandwidth->period,
+                            diff,
+                            bandwidth->bytesInThisPeriod,
+                            bandwidth->periods);
     bandwidth->bytesInLastPeriod = bandwidth->bytesInThisPeriod;
     bandwidth->bytesInThisPeriod = bytes;
     bandwidth->thisPeriodStart = *timestamp;
     bandwidth->periods++;
+    spindump_deepdeepdebugf("changed bandwidth numbers now current period %llu and last period %llu",
+                            bandwidth->bytesInThisPeriod,
+                            bandwidth->bytesInLastPeriod);
   }
 
   //
@@ -128,6 +142,31 @@ spindump_bandwidth_setcounter(struct spindump_bandwidth* bandwidth,
   memset(&bandwidth->thisPeriodStart,0,sizeof(bandwidth->thisPeriodStart));
   bandwidth->bytesInThisPeriod = 0;
   
+}
+
+//
+// Calculate bandwidth numbers as bytes per second
+//
+
+spindump_counter_64bit
+spindump_bandwidth_periodbytes_to_bytespersec(const struct spindump_bandwidth* bandwidth) {
+  spindump_assert(bandwidth != 0);
+  spindump_deepdeepdebugf("entering spindump_bandwidth_periodbytes_to_bytespersec");
+  double factor = (bandwidth->period * 1.0) / 1000000.0;
+  spindump_deepdeepdebugf("factor = %.4f", factor);
+  spindump_counter_64bit countedBytes = bandwidth->bytesInLastPeriod;
+  spindump_deepdeepdebugf("bytes in last period = %.4f", countedBytes);
+  double resultDouble  = (countedBytes * 1.0) / factor;
+  spindump_deepdeepdebugf("resultDouble = %.4f", resultDouble);
+  spindump_counter_64bit result = (unsigned long long)llround(resultDouble);
+  spindump_deepdeepdebugf("result = %llu", result);
+  spindump_deepdeepdebugf("calculated bandwidth as %llu bytes/s from %llu last period bytes (current period bytes %llu, period %llu, factor %.4f)",
+                          result,
+                          bandwidth->bytesInLastPeriod,
+                          bandwidth->bytesInThisPeriod,
+                          bandwidth->period,
+                          factor);
+  return(result);
 }
 
 //

@@ -12,10 +12,12 @@ The detailed API functions are as follows:
 
 This function creates an object to represent an analyzer. It allocates memory as needed. It returns a non-NULL object pointer if the creation was successful, and NULL otherwise.
 
+The argument is for how to measure bandwidth for connections, see the documentation for the --bandwidth-period option.
+
 The prototype:
 
     struct spindump_analyze*
-    spindump_analyze_initialize(void);
+    spindump_analyze_initialize(unsigned long long bandwidthMeasurementPeriod);
 
 ## API function spindump_analyze_uninitialize
 

@@ -51,7 +51,7 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
 //
 
 struct spindump_connectionstable*
-spindump_connectionstable_initialize(void) {
+spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeriod) {
 
   //
   // Figure out sizes
@@ -76,6 +76,7 @@ spindump_connectionstable_initialize(void) {
   // 
   
   memset(table,0,sizeof(*table));
+  table->bandwidthMeasurementPeriod = bandwidthMeasurementPeriod;
   table->nConnections = 0;
   table->maxNConnections = variabletabelements;
   

@@ -93,7 +93,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   //
 
   spindump_deepdeepdebugf("main loop, analyzer initialization");
-  struct spindump_analyze* analyzer = spindump_analyze_initialize();
+  struct spindump_analyze* analyzer = spindump_analyze_initialize(config->bandwidthMeasurementPeriod);
   if (analyzer == 0) exit(1);
 
   //
