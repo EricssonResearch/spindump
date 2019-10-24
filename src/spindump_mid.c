@@ -54,6 +54,7 @@ spindump_messageidtracker_add(struct spindump_messageidtracker* tracker,
                               const uint16_t messageid) {
   spindump_assert(tracker != 0);
   spindump_assert(tracker->messageidindex < spindump_messageidtracker_nstored);
+  spindump_deepdeepdebugf("registering a message id of %u", messageid);
   tracker->stored[tracker->messageidindex].outstanding = 1;
   tracker->stored[tracker->messageidindex].received = *ts;
   tracker->stored[tracker->messageidindex].messageid = messageid;
@@ -123,6 +124,7 @@ spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
     }
     
     chosen->outstanding = 0;
+    spindump_deepdeepdebugf("matched to an earlier message id of %u", messageid);
     return(&chosen->received);
     
   } else {
@@ -131,6 +133,7 @@ spindump_messageidtracker_ackto(struct spindump_messageidtracker* tracker,
     // Not found
     // 
     
+    spindump_deepdeepdebugf("did not find a match to an earlier message id of %u", messageid);
     return(0);
     
   }

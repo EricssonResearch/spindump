@@ -223,6 +223,9 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
         spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
 
+      spindump_deepdeepdebugf("looking for ICMP ID match of %u to latest id of %u",
+                              peerSeq,
+                              connection->u.icmp.side1peerLatestSequence);
       if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
         spindump_connections_newrttmeasurement(state,
                                                packet,
