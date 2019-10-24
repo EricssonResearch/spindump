@@ -223,25 +223,29 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
         spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
 
-      spindump_deepdeepdebugf("looking for ICMP ID match of %u to latest id of %u",
-                              peerSeq,
-                              connection->u.icmp.side1peerLatestSequence);
-      if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
+      spindump_deepdeepdebugf("looking for ICMP SEQ match of %u",
+                              peerSeq);
+      const struct timeval* ackto =
+        spindump_messageidtracker_ackto(&connection->u.icmp.side1Seqs,peerSeq);
+      if (ackto != 0) {
+        spindump_deepdeepdebugf("found ackto for sequence %u", peerSeq);
         spindump_connections_newrttmeasurement(state,
                                                packet,
                                                connection,
                                                1,
                                                0,
-                                               &connection->latestPacketFromSide1,
+                                               ackto,
                                                &packet->timestamp,
                                                "ICMP echo reply");
+      } else {
+        spindump_deepdeepdebugf("did not find ackto for sequence %u", peerSeq);
       }
 
       fromResponder = 1;
 
     } else {
 
-      connection->u.icmp.side1peerLatestSequence = peerSeq;
+      spindump_messageidtracker_add(&connection->u.icmp.side1Seqs,&packet->timestamp,peerSeq);
       fromResponder = 0;
 
     }
@@ -452,24 +456,33 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
       if (connection->state == spindump_connection_state_establishing) {
         spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
       }
-      if (peerSeq == connection->u.icmp.side1peerLatestSequence) {
+      
+      spindump_deepdeepdebugf("looking for ICMPv6 SEQ match of %u",
+                              peerSeq);
+      const struct timeval* ackto =
+        spindump_messageidtracker_ackto(&connection->u.icmp.side1Seqs,peerSeq);
+      
+      if (ackto != 0) {
+        spindump_deepdeepdebugf("found ackto for sequence %u", peerSeq);
         spindump_connections_newrttmeasurement(state,
                                                packet,
                                                connection,
                                                1,
                                                0,
-                                               &connection->latestPacketFromSide1,
+                                               ackto,
                                                &packet->timestamp,
                                                "ICMPv6 ECHO reply");
+      } else {
+        spindump_deepdeepdebugf("did not find ackto for sequence %u", peerSeq);
       }
 
       fromResponder = 1;
 
     } else {
-
-      connection->u.icmp.side1peerLatestSequence = peerSeq;
+      
+      spindump_messageidtracker_add(&connection->u.icmp.side1Seqs,&packet->timestamp,peerSeq);
       fromResponder = 0;
-
+      
     }
 
     //

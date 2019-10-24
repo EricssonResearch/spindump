@@ -31,7 +31,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_messageidtracker_nstored               40
+#define spindump_messageidtracker_nstored               8
 
 //
 // Data structures ----------------------------------------------------------------------------

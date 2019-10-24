@@ -144,6 +144,7 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
     break;
 
   case spindump_connection_transport_icmp:
+    spindump_messageidtracker_initialize(&connection->u.icmp.side1Seqs);
     break;
 
   case spindump_connection_aggregate_hostpair:
@@ -354,7 +355,6 @@ spindump_connections_newconnection_icmp(const spindump_address* side1address,
   connection->u.icmp.side2peerAddress = *side2address;
   connection->u.icmp.side1peerType = side1peerType;
   connection->u.icmp.side1peerId = side1peerId;
-  connection->u.icmp.side1peerLatestSequence = 0;
   spindump_connections_newconnection_addtoaggregates(connection,table);
   
   spindump_debugf("created a new ICMP connection %u", connection->id);
@@ -708,6 +708,7 @@ spindump_connections_delete(struct spindump_connection* connection) {
     break;
     
   case spindump_connection_transport_icmp:
+    spindump_messageidtracker_uninitialize(&connection->u.icmp.side1Seqs);
     break;
     
   case spindump_connection_aggregate_hostpair:

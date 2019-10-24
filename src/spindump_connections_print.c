@@ -363,7 +363,6 @@ spindump_connection_report_icmp(struct spindump_connection* connection,
   fprintf(file,"  host 2:                %40s\n", spindump_connection_address_tostring(anonymize,&connection->u.icmp.side2peerAddress,querier));
   fprintf(file,"  icmp type:             %40s\n", spindump_icmptype_tostring(connection->u.icmp.side1peerType));
   fprintf(file,"  id:                      %38u\n", ntohs(connection->u.icmp.side1peerId));
-  fprintf(file,"  last sequence #:         %38u\n", ntohs(connection->u.icmp.side1peerLatestSequence));
 }
 
 //

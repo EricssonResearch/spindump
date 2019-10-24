@@ -200,7 +200,7 @@ struct spindump_connection {
       uint8_t side1peerType;                        // the ICMP type used in a request from side 1
       uint8_t padding1;                             // unused padding to align the next field properly
       uint16_t side1peerId;                         // the ICMP id used in a request from side 1
-      uint16_t  side1peerLatestSequence;            // latest seen sequence number from side 1
+      struct spindump_messageidtracker side1Seqs;   // latest sequence numbers from side1
       uint8_t padding2[2];                          // unused padding to align the size of the structure properly
     } icmp;
 
