@@ -36,7 +36,7 @@
 #include "spindump_stats.h"
 #include "spindump_analyze_quic_parser.h"
 #include "spindump_spin.h"
-#include "spindump_rtloss1.h"
+#include "spindump_rtloss.h"
 #include "spindump_qrloss.h"
 
 //
@@ -135,6 +135,8 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
     spindump_spintracker_initialize(&connection->u.quic.spinFromPeer2to1);
     spindump_rtloss1tracker_initialize(&connection->u.quic.rtloss1FromPeer1to2);
     spindump_rtloss1tracker_initialize(&connection->u.quic.rtloss1FromPeer2to1);
+    spindump_rtloss2tracker_initialize(&connection->u.quic.rtloss2FromPeer1to2);
+    spindump_rtloss2tracker_initialize(&connection->u.quic.rtloss2FromPeer2to1);
     spindump_qrlosstracker_initialize(&connection->u.quic.qrFromPeer1to2);
     spindump_qrlosstracker_initialize(&connection->u.quic.qrFromPeer2to1);
     connection->u.quic.side1initialPacket = *when;

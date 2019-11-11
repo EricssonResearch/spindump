@@ -39,7 +39,7 @@ enum spindump_event_type {
   spindump_event_type_spin_flip = 5,
   spindump_event_type_spin_value = 6,
   spindump_event_type_ecn_congestion_event = 7,
-  spindump_event_type_rtloss1_measurement = 8,
+  spindump_event_type_rtloss_measurement = 8,
   spindump_event_type_qrloss_measurement = 9
 };
 
@@ -97,7 +97,7 @@ struct spindump_event_ecn_congestion_event {
   spindump_counter_64bit ce;
 };
 
-struct spindump_event_rtloss1_measurement {
+struct spindump_event_rtloss_measurement {
   enum spindump_direction direction;
   char avgLoss[10];
   char totLoss[10];
@@ -135,7 +135,7 @@ struct spindump_event {
     struct spindump_event_spin_flip spinFlip;
     struct spindump_event_spin_value spinValue;
     struct spindump_event_ecn_congestion_event ecnCongestionEvent;
-    struct spindump_event_rtloss1_measurement rtloss1Measurement;
+    struct spindump_event_rtloss_measurement rtlossMeasurement;
     struct spindump_event_qrloss_measurement qrlossMeasurement;
   } u;
 };

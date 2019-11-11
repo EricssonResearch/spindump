@@ -73,6 +73,12 @@ spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1(uint32_t versio
                                                                  struct spindump_extrameas* p_extrameasValue);
 
 static int
+spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss2(uint32_t version,
+                                                                 uint8_t headerByte,
+                                                                 int spin,
+                                                                 struct spindump_extrameas* p_extrameasValue);
+
+static int
 spindump_analyze_quic_parser_version_getextrameasfunc_or_qrloss(uint32_t version,
                                                                  uint8_t headerByte,
                                                                  int spin,
@@ -95,6 +101,7 @@ spindump_analyze_quic_parser_version_getextrameasfunc_or_qrloss(uint32_t version
 #define spinbit17 spindump_analyze_quic_parser_version_getspinbitvalue_draft17
 #define spinbit16 spindump_analyze_quic_parser_version_getspinbitvalue_draft16
 #define emtrloss1 spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1
+#define emtrloss2 spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss2
 #define emqrloss  spindump_analyze_quic_parser_version_getextrameasfunc_or_qrloss
 
 
@@ -145,7 +152,8 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_google,  googlenamefn, "g.",     1,        0,    messagefuncgo,  0,               0        , 0          },
-  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emtrloss1  },
+  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emtrloss1  },
+  { spindump_quic_version_titrlo2, fixednamefn,  "v.til2", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emtrloss2  },
   { spindump_quic_version_orqrlos, fixednamefn,  "v.orql", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emqrloss   },
   { spindump_quic_version_unknown, 0,            0,        0,        0,    0,              0,               0        , 0          }
 };
@@ -427,7 +435,7 @@ spindump_analyze_quic_parser_version_getspinbitvalue_draft16(uint32_t version,
 
 //
 // Get the value of the rtloss1 bit for
-// https://tools.ietf.org/html/draft-cfb-ippm-spinbit-new-measurements-01#section-6.1
+// https://tools.ietf.org/html/draft-cfb-tsvwg-spinbit-new-measurements-00#section-6
 //
 
 static int
@@ -444,6 +452,30 @@ spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1(uint32_t versio
   if (reserved2) p_extrameasValue->extrameasbits = p_extrameasValue->extrameasbits | spindump_extrameas_rtloss1;
 
   return 1;
+}
+
+//
+// Get the value of the rtloss2 bit for
+// https://tools.ietf.org/html/draft-cfb-tsvwg-spinbit-new-measurements-00#section-7
+//
+
+static int
+spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss2(uint32_t version,
+                                                                 uint8_t headerByte,
+                                                                 int spin,
+                                                                 struct spindump_extrameas* p_extrameasValue) {
+    int retval;
+    int reserved1=0;
+    int reserved2=0;
+    retval = spindump_analyze_quic_parser_reserved2(version,headerByte,&reserved2) &&
+             spindump_analyze_quic_parser_reserved1(version,headerByte,&reserved1);
+    if (!retval) return 0;
+
+    p_extrameasValue->isvalid = p_extrameasValue->isvalid | spindump_extrameas_rtloss2_bit1 | spindump_extrameas_rtloss2_bit2;
+    if (reserved1) p_extrameasValue->extrameasbits = p_extrameasValue->extrameasbits | spindump_extrameas_rtloss2_bit1;
+    if (reserved2) p_extrameasValue->extrameasbits = p_extrameasValue->extrameasbits | spindump_extrameas_rtloss2_bit2;
+
+    return 1;
 }
 
 //

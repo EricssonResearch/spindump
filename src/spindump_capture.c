@@ -160,6 +160,30 @@ spindump_capture_initialize_aux(const char* interface,
       spindump_free(state);
       return(0);
     }
+
+    //
+    // Set "non-blocking" mode to enhance interface responsiveness. Using a timeout
+    // on packet buffer does not guarantee non-blocking behaviour of pcap_next_ex().
+    //
+
+    if (pcap_setnonblock(state->handle, 1, errbuf) == PCAP_ERROR) {
+      spindump_errorf("couldn't enable non_blocking mode: %s", errbuf);
+      spindump_free(state);
+      return(0);
+    }
+
+    //
+    // Initialize the file descriptor set to handle timeout on packet capture.
+    //
+
+    state->handleFD = pcap_get_selectable_fd(state->handle);
+    if (state->handleFD == PCAP_ERROR) {
+      spindump_errorf("couldn't get pcap handle file descriptor");
+      spindump_free(state);
+      return(0);
+    }
+    FD_ZERO(&state->handleSet);
+    FD_SET(state->handleFD, &state->handleSet);
     
   } else if (file != 0) {
     
@@ -314,7 +338,11 @@ spindump_capture_nextpacket(struct spindump_capture_state* state,
   
   //
   // Otherwise, wait for the next packet
-  // 
+  //
+
+  fd_set set = state->handleSet;
+  struct timeval timeout = { .tv_sec = 0, .tv_usec = spindump_capture_wait_select };
+  select(state->handleFD + 1, &set, NULL, NULL, &timeout);
   
   struct spindump_packet* packet = &state->currentPacket;
   memset(packet,0,sizeof(*packet));

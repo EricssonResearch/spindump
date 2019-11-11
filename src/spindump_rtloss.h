@@ -15,14 +15,14 @@
 //
 //
 
-#ifndef SPINDUMP_RTLOSS1_H
-#define SPINDUMP_RTLOSS1_H
+#ifndef SPINDUMP_RTLOSS_H
+#define SPINDUMP_RTLOSS_H
 
 //
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include "spindump_rtloss1_structs.h"
+#include "spindump_rtloss_structs.h"
 #include "spindump_connections_structs.h"
 
 struct spindump_analyze;
@@ -41,8 +41,19 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
                                                 int lossbit,
                                                 int isFlip);
 void
+spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze* state,
+                                                struct spindump_packet* packet,
+                                                struct spindump_connection* connection,
+                                                struct timeval* ts,
+                                                int fromResponder,
+                                                int lossbits);
+void
 spindump_rtloss1tracker_initialize(struct spindump_rtloss1tracker* tracker);
 void
+spindump_rtloss2tracker_initialize(struct spindump_rtloss2tracker* tracker);
+void
 spindump_rtloss1tracker_uninitialize(struct spindump_rtloss1tracker* tracker);
+void
+spindump_rtloss2tracker_uninitialize(struct spindump_rtloss2tracker* tracker);
 
 #endif

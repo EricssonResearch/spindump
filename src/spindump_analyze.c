@@ -765,10 +765,10 @@ spindump_analyze_eventtostring(spindump_analyze_event event) {
     return("firstresponsepacket");
   } else if (event == spindump_analyze_event_statechange) {
     return("statechange");
-  } else if (event == spindump_analyze_event_initiatorrtloss1measurement) {
-    return("initiatorrtloss1measurement");
-  } else if (event == spindump_analyze_event_initiatorrtloss1measurement) {
-    return("responderrtloss1measurement");
+  } else if (event == spindump_analyze_event_initiatorrtlossmeasurement) {
+    return("initiatorrtlossmeasurement");
+  } else if (event == spindump_analyze_event_responderrtlossmeasurement) {
+    return("responderrtlossmeasurement");
   } else {
     return("multiple");
   }

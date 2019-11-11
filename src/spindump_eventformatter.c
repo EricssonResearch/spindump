@@ -617,18 +617,18 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventType = spindump_event_type_ecn_congestion_event;
     break;
 
-  case spindump_analyze_event_initiatorrtloss1measurement:
+  case spindump_analyze_event_initiatorrtlossmeasurement:
     spindump_deepdeepdebugf("point 5m");
     if (!formatter->reportRtLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
-    eventType = spindump_event_type_rtloss1_measurement;
+    eventType = spindump_event_type_rtloss_measurement;
     break;
 
-  case spindump_analyze_event_responderrtloss1measurement:
+  case spindump_analyze_event_responderrtlossmeasurement:
     spindump_deepdeepdebugf("point 5n");
     if (!formatter->reportRtLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
-    eventType = spindump_event_type_rtloss1_measurement;
+    eventType = spindump_event_type_rtloss_measurement;
     break;
 
   case spindump_analyze_event_initiatorqrlossmeasurement:
@@ -789,16 +789,16 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.ecnCongestionEvent.direction = spindump_direction_fromresponder;
     break;
 
-  case spindump_analyze_event_initiatorrtloss1measurement:
-    eventobj.u.rtloss1Measurement.direction = spindump_direction_frominitiator;
-    sprintf(eventobj.u.rtloss1Measurement.avgLoss, "%.3f", connection->rtLossesFrom1to2.averageLossRate*100);
-    sprintf(eventobj.u.rtloss1Measurement.totLoss, "%.3f", connection->rtLossesFrom1to2.totalLossRate*100);
+  case spindump_analyze_event_initiatorrtlossmeasurement:
+    eventobj.u.rtlossMeasurement.direction = spindump_direction_frominitiator;
+    sprintf(eventobj.u.rtlossMeasurement.avgLoss, "%.3f", connection->rtLossesFrom1to2.averageLossRate * 100);
+    sprintf(eventobj.u.rtlossMeasurement.totLoss, "%.3f", connection->rtLossesFrom1to2.totalLossRate * 100);
     break;
 
-  case spindump_analyze_event_responderrtloss1measurement:
-    eventobj.u.rtloss1Measurement.direction = spindump_direction_fromresponder;
-    sprintf(eventobj.u.rtloss1Measurement.avgLoss, "%.3f", connection->rtLossesFrom2to1.averageLossRate*100);
-    sprintf(eventobj.u.rtloss1Measurement.totLoss, "%.3f", connection->rtLossesFrom2to1.totalLossRate*100);
+  case spindump_analyze_event_responderrtlossmeasurement:
+    eventobj.u.rtlossMeasurement.direction = spindump_direction_fromresponder;
+    sprintf(eventobj.u.rtlossMeasurement.avgLoss, "%.3f", connection->rtLossesFrom2to1.averageLossRate * 100);
+    sprintf(eventobj.u.rtlossMeasurement.totLoss, "%.3f", connection->rtLossesFrom2to1.totalLossRate * 100);
     break;
 
   case spindump_analyze_event_initiatorqrlossmeasurement:

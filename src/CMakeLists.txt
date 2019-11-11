@@ -89,7 +89,7 @@ add_library(spindumplib
   spindump_report.c
   spindump_reversedns.c
   spindump_reversedns_full.c
-  spindump_rtloss1.c
+  spindump_rtloss.c
   spindump_qrloss.c
   spindump_rtt.c
   spindump_seq.c

@@ -32,8 +32,9 @@
 // Capture parameters -------------------------------------------------------------------------
 //
 
-#define spindump_capture_snaplen        128  // bytes
-#define spindump_capture_wait           1    // ms
+#define spindump_capture_snaplen        128   // bytes
+#define spindump_capture_wait           1     // ms
+#define spindump_capture_wait_select    5000  // usec
 
 //
 // Capture data structures --------------------------------------------------------------------
@@ -46,6 +47,8 @@ enum spindump_capture_linktype {
 
 struct spindump_capture_state {
   pcap_t *handle;
+  int handleFD;
+  fd_set handleSet;
   enum spindump_capture_linktype linktype;
   uint32_t ourNetmask;
   uint32_t ourAddress;

@@ -80,6 +80,7 @@
 #define spindump_quic_version_forcenegotmask   0x0f0f0f0f
 #define spindump_quic_version_forcenegotiation 0x0a0a0a0a
 #define spindump_quic_version_titrlo1          0xf0f0f1f0
+#define spindump_quic_version_titrlo2          0xf0f0f1f1
 #define spindump_quic_version_orqrlos          0x50435132
 #define spindump_quic_version_unknown          0xffffffff
 
