@@ -44,6 +44,7 @@
 
 #define spindump_quic_version_negotiation      0x00000000
 #define spindump_quic_version_rfc              0x00000001
+#define spindump_quic_version_draft24          0xff000018
 #define spindump_quic_version_draft23          0xff000017
 #define spindump_quic_version_draft22          0xff000016
 #define spindump_quic_version_draft21          0xff000015
