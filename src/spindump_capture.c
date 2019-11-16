@@ -353,9 +353,9 @@ spindump_capture_nextpacket(struct spindump_capture_state* state,
   // Otherwise, wait for the next packet
   //
 
-  fd_set set;
-  FD_ZERO(&set);
-  FD_COPY(&state->handleSet,&set);
+  fd_set set = state->handleSet;
+  //FD_ZERO(&set);
+  //FD_COPY(&state->handleSet,&set);
   struct timeval timeout = { .tv_sec = 0, .tv_usec = spindump_capture_wait_select };
   select(state->handleFD + 1, &set, NULL, NULL, &timeout);
   
