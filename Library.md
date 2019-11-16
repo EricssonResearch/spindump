@@ -149,8 +149,8 @@ The currently defined events that can be caught are:
     #define spindump_analyze_event_statechange                        8192
     #define spindump_analyze_event_initiatorecnce                    16384
     #define spindump_analyze_event_responderecnce                    32768
-    #define spindump_analyze_event_initiatorrtloss1measurement       65536
-    #define spindump_analyze_event_responderrtloss1measurement      131072
+    #define spindump_analyze_event_initiatorrtlossmeasurement        65536
+    #define spindump_analyze_event_responderrtlossmeasurement       131072
     #define spindump_analyze_event_initiatorqrlossmeasurement       262144
     #define spindump_analyze_event_responderqrlossmeasurement       524288
 

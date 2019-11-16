@@ -53,8 +53,8 @@ static int
 spindump_event_parser_json_parse_aux_ecn_congestion_event(const struct spindump_json_value* json,
                                                           struct spindump_event* event);
 static int
-spindump_event_parser_json_parse_aux_rtloss1_measurement(const struct spindump_json_value* json,
-                                                          struct spindump_event* event);
+spindump_event_parser_json_parse_aux_rtloss_measurement(const struct spindump_json_value* json,
+                                                        struct spindump_event* event);
 static int
 spindump_event_parser_json_parse_aux_qrloss_measurement(const struct spindump_json_value* json,
                                                           struct spindump_event* event);
@@ -213,8 +213,8 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
     }
     break;
 
-  case spindump_event_type_rtloss1_measurement:
-    if (!spindump_event_parser_json_parse_aux_rtloss1_measurement(json,event)) {
+  case spindump_event_type_rtloss_measurement:
+    if (!spindump_event_parser_json_parse_aux_rtloss_measurement(json, event)) {
       return(0);
     }
     break;
@@ -414,14 +414,14 @@ spindump_event_parser_json_parse_aux_ecn_congestion_event(const struct spindump_
 }
 
 static int
-spindump_event_parser_json_parse_aux_rtloss1_measurement(const struct spindump_json_value* json,
-                                                struct spindump_event* event) {
+spindump_event_parser_json_parse_aux_rtloss_measurement(const struct spindump_json_value* json,
+                                                        struct spindump_event* event) {
   const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
   const struct spindump_json_value* avgField = spindump_json_value_getfield("Avg_loss",json);
   const struct spindump_json_value* totField = spindump_json_value_getfield("Tot_loss",json);
   
   if (whoField == 0 || avgField == 0 || totField == 0) {
-    spindump_errorf("rtloss1 event does not have the necessary JSON fields");
+    spindump_errorf("rtloss event does not have the necessary JSON fields");
     return(0);
   }
 
@@ -430,18 +430,18 @@ spindump_event_parser_json_parse_aux_rtloss1_measurement(const struct spindump_j
   const char* whoValue = spindump_json_value_getstring(whoField);
 
   // Implement validity check
-  memset(event->u.rtloss1Measurement.avgLoss, '\0', sizeof(event->u.rtloss1Measurement.avgLoss));
-  strcpy(event->u.rtloss1Measurement.avgLoss, avgValue);
+  memset(event->u.rtlossMeasurement.avgLoss, '\0', sizeof(event->u.rtlossMeasurement.avgLoss));
+  strcpy(event->u.rtlossMeasurement.avgLoss, avgValue);
 
-  memset(event->u.rtloss1Measurement.totLoss, '\0', sizeof(event->u.rtloss1Measurement.totLoss));
-  strcpy(event->u.rtloss1Measurement.totLoss, totValue);
+  memset(event->u.rtlossMeasurement.totLoss, '\0', sizeof(event->u.rtlossMeasurement.totLoss));
+  strcpy(event->u.rtlossMeasurement.totLoss, totValue);
 
   if (strcasecmp(whoValue,"initiator") == 0) {
-    event->u.rtloss1Measurement.direction = spindump_direction_frominitiator;
+    event->u.rtlossMeasurement.direction = spindump_direction_frominitiator;
   } else if (strcasecmp(whoValue,"responder") == 0) {
-    event->u.rtloss1Measurement.direction = spindump_direction_fromresponder;
+    event->u.rtlossMeasurement.direction = spindump_direction_fromresponder;
   } else {
-    spindump_errorf("rtloss1 value direction does not have the right value in JSON: %s", whoValue);
+    spindump_errorf("rtloss value direction does not have the right value in JSON: %s", whoValue);
     return(0);
   }
   return(1);
@@ -596,11 +596,11 @@ spindump_event_parser_json_print(const struct spindump_event* event,
     addtobuffer2(", \"Ce\": \"%llu\"", event->u.ecnCongestionEvent.ce);
     break;
 
-  case spindump_event_type_rtloss1_measurement:
+  case spindump_event_type_rtloss_measurement:
     addtobuffer2(", \"Who\": \"%s\"",
                  event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");  
-    addtobuffer2(", \"Avg_loss\": \"%s\"", event->u.rtloss1Measurement.avgLoss);
-    addtobuffer2(", \"Tot_loss\": \"%s\"", event->u.rtloss1Measurement.totLoss);
+    addtobuffer2(", \"Avg_loss\": \"%s\"", event->u.rtlossMeasurement.avgLoss);
+    addtobuffer2(", \"Tot_loss\": \"%s\"", event->u.rtlossMeasurement.totLoss);
     break;
 
   case spindump_event_type_qrloss_measurement:

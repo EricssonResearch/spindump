@@ -15,8 +15,8 @@
 //
 //
 
-#ifndef SPINDUMP_RTLOSS1_STRUCTS_H
-#define SPINDUMP_RTLOSS1_STRUCTS_H
+#ifndef SPINDUMP_RTLOSS_STRUCTS_H
+#define SPINDUMP_RTLOSS_STRUCTS_H
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -30,21 +30,22 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_rtloss1_n        10
-#define spindump_rtloss1_maxrate 1.0
+#define spindump_rtloss_n                   10
+#define spindump_rtloss_maxrate             1.0
+#define spindump_rtloss2_reorder_threshold  10000    // 10ms
 
 //
 // Data Structures ----------------------------------------------------------------------------
 //
 
-struct spindump_rtloss1 {
+struct spindump_rtloss {
   float averageLossRate;
   float totalLossRate;
 };
 
-struct spindump_rtloss1stats {
-  struct spindump_rtloss1 rates;
-  float recentLossRates[spindump_rtloss1_n];
+struct spindump_rtloss_stats {
+  struct spindump_rtloss rates;
+  float recentLossRates[spindump_rtloss_n];
   int currentIndex;
 };
 
@@ -59,7 +60,22 @@ struct spindump_rtloss1tracker {
   spindump_counter_32bit generatedPktCounter;
   spindump_counter_32bit reflectedPktCounter;
   spindump_counter_32bit lostPackets;
-  struct spindump_rtloss1stats lossStats;
+  struct spindump_rtloss_stats lossStats;
+};
+
+struct spindump_rtloss2tracker {
+    int reflectionPhase;
+    spindump_counter_32bit tmpGenCounter;
+    spindump_counter_32bit genCounter;
+    spindump_counter_32bit rflCounter;
+    unsigned long long lockCounterTime;
+    struct timeval lastRflTime;
+    // Stats fields
+    spindump_counter_32bit markedPktCounter;
+    spindump_counter_32bit generatedPktCounter;
+    spindump_counter_32bit reflectedPktCounter;
+    spindump_counter_32bit lostPackets;
+    struct spindump_rtloss_stats lossStats;
 };
 
 #endif
