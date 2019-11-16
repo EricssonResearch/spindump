@@ -96,7 +96,8 @@ struct spindump_analyze {
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize(unsigned long long bandwidthMeasurementPeriod);
+spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
+                            unsigned long long bandwidthMeasurementPeriod);
 void
 
 spindump_analyze_uninitialize(struct spindump_analyze* state);

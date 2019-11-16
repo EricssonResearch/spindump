@@ -34,6 +34,9 @@ traces="trace_icmpv4_short
         trace_dns
         trace_ping_aggregate_average
         trace_ping_aggregate_average_text
+        trace_ping_aggregate_average_filt
+        trace_ping_aggregate_average_filt_max
+        trace_ping_aggregate_average_filt_text
         trace_ping_bandwidthperiods1
         trace_ping_bandwidthperiods2
         trace_ping_bandwidthperiods3
@@ -96,6 +99,28 @@ traces="trace_icmpv4_short
         trace_empty"
 
 #
+# Check options
+#
+
+debugopts=
+
+while [ $# -gt 0 ]
+do
+    case "x$1" in
+        x--debug) debugopts="--debug";
+                  shift;;
+        x--deepdebug) debugopts="--deepdebug";
+                      shift;;
+        x--deepdeepdebug) debugopts="--deepdeepdebug";
+                          shift;;
+        x--help) echo "Usage: spindump_testtraces.sh [options] [testcases]";
+                 exit 0;;
+        *) traces=`echo $traces | tr " " "\\n" | fgrep -e $1`;
+           shift;;
+    esac
+done
+
+#
 # Loop through test cases
 #
 
@@ -136,7 +161,7 @@ do
     # Now run it!
     #
     
-    if $spindump --input-file $pcap --textual --format text --not-report-notes $opts > $outpre
+    if $spindump --input-file $pcap --textual --format text --not-report-notes $opts $debugopts > $outpre
      then
         echo "  run ok..."
     else

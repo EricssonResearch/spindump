@@ -518,13 +518,14 @@ spindump_connection_report(struct spindump_connection* connection,
                    spindump_rtt_tostring(connection->leftRTT.lastRTT),
                    sizeof(rttbuf1));
   unsigned long dev;
-  unsigned long avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT,0,0,&dev);
+  unsigned long filt;
+  unsigned long avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT,0,0,&dev,&filt);
   spindump_strlcpy(rttbuf2,
                    spindump_rtt_tostring(avg),
                    sizeof(rttbuf2));
   fprintf(file,"  last left RTT:           %38s\n", rttbuf1);
   fprintf(file,"  moving avg left RTT:     %38s\n", rttbuf2);
-  avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT,0,0,&dev);
+  avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT,0,0,&dev,&filt);
   spindump_strlcpy(rttbuf1,
                    spindump_rtt_tostring(connection->rightRTT.lastRTT),
                    sizeof(rttbuf1));
@@ -1095,12 +1096,13 @@ spindump_connection_report_brief(struct spindump_connection* connection,
   memset(rttbuf1,0,sizeof(rttbuf1));
   memset(rttbuf2,0,sizeof(rttbuf2));
   spindump_deepdeepdebugf("report_brief point 2");
+  unsigned long filt;
   if (avg) {
     unsigned long devLeft;
-    unsigned long avgLeft = spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT,0,0,&devLeft);
+    unsigned long avgLeft = spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT,0,0,&devLeft,&filt);
     spindump_strlcpy(rttbuf1,spindump_rtt_tostring(avgLeft),sizeof(rttbuf1));
     unsigned long devRight;
-    unsigned long avgRight = spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT,0,0,&devRight);
+    unsigned long avgRight = spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT,0,0,&devRight,&filt);
     spindump_strlcpy(rttbuf2,spindump_rtt_tostring(avgRight),sizeof(rttbuf2));
   } else {
     spindump_strlcpy(rttbuf1,spindump_rtt_tostring(connection->leftRTT.lastRTT),sizeof(rttbuf1));

@@ -59,6 +59,7 @@ The other fields depend on the type of an event and connection. These fields can
    * The field "Full_rtt_responder" specifies the full RTT as meassured from a QUIC spin bit flips from packets from the server/responder of a connection.
    * Similarly, the fields "Avg_left_rtt", "Avg_right_rtt", "Avg_full_rtt_initiator", and "Avg_full_rtt_responder" represent the above RTT values but calculated as moving averages.
    * Again similarly, the fields "Dev_left_rtt", "Dev_right_rtt", "Dev_full_rtt_initiator", and "Dev_full_rtt_responder" represent the standard deviation of the above RTT values.
+   * The fields "Filt_avg_left_rtt", "Filt_avg_right_rtt", "Filt_avg_full_rtt_initiator", and "Filt_avg_full_rtt_responder" represent the moving average values, but with exceptional values filtered out before they are used in the average calculation.
    * The field "Value" specifies the value of the spin bit.
    * The field "Transition" specifies the spin bit transition, which is either "0-1" or "1-0". 
    * The field "Who" specifies from which direction did the information come from, "initiator" or "responder".

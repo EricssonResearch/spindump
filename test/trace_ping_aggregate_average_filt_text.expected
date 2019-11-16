@@ -1,0 +1,20 @@
+H2NET 10.30.0.167 <-> 195.140.0.0/16 0 sessions new static packets 0 0 bytes 0 0
+H2NET 10.30.0.167 <-> 212.16.100.0/24 0 sessions new static packets 0 0 bytes 0 0
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283552230569 measurement static right 20850 avg 20850 dev 0 filtavg 20850 packets 1 0 bytes 1428 0 bandwidth 1428 0
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283553233186 measurement static right 21935 avg 21392 dev 767 filtavg 21392 packets 2 1 bytes 2856 1428 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283554237287 measurement static right 20800 avg 21195 dev 641 filtavg 21195 packets 3 2 bytes 4284 2856 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283555240193 measurement static right 20877 avg 21115 dev 547 filtavg 21115 packets 4 3 bytes 5712 4284 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283556240797 measurement static right 20691 avg 21030 dev 510 filtavg 20804 packets 5 4 bytes 7140 5712 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283557247335 measurement static right 21979 avg 21188 dev 598 filtavg 20804 packets 6 5 bytes 8568 7140 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283558246675 measurement static right 21136 avg 21181 dev 546 filtavg 20870 packets 7 6 bytes 9996 8568 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283559247406 measurement static right 21303 avg 21196 dev 508 filtavg 20942 packets 8 7 bytes 11424 9996 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283560252257 measurement static right 20900 avg 21163 dev 485 filtavg 20936 packets 9 8 bytes 12852 11424 bandwidth 1428 2856
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283561256663 measurement static right 21875 avg 21234 dev 510 filtavg 20936 packets 10 9 bytes 14280 12852 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283562257230 measurement static right 21737 avg 21280 dev 507 filtavg 21086 packets 11 10 bytes 15708 14280 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283563263865 measurement static right 23762 avg 21487 dev 864 filtavg 21086 packets 12 11 bytes 17136 15708 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283564261170 measurement static right 20664 avg 21423 dev 858 filtavg 21228 packets 13 12 bytes 18564 17136 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283565264576 measurement static right 21179 avg 21406 dev 827 filtavg 21225 packets 14 13 bytes 19992 18564 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283566269392 measurement static right 21638 avg 21421 dev 799 filtavg 21254 packets 15 14 bytes 21420 19992 bandwidth 1428 2856
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283567272676 measurement static right 20882 avg 21388 dev 784 filtavg 21229 packets 16 15 bytes 22848 21420 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283568277248 measurement static right 20854 avg 21356 dev 770 filtavg 21206 packets 17 16 bytes 24276 22848 bandwidth 1428 1428
+H2NET 10.30.0.167 <-> 195.140.0.0/16 1 sessions at 1559283569284154 measurement static right 22510 avg 21420 dev 795 filtavg 21206 packets 18 17 bytes 25704 24276 bandwidth 1428 1428

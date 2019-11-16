@@ -145,6 +145,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->reportNotes = 1;
   config->anonymizeLeft = 0;
   config->anonymizeRight = 0;
+  config->filterExceptionalValuesPercentage = 0; // no filtering of RTT values
   config->updatePeriod = 500 * 1000; // 0.5s
   config->bandwidthMeasurementPeriod = spindump_bandwidth_period_default;
   config->nAggregates = 0;
@@ -338,6 +339,24 @@ spindump_main_processargs(int argc,
       }
       
       config->snaplen = (unsigned int)arg;
+      
+      argc--; argv++;
+
+    } else if (strcmp(argv[0],"--filter-exceptional-values") == 0 && argc > 1) {
+
+      if (!isdigit(argv[1][0])) {
+        spindump_errorf("the --filter-exceptional-values argument needs to be numeric");
+        exit(1);
+      }
+
+      int arg = atoi(argv[1]);
+      
+      if (arg < 1 || arg > 400) {
+        spindump_errorf("the --filter-exceptional-values argument needs to be bigger than zero and less than or equal to 400");
+        exit(1);
+      }
+      
+      config->filterExceptionalValuesPercentage = (unsigned int)arg;
       
       argc--; argv++;
 
@@ -660,6 +679,9 @@ spindump_main_help(void) {
   printf("    --no-average-mode       values instead of specific instantaneous values. Default is not.\n");
   printf("    --aggregate-mode        Display (or report) aggregates only, not individal connections.\n");
   printf("    --no-aggregate-mode     Default is to report individual connections.\n");
+  printf("\n");
+  printf("    --filter-exceptional-values n\n");
+  printf("                            Filter exceptional RTT values beyond given %% of standard deviation.\n");
   printf("\n");
   printf("    --no-stats              Produces statistics at the end of the execution.\n");
   printf("    --stats\n");

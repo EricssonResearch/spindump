@@ -28,6 +28,16 @@
 #include "spindump_rtt.h"
 
 //
+// Function prototypes ------------------------------------------------------------------------
+//
+
+static int
+spindump_rtt_valuewithinlimits(unsigned long val,
+                               unsigned int n,
+                               struct spindump_rtt* rtt,
+                               unsigned int filterLimitPercentage);
+
+//
 // Actual code --------------------------------------------------------------------------------
 //
 
@@ -39,6 +49,8 @@ void
 spindump_rtt_initialize(struct spindump_rtt* rtt) {
   spindump_assert(rtt != 0);
   rtt->lastRTT = spindump_rtt_infinite;
+  rtt->lastMovingAvgRTT = spindump_rtt_infinite;
+  rtt->lastStandardDeviation = spindump_rtt_infinite;
   rtt->recentTableIndex = 0;
   for (unsigned int i = 0; i < spindump_rtt_nrecent; i++) {
     rtt->recentRTTs[i] = spindump_rtt_infinite;
@@ -92,15 +104,61 @@ spindump_rtt_uninitialize(struct spindump_rtt* rtt) {
   // No-op// 
 }
 
+static int
+spindump_rtt_valuewithinlimits(unsigned long val,
+                               unsigned int n,
+                               struct spindump_rtt* rtt,
+                               unsigned int filterLimitPercentage) {
+  spindump_deepdeepdebugf("filter check val %lu percentage = %u avg %lu dev %lu n %u",
+                          val,
+                          filterLimitPercentage,
+                          rtt->lastMovingAvgRTT,
+                          rtt->lastStandardDeviation,
+                          n);
+  if (rtt->lastMovingAvgRTT == spindump_rtt_infinite) {
+    spindump_deepdeepdebugf("filter exception 1");
+    return(1);
+  }
+  if (rtt->lastStandardDeviation == spindump_rtt_infinite) {
+    spindump_deepdeepdebugf("filter exception 2");
+    return(1);
+  }
+  if (n < spindump_rtt_nminfilter) {
+    spindump_deepdeepdebugf("filter exception 3: %u", n);
+    return(1);
+  }
+  unsigned long limitdiff =
+    (filterLimitPercentage * rtt->lastStandardDeviation) / 100;
+  unsigned long lowerlimit =
+    rtt->lastMovingAvgRTT > limitdiff ? rtt->lastMovingAvgRTT - limitdiff : 0;
+  unsigned long upperlimit =
+    (rtt->lastMovingAvgRTT + limitdiff >= rtt->lastMovingAvgRTT) ? rtt->lastMovingAvgRTT + limitdiff : spindump_rtt_max;
+  spindump_deepdeepdebugf("filter value %lu limitdiff %u to within %lu..%lu", val, limitdiff, lowerlimit, upperlimit);
+  if (val < lowerlimit) {
+    spindump_deepdeepdebugf("filter away, too low");
+    return(0);
+  }
+  if (val > upperlimit) {
+    spindump_deepdeepdebugf("filter away, too high");
+    return(0);
+  }
+  return(1);
+}
+
 //
-// Calculate the most recent moving average
+// Calculate the most recent moving average. Returns the average.
+// Input parameters are the RTT structure and filter flag if filtering
+// should be performed, and if so, what percentage of standard
+// deviation is considered exceptional. Output parameters are the
+// standard deviation and filtered average.
 // 
   
 unsigned long
 spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
                                        int filter,
                                        unsigned int filterLimitPercentage,
-                                       unsigned long* standardDeviation) {
+                                       unsigned long* standardDeviation,
+                                       unsigned long* filteredAvg) {
   
   unsigned long long sum = 0;
   unsigned long long devSum = 0;
@@ -114,7 +172,8 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
   spindump_assert(rtt != 0);
   spindump_assert(spindump_isbool(filter));
   spindump_assert(standardDeviation != 0);
-
+  spindump_assert(filteredAvg != 0);
+  
   //
   // Calculate basic moving average
   //
@@ -129,6 +188,10 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
   
   if (n == 0) {
     *standardDeviation = 0;
+    if (!filter) {
+      rtt->lastStandardDeviation = spindump_rtt_infinite;
+      rtt->lastMovingAvgRTT = spindump_rtt_infinite;
+    }
     return(spindump_rtt_infinite);
   }
   
@@ -137,7 +200,8 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
   //
   // Calculate standard deviation
   //
-  
+
+  unsigned long dev = 0;
   if (n > 1) {
     for (i = 0; i < spindump_rtt_nrecent; i++) {
       unsigned long long val = (unsigned long long)(rtt->recentRTTs[i]);
@@ -149,29 +213,68 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
       }
     }
     double realResult = floor(sqrt((1.0/(n-1))*(double)devSum));
-    *standardDeviation = (unsigned long)realResult;
+    dev = (unsigned long)realResult;
     spindump_deepdeepdebugf("standard deviation n = %u avg = %llu devSum = %llu ", n, avg, devSum);
   } else {
-    *standardDeviation = 0;
+    dev = 0;
   }
+  
+  //
+  // Calculate filtered moving average
+  //
 
+  unsigned int fn = 0;
+  unsigned long long fsum = 0;
+  
+  if (filter) {
+
+    for (i = 0; i < spindump_rtt_nrecent; i++) {
+      unsigned long val = rtt->recentRTTs[i];
+      if (val != spindump_rtt_infinite &&
+          (filter == 0 ||
+           spindump_rtt_valuewithinlimits(val,n,rtt,filterLimitPercentage))) {
+        fsum += (unsigned long long)val;
+        fn++;
+      }
+    }
+    
+  } else {
+    fsum = sum;
+    fn = n;
+  }
+  
+  unsigned long long favg = fn > 0 ? fsum / (unsigned long long)fn : 0;
+  
   //
   // Determine if the value is within limits
   //
   
   if (avg > spindump_rtt_max) {
-    rtt->lastMovingAvgRTT = spindump_rtt_max;
-  } else {
-    rtt->lastMovingAvgRTT = (unsigned long)avg;
+    avg = spindump_rtt_max;
   }
-
+  if (dev > spindump_rtt_max) {
+    dev = spindump_rtt_max;
+  }
+  if (favg > spindump_rtt_max) {
+    favg = spindump_rtt_max;
+  }
+  
+  //
+  // Set output parameters and permanently stored values if needed
+  //
+  
+  *standardDeviation = dev;
+  *filteredAvg = favg;
+  rtt->lastMovingAvgRTT = avg;
+  rtt->lastStandardDeviation = dev;
+  
   //
   // Return
   //
   
   spindump_debugf("new calculated avg RTT = %lu us (n = %u, std. dev. = %u)",
-                  rtt->lastMovingAvgRTT, n, *standardDeviation);
-  return(rtt->lastMovingAvgRTT);
+                  (unsigned long)avg, n, (unsigned long)dev);
+  return((unsigned long)avg);
 }
 
 //

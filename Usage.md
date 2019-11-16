@@ -101,6 +101,10 @@ The first pair sets the debugging output on/off. Note that in the visual or text
 
 The --average-mode option causes the tool to display (or report in output or HTTP-delivered update) average values instead of specific instantaneous values. Default is to report instantaneous values. The  --aggregate-mode option causes the tool to display (or report) aggregates only, not individal connections. The default is to report individual connections.
 
+    --filter-exceptional-values n
+
+This option makes Spindump do filtering of exceptionally small or large values. The argument is a percentage value, from 0 to 400 percent. It expresses what percentage of current standard deviation should be considered as exceptional. For instance, if the standard deviation of RTT values is 10, then setting this option to 20 makes values that stand out more than two times the standard deviation as exceptional. Exceptional values are still reported as RTT measurements and taken into average calculations, but not taken into account when calculating the filtered average.
+
    --bandwidth-period n
 
 This option sets the measurement period for bandwidth. Each connection is measured for bandwidth in periods, with the number of bytes sent on a connection during that period counted together. Bandwidth numbers are always presented in bytes/s but when traffic varies over time, a shorter measurement period will produce a more variable bandwidth numbers, whereas a longer period will produce a smoother measurement. The option takes an argument, the length of the period in microseconds. The default is 1000000 or 1s.

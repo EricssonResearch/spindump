@@ -93,7 +93,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   //
 
   spindump_deepdeepdebugf("main loop, analyzer initialization");
-  struct spindump_analyze* analyzer = spindump_analyze_initialize(config->bandwidthMeasurementPeriod);
+  struct spindump_analyze* analyzer = spindump_analyze_initialize(config-> filterExceptionalValuesPercentage,
+                                                                  config->bandwidthMeasurementPeriod);
   if (analyzer == 0) exit(1);
 
   //
@@ -217,7 +218,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                                         config->anonymizeLeft,
                                                         config->anonymizeRight,
                                                         config->aggregateMode,
-                                                        config->averageMode);
+                                                        config->averageMode,
+                                                        config->filterExceptionalValuesPercentage);
   }
   
   if (config->nRemotes > 0) {
@@ -235,7 +237,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                                                 config->anonymizeLeft,
                                                                 config->anonymizeRight,
                                                                 config->aggregateMode,
-                                                                config->averageMode);
+                                                                config->averageMode,
+                                                                config->filterExceptionalValuesPercentage);
   }
 
   //

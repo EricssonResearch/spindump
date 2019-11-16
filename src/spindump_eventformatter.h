@@ -74,6 +74,7 @@ struct spindump_eventformatter {
   int anonymizeRight;
   int aggregatesOnly;
   int averageRtts;
+  unsigned int filterExceptionalValuesPercentage;
   enum spindump_eventformatter_outputformat format;
   size_t preambleLength;
   size_t postambleLength;
@@ -96,7 +97,8 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         int anonymizeLeft,
                                         int anonymizeRight,
                                         int aggregatesOnly,
-                                        int averageRtts);
+                                        int averageRtts,
+                                        unsigned int filterExceptionalValuesPercentage);
 struct spindump_eventformatter*
 spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           enum spindump_eventformatter_outputformat format,
@@ -112,7 +114,8 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           int anonymizeLeft,
                                           int anonymizeRight,
                                           int aggregatesOnly,
-                                          int averageRtts);
+                                          int averageRtts,
+                                          unsigned int filterExceptionalValuesPercentage);
 void
 spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter);
 void

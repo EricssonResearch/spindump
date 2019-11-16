@@ -23,7 +23,8 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_rtt_nrecent 20
+#define spindump_rtt_nrecent     20
+#define spindump_rtt_nminfilter   5
 
 //
 // Data structures ----------------------------------------------------------------------------
@@ -36,6 +37,7 @@
 struct spindump_rtt {
   unsigned long lastRTT;                     // in usecs, spindump_rtt_infinite if not set
   unsigned long lastMovingAvgRTT;            // in usecs, spindump_rtt_infinite if not set
+  unsigned long lastStandardDeviation;       // in usecs, spindump_rtt_infinite if not set
   unsigned int recentTableIndex;             // where the next recent RTT measurement will
                                              // be placed in
   unsigned int padding;                      // unused padding to align the next field properly
@@ -57,7 +59,8 @@ unsigned long
 spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
                                        int filter,
                                        unsigned int filterLimitPercentage,
-                                       unsigned long* standardDeviation);
+                                       unsigned long* standardDeviation,
+                                       unsigned long* filteredAvg);
 const char*
 spindump_rtt_tostring(unsigned long rttval);
 void

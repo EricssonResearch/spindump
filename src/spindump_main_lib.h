@@ -76,6 +76,7 @@ struct spindump_main_configuration {
   int aggregateMode;
   int anonymizeLeft;
   int anonymizeRight;
+  unsigned int filterExceptionalValuesPercentage;
   unsigned long long updatePeriod;
   unsigned long long bandwidthMeasurementPeriod;
   unsigned int nAggregates;

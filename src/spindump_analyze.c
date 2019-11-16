@@ -62,7 +62,8 @@ spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* st
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize(unsigned long long bandwidthMeasurementPeriod) {
+spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
+                            unsigned long long bandwidthMeasurementPeriod) {
 
   //
   // Checks

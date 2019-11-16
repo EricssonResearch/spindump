@@ -212,7 +212,7 @@ static struct spindump_json_schema recordschema = {
   .callback = 0,
   .u = {
     .record = {
-      .nFields = 30 ,
+      .nFields = 35,
       .fields = {
         { .required = 1, .name = "Event", .schema = &fieldeventschema },
         { .required = 1, .name = "Type", .schema = &fieldtypeschema },
@@ -228,6 +228,10 @@ static struct spindump_json_schema recordschema = {
         { .required = 0, .name = "Avg_right_rtt", .schema = &fieldrttschema },
         { .required = 0, .name = "Avg_full_rtt_initiator", .schema = &fieldrttschema },
         { .required = 0, .name = "Avg_full_rtt_responder", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_left_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_right_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_full_rtt_initiator", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_full_rtt_responder", .schema = &fieldrttschema },
         { .required = 0, .name = "Dev_left_rtt", .schema = &fieldrttschema },
         { .required = 0, .name = "Dev_right_rtt", .schema = &fieldrttschema },
         { .required = 0, .name = "Dev_full_rtt_initiator", .schema = &fieldrttschema },
