@@ -135,6 +135,7 @@ spindump_event_parser_text_print(const struct spindump_event* event,
     }
     if (event->u.newRttMeasurement.avgRtt > 0) {
       addtobuffer2("avg %lu ", event->u.newRttMeasurement.avgRtt);
+      addtobuffer2("dev %lu ", event->u.newRttMeasurement.devRtt);
     }
     break;
     

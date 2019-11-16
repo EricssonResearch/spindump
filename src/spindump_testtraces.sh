@@ -33,6 +33,7 @@ traces="trace_icmpv4_short
         trace_dns_simple
         trace_dns
         trace_ping_aggregate_average
+        trace_ping_aggregate_average_text
         trace_ping_bandwidthperiods1
         trace_ping_bandwidthperiods2
         trace_ping_bandwidthperiods3

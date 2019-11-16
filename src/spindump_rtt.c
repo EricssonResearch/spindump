@@ -20,6 +20,7 @@
 // Includes -----------------------------------------------------------------------------------
 //
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -96,13 +97,27 @@ spindump_rtt_uninitialize(struct spindump_rtt* rtt) {
 // 
   
 unsigned long
-spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt) {
+spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
+                                       int filter,
+                                       unsigned int filterLimitPercentage,
+                                       unsigned long* standardDeviation) {
   
   unsigned long long sum = 0;
+  unsigned long long devSum = 0;
   unsigned int n = 0;
   unsigned int i;
+
+  //
+  // Sanity checks
+  //
   
   spindump_assert(rtt != 0);
+  spindump_assert(spindump_isbool(filter));
+  spindump_assert(standardDeviation != 0);
+
+  //
+  // Calculate basic moving average
+  //
   
   for (i = 0; i < spindump_rtt_nrecent; i++) {
     unsigned long val = rtt->recentRTTs[i];
@@ -111,22 +126,52 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt) {
       n++;
     }
   }
-
-  if (n == 0) return(spindump_rtt_infinite);
   
-  unsigned long long avg = sum / (unsigned long long)n;
-  unsigned long lastMovingAvgRTT;
-  
-  if (avg > spindump_rtt_max) {
-    lastMovingAvgRTT = spindump_rtt_max;
-  } else {
-    lastMovingAvgRTT = (unsigned long)avg;
+  if (n == 0) {
+    *standardDeviation = 0;
+    return(spindump_rtt_infinite);
   }
   
-  spindump_debugf("new calculated avg RTT = %lu us (n = %u)",
-                  lastMovingAvgRTT, n);
-  rtt->lastMovingAvgRTT = lastMovingAvgRTT;
-  return(lastMovingAvgRTT);
+  unsigned long long avg = sum / (unsigned long long)n;
+  
+  //
+  // Calculate standard deviation
+  //
+  
+  if (n > 1) {
+    for (i = 0; i < spindump_rtt_nrecent; i++) {
+      unsigned long long val = (unsigned long long)(rtt->recentRTTs[i]);
+      if (val != spindump_rtt_infinite) {
+        unsigned long long diff = val > avg ? val - avg : avg - val;
+        devSum += (diff * diff);
+        spindump_deepdeepdebugf("standard deviation val %llu avg %llu diff %llu sqrt %llu",
+                                val, avg, diff, diff * diff);
+      }
+    }
+    double realResult = floor(sqrt((1.0/(n-1))*(double)devSum));
+    *standardDeviation = (unsigned long)realResult;
+    spindump_deepdeepdebugf("standard deviation n = %u avg = %llu devSum = %llu ", n, avg, devSum);
+  } else {
+    *standardDeviation = 0;
+  }
+
+  //
+  // Determine if the value is within limits
+  //
+  
+  if (avg > spindump_rtt_max) {
+    rtt->lastMovingAvgRTT = spindump_rtt_max;
+  } else {
+    rtt->lastMovingAvgRTT = (unsigned long)avg;
+  }
+
+  //
+  // Return
+  //
+  
+  spindump_debugf("new calculated avg RTT = %lu us (n = %u, std. dev. = %u)",
+                  rtt->lastMovingAvgRTT, n, *standardDeviation);
+  return(rtt->lastMovingAvgRTT);
 }
 
 //

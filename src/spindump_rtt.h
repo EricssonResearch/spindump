@@ -54,7 +54,10 @@ unsigned long
 spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
                             unsigned long long timediff);
 unsigned long
-spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt);
+spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
+                                       int filter,
+                                       unsigned int filterLimitPercentage,
+                                       unsigned long* standardDeviation);
 const char*
 spindump_rtt_tostring(unsigned long rttval);
 void

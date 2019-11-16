@@ -712,9 +712,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
     eventobj.u.newRttMeasurement.rtt = connection->leftRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
+    eventobj.u.newRttMeasurement.devRtt = 0;
     if (formatter->averageRtts) {
-      spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT);
-      eventobj.u.newRttMeasurement.avgRtt = connection->leftRTT.lastMovingAvgRTT;
+      unsigned long dev;
+      unsigned long avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->leftRTT,0,0,&dev);
+      eventobj.u.newRttMeasurement.avgRtt = avg;
+      eventobj.u.newRttMeasurement.devRtt = dev;
     }
     break;
     
@@ -723,9 +726,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
     eventobj.u.newRttMeasurement.rtt = connection->rightRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
+    eventobj.u.newRttMeasurement.devRtt = 0;
     if (formatter->averageRtts) {
-      spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT);
-      eventobj.u.newRttMeasurement.avgRtt = connection->rightRTT.lastMovingAvgRTT;
+      unsigned long dev;
+      unsigned long avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT,0,0,&dev);
+      eventobj.u.newRttMeasurement.avgRtt = avg;
+      eventobj.u.newRttMeasurement.devRtt = dev;
     }
     spindump_deepdeepdebugf("eventobj.avgRtt = %lu, averageRtts = %u",
                             eventobj.u.newRttMeasurement.avgRtt,
@@ -737,9 +743,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
     eventobj.u.newRttMeasurement.rtt = connection->initToRespFullRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
+    eventobj.u.newRttMeasurement.devRtt = 0;
     if (formatter->averageRtts) {
-      spindump_rtt_calculateLastMovingAvgRTT(&connection->initToRespFullRTT);
-      eventobj.u.newRttMeasurement.avgRtt = connection->initToRespFullRTT.lastMovingAvgRTT;
+      unsigned long dev;
+      unsigned long avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->initToRespFullRTT,0,0,&dev);
+      eventobj.u.newRttMeasurement.avgRtt = avg;
+      eventobj.u.newRttMeasurement.devRtt = dev;
     }
     break;
 
@@ -748,9 +757,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.direction = spindump_direction_fromresponder;
     eventobj.u.newRttMeasurement.rtt = connection->respToInitFullRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
+    eventobj.u.newRttMeasurement.devRtt = 0;
     if (formatter->averageRtts) {
-      spindump_rtt_calculateLastMovingAvgRTT(&connection->respToInitFullRTT);
-      eventobj.u.newRttMeasurement.avgRtt = connection->respToInitFullRTT.lastMovingAvgRTT;
+      unsigned long dev;
+      unsigned long avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->respToInitFullRTT,0,0,&dev);
+      eventobj.u.newRttMeasurement.avgRtt = avg;
+      eventobj.u.newRttMeasurement.devRtt = dev;
     }
     break;
 

@@ -1,0 +1,1 @@
+This is the same test as trace_ping_aggregate_average, but using text output format instead of JSON.
