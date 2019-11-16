@@ -162,7 +162,7 @@ spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze *state,
         spindump_warnf("rtloss2 rflCounter (%lu) is greater than genCounter (%lu), triggered at %lu (usec)",
                        tracker->rflCounter,
                        tracker->genCounter,
-                       tracker->lastRflTime);
+                       tracker->lastRflTime.tv_usec);
 
       } else if (tracker->genCounter > 0) {
         uint32_t losses = tracker->genCounter - tracker->rflCounter;
