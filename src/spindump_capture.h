@@ -47,6 +47,7 @@ enum spindump_capture_linktype {
 
 struct spindump_capture_state {
   pcap_t *handle;
+  int waitable;
   int handleFD;
   fd_set handleSet;
   enum spindump_capture_linktype linktype;

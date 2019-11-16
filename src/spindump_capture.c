@@ -140,6 +140,7 @@ spindump_capture_initialize_aux(const char* interface,
     state->ourAddress = 0x7f000001;
     state->ourNetmask = 0xff000000;
     state->ourLocalBroadcastAddress = 0x7fffffff;
+    state->waitable = 0;
     return(state);
     
   } else if (interface != 0) {
@@ -184,6 +185,7 @@ spindump_capture_initialize_aux(const char* interface,
     }
     FD_ZERO(&state->handleSet);
     FD_SET(state->handleFD, &state->handleSet);
+    state->waitable = 1;
     
   } else if (file != 0) {
     
@@ -193,19 +195,8 @@ spindump_capture_initialize_aux(const char* interface,
       spindump_free(state);
       return(0);
     }
-    
-    //
-    // Initialize the file descriptor set to handle timeout on packet capture.
-    //
-    
-    state->handleFD = pcap_get_selectable_fd(state->handle);
-    if (state->handleFD == PCAP_ERROR) {
-      spindump_errorf("couldn't get pcap handle file descriptor");
-      spindump_free(state);
-      return(0);
-    }
-    FD_ZERO(&state->handleSet);
-    FD_SET(state->handleFD, &state->handleSet);
+
+    state->waitable = 0;
     
   }
   
@@ -352,12 +343,12 @@ spindump_capture_nextpacket(struct spindump_capture_state* state,
   //
   // Otherwise, wait for the next packet
   //
-
-  fd_set set = state->handleSet;
-  //FD_ZERO(&set);
-  //FD_COPY(&state->handleSet,&set);
-  struct timeval timeout = { .tv_sec = 0, .tv_usec = spindump_capture_wait_select };
-  select(state->handleFD + 1, &set, NULL, NULL, &timeout);
+  
+  if (state->waitable) {
+    fd_set set = state->handleSet;
+    struct timeval timeout = { .tv_sec = 0, .tv_usec = spindump_capture_wait_select };
+    select(state->handleFD + 1, &set, NULL, NULL, &timeout);
+  }
   
   struct spindump_packet* packet = &state->currentPacket;
   memset(packet,0,sizeof(*packet));
