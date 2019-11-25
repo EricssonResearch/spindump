@@ -171,7 +171,7 @@ spindump_main_processargs(int argc,
     spindump_deepdeepdebugf("spindump_main_processarg %s", argv[0]);
     if (strcmp(argv[0],"--version") == 0) {
 
-      printf("version 0.70 October 21, 2019\n");
+      printf("version 0.71 November 25, 2019\n");
       exit(0);
 
     } else if (strcmp(argv[0],"--help") == 0) {

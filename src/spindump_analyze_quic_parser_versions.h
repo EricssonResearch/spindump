@@ -74,6 +74,7 @@
 #define spindump_quic_version_quant21          0x45474715
 #define spindump_quic_version_quant22          0x45474716
 #define spindump_quic_version_quant23          0x45474717
+#define spindump_quic_version_quant24          0x45474718
 #define spindump_quic_version_huitema          0x50435131
 #define spindump_quic_version_mozilla          0xf123f0c5
 #define spindump_quic_version_googlemask       0xfff0f0f0

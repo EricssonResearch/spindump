@@ -1308,7 +1308,7 @@ spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(const unsigne
   spindump_deepdeepdebugf("seeking QUIC packets: spindump_analyze_quic_parser_parsemessagelength_versionnegotiation");
   
   //
-  // From the specification:
+  // From the specification (up until -21):
   //
   //  +-+-+-+-+-+-+-+-+
   //  |1|1| 0 |R R|P P|
@@ -1332,6 +1332,34 @@ spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(const unsigne
   //
   //              Figure 10: Version Negotiation Packet
   //
+  // and from -22 onwards:
+  //
+  //    0                   1                   2                   3
+  //    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //   +-+-+-+-+-+-+-+-+
+  //   |1|  Unused (7) |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                          Version (32)                         |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   | DCID Len (8)  |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |               Destination Connection ID (0..2040)           ...
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   | SCID Len (8)  |
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                 Source Connection ID (0..2040)              ...
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                    Supported Version 1 (32)                 ...
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                   [Supported Version 2 (32)]                ...
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //                                  ...
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //   |                   [Supported Version N (32)]                ...
+  //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  //                   Figure 10: Version Negotiation Packet
+  //  
 
   if (payload_len > remainingCaplen) {
     spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length");
