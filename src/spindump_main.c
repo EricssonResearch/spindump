@@ -107,6 +107,7 @@ int main(int argc,char** argv) {
   }
   spindump_seterrordestination(debugfile);
   spindump_deepdeepdebugf("main setup done, now main loop");
+  spindump_deepdeepdebugf("==>main(): SCTP branch enabled!!!");
   
   //
   // Main operation
