@@ -526,6 +526,45 @@ spindump_protocols_tcp_header_decode(const unsigned char* header,
 }
 
 //
+// Decode a SCTP header from the packet bytes starting from the pointer
+// "header". It is assumed to be long enough for the SCTP header, i.e.,
+// the caller must have checked this.  The header as parsed and as
+// converted to host byte order where applicable, is placed in the
+// output parameter "decoded".
+//
+
+void
+spindump_protocols_sctp_header_decode(const unsigned char* header,
+                                     struct spindump_sctp* decoded) {
+
+  //
+  // Sanity checks
+  //
+
+  spindump_assert(header != 0);
+  spindump_assert(decoded != 0);
+
+  //
+  // SCTP header from RFC 4960:
+  //
+  // 0                   1                   2                   3
+  // 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  // |     Source Port Number        |     Destination Port Number   |
+  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  // |                      Verification Tag                         |
+  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  // |                           Checksum                            |
+  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //
+  unsigned int pos = 0;
+  spindump_decode2byteint(decoded->sh_sport,header,pos);     // source port
+  spindump_decode2byteint(decoded->sh_dport,header,pos);     // destination port
+  spindump_decode4byteint(decoded->sh_vtag,header,pos);      // Verification Tag
+  spindump_decode4byteint(decoded->sh_checksum,header,pos);  // Cheksum
+}
+
+//
 // Decode a QUIC header from the packet bytes starting from the pointer
 // "header". It is assumed to be long enough for the DNS header, i.e.,
 // the caller must have checked this.  The header as parsed and as

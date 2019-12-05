@@ -73,6 +73,11 @@ spindump_connection_report_tcp(struct spindump_connection* connection,
                                int anonymize,
                                struct spindump_reverse_dns* querier);
 static void
+spindump_connection_report_sctp(struct spindump_connection* connection,
+                               FILE* file,
+                               int anonymize,
+                               struct spindump_reverse_dns* querier);
+static void
 spindump_connection_report_quic(struct spindump_connection* connection,
                                 FILE* file,
                                 int anonymize,
@@ -126,6 +131,7 @@ const char*
 spindump_connection_type_to_string(enum spindump_connection_type type) {
   switch (type) {
   case spindump_connection_transport_tcp: return("TCP");
+  case spindump_connection_transport_sctp: return("SCTP");
   case spindump_connection_transport_udp: return("UDP");
   case spindump_connection_transport_dns: return("DNS");
   case spindump_connection_transport_coap: return("COAP");
@@ -152,6 +158,9 @@ spindump_connection_string_to_connectiontype(const char* string,
   spindump_assert(type != 0);
   if (strcasecmp(string,"TCP") == 0) {
     *type = spindump_connection_transport_tcp;
+    return(1);
+  } else if (strcasecmp(string,"SCTP") == 0) {
+    *type = spindump_connection_transport_sctp;
     return(1);
   } else if (strcasecmp(string,"UDP") == 0) {
     *type = spindump_connection_transport_udp;
@@ -231,6 +240,27 @@ spindump_connection_report_tcp(struct spindump_connection* connection,
   fprintf(file,"  host 2:                %10s:%u\n",
           spindump_connection_address_tostring(anonymize,&connection->u.tcp.side2peerAddress,querier),
           connection->u.tcp.side2peerPort);
+}
+
+//
+// Print a report of a SCTP connection
+//
+
+static void
+spindump_connection_report_sctp(struct spindump_connection* connection,
+                               FILE* file,
+                               int anonymize,
+                               struct spindump_reverse_dns* querier) {
+  fprintf(file,"  host & port 1:         %10s:%u\n",
+          spindump_connection_address_tostring(anonymize,&connection->u.sctp.side1peerAddress,querier),
+          connection->u.sctp.side1peerPort);
+  fprintf(file,"  host 2:                %10s:%u\n",
+          spindump_connection_address_tostring(anonymize,&connection->u.sctp.side2peerAddress,querier),
+          connection->u.sctp.side2peerPort);
+  fprintf(file,"  side1 VTag:            %u\n",
+          connection->u.sctp.side1Vtag);
+  fprintf(file,"  side2 VTag:            %u\n",
+          connection->u.sctp.side2Vtag);
 }
 
 //
@@ -470,6 +500,9 @@ spindump_connection_report(struct spindump_connection* connection,
   case spindump_connection_transport_tcp:
     spindump_connection_report_tcp(connection,file,anonymize,querier);
     break;
+  case spindump_connection_transport_sctp:
+    spindump_connection_report_sctp(connection,file,anonymize,querier);
+    break;
   case spindump_connection_transport_udp:
     spindump_connection_report_udp(connection,file,anonymize,querier);
     break;
@@ -616,6 +649,15 @@ spindump_connection_addresses(struct spindump_connection* connection,
                      spindump_connection_address_tostring(anonymizeRight,&connection->u.tcp.side2peerAddress,querier),
                      sizeof(buf));
     break;
+  case spindump_connection_transport_sctp:
+    spindump_strlcpy(buf,
+                     spindump_connection_address_tostring(anonymizeLeft,&connection->u.sctp.side1peerAddress,querier),
+                     sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
+    spindump_strlcat(buf,
+                     spindump_connection_address_tostring(anonymizeRight,&connection->u.sctp.side2peerAddress,querier),
+                     sizeof(buf));
+    break;
   case spindump_connection_transport_udp:
     spindump_strlcpy(buf,
                      spindump_connection_address_tostring(anonymizeLeft,&connection->u.udp.side1peerAddress,querier),
@@ -760,7 +802,15 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
              connection->u.tcp.side1peerPort,
              connection->u.tcp.side2peerPort);
     break;
-    
+
+  case spindump_connection_transport_sctp:
+    snprintf(buffer,maxlen-1,"%u:%u (%u:%u)",
+             connection->u.sctp.side1Vtag,
+             connection->u.sctp.side2Vtag,
+             connection->u.sctp.side1peerPort,
+             connection->u.sctp.side2peerPort);
+    break;
+
   case spindump_connection_transport_udp:
     snprintf(buffer,maxlen-1,"%u:%u",
              connection->u.udp.side1peerPort,

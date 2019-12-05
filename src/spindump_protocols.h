@@ -688,6 +688,70 @@ struct spindump_tcp {
 };
 
 //
+// SCTP header from RFC 4960:
+//
+// 0                   1                   2                   3
+// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |     Source Port Number        |     Destination Port Number   |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                      Verification Tag                         |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Checksum                            |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+//
+
+#define spindump_sctp_header_length     (2+2+4+4)
+
+struct spindump_sctp {
+  spindump_port sh_sport;       // source port
+  spindump_port sh_dport;       // destination port
+  uint32_t sh_vtag;             // Verification Tag
+  uint32_t sh_checksum;         // Checksum
+};
+
+//
+// Chunk Field from RFC 4960:
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Chunk Type  | Chunk  Flags  |        Chunk Length           |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                          Chunk Value                          |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+#define spindump_sctp_chunk_header_length     (1+1+2)
+
+struct spindump_sctp_chunk {
+  uint8_t ch_type;       // Chunk Type
+  uint8_t ch_flags;      // Chunk Flags
+  uint16_t ch_length;    // Chunk Length
+  uint32_t ch_value;     // Chunk Value
+};
+
+
+#define spindump_sctp_chunk_type_data               0 // 0x00
+#define spindump_sctp_chunk_type_init               1 // 0x01
+#define spindump_sctp_chunk_type_init_ack           2 // 0x02
+#define spindump_sctp_chunk_type_sack               3 // 0x03
+#define spindump_sctp_chunk_type_heartbeat          4 // 0x04
+#define spindump_sctp_chunk_type_heartbeat_ack      5 // 0x05
+#define spindump_sctp_chunk_type_abort              6 // 0x06
+#define spindump_sctp_chunk_type_shutdown           7 // 0x07
+#define spindump_sctp_chunk_type_shutdown_ack       8 // 0x08
+#define spindump_sctp_chunk_type_error              9 // 0x09
+#define spindump_sctp_chunk_type_cookie_echo        10 // 0x0A
+#define spindump_sctp_chunk_type_cookie_ack         11 // 0x0B
+#define spindump_sctp_chunk_type_ecne               12 // 0x0C
+#define spindump_sctp_chunk_type_cwr                13 // 0x0D
+#define spindump_sctp_chunk_type_shutdown_complete  14 // 0x0E
+#define spindump_sctp_chunk_type_auth               15 // 0x0F
+
+//
 // Draft 17 (and later) high order bits
 //
 
@@ -968,6 +1032,9 @@ spindump_protocols_coap_header_decode(const unsigned char* header,
 void
 spindump_protocols_tcp_header_decode(const unsigned char* header,
                                      struct spindump_tcp* decoded);
+void
+spindump_protocols_sctp_header_decode(const unsigned char* header,
+                                     struct spindump_sctp* decoded);
 void
 spindump_protocols_quic_header_decode(const unsigned char* header,
                                       unsigned char* decoded);

@@ -11,35 +11,27 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2019 BY ERICSSON AB
-//  AUTHOR: MAKSIM PROSHIN, DENIS SCHERBAKOV
+//  SPINDUMP (C) 2018-2019 BY ERICSSON AB
+//  AUTHOR: DENIS SCHERBAKOV
 //
-//
+// 
 
-#ifndef SPINDUMP_ANALYZE_SCTP_H
-#define SPINDUMP_ANALYZE_SCTP_H
+#ifndef SPINDUMP_ANALYZE_SCTP_PARSER_H
+#define SPINDUMP_ANALYZE_SCTP_PARSER_H
 
 //
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include "spindump_analyze.h"
+//
+// Convenient macros --------------------------------------------------------------------------
+//
 
 //
 // External API interface to this module ------------------------------------------------------
 //
-
 void
-spindump_analyze_process_sctp(struct spindump_analyze* table,
-                             struct spindump_packet* packet,
-                             unsigned int ipHeaderPosition,
-                             unsigned int ipHeaderSize,
-                             uint8_t ipVersion,
-                             uint8_t ecnFlags,
-                             unsigned int ipPacketLength,
-                             unsigned int sctpHeaderPosition,
-                             unsigned int sctpLength,
-                             unsigned int remainingCaplen,
-                             struct spindump_connection** p_connection);
+spindump_protocols_sctp_chunk_header_parse(const unsigned char* header,
+                                     struct spindump_sctp_chunk* decoded);
 
-#endif // SPINDUMP_ANALYZE_SCTP_H
+#endif // SPINDUMP_ANALYZE_SCTP_PARSER_H

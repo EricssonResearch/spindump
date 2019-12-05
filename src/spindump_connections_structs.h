@@ -54,6 +54,7 @@ enum spindump_connection_type {
   spindump_connection_transport_coap,
   spindump_connection_transport_quic,
   spindump_connection_transport_icmp,
+  spindump_connection_transport_sctp,
   spindump_connection_aggregate_hostpair,
   spindump_connection_aggregate_hostnetwork,
   spindump_connection_aggregate_networknetwork,
@@ -137,6 +138,21 @@ struct spindump_connection {
       int finFromSide1;                             // seen a FIN from side1?
       int finFromSide2;                             // seen a FIN from side2?
     } tcp;
+
+    struct {
+      spindump_address side1peerAddress;            // source address for the initial packet
+      spindump_address side2peerAddress;            // destination address for the initial packet
+      spindump_port side1peerPort;                  // source port for the initial packe
+      spindump_port side2peerPort;                  // destination port for the initial packet
+      uint32_t side1Vtag;                           // Vtag of association for side1
+      uint32_t side2Vtag;                           // Vtag of association for side2
+      struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
+      struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
+      //uint8_t padding[4];                           // unused
+      // TODO: Denis S: implement SCTP specific TSN tracker and add two trackers below
+      //struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
+      //struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
+    } sctp;
 
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet

@@ -117,6 +117,10 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
     spindump_seqtracker_initialize(&connection->u.tcp.side2Seqs);
     break;
 
+  case spindump_connection_transport_sctp:
+    // TODO: Denis S: initialize trackers for TSNs
+    break;
+  
   case spindump_connection_transport_udp:
     break;
 
@@ -227,6 +231,7 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
 
         case spindump_connection_transport_udp:
         case spindump_connection_transport_tcp:
+        case spindump_connection_transport_sctp:
         case spindump_connection_transport_quic:
         case spindump_connection_transport_dns:
         case spindump_connection_transport_coap:
@@ -392,6 +397,41 @@ spindump_connections_newconnection_tcp(const spindump_address* side1address,
   spindump_connections_newconnection_addtoaggregates(connection,table);
   
   spindump_debugf("created a new TCP connection %u", connection->id);
+  return(connection);
+}
+
+// TODO: Denis S: probably VTAgs as parameters shall be present in function definition
+//
+// Create a new connection for an SCTP flow that has been observed in
+// the network.
+// 
+
+struct spindump_connection*
+spindump_connections_newconnection_sctp(const spindump_address* side1address,
+                                       const spindump_address* side2address,
+                                       spindump_port side1port,
+                                       spindump_port side2port,
+                                       const struct timeval* when,
+                                       struct spindump_connectionstable* table) {
+  
+  spindump_assert(side1address != 0);
+  spindump_assert(side2address != 0);
+  spindump_assert(table != 0);
+  
+  struct spindump_connection* connection =
+    spindump_connections_newconnection(table,spindump_connection_transport_sctp,when,0);
+  if (connection == 0) return(0);
+  
+  connection->state = spindump_connection_state_establishing;
+  connection->u.sctp.side1peerAddress = *side1address;
+  connection->u.sctp.side2peerAddress = *side2address;
+  connection->u.sctp.side1peerPort = side1port;
+  connection->u.sctp.side2peerPort = side2port;
+  connection->u.sctp.side1Vtag = 0;
+  connection->u.sctp.side2Vtag = 0;
+  spindump_connections_newconnection_addtoaggregates(connection,table);
+  
+  spindump_debugf("created a new SCTP connection %u", connection->id);
   return(connection);
 }
 
@@ -693,6 +733,9 @@ spindump_connections_delete(struct spindump_connection* connection) {
     spindump_seqtracker_uninitialize(&connection->u.tcp.side2Seqs);
     break;
     
+  case spindump_connection_transport_sctp:
+    break;
+
   case spindump_connection_transport_udp:
     break;
     
