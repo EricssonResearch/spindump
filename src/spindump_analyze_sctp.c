@@ -269,6 +269,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                           packet,
                                           connection,
                                           spindump_connection_state_closed);
+          spindump_connections_markconnectiondeleted(connection);
         }
 
         spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
@@ -304,6 +305,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                           packet,
                                           connection,
                                           spindump_connection_state_closed);
+          spindump_connections_markconnectiondeleted(connection);
         }
 
         spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
@@ -339,6 +341,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                           packet,
                                           connection,
                                           spindump_connection_state_closed);
+          spindump_connections_markconnectiondeleted(connection);
         }
 
         spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
