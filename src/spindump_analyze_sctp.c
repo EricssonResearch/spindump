@@ -108,7 +108,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   spindump_analyze_getdestination(packet,ipVersion,ipHeaderPosition,&destination);
   uint16_t side1port = sctp.sh_sport;
   uint16_t side2port = sctp.sh_dport;
-  //int fromResponder;
+  int fromResponder;  // to be used in spindump_connections_searchconnection_sctp_either()
 
   //
   // Debugs
@@ -157,10 +157,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       //
 
       connection = spindump_connections_searchconnection_sctp(&source,
-                                                           &destination,
-                                                           side1port,
-                                                           side2port,
-                                                           state->table);
+                                                              &destination,
+                                                              side1port,
+                                                              side2port,
+                                                              state->table);
       //
       // If found, change state to established. If not found, ignore.
       //
@@ -169,16 +169,19 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
         if (connection->state == spindump_connection_state_establishing) {
           spindump_connections_changestate(state,
-                                         packet,
-                                         connection,
-                                         spindump_connection_state_established);
-          spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
-          *p_connection = connection;
+                                           packet,
+                                           connection,
+                                           spindump_connection_state_established);
         }
-      
+
+        spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
+        *p_connection = connection;
+
       } else {
 
         state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
 
       }
       break;
@@ -188,39 +191,166 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       //
 
       connection = spindump_connections_searchconnection_sctp(&destination,
-                                                           &source,
-                                                           side2port,
-                                                           side1port,
-                                                           state->table);
+                                                              &source,
+                                                              side2port,
+                                                              side1port,
+                                                              state->table);
       //
       // If found, update stats. If not found, ignore.
       //
 
       if (connection != 0) {
 
-        if (connection->state == spindump_connection_state_established) {
-          spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
-          *p_connection = connection;
-        }
+        spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
+        *p_connection = connection;
 
       } else {
 
         state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
 
       }
-      // TODO: Denis S: keep connection in established state
       break;
     case spindump_sctp_chunk_type_shutdown:
-      // TODO: Denis S: change connection state to closing
+      //
+      // First, look for existing connection
+      //
+
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                    &destination,
+                                                                    side1port,
+                                                                    side2port,
+                                                                    state->table,
+                                                                    &fromResponder);
+      //
+      // If found, change state to established. If not found, ignore.
+      //
+
+      if (connection != 0) {
+
+        if (connection->state == spindump_connection_state_established) {
+          spindump_connections_changestate(state,
+                                          packet,
+                                          connection,
+                                          spindump_connection_state_closing);
+        }
+
+        spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+        *p_connection = connection;
+
+      } else {
+
+        state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
+
+      }
       break;
     case spindump_sctp_chunk_type_shutdown_complete:
-      // TODO: Denis S: change connection state to closed
+      //
+      // First, look for existing connection
+      //
+
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                    &destination,
+                                                                    side1port,
+                                                                    side2port,
+                                                                    state->table,
+                                                                    &fromResponder);
+      //
+      // If found, change state to established. If not found, ignore.
+      //
+
+      if (connection != 0) {
+
+        if (connection->state == spindump_connection_state_closing) {
+          spindump_connections_changestate(state,
+                                          packet,
+                                          connection,
+                                          spindump_connection_state_closed);
+        }
+
+        spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+        *p_connection = connection;
+
+      } else {
+
+        state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
+
+      }
       break;
     case spindump_sctp_chunk_type_shutdown_ack:
-      // TODO: Denis S: ignore (connection must be closed or not exists)
+      //
+      // First, look for existing connection
+      //
+
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                    &destination,
+                                                                    side1port,
+                                                                    side2port,
+                                                                    state->table,
+                                                                    &fromResponder);
+      //
+      // If found, change state to established. If not found, ignore.
+      //
+
+      if (connection != 0) {
+
+        if (connection->state != spindump_connection_state_closed) {
+          spindump_connections_changestate(state,
+                                          packet,
+                                          connection,
+                                          spindump_connection_state_closed);
+        }
+
+        spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+        *p_connection = connection;
+
+      } else {
+
+        state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
+
+      }
       break;
     case spindump_sctp_chunk_type_abort:
-      // TODO: Denis S: change connection state to closed
+      //
+      // First, look for existing connection
+      //
+
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                    &destination,
+                                                                    side1port,
+                                                                    side2port,
+                                                                    state->table,
+                                                                    &fromResponder);
+      //
+      // If found, change state to established. If not found, ignore.
+      //
+
+      if (connection != 0) {
+
+        if (connection->state != spindump_connection_state_closed) {
+          spindump_connections_changestate(state,
+                                          packet,
+                                          connection,
+                                          spindump_connection_state_closed);
+        }
+
+        spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+        *p_connection = connection;
+
+      } else {
+
+        state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
+
+      }
       break; 
     case spindump_sctp_chunk_type_data:
       // TODO: Denis S: remember TSN for RTT measurement
