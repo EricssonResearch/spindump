@@ -68,6 +68,7 @@ struct spindump_stats {
   unsigned int notEnoughPacketForTcpHdr;
   unsigned int invalidTcpHdrSize;
   unsigned int unknownTcpConnection;
+  unsigned int unknownSctpConnection;
   unsigned int receivedSctp;
   unsigned int notEnoughPacketForSctpHdr;
   unsigned int protocolNotSupported;

@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2019 BY ERICSSON RESEARCH AB
+//  SPINDUMP (C) 2019 BY ERICSSON AB
 //  AUTHOR: MAKSIM PROSHIN, DENIS SCHERBAKOV
 //
 //
@@ -135,25 +135,80 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                           side2port,
                                                           &packet->timestamp,
                                                           state->table);
+
+        if (connection == 0) {
+          *p_connection = 0;
+          return;
+        }
+        state->stats->connections++;
+        state->stats->connectionsSctp++;
       } // TODO: what if connection exist?
 
-      if (connection == 0) {
-        *p_connection = 0;
-        return;
-      }
+      spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
 
-      state->stats->connections++;
-      state->stats->connectionsSctp++;
       *p_connection = connection;
       break; // INIT
     case spindump_sctp_chunk_type_init_ack:
       // TODO: Denis S: update Vtag in connection
       break;
     case spindump_sctp_chunk_type_cookie_echo:
-      // TODO: Denis S: update Vtag in connection
+      //
+      // First, look for existing connection
+      //
+
+      connection = spindump_connections_searchconnection_sctp(&source,
+                                                           &destination,
+                                                           side1port,
+                                                           side2port,
+                                                           state->table);
+      //
+      // If found, change state to established. If not found, ignore.
+      //
+
+      if (connection != 0) {
+
+        if (connection->state == spindump_connection_state_establishing) {
+          spindump_connections_changestate(state,
+                                         packet,
+                                         connection,
+                                         spindump_connection_state_established);
+          spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
+          *p_connection = connection;
+        }
+      
+      } else {
+
+        state->stats->unknownSctpConnection++;
+
+      }
       break;
     case spindump_sctp_chunk_type_cookie_ack:
-      // TODO: Denis S: change connection state to established
+      //
+      // First, look for existing connection
+      //
+
+      connection = spindump_connections_searchconnection_sctp(&destination,
+                                                           &source,
+                                                           side2port,
+                                                           side1port,
+                                                           state->table);
+      //
+      // If found, update stats. If not found, ignore.
+      //
+
+      if (connection != 0) {
+
+        if (connection->state == spindump_connection_state_established) {
+          spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
+          *p_connection = connection;
+        }
+
+      } else {
+
+        state->stats->unknownSctpConnection++;
+
+      }
+      // TODO: Denis S: keep connection in established state
       break;
     case spindump_sctp_chunk_type_shutdown:
       // TODO: Denis S: change connection state to closing
@@ -161,6 +216,12 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
     case spindump_sctp_chunk_type_shutdown_complete:
       // TODO: Denis S: change connection state to closed
       break;
+    case spindump_sctp_chunk_type_shutdown_ack:
+      // TODO: Denis S: ignore (connection must be closed or not exists)
+      break;
+    case spindump_sctp_chunk_type_abort:
+      // TODO: Denis S: change connection state to closed
+      break; 
     case spindump_sctp_chunk_type_data:
       // TODO: Denis S: remember TSN for RTT measurement
       break;
