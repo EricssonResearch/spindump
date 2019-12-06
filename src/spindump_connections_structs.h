@@ -32,6 +32,7 @@
 #include "spindump_rtt.h"
 #include "spindump_seq.h"
 #include "spindump_mid.h"
+#include "spindump_sctp_tsn.h"
 #include "spindump_bandwidth.h"
 #include "spindump_spin_structs.h"
 #include "spindump_rtloss_structs.h"
@@ -146,12 +147,9 @@ struct spindump_connection {
       spindump_port side2peerPort;                  // destination port for the initial packet
       uint32_t side1Vtag;                           // Vtag of association for side1
       uint32_t side2Vtag;                           // Vtag of association for side2
-      struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
-      struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
+      struct spindump_tsntracker side1Seqs;         // when did we see sequence numbers from side1?
+      struct spindump_tsntracker side2Seqs;         // when did we see sequence numbers from side2?
       //uint8_t padding[4];                           // unused
-      // TODO: Denis S: implement SCTP specific TSN tracker and add two trackers below
-      //struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
-      //struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
     } sctp;
 
     struct {

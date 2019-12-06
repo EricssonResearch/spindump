@@ -755,10 +755,10 @@ struct spindump_sctp_chunk_header {
 struct spindump_sctp_chunk_init {
   struct spindump_sctp_chunk_header header;
   uint32_t initiateTag;             // Initiate Tag
-  uint32_t arwnd; 
+  uint32_t arwnd;
   uint16_t outStreams;
-  uint16_t inStreams; 
-  uint32_t initTsn; 
+  uint16_t inStreams;
+  uint32_t initTsn;
   // optional parameters follow
 };
 
@@ -766,11 +766,78 @@ struct spindump_sctp_chunk_init {
 struct spindump_sctp_chunk_init_ack {
   struct spindump_sctp_chunk_header header;
   uint32_t initiateTag;             // Initiate Tag
-  uint32_t arwnd; 
+  uint32_t arwnd;
   uint16_t outStreams;
-  uint16_t inStreams; 
-  uint32_t initTsn; 
+  uint16_t inStreams;
+  uint32_t initTsn;
   // optional parameters follow
+};
+
+//
+// DATA chunk from RFC 4960:
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 0    | Reserved|U|B|E|    Length                     |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                              TSN                              |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |      Stream Identifier S      |   Stream Sequence Number n    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                  Payload Protocol Identifier                  |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                 User Data (seq n of Stream S)                 |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+struct spindump_sctp_chunk_data {
+  struct spindump_sctp_chunk_header header;
+  uint32_t tsn;
+  uint16_t streamId;
+  uint16_t streamSn;
+  uint32_t payloadProtoId;
+  // user data below
+};
+
+// TODO: Denis S: Implement Gaps and Duplicate TSNs
+//
+// SACK chunk from RFC 4960:
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 3    |Chunk  Flags   |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                      Cumulative TSN Ack                       |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |          Advertised Receiver Window Credit (a_rwnd)           |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  | Number of Gap Ack Blocks = N  |  Number of Duplicate TSNs = X |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Gap Ack Block #1 Start       |   Gap Ack Block #1 End        |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                              ...                              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Gap Ack Block #N Start      |  Gap Ack Block #N End         |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                       Duplicate TSN 1                         |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                              ...                              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                       Duplicate TSN X                         |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+struct spindump_sctp_chunk_sack {
+  struct spindump_sctp_chunk_header header;
+  uint32_t cumulativeTsnAck;
+  uint32_t arwnd;
+  uint16_t nGapAckBlock;
+  uint16_t nDupTsn;
+  // Gaps and Duplicate TSNs below
 };
 
 //

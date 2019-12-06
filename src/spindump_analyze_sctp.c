@@ -31,9 +31,129 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
+static void
+spindump_analyze_process_sctp_marktsnsent(struct spindump_connection* connection,
+                                          int fromResponder,
+                                          sctp_tsn tsn,
+                                          struct timeval* t);
+static void
+spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
+                                              struct spindump_packet* packet,
+                                              struct spindump_connection* connection,
+                                              int fromResponder,
+                                              sctp_tsn ackTsn,
+                                              struct timeval* t);
+
 //
 // Actual code --------------------------------------------------------------------------------
 //
+
+//
+// Mark the sending of a TSN from one of the peers.
+//
+// If fromResponder = 1, the sending party is the server of the
+// connection, if fromResponder = 0, it is the client. Based on
+// this TSN one can track RTT later when an ACK is received.
+//
+static void
+spindump_analyze_process_sctp_marktsnsent(struct spindump_connection* connection,
+                                          int fromResponder,
+                                          sctp_tsn tsn,
+                                          struct timeval* t) {
+
+  spindump_assert(connection != 0);
+  spindump_assert(spindump_isbool(fromResponder));
+  spindump_assert(t != 0);
+  if (fromResponder) {
+    spindump_tsntracker_add(&connection->u.sctp.side2Seqs,t,tsn);
+    spindump_deepdebugf("responder sent TSN %u", tsn);
+  } else {
+    spindump_tsntracker_add(&connection->u.sctp.side1Seqs,t,tsn);
+    spindump_deepdebugf("initiator sent TSN %u", tsn);
+  }
+}
+
+//
+// Mark the reception of a TSN number ACK from one of the peers.
+//
+// If fromResponder = 1, the ACKing party is the server of the
+// connection, if fromResponder = 0, it is the client. Seq is the
+// sequence number from the other party that is being acked. Based on
+// this sequence one can track RTT.
+//
+static void
+spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
+                                              struct spindump_packet* packet,
+                                              struct spindump_connection* connection,
+                                              int fromResponder,
+                                              sctp_tsn ackTsn,
+                                              struct timeval* t) {
+  struct timeval* ackto;
+  sctp_tsn sentTsn;
+  spindump_assert(state != 0);
+  spindump_assert(connection != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(spindump_isbool(fromResponder));
+  spindump_assert(t != 0);
+  if (fromResponder) {
+    ackto = spindump_tsntracker_ackto(&connection->u.sctp.side1Seqs,ackTsn,&sentTsn);
+    if (ackto != 0) {
+
+      spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived");
+      unsigned long long diff = spindump_timediffinusecs(t,ackto);
+      spindump_deepdebugf("the responder SACK %u refers to initiator SCTP message (TSN=%u) that came %llu ms earlier",
+                          ackTsn,
+                          sentTsn,
+                          diff / 1000);
+      // TODO: Denis S: either uncomment existing RTT measurement function
+      //       or create new one
+      /*
+      spindump_connections_newrttmeasurement(state,
+                                             packet,
+                                             connection,
+                                             1,
+                                             0,
+                                             ackto,
+                                             t,
+                                             "SCTP SACK");
+      */
+
+    } else {
+
+      spindump_deepdebugf("did not find the initiator SCTP message that responder SACK %u refers to", ackTsn);
+
+    }
+  } else {
+    ackto = spindump_tsntracker_ackto(&connection->u.sctp.side2Seqs,ackTsn,&sentTsn);
+
+    if (ackto != 0) {
+
+      spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived 2");
+      unsigned long long diff = spindump_timediffinusecs(t,ackto);
+      spindump_deepdebugf("the initiator SACK %u refers to responder SCTP message (TSN=%u) that came %llu ms earlier",
+                          ackTsn,
+                          sentTsn,
+                          diff / 1000);
+      // TODO: Denis S: either uncomment existing RTT measurement function
+      //       or create new one
+      /*
+      spindump_connections_newrttmeasurement(state,
+                                             packet,
+                                             connection,
+                                             0,
+                                             0,
+                                             ackto,
+                                             t,
+                                             "TCP ACK");
+      */
+
+    } else {
+
+      spindump_deepdebugf("did not find the responder SCTP message that initiator SACK %u refers to", ackTsn);
+
+    }
+  }
+}
 
 // TODO: Maksim Proshin: fix the function
 //
@@ -126,7 +246,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       struct spindump_sctp_chunk_init sctp_chunk_init;
       spindump_protocols_sctp_chunk_init_parse(
           packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, 
-	  &sctp_chunk_init);
+          &sctp_chunk_init);
         
       // search the connection
       // it can be created from any side so we need to find it in both directions
@@ -135,7 +255,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                      side1port,
                                                                      side2port,
                                                                      state->table,
-								     &fromResponder);
+                                                                     &fromResponder);
       //
       // If not found, create a new one
       //
@@ -144,16 +264,17 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                           &destination,
                                                           side1port,
                                                           side2port,
-							  sctp_chunk_init.initiateTag,
+                                                          sctp_chunk_init.initiateTag,
                                                           &packet->timestamp,
                                                           state->table);
       } 
       else {
           // update side1Vtag for the existing connection if INIT was retransmitted
-	  if (fromResponder == 0) {
-	      connection->u.sctp.side1Vtag = sctp_chunk_init.initiateTag;
-	  }
-	  // TODO: Maksim Proshin: what if INIT has been received from the other side
+          if (fromResponder == 0)
+          {
+            connection->u.sctp.side1Vtag = sctp_chunk_init.initiateTag;
+          }
+          // TODO: Maksim Proshin: what if INIT has been received from the other side
       }
 
       spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
@@ -172,7 +293,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                      side1port,
                                                                      side2port,
                                                                      state->table,
-								     &fromResponder);
+                                                                     &fromResponder);
       //
       // If found, parse the chunk, update side2.vTag and stats. If not found, ignore.
       //
@@ -182,11 +303,11 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         struct spindump_sctp_chunk_init_ack sctp_chunk_init_ack;
         spindump_protocols_sctp_chunk_init_ack_parse(
           packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, 
-	  &sctp_chunk_init_ack);
+          &sctp_chunk_init_ack);
 
         connection->u.sctp.side2Vtag = sctp_chunk_init_ack.initiateTag;
-	
-	spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
+
+        spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
         *p_connection = connection;
 
       } else {
@@ -208,7 +329,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                      side1port,
                                                                      side2port,
                                                                      state->table,
-								     &fromResponder);
+                                                                     &fromResponder);
       //
       // If found, change state to established. If not found, ignore.
       //
@@ -245,7 +366,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                      side1port,
                                                                      side2port,
                                                                      state->table,
-								     &fromResponder);
+                                                                     &fromResponder);
       //
       // If found, update stats. If not found, ignore.
       //
@@ -275,7 +396,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                     state->table,
                                                                     &fromResponder);
       //
-      // If found, change state to established. If not found, ignore.
+      // If found, change state to closing. If not found, ignore.
       //
 
       if (connection != 0) {
@@ -310,7 +431,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                     state->table,
                                                                     &fromResponder);
       //
-      // If found, change state to established. If not found, ignore.
+      // If found, change state to closed. If not found, ignore.
       //
 
       if (connection != 0) {
@@ -346,7 +467,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                     state->table,
                                                                     &fromResponder);
       //
-      // If found, change state to established. If not found, ignore.
+      // If found, change state to closed. If not found, ignore.
       //
 
       if (connection != 0) {
@@ -371,6 +492,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       }
       break;
     case spindump_sctp_chunk_type_abort:
+      // ABORT
       //
       // First, look for existing connection
       //
@@ -382,7 +504,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                                     state->table,
                                                                     &fromResponder);
       //
-      // If found, change state to established. If not found, ignore.
+      // If found, change state to closed. If not found, ignore.
       //
 
       if (connection != 0) {
@@ -405,15 +527,79 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         return;
 
       }
-      break; 
+      break; // ABORT
     case spindump_sctp_chunk_type_data:
-      // TODO: Denis S: remember TSN for RTT measurement
-      break;
+      // DATA
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                    &destination,
+                                                                    side1port,
+                                                                    side2port,
+                                                                    state->table,
+                                                                    &fromResponder);
+
+      if (connection != 0) {
+        ;  // TODO: Maksim Proshin: fix this trick to avoid a C-lang error about the label 
+        struct spindump_sctp_chunk_data sctp_chunk_data;
+        spindump_protocols_sctp_chunk_data_parse(
+            packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, 
+            &sctp_chunk_data);
+        spindump_analyze_process_pakstats(state,
+                                        connection,
+                                        fromResponder,
+                                        packet,
+                                        ipPacketLength,
+                                        ecnFlags);
+        spindump_analyze_process_sctp_marktsnsent(connection,
+                                                fromResponder,
+                                                sctp_chunk_data.tsn,
+                                                &packet->timestamp);
+
+        *p_connection = connection;
+      } else {
+
+        state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
+
+      }
+      break; // DATA
     case spindump_sctp_chunk_type_sack:
-      // TODO: Denis S: RTT measurement for ack'ed TSN
-      break;
+      // SACK
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                    &destination,
+                                                                    side1port,
+                                                                    side2port,
+                                                                    state->table,
+                                                                    &fromResponder);
+      if (connection != 0) {
+        ;  // TODO: Maksim Proshin: fix this trick to avoid a C-lang error about the label 
+        struct spindump_sctp_chunk_sack sctp_chunk_sack;
+        spindump_protocols_sctp_chunk_sack_parse(
+            packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, 
+            &sctp_chunk_sack);
+        spindump_analyze_process_pakstats(state,
+                                          connection,
+                                          fromResponder,
+                                          packet,
+                                          ipPacketLength,
+                                          ecnFlags);
+        spindump_analyze_process_sctp_markackreceived(state,
+                                                      packet,
+                                                      connection,
+                                                      fromResponder,
+                                                      sctp_chunk_sack.cumulativeTsnAck,
+                                                      &packet->timestamp);
+        *p_connection = connection;
+      } else {
+
+        state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
+
+      }
+      break; // SACK
   }
 
-  // TODO: remove below
+  // TODO: add additional event handler invocation below
   return;
 }

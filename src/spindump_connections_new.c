@@ -28,6 +28,7 @@
 #include <netinet/icmp6.h>
 #include "spindump_util.h"
 #include "spindump_seq.h"
+#include "spindump_sctp_tsn.h"
 #include "spindump_rtt.h"
 #include "spindump_spin_structs.h"
 #include "spindump_connections.h"
@@ -118,7 +119,8 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
     break;
 
   case spindump_connection_transport_sctp:
-    // TODO: Denis S: initialize trackers for TSNs
+    spindump_tsntracker_initialize(&connection->u.sctp.side1Seqs);
+    spindump_tsntracker_initialize(&connection->u.sctp.side2Seqs);
     break;
   
   case spindump_connection_transport_udp:
@@ -408,12 +410,12 @@ spindump_connections_newconnection_tcp(const spindump_address* side1address,
 
 struct spindump_connection*
 spindump_connections_newconnection_sctp(const spindump_address* side1address,
-                                       const spindump_address* side2address,
-                                       spindump_port side1port,
-                                       spindump_port side2port,
-				       uint32_t side1Vtag,
-                                       const struct timeval* when,
-                                       struct spindump_connectionstable* table) {
+                                        const spindump_address* side2address,
+                                        spindump_port side1port,
+                                        spindump_port side2port,
+                                        uint32_t side1Vtag,
+                                        const struct timeval* when,
+                                        struct spindump_connectionstable* table) {
   
   spindump_assert(side1address != 0);
   spindump_assert(side2address != 0);
@@ -735,6 +737,8 @@ spindump_connections_delete(struct spindump_connection* connection) {
     break;
     
   case spindump_connection_transport_sctp:
+    spindump_tsntracker_uninitialize(&connection->u.sctp.side1Seqs);
+    spindump_tsntracker_uninitialize(&connection->u.sctp.side2Seqs);
     break;
 
   case spindump_connection_transport_udp:
