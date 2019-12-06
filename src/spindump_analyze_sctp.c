@@ -130,12 +130,12 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         
       // search the connection
       // it can be created from any side so we need to find it in both directions
-      // TODO: Maksim Proshin: use either search instead
-      connection = spindump_connections_searchconnection_sctp(&source,
-                                                           &destination,
-                                                           side1port,
-                                                           side2port,
-                                                           state->table);
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                     &destination,
+                                                                     side1port,
+                                                                     side2port,
+                                                                     state->table,
+								     &fromResponder);
       //
       // If not found, create a new one
       //
@@ -149,7 +149,11 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                           state->table);
       } 
       else {
-          // TODO: update side1Vtag for the existing connection
+          // update side1Vtag for the existing connection if INIT was retransmitted
+	  if (fromResponder == 0) {
+	      connection->u.sctp.side1Vtag = sctp_chunk_init.initiateTag;
+	  }
+	  // TODO: Maksim Proshin: what if INIT has been received from the other side
       }
 
       spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
