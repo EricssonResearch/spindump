@@ -161,18 +161,47 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       *p_connection = connection;
       break; // INIT
     case spindump_sctp_chunk_type_init_ack:
-      // TODO: Denis S: update Vtag in connection
-      break;
-    case spindump_sctp_chunk_type_cookie_echo:
+      // INIT ACK
+      
       //
       // First, look for existing connection
       //
 
-      connection = spindump_connections_searchconnection_sctp(&source,
-                                                              &destination,
-                                                              side1port,
-                                                              side2port,
-                                                              state->table);
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                     &destination,
+                                                                     side1port,
+                                                                     side2port,
+                                                                     state->table,
+								     &fromResponder);
+      //
+      // If found, parse the chunk, update side2.vTag and stats. If not found, ignore.
+      //
+
+      if (connection != 0) {
+
+        spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
+        *p_connection = connection;
+
+      } else {
+
+        state->stats->unknownSctpConnection++;
+        *p_connection = 0;
+        return;
+      }
+      break;  // INIT ACK
+    case spindump_sctp_chunk_type_cookie_echo:
+      // COOKIE ECHO
+      
+      //
+      // First, look for existing connection
+      //
+
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                     &destination,
+                                                                     side1port,
+                                                                     side2port,
+                                                                     state->table,
+								     &fromResponder);
       //
       // If found, change state to established. If not found, ignore.
       //
@@ -196,17 +225,20 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         return;
 
       }
-      break;
+      break;  // COOKIE ECHO
     case spindump_sctp_chunk_type_cookie_ack:
+      // COOKIE ACK
+      
       //
       // First, look for existing connection
       //
 
-      connection = spindump_connections_searchconnection_sctp(&destination,
-                                                              &source,
-                                                              side2port,
-                                                              side1port,
-                                                              state->table);
+      connection = spindump_connections_searchconnection_sctp_either(&source,
+                                                                     &destination,
+                                                                     side1port,
+                                                                     side2port,
+                                                                     state->table,
+								     &fromResponder);
       //
       // If found, update stats. If not found, ignore.
       //
@@ -223,7 +255,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         return;
 
       }
-      break;
+      break;  // COOKIE ACK
     case spindump_sctp_chunk_type_shutdown:
       //
       // First, look for existing connection

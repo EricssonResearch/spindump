@@ -758,6 +758,18 @@ struct spindump_sctp_chunk_init {
   uint16_t outStreams;
   uint16_t inStreams; 
   uint32_t initTsn; 
+  // optional parameters follow
+};
+
+// TODO: Maksim Proshin: add INIT ACK description
+struct spindump_sctp_chunk_init_ack {
+  struct spindump_sctp_chunk_header header;
+  uint32_t initiateTag;             // Initiate Tag
+  uint32_t arwnd; 
+  uint16_t outStreams;
+  uint16_t inStreams; 
+  uint32_t initTsn; 
+  // optional parameters follow
 };
 
 //
