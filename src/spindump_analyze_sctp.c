@@ -178,8 +178,15 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       //
 
       if (connection != 0) {
+      
+        struct spindump_sctp_chunk_init_ack sctp_chunk_init_ack;
+        spindump_protocols_sctp_chunk_init_ack_parse(
+          packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, 
+	  &sctp_chunk_init_ack);
 
-        spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
+        connection->u.sctp.side2Vtag = sctp_chunk_init_ack.initiateTag;
+	
+	spindump_analyze_process_pakstats(state,connection,1,packet,ipPacketLength,ecnFlags);
         *p_connection = connection;
 
       } else {

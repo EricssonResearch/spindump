@@ -38,4 +38,8 @@ void
 spindump_protocols_sctp_chunk_init_parse(const unsigned char* header,
                                          struct spindump_sctp_chunk_init* decoded);
 
+void
+spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* header,
+                                             struct spindump_sctp_chunk_init_ack* decoded);
+
 #endif // SPINDUMP_ANALYZE_SCTP_PARSER_H

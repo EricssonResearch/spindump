@@ -730,6 +730,7 @@ struct spindump_sctp_chunk_header {
   uint8_t ch_type;       // Chunk Type
   uint8_t ch_flags;      // Chunk Flags
   uint16_t ch_length;    // Chunk Length
+  // Chunk Value follows
 };
 
 
