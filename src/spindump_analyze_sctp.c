@@ -76,14 +76,14 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   //
 
   state->stats->receivedSctp++;
-  if (sctpLength < (spindump_sctp_header_length + spindump_sctp_chunk_header_length) ||
-    remainingCaplen < (spindump_sctp_header_length + spindump_sctp_chunk_header_length) ) {
+  if (sctpLength < (spindump_sctp_packet_header_length + spindump_sctp_chunk_header_length) ||
+    remainingCaplen < (spindump_sctp_packet_header_length + spindump_sctp_chunk_header_length) ) {
     state->stats->notEnoughPacketForSctpHdr++;
     spindump_warnf("not enough payload bytes for a SCTP header", sctpLength);
     *p_connection = 0;
     return;
   }
-  struct spindump_sctp sctp;
+  struct spindump_sctp_packet_header sctp;
   spindump_protocols_sctp_header_decode(packet->contents + sctpHeaderPosition,&sctp);
   spindump_deepdebugf("sctp header: sport = %u", sctp.sh_sport);
   spindump_deepdebugf("sctp header: dport = %u", sctp.sh_dport);
@@ -92,14 +92,14 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
   //
   // Check what chunks are present in packet,
-  // create or delete the connection accordingly
+  // create, update or delete the connection accordingly
   //
-  struct spindump_sctp_chunk sctp_chunk;
+  struct spindump_sctp_chunk_header sctp_chunk_header;
   spindump_protocols_sctp_chunk_header_parse(
-      packet->contents + sctpHeaderPosition + spindump_sctp_header_length, &sctp_chunk);
-  spindump_deepdebugf("sctp chunk: type = %u", sctp_chunk.ch_type);
-  spindump_deepdebugf("sctp chunk: flags = %u", sctp_chunk.ch_flags);
-  spindump_deepdebugf("sctp chunk: length = %u", sctp_chunk.ch_length);
+      packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, &sctp_chunk_header);
+  spindump_deepdebugf("sctp chunk: type = %u", sctp_chunk_header.ch_type);
+  spindump_deepdebugf("sctp chunk: flags = %u", sctp_chunk_header.ch_flags);
+  spindump_deepdebugf("sctp chunk: length = %u", sctp_chunk_header.ch_length);
 
   struct spindump_connection* connection = 0;
   spindump_address source;
@@ -117,9 +117,20 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   spindump_debugf("saw packet from %s (ports %u:%u)",
                   spindump_address_tostring(&source), side1port, side2port);
 
-  switch (sctp_chunk.ch_type) {
+  switch (sctp_chunk_header.ch_type) {
     case spindump_sctp_chunk_type_init:
       // INIT
+      
+      // parse the chunk
+      ;  // TODO: Maksim Proshin: fix this trick to avoid a C-lang error about the label 
+      struct spindump_sctp_chunk_init sctp_chunk_init;
+      spindump_protocols_sctp_chunk_init_parse(
+          packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, 
+	  &sctp_chunk_init);
+        
+      // search the connection
+      // it can be created from any side so we need to find it in both directions
+      // TODO: Maksim Proshin: use either search instead
       connection = spindump_connections_searchconnection_sctp(&source,
                                                            &destination,
                                                            side1port,
@@ -133,16 +144,13 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                           &destination,
                                                           side1port,
                                                           side2port,
+							  sctp_chunk_init.initiateTag,
                                                           &packet->timestamp,
                                                           state->table);
-
-        if (connection == 0) {
-          *p_connection = 0;
-          return;
-        }
-        state->stats->connections++;
-        state->stats->connectionsSctp++;
-      } // TODO: what if connection exist?
+      } 
+      else {
+          // TODO: update side1Vtag for the existing connection
+      }
 
       spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
 

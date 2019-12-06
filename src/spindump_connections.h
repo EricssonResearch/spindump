@@ -84,6 +84,7 @@ spindump_connections_newconnection_sctp(const spindump_address* side1address,
                                        const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
+				       uint32_t side1Vtag,
                                        const struct timeval* when,
                                        struct spindump_connectionstable* table);
 struct spindump_connection*

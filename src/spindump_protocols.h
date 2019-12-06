@@ -702,9 +702,9 @@ struct spindump_tcp {
 //
 //
 
-#define spindump_sctp_header_length     (2+2+4+4)
+#define spindump_sctp_packet_header_length     (2+2+4+4)
 
-struct spindump_sctp {
+struct spindump_sctp_packet_header {
   spindump_port sh_sport;       // source port
   spindump_port sh_dport;       // destination port
   uint32_t sh_vtag;             // Verification Tag
@@ -726,11 +726,10 @@ struct spindump_sctp {
 
 #define spindump_sctp_chunk_header_length     (1+1+2)
 
-struct spindump_sctp_chunk {
+struct spindump_sctp_chunk_header {
   uint8_t ch_type;       // Chunk Type
   uint8_t ch_flags;      // Chunk Flags
   uint16_t ch_length;    // Chunk Length
-  uint32_t ch_value;     // Chunk Value
 };
 
 
@@ -750,6 +749,16 @@ struct spindump_sctp_chunk {
 #define spindump_sctp_chunk_type_cwr                13 // 0x0D
 #define spindump_sctp_chunk_type_shutdown_complete  14 // 0x0E
 #define spindump_sctp_chunk_type_auth               15 // 0x0F
+
+// TODO: Maksim Proshin: add INIT description
+struct spindump_sctp_chunk_init {
+  struct spindump_sctp_chunk_header header;
+  uint32_t initiateTag;             // Initiate Tag
+  uint32_t arwnd; 
+  uint16_t outStreams;
+  uint16_t inStreams; 
+  uint32_t initTsn; 
+};
 
 //
 // Draft 17 (and later) high order bits
@@ -1034,7 +1043,7 @@ spindump_protocols_tcp_header_decode(const unsigned char* header,
                                      struct spindump_tcp* decoded);
 void
 spindump_protocols_sctp_header_decode(const unsigned char* header,
-                                     struct spindump_sctp* decoded);
+                                     struct spindump_sctp_packet_header* decoded);
 void
 spindump_protocols_quic_header_decode(const unsigned char* header,
                                       unsigned char* decoded);

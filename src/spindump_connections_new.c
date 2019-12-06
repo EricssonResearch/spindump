@@ -411,6 +411,7 @@ spindump_connections_newconnection_sctp(const spindump_address* side1address,
                                        const spindump_address* side2address,
                                        spindump_port side1port,
                                        spindump_port side2port,
+				       uint32_t side1Vtag,
                                        const struct timeval* when,
                                        struct spindump_connectionstable* table) {
   
@@ -427,8 +428,8 @@ spindump_connections_newconnection_sctp(const spindump_address* side1address,
   connection->u.sctp.side2peerAddress = *side2address;
   connection->u.sctp.side1peerPort = side1port;
   connection->u.sctp.side2peerPort = side2port;
-  connection->u.sctp.side1Vtag = 0;
-  connection->u.sctp.side2Vtag = 0;
+  connection->u.sctp.side1Vtag = side1Vtag;  // VTag from INIT chunk
+  connection->u.sctp.side2Vtag = 0;  // VTag from INIT ACK chunk
   spindump_connections_newconnection_addtoaggregates(connection,table);
   
   spindump_debugf("created a new SCTP connection %u", connection->id);

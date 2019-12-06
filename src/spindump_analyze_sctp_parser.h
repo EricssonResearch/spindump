@@ -12,7 +12,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2018-2019 BY ERICSSON AB
-//  AUTHOR: DENIS SCHERBAKOV
+//  AUTHOR: DENIS SCHERBAKOV, MAKSIM PROSHIN
 //
 // 
 
@@ -32,6 +32,10 @@
 //
 void
 spindump_protocols_sctp_chunk_header_parse(const unsigned char* header,
-                                     struct spindump_sctp_chunk* decoded);
+                                           struct spindump_sctp_chunk_header* decoded);
+
+void
+spindump_protocols_sctp_chunk_init_parse(const unsigned char* header,
+                                         struct spindump_sctp_chunk_init* decoded);
 
 #endif // SPINDUMP_ANALYZE_SCTP_PARSER_H

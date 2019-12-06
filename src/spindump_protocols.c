@@ -535,7 +535,7 @@ spindump_protocols_tcp_header_decode(const unsigned char* header,
 
 void
 spindump_protocols_sctp_header_decode(const unsigned char* header,
-                                     struct spindump_sctp* decoded) {
+                                     struct spindump_sctp_packet_header* decoded) {
 
   //
   // Sanity checks

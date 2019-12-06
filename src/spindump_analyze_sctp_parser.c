@@ -12,7 +12,7 @@
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
 //  SPINDUMP (C) 2019 BY ERICSSON AB
-//  AUTHOR: DENIS SCHERBAKOV
+//  AUTHOR: DENIS SCHERBAKOV, MAKSIM PROSHIN
 //
 // 
 
@@ -46,9 +46,24 @@
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 void
 spindump_protocols_sctp_chunk_header_parse(const unsigned char* header,
-                                     struct spindump_sctp_chunk* decoded){
+                                     struct spindump_sctp_chunk_header* decoded){
   unsigned int pos = 0;
   spindump_decodebyte(decoded->ch_type,header,pos);
   spindump_decodebyte(decoded->ch_flags,header,pos);
   spindump_decode2byteint(decoded->ch_length,header,pos);
+}
+
+// TODO: Maksim Proshin: add INIT chunk description and function description
+void
+spindump_protocols_sctp_chunk_init_parse(const unsigned char* header,
+                                     struct spindump_sctp_chunk_init* decoded){
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->header.ch_type,header,pos);           // Chunk Type
+  spindump_decodebyte(decoded->header.ch_flags,header,pos);          // Chunk Flags
+  spindump_decode2byteint(decoded->header.ch_length,header,pos);     // Chunk Length
+  spindump_decode4byteint(decoded->initiateTag,header,pos);          // Initiate Tag
+  spindump_decode4byteint(decoded->arwnd,header,pos);                // Advertised Receiver Window
+  spindump_decode2byteint(decoded->outStreams,header,pos);           // Num of Outbound Streams
+  spindump_decode2byteint(decoded->inStreams,header,pos);            // Num of Inbound Streams
+  spindump_decode4byteint(decoded->initTsn,header,pos);              // Initial TSN
 }
