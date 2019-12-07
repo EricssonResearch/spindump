@@ -37,7 +37,7 @@ Finally, you need to clean up the resources used by the analyzer. Like this:
 
     spindump_analyze_uninitialize(analyzer);
 
-That's the basic usage of the analyzer, using the built-in functions of looking at TCP, QUIC, ICMP, UDP, and DNS connections and their roundtrips.
+That's the basic usage of the analyzer, using the built-in functions of looking at TCP, QUIC, ICMP, UDP, DNS, and SCTP connections and their roundtrips.
 
 The software does not communicate the results in any fashion at this point; any use of the collected information about connections would be up to the program that calls the analyzer; the information is merely collected in an in-memory data structure about current connections. A simple use of the collected information would be to store the data for later statistical analysis, or to summarize in in some fashion, e.g., by looking at average round-trip times to popular destinations.
 
@@ -77,7 +77,7 @@ But in the end, when a handler has been registered, if the noted event occurs th
 
 In the first part of the code above, a handler is registered to be called upon seeing a new RTT measurement being registered. The second part of the code is the implementation of that handler function. In this case, once a measurement has been made, the function "myhandler" is called. The packet that triggered the event (if any) is given by "packet" and the connection it is associated with is "connection". For the connection delete events (as they can come due to timeouts), the packet structure is otherwise empty except for the timestamp (packet->timestamp) of the deletion.
 
-All RTT measurements and other data that may be useful is stored in the connection object. See spindump_connections_struct.h for more information. For instance, the type of the connection (TCP, UDP, QUIC, DNS, ICMP) can be determined by looking at the connection->type field.
+All RTT measurements and other data that may be useful is stored in the connection object. See spindump_connections_struct.h for more information. For instance, the type of the connection (TCP, UDP, QUIC, DNS, ICMP, SCTP) can be determined by looking at the connection->type field.
 
 The RTT data can be accessed also via the connection object. For instance, in the above "myhandler" function one could print an RTT measurement as follows:
 
@@ -120,7 +120,7 @@ See the API functions in the [Analyzer API definition](https://github.com/Ericss
 
 This object represents a single connection observed by the analyzer. The full description of that object needs to be added later, but here are some of the key fields that are relevant:
 
-* connection->type indicates the type of the connection (TCP, ICMP, QUIC, etc)
+* connection->type indicates the type of the connection (TCP, ICMP, QUIC, SCTP, etc)
 * connection->creationTime indicates when the first packet for the connection was seen
 * connection->packetsFromSide1 counts the number of packets sent from the initiator to the responder 
 * connection->packetsFromSide2 counts the number of packets sent from the initiator to the initiator 

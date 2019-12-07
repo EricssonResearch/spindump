@@ -8,7 +8,7 @@ The detailed data structure is as follows:
 
 This object represents a single connection observed by the analyzer. The full description of that object needs to be added later, but here are some of the key fields that are relevant:
 
-* connection->type indicates the type of the connection (TCP, ICMP, QUIC, etc)
+* connection->type indicates the type of the connection (TCP, ICMP, QUIC, SCTP, etc)
 * connection->creationTime indicates when the first packet for the connection was seen
 * connection->packetsFromSide1 counts the number of packets sent from the initiator to the responder 
 * connection->packetsFromSide2 counts the number of packets sent from the initiator to the initiator 

@@ -167,7 +167,7 @@ Called when there's an ECN congestion event from the responder (server) of a con
 
 The library allocates memory as needed using malloc and free, and upon calling the analyzer uninitialization function, no allocated memory remains.
 
-Some of the allocation sizes can be changed in the relevant header files or through -D flag settings in the makefiles. For instance, the default number of sequence numbers stored for tracking TCP ACKs and COAP requests is 50, as defined in src/spindump_seq.h:
+Some of the allocation sizes can be changed in the relevant header files or through -D flag settings in the makefiles. For instance, the default number of sequence numbers stored for tracking TCP ACKs, SCTP SACKs and COAP requests is 50, as defined in src/spindump_seq.h:
 
     #ifndef spindump_seqtracker_nstored
     #define spindump_seqtracker_nstored		50
