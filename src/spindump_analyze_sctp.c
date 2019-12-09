@@ -105,9 +105,7 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
                           ackTsn,
                           sentTsn,
                           diff / 1000);
-      // TODO: Denis S: either uncomment existing RTT measurement function
-      //       or create new one
-      /*
+
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
@@ -116,7 +114,6 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
                                              ackto,
                                              t,
                                              "SCTP SACK");
-      */
 
     } else {
 
@@ -134,9 +131,7 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
                           ackTsn,
                           sentTsn,
                           diff / 1000);
-      // TODO: Denis S: either uncomment existing RTT measurement function
-      //       or create new one
-      /*
+
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
@@ -144,8 +139,7 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
                                              0,
                                              ackto,
                                              t,
-                                             "TCP ACK");
-      */
+                                             "SCTP ACK");
 
     } else {
 
