@@ -88,6 +88,7 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
                                               int fromResponder,
                                               sctp_tsn ackTsn,
                                               struct timeval* t) {
+
   struct timeval* ackto;
   sctp_tsn sentTsn;
   spindump_assert(state != 0);
@@ -95,13 +96,19 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(t != 0);
+
   if (fromResponder) {
     ackto = spindump_tsntracker_ackto(&connection->u.sctp.side1Seqs,ackTsn,&sentTsn);
-    if (ackto != 0) {
+  } else {
+    ackto = spindump_tsntracker_ackto(&connection->u.sctp.side2Seqs,ackTsn,&sentTsn);
+  }
 
-      spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived");
+  spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived, fromResponder: %d", fromResponder);
+
+  if (ackto != 0) {
+
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
-      spindump_deepdebugf("the responder SACK %u refers to initiator SCTP message (TSN=%u) that came %llu ms earlier",
+      spindump_deepdebugf("the SACK %u refers to SCTP message (TSN=%u) that came %llu ms earlier",
                           ackTsn,
                           sentTsn,
                           diff / 1000);
@@ -109,44 +116,18 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
-                                             1,
+                                             fromResponder,
                                              0,
                                              ackto,
                                              t,
                                              "SCTP SACK");
 
-    } else {
-
-      spindump_deepdebugf("did not find the initiator SCTP message that responder SACK %u refers to", ackTsn);
-
-    }
   } else {
-    ackto = spindump_tsntracker_ackto(&connection->u.sctp.side2Seqs,ackTsn,&sentTsn);
 
-    if (ackto != 0) {
+      spindump_deepdebugf("did not find the outgoing DATA message that responder SACK %u refers to", ackTsn);
 
-      spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived 2");
-      unsigned long long diff = spindump_timediffinusecs(t,ackto);
-      spindump_deepdebugf("the initiator SACK %u refers to responder SCTP message (TSN=%u) that came %llu ms earlier",
-                          ackTsn,
-                          sentTsn,
-                          diff / 1000);
-
-      spindump_connections_newrttmeasurement(state,
-                                             packet,
-                                             connection,
-                                             0,
-                                             0,
-                                             ackto,
-                                             t,
-                                             "SCTP ACK");
-
-    } else {
-
-      spindump_deepdebugf("did not find the responder SCTP message that initiator SACK %u refers to", ackTsn);
-
-    }
   }
+
 }
 
 // TODO: Maksim Proshin: fix the function
