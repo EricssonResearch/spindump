@@ -432,6 +432,8 @@ spindump_connections_newconnection_sctp(const spindump_address* side1address,
   connection->u.sctp.side2peerPort = side2port;
   connection->u.sctp.side1Vtag = side1Vtag;  // VTag from INIT chunk
   connection->u.sctp.side2Vtag = 0;  // VTag from INIT ACK chunk will be stored here
+  connection->u.sctp.side1HbCnt = 0;
+  connection->u.sctp.side2HbCnt = 0;
   spindump_connections_newconnection_addtoaggregates(connection,table);
   
   spindump_debugf("created a new SCTP connection %u", connection->id);
