@@ -37,13 +37,19 @@ spindump_analyze_process_sctp_marktsnsent(struct spindump_connection* connection
                                           sctp_tsn tsn,
                                           struct timeval* t);
 static void
-spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
-                                              struct spindump_packet* packet,
-                                              struct spindump_connection* connection,
-                                              int fromResponder,
-                                              sctp_tsn ackTsn,
-                                              struct timeval* t);
+spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* state,
+                                                   struct spindump_packet* packet,
+                                                   struct spindump_connection* connection,
+                                                   int fromResponder,
+                                                   sctp_tsn ackTsn,
+                                                   struct timeval* t);
 
+static void
+spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
+                                                 struct spindump_packet* packet,
+                                                 struct spindump_connection* connection,
+                                                 int fromResponder,
+                                                 struct timeval* t);
 //
 // Actual code --------------------------------------------------------------------------------
 //
@@ -82,12 +88,12 @@ spindump_analyze_process_sctp_marktsnsent(struct spindump_connection* connection
 // this sequence one can track RTT.
 //
 static void
-spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
-                                              struct spindump_packet* packet,
-                                              struct spindump_connection* connection,
-                                              int fromResponder,
-                                              sctp_tsn ackTsn,
-                                              struct timeval* t) {
+spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* state,
+                                                   struct spindump_packet* packet,
+                                                   struct spindump_connection* connection,
+                                                   int fromResponder,
+                                                   sctp_tsn ackTsn,
+                                                   struct timeval* t) {
 
   struct timeval* ackto;
   sctp_tsn sentTsn;
@@ -103,12 +109,12 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
     ackto = spindump_tsntracker_ackto(&connection->u.sctp.side2Seqs,ackTsn,&sentTsn);
   }
 
-  spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived, fromResponder: %d", fromResponder);
+  spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived_data, fromResponder: %d", fromResponder);
 
   if (ackto != 0) {
 
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
-      spindump_deepdebugf("the SACK %u refers to SCTP message (TSN=%u) that came %llu ms earlier",
+      spindump_deepdebugf("SACK %u refers to SCTP message (TSN=%u) that came %llu ms earlier",
                           ackTsn,
                           sentTsn,
                           diff / 1000);
@@ -125,6 +131,72 @@ spindump_analyze_process_sctp_markackreceived(struct spindump_analyze* state,
   } else {
 
       spindump_deepdebugf("did not find the outgoing DATA message that responder SACK %u refers to", ackTsn);
+
+  }
+
+}
+
+//
+// Mark the reception of HB ACK from one of the peers.
+// Perform RTT measurement if HB ACK acknowledges a sole HB.
+//
+// If fromResponder = 1, the ACKing party is the server of the
+// connection, if fromResponder = 0, it is the client. Seq is the
+// sequence number from the other party that is being acked. Based on
+// this sequence one can track RTT.
+//
+static void
+spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
+                                                   struct spindump_packet* packet,
+                                                   struct spindump_connection* connection,
+                                                   int fromResponder,
+                                                   struct timeval* t) {
+
+  struct timeval* ackto = 0;
+  spindump_assert(state != 0);
+  spindump_assert(connection != 0);
+  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(spindump_isbool(fromResponder));
+  spindump_assert(t != 0);
+  
+  spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived_hb, fromResponder: %d", fromResponder);
+  
+  // calculate RTT if only one HB was inflight
+  if (fromResponder) {
+        
+    if (connection->u.sctp.side2HbCnt == 1) {
+      ackto = &connection->u.sctp.side2hbTime;
+    }    
+    // reset the counter of HBs in any case
+    connection->u.sctp.side2HbCnt = 0;
+    
+  } else {
+              
+    if (connection->u.sctp.side1HbCnt == 1) {
+      ackto = &connection->u.sctp.side1hbTime;
+    }    
+    // reset the counter of HBs in any case
+    connection->u.sctp.side1HbCnt = 0;
+    
+  }
+
+  if (ackto != 0) {
+
+    unsigned long long diff = spindump_timediffinusecs(t,ackto);
+    spindump_deepdebugf("HB ACK refers to HB that came %llu ms earlier", diff / 1000);
+
+    spindump_connections_newrttmeasurement(state,
+                                           packet,
+                                           connection,
+                                           fromResponder,
+                                           0,
+                                           ackto,
+                                           t,
+                                           "SCTP HB ACK");
+
+  } else {
+
+    spindump_deepdebugf("did not find the outgoing HB message that received HB ACK refers to");
 
   }
 
@@ -471,12 +543,12 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
             packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, 
             &sctp_chunk_sack);
 
-        spindump_analyze_process_sctp_markackreceived(state,
-                                                      packet,
-                                                      connection,
-                                                      fromResponder,
-                                                      sctp_chunk_sack.cumulativeTsnAck,
-                                                      &packet->timestamp);
+        spindump_analyze_process_sctp_markackreceived_data(state,
+                                                           packet,
+                                                           connection,
+                                                           fromResponder,
+                                                           sctp_chunk_sack.cumulativeTsnAck,
+                                                           &packet->timestamp);
 
       } else {
 
@@ -525,23 +597,12 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       //
 
       if (connection != 0) {
-
-        // calculate RTT if only one HB was inflight
-        if (fromResponder) {
-        
-            if (connection->u.sctp.side2HbCnt == 1) {
-            
-            }
-            // reset the counter of HBs in any case
-            connection->u.sctp.side2HbCnt = 0;
-        } else {
-              
-            if (connection->u.sctp.side1HbCnt == 1) {
-            
-            }
-            // reset the counter of HBs in any case
-            connection->u.sctp.side1HbCnt = 0;
-        }
+      
+        spindump_analyze_process_sctp_markackreceived_hb(state,
+                                                         packet,
+                                                         connection,
+                                                         fromResponder,
+                                                         &packet->timestamp);
       } else {
 
         state->stats->unknownSctpConnection++;
