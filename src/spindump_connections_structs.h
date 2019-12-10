@@ -150,9 +150,6 @@ struct spindump_connection {
       struct spindump_tsntracker side1Seqs;         // when did we see sequence numbers from side1?
       struct spindump_tsntracker side2Seqs;         // when did we see sequence numbers from side2?
       //uint8_t padding[4];                           // unused
-      // TODO: Denis S: implement SCTP specific TSN tracker and add two trackers below
-      //struct spindump_seqtracker side1Seqs;         // when did we see sequence numbers from side1?
-      //struct spindump_seqtracker side2Seqs;         // when did we see sequence numbers from side2?
       uint8_t side1HbCnt;                           // Number of HBs inflight seen from side 1
       struct timeval side1hbTime;                   // the time of the last HB seen from side 1
       uint8_t side2HbCnt;                           // Number of HBs inflight seen from side 2

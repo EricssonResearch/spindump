@@ -490,7 +490,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       // HEARTBEAT (HB) 
 
       //
-      // If found, calculate RTT. If not found, ignore.
+      // If found, remember HB info. If not found, ignore.
       //
 
       if (connection != 0) {
@@ -498,15 +498,14 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         // ignore if not in Established state
         if (connection->state != spindump_connection_state_established) {
 
-          // remember side and timestamp
-          if (fromResponder == 0) {
-            connection->u.sctp.side1HbCnt += 1;
-            connection->u.sctp.side1hbTime = packet->timestamp;
-          }
-          else {
-              
+          // increment number of HBs inflight and remember timestamp
+          if (fromResponder) {
             connection->u.sctp.side2HbCnt += 1;
             connection->u.sctp.side2hbTime = packet->timestamp;
+          } else {
+              
+            connection->u.sctp.side1HbCnt += 1;
+            connection->u.sctp.side1hbTime = packet->timestamp;
           }
         }
 
@@ -522,11 +521,27 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       // HEARTBEAT ACK (HB ACK) 
 
       //
-      // If found, TODO. If not found, ignore.
+      // If found, process it to calculate RTT. If not found, ignore.
       //
 
       if (connection != 0) {
 
+        // calculate RTT if only one HB was inflight
+        if (fromResponder) {
+        
+            if (connection->u.sctp.side2HbCnt == 1) {
+            
+            }
+            // reset the counter of HBs in any case
+            connection->u.sctp.side2HbCnt = 0;
+        } else {
+              
+            if (connection->u.sctp.side1HbCnt == 1) {
+            
+            }
+            // reset the counter of HBs in any case
+            connection->u.sctp.side1HbCnt = 0;
+        }
       } else {
 
         state->stats->unknownSctpConnection++;

@@ -309,7 +309,7 @@ spindump_connections_getports(struct spindump_connection* connection,
 //
 // Report a new RTT measurement. This could have been determined in
 // many ways, by way of the initial packet exchange, looking at QUIC
-// spin bit or TCP sequence numbers.
+// spin bit or TCP sequence numbers or SCTP data tsn and hearbeat.
 //
 // In any case, the new measurement is recorded, proper averages etc
 // are counted, and also any handlers associated with this connection
