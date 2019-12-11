@@ -723,55 +723,61 @@ struct spindump_sctp_packet_header {
 //  |                          Chunk Value                          |
 //  |                                                               |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-#define spindump_sctp_chunk_header_length     (1+1+2)
-
-struct spindump_sctp_chunk_header {
+struct spindump_sctp_chunk {
   uint8_t ch_type;       // Chunk Type
   uint8_t ch_flags;      // Chunk Flags
   uint16_t ch_length;    // Chunk Length
-  // Chunk Value follows
-};
+  union {
 
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 1    |  Chunk Flags  |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                         Initiate Tag                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |           Advertised Receiver Window Credit (a_rwnd)          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Number of Outbound Streams   |  Number of Inbound Streams    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                          Initial TSN                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |              Optional/Variable-Length Parameters              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    struct {
+      uint32_t initiateTag;             // Initiate Tag
+      uint32_t arwnd;
+      uint16_t outStreams;
+      uint16_t inStreams;
+      uint32_t initTsn;
+    } init;
 
-#define spindump_sctp_chunk_type_data               0 // 0x00
-#define spindump_sctp_chunk_type_init               1 // 0x01
-#define spindump_sctp_chunk_type_init_ack           2 // 0x02
-#define spindump_sctp_chunk_type_sack               3 // 0x03
-#define spindump_sctp_chunk_type_heartbeat          4 // 0x04
-#define spindump_sctp_chunk_type_heartbeat_ack      5 // 0x05
-#define spindump_sctp_chunk_type_abort              6 // 0x06
-#define spindump_sctp_chunk_type_shutdown           7 // 0x07
-#define spindump_sctp_chunk_type_shutdown_ack       8 // 0x08
-#define spindump_sctp_chunk_type_error              9 // 0x09
-#define spindump_sctp_chunk_type_cookie_echo        10 // 0x0A
-#define spindump_sctp_chunk_type_cookie_ack         11 // 0x0B
-#define spindump_sctp_chunk_type_ecne               12 // 0x0C
-#define spindump_sctp_chunk_type_cwr                13 // 0x0D
-#define spindump_sctp_chunk_type_shutdown_complete  14 // 0x0E
-#define spindump_sctp_chunk_type_auth               15 // 0x0F
-
-// TODO: Maksim Proshin: add INIT description
-struct spindump_sctp_chunk_init {
-  struct spindump_sctp_chunk_header header;
-  uint32_t initiateTag;             // Initiate Tag
-  uint32_t arwnd;
-  uint16_t outStreams;
-  uint16_t inStreams;
-  uint32_t initTsn;
-  // optional parameters follow
-};
-
-// TODO: Maksim Proshin: add INIT ACK description
-struct spindump_sctp_chunk_init_ack {
-  struct spindump_sctp_chunk_header header;
-  uint32_t initiateTag;             // Initiate Tag
-  uint32_t arwnd;
-  uint16_t outStreams;
-  uint16_t inStreams;
-  uint32_t initTsn;
-  // optional parameters follow
-};
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 2    |  Chunk Flags  |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                         Initiate Tag                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |              Advertised Receiver Window Credit                |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Number of Outbound Streams   |  Number of Inbound Streams    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                          Initial TSN                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |              Optional/Variable-Length Parameters              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    struct {
+       uint32_t initiateTag;             // Initiate Tag
+       uint32_t arwnd;
+       uint16_t outStreams;
+       uint16_t inStreams;
+       uint32_t initTsn;
+    } init_ack;
 
 //
 // DATA chunk from RFC 4960:
@@ -791,14 +797,12 @@ struct spindump_sctp_chunk_init_ack {
 //  |                 User Data (seq n of Stream S)                 |
 //  |                                                               |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-struct spindump_sctp_chunk_data {
-  struct spindump_sctp_chunk_header header;
-  uint32_t tsn;
-  uint16_t streamId;
-  uint16_t streamSn;
-  uint32_t payloadProtoId;
-  // user data below
-};
+    struct {
+      uint32_t tsn;
+      uint16_t streamId;
+      uint16_t streamSn;
+      uint32_t payloadProtoId;
+    } data;
 
 // TODO: Denis S: Implement Gaps and Duplicate TSNs
 //
@@ -831,13 +835,15 @@ struct spindump_sctp_chunk_data {
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |                       Duplicate TSN X                         |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-struct spindump_sctp_chunk_sack {
-  struct spindump_sctp_chunk_header header;
-  uint32_t cumulativeTsnAck;
-  uint32_t arwnd;
-  uint16_t nGapAckBlock;
-  uint16_t nDupTsn;
-  // Gaps and Duplicate TSNs below
+    struct {
+      uint32_t cumulativeTsnAck;
+      uint32_t arwnd;
+      uint16_t nGapAckBlock;
+      uint16_t nDupTsn;
+    } sack;
+
+  } ch;
+
 };
 
 //

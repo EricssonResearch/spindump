@@ -28,63 +28,106 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
+void
+spindump_protocols_sctp_chunk_init_parse(const unsigned char* packet,
+                                        struct spindump_sctp_chunk* decoded);
+
+void
+spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* packet,
+                                            struct spindump_sctp_chunk* decoded);
+
+void
+spindump_protocols_sctp_chunk_data_parse(const unsigned char* packet,
+                                        struct spindump_sctp_chunk* decoded);
+
+void
+spindump_protocols_sctp_chunk_sack_parse(const unsigned char* packet,
+                                        struct spindump_sctp_chunk* decoded);
+
+unsigned int
+spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
+                                          struct spindump_sctp_chunk* decoded,
+                                          unsigned int remainingLen);
+
 //
 // Actual code --------------------------------------------------------------------------------
 //
 
-//
-// Chunk Field from RFC 4960:
-//
 //  0                   1                   2                   3
 //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//  |   Chunk Type  | Chunk  Flags  |        Chunk Length           |
+//  |   Type = 1    |  Chunk Flags  |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+void
+spindump_protocols_sctp_chunk_header_parse(const unsigned char* packet,
+                                     struct spindump_sctp_chunk* decoded){
+
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->ch_type,packet,pos);
+  spindump_decodebyte(decoded->ch_flags,packet,pos);
+  spindump_decode2byteint(decoded->ch_length,packet,pos);
+}
+
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 1    |  Chunk Flags  |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                         Initiate Tag                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |           Advertised Receiver Window Credit (a_rwnd)          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Number of Outbound Streams   |  Number of Inbound Streams    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                          Initial TSN                          |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |                                                               |
-//  |                          Chunk Value                          |
+//  |              Optional/Variable-Length Parameters              |
 //  |                                                               |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //
-// TODO: Maksim Proshin: add checks on params length
+// Note, packet must point to chunk value
 void
-spindump_protocols_sctp_chunk_header_parse(const unsigned char* header,
-                                     struct spindump_sctp_chunk_header* decoded){
+spindump_protocols_sctp_chunk_init_parse(const unsigned char* packet,
+                                     struct spindump_sctp_chunk* decoded){
+  
   unsigned int pos = 0;
-  spindump_decodebyte(decoded->ch_type,header,pos);
-  spindump_decodebyte(decoded->ch_flags,header,pos);
-  spindump_decode2byteint(decoded->ch_length,header,pos);
+  spindump_decode4byteint(decoded->ch.init.initiateTag,packet,pos);          // Initiate Tag
+  spindump_decode4byteint(decoded->ch.init.arwnd,packet,pos);                // Advertised Receiver Window
+  spindump_decode2byteint(decoded->ch.init.outStreams,packet,pos);           // Num of Outbound Streams
+  spindump_decode2byteint(decoded->ch.init.inStreams,packet,pos);            // Num of Inbound Streams
+  spindump_decode4byteint(decoded->ch.init.initTsn,packet,pos);              // Initial TSN
 }
 
-// TODO: Maksim Proshin: add INIT chunk description and function description
-// TODO: Maksim Proshin: add checks on params length
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 2    |  Chunk Flags  |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                         Initiate Tag                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |              Advertised Receiver Window Credit                |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Number of Outbound Streams   |  Number of Inbound Streams    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                          Initial TSN                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |              Optional/Variable-Length Parameters              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Note, packet must point to chunk value
 void
-spindump_protocols_sctp_chunk_init_parse(const unsigned char* header,
-                                     struct spindump_sctp_chunk_init* decoded){
-  unsigned int pos = 0;
-  spindump_decodebyte(decoded->header.ch_type,header,pos);           // Chunk Type
-  spindump_decodebyte(decoded->header.ch_flags,header,pos);          // Chunk Flags
-  spindump_decode2byteint(decoded->header.ch_length,header,pos);     // Chunk Length
-  spindump_decode4byteint(decoded->initiateTag,header,pos);          // Initiate Tag
-  spindump_decode4byteint(decoded->arwnd,header,pos);                // Advertised Receiver Window
-  spindump_decode2byteint(decoded->outStreams,header,pos);           // Num of Outbound Streams
-  spindump_decode2byteint(decoded->inStreams,header,pos);            // Num of Inbound Streams
-  spindump_decode4byteint(decoded->initTsn,header,pos);              // Initial TSN
-}
+spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* packet,
+                                     struct spindump_sctp_chunk* decoded){
 
-// TODO: Maksim Proshin: add INIT ACK chunk description and function description
-// TODO: Maksim Proshin: add checks on params length
-void
-spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* header,
-                                     struct spindump_sctp_chunk_init_ack* decoded){
   unsigned int pos = 0;
-  spindump_decodebyte(decoded->header.ch_type,header,pos);           // Chunk Type
-  spindump_decodebyte(decoded->header.ch_flags,header,pos);          // Chunk Flags
-  spindump_decode2byteint(decoded->header.ch_length,header,pos);     // Chunk Length
-  spindump_decode4byteint(decoded->initiateTag,header,pos);          // Initiate Tag
-  spindump_decode4byteint(decoded->arwnd,header,pos);                // Advertised Receiver Window
-  spindump_decode2byteint(decoded->outStreams,header,pos);           // Num of Outbound Streams
-  spindump_decode2byteint(decoded->inStreams,header,pos);            // Num of Inbound Streams
-  spindump_decode4byteint(decoded->initTsn,header,pos);              // Initial TSN
+  spindump_decode4byteint(decoded->ch.init_ack.initiateTag,packet,pos);          // Initiate Tag
+  spindump_decode4byteint(decoded->ch.init_ack.arwnd,packet,pos);                // Advertised Receiver Window
+  spindump_decode2byteint(decoded->ch.init_ack.outStreams,packet,pos);           // Num of Outbound Streams
+  spindump_decode2byteint(decoded->ch.init_ack.inStreams,packet,pos);            // Num of Inbound Streams
+  spindump_decode4byteint(decoded->ch.init_ack.initTsn,packet,pos);              // Initial TSN
 }
 
 //
@@ -106,16 +149,14 @@ spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* header,
 //  |                                                               |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 void
-spindump_protocols_sctp_chunk_data_parse(const unsigned char* header,
-                                     struct spindump_sctp_chunk_data* decoded){
+spindump_protocols_sctp_chunk_data_parse(const unsigned char* packet,
+                                     struct spindump_sctp_chunk* decoded){
+
   unsigned int pos = 0;
-  spindump_decodebyte(decoded->header.ch_type,header,pos);         // Chunk Type
-  spindump_decodebyte(decoded->header.ch_flags,header,pos);        // Chunk Flags
-  spindump_decode2byteint(decoded->header.ch_length,header,pos);   // Chunk Length
-  spindump_decode4byteint(decoded->tsn,header,pos);                // TSN
-  spindump_decode2byteint(decoded->streamId,header,pos);           // Stream ID
-  spindump_decode2byteint(decoded->streamSn,header,pos);           // Stream Seq Number
-  spindump_decode4byteint(decoded->payloadProtoId,header,pos);     // Payload Protocol Id
+  spindump_decode4byteint(decoded->ch.data.tsn,packet,pos);                // TSN
+  spindump_decode2byteint(decoded->ch.data.streamId,packet,pos);           // Stream ID
+  spindump_decode2byteint(decoded->ch.data.streamSn,packet,pos);           // Stream Seq Number
+  spindump_decode4byteint(decoded->ch.data.payloadProtoId,packet,pos);     // Payload Protocol Id
 }
 
 //
@@ -149,14 +190,99 @@ spindump_protocols_sctp_chunk_data_parse(const unsigned char* header,
 //  |                       Duplicate TSN X                         |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 void
-spindump_protocols_sctp_chunk_sack_parse(const unsigned char* header,
-                                     struct spindump_sctp_chunk_sack* decoded){
+spindump_protocols_sctp_chunk_sack_parse(const unsigned char* packet,
+                                     struct spindump_sctp_chunk* decoded){
+
   unsigned int pos = 0;
-  spindump_decodebyte(decoded->header.ch_type,header,pos);        // Chunk Type
-  spindump_decodebyte(decoded->header.ch_flags,header,pos);       // Chunk Flags
-  spindump_decode2byteint(decoded->header.ch_length,header,pos);  // Chunk Length
-  spindump_decode4byteint(decoded->cumulativeTsnAck,header,pos);  // Cumulative TSN Ack
-  spindump_decode4byteint(decoded->arwnd,header,pos);             // arwnd
-  spindump_decode2byteint(decoded->nGapAckBlock,header,pos);      // Number of Gap Ack blocks
-  spindump_decode2byteint(decoded->nDupTsn,header,pos);           // Number of Duplicate TSNs
+  spindump_decode4byteint(decoded->ch.sack.cumulativeTsnAck,packet,pos);  // Cumulative TSN Ack
+  spindump_decode4byteint(decoded->ch.sack.arwnd,packet,pos);             // arwnd
+  spindump_decode2byteint(decoded->ch.sack.nGapAckBlock,packet,pos);      // Number of Gap Ack blocks
+  spindump_decode2byteint(decoded->ch.sack.nDupTsn,packet,pos);           // Number of Duplicate TSNs
+}
+
+unsigned int
+spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
+                                          struct spindump_sctp_chunk* decoded,
+                                          unsigned int remainingLen) {
+
+  switch (decoded->ch_type) {
+
+    case spindump_sctp_chunk_type_init:
+
+      if (remainingLen >= spindump_sctp_chunk_init_parse_length) {
+        spindump_protocols_sctp_chunk_init_parse(packet, decoded);
+        return spindump_sctp_parse_ok;
+      } else {
+        return spindump_sctp_parse_error;
+      }
+
+      break;
+    case spindump_sctp_chunk_type_init_ack:
+
+      if (remainingLen >= spindump_sctp_chunk_initack_parse_length) {
+        spindump_protocols_sctp_chunk_init_ack_parse(packet, decoded);
+        return spindump_sctp_parse_ok;
+      } else {
+        return spindump_sctp_parse_error;
+      }
+
+      break;
+    case spindump_sctp_chunk_type_data:
+
+      if (remainingLen >= spindump_sctp_chunk_data_parse_length) {
+        spindump_protocols_sctp_chunk_data_parse(packet, decoded);
+        return spindump_sctp_parse_ok;
+      } else {
+        return spindump_sctp_parse_error;
+      }
+
+      break;
+    case spindump_sctp_chunk_type_sack:
+
+      if (remainingLen >= spindump_sctp_chunk_sack_parse_length) {
+        spindump_protocols_sctp_chunk_sack_parse(packet, decoded);
+        return spindump_sctp_parse_ok;
+      } else {
+        return spindump_sctp_parse_error;
+      }
+    case spindump_sctp_chunk_type_cookie_echo:
+    case spindump_sctp_chunk_type_cookie_ack:
+    case spindump_sctp_chunk_type_shutdown:
+    case spindump_sctp_chunk_type_shutdown_complete:
+    case spindump_sctp_chunk_type_shutdown_ack:
+    case spindump_sctp_chunk_type_abort:
+    case spindump_sctp_chunk_type_heartbeat:
+    case spindump_sctp_chunk_type_heartbeat_ack:
+      return spindump_sctp_parse_ok;
+      break;
+    default:
+
+      spindump_deepdeepdebugf("Unknown chunk received: %d", decoded->ch_type);
+      return spindump_sctp_parse_error;
+      break;
+  }
+}
+
+unsigned int
+spindump_protocols_sctp_chunk_parse(const unsigned char* packet,
+                                    struct spindump_sctp_chunk* decoded,
+                                    unsigned int remainingLen) {
+
+  unsigned int result;
+  unsigned int pos = 0;
+  unsigned int remLen = remainingLen;
+
+  if ( remLen < spindump_sctp_chunk_header_length ) return spindump_sctp_parse_error;
+
+  spindump_decodebyte(decoded->ch_type,packet,pos);
+  spindump_decodebyte(decoded->ch_flags,packet,pos);
+  spindump_decode2byteint(decoded->ch_length,packet,pos);
+  remLen -= spindump_sctp_chunk_header_length;
+
+  result = spindump_protocols_sctp_chunk_value_parse(packet + spindump_sctp_chunk_header_length,
+                                                    decoded,
+                                                    remLen);
+
+  return result;
+
 }
