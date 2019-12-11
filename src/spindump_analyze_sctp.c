@@ -114,10 +114,10 @@ spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* stat
   if (ackto != 0) {
 
       unsigned long long diff = spindump_timediffinusecs(t,ackto);
-      spindump_deepdebugf("SACK %u refers to SCTP message (TSN=%u) that came %llu ms earlier",
+      spindump_deepdebugf("SACK %u refers to SCTP message (TSN=%u) that came %llu us earlier",
                           ackTsn,
                           sentTsn,
-                          diff / 1000);
+                          diff);
 
       spindump_connections_newrttmeasurement(state,
                                              packet,
@@ -147,10 +147,10 @@ spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* stat
 //
 static void
 spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
-                                                   struct spindump_packet* packet,
-                                                   struct spindump_connection* connection,
-                                                   int fromResponder,
-                                                   struct timeval* t) {
+                                                 struct spindump_packet* packet,
+                                                 struct spindump_connection* connection,
+                                                 int fromResponder,
+                                                 struct timeval* t) {
 
   struct timeval* ackto = 0;
   spindump_assert(state != 0);
@@ -162,28 +162,29 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
   spindump_deepdebugf("spindump_analyze_process_sctp_markackreceived_hb, fromResponder: %d", fromResponder);
   
   // calculate RTT if only one HB was inflight
+  // note that the measurment is made for the opposite side towards HB ACK
   if (fromResponder) {
         
-    if (connection->u.sctp.side2HbCnt == 1) {
-      ackto = &connection->u.sctp.side2hbTime;
-    }    
-    // reset the counter of HBs in any case
-    connection->u.sctp.side2HbCnt = 0;
-    
-  } else {
-              
     if (connection->u.sctp.side1HbCnt == 1) {
       ackto = &connection->u.sctp.side1hbTime;
     }    
     // reset the counter of HBs in any case
     connection->u.sctp.side1HbCnt = 0;
     
+  } else {
+              
+    if (connection->u.sctp.side2HbCnt == 1) {
+      ackto = &connection->u.sctp.side2hbTime;
+    }    
+    // reset the counter of HBs in any case
+    connection->u.sctp.side2HbCnt = 0;
+    
   }
 
   if (ackto != 0) {
 
     unsigned long long diff = spindump_timediffinusecs(t,ackto);
-    spindump_deepdebugf("HB ACK refers to HB that came %llu ms earlier", diff / 1000);
+    spindump_deepdebugf("HB ACK refers to HB that came %llu us earlier", diff);
 
     spindump_connections_newrttmeasurement(state,
                                            packet,
@@ -202,7 +203,7 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 
 }
 
-// TODO: Maksim Proshin: fix the function
+// TODO: Maksim Proshin: refactor the function
 //
 // This is the main function to process an incoming SCTP packet, parse
 // the packet as much as we can and process it appropriately. The
@@ -264,9 +265,6 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   struct spindump_sctp_chunk_header sctp_chunk_header;
   spindump_protocols_sctp_chunk_header_parse(
       packet->contents + sctpHeaderPosition + spindump_sctp_packet_header_length, &sctp_chunk_header);
-  spindump_deepdebugf("sctp chunk: type = %u", sctp_chunk_header.ch_type);
-  spindump_deepdebugf("sctp chunk: flags = %u", sctp_chunk_header.ch_flags);
-  spindump_deepdebugf("sctp chunk: length = %u", sctp_chunk_header.ch_length);
 
   struct spindump_connection* connection = 0;
   spindump_address source;
@@ -283,6 +281,9 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
   spindump_debugf("saw packet from %s (ports %u:%u)",
                   spindump_address_tostring(&source), side1port, side2port);
+  spindump_deepdebugf("sctp chunk: type = %u", sctp_chunk_header.ch_type);
+  spindump_deepdebugf("sctp chunk: flags = %u", sctp_chunk_header.ch_flags);
+  spindump_deepdebugf("sctp chunk: length = %u", sctp_chunk_header.ch_length);
 
   // search the connection
   connection = spindump_connections_searchconnection_sctp_either(&source,
@@ -568,17 +569,26 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
       if (connection != 0) {
       
         // ignore if not in Established state
-        if (connection->state != spindump_connection_state_established) {
+        if (connection->state == spindump_connection_state_established) {
 
+          spindump_deepdeepdebugf("HB received, fromResponder %d", fromResponder);
+
+          // TODO: Maksim Proshin: create a new func
           // increment number of HBs inflight and remember timestamp
           if (fromResponder) {
             connection->u.sctp.side2HbCnt += 1;
             connection->u.sctp.side2hbTime = packet->timestamp;
+            spindump_deepdeepdebugf("After processing side2HbCnt %d, side2hbTime %llu", 
+                                    connection->u.sctp.side2HbCnt, connection->u.sctp.side2hbTime);
           } else {
               
             connection->u.sctp.side1HbCnt += 1;
             connection->u.sctp.side1hbTime = packet->timestamp;
+            spindump_deepdeepdebugf("After processing side1HbCnt %d, side1hbTime %llu", 
+                                    connection->u.sctp.side1HbCnt, connection->u.sctp.side1hbTime);
           }
+        } else {
+          spindump_deepdeepdebugf("HB hasn't been processed cause the connection is not in Established state");
         }
 
       } else {

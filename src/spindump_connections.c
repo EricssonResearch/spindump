@@ -443,7 +443,7 @@ spindump_connections_setisclosed(const struct spindump_connection_set* set) {
     struct spindump_connection* other = set->set[i];
     if (other != 0) {
       if (!spindump_connections_isclosed(other)) {
-                                return(0);
+        return(0);
       }
     }
   }
