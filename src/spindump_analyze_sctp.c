@@ -45,6 +45,11 @@ spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* stat
                                                    struct timeval* t);
 
 static void
+spindump_analyze_process_sctp_marksent_hb(struct spindump_connection* connection,
+                                          int fromResponder,
+                                          struct timeval* t);
+
+static void
 spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
                                                  struct spindump_packet* packet,
                                                  struct spindump_connection* connection,
@@ -53,6 +58,34 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 //
 // Actual code --------------------------------------------------------------------------------
 //
+
+//
+// Returns the chunk type as a string. The returned string is a
+// static value, and need not be deallocated.
+//
+
+const char*
+spindump_analyze_sctp_chunk_type_to_string(enum spindump_sctp_chunk_type type) {
+  switch (type) {
+  case spindump_sctp_chunk_type_data: return("DATA");              
+  case spindump_sctp_chunk_type_init: return("INIT");              
+  case spindump_sctp_chunk_type_init_ack: return("INIT ACK");          
+  case spindump_sctp_chunk_type_sack: return("SACK");              
+  case spindump_sctp_chunk_type_heartbeat: return("HEARTBEAT");          
+  case spindump_sctp_chunk_type_heartbeat_ack: return("HEARTBEAT ACK");     
+  case spindump_sctp_chunk_type_abort: return("ABORT");             
+  case spindump_sctp_chunk_type_shutdown: return("SHUTDOWN");          
+  case spindump_sctp_chunk_type_shutdown_ack: return("SHUTDOWN ACK");       
+  case spindump_sctp_chunk_type_error: return("ERROR");             
+  case spindump_sctp_chunk_type_cookie_echo: return("COOKIE ECHO");        
+  case spindump_sctp_chunk_type_cookie_ack: return("COOKIE ACK");        
+  case spindump_sctp_chunk_type_ecne: return("ECNE");              
+  case spindump_sctp_chunk_type_cwr: return("CWR");               
+  case spindump_sctp_chunk_type_shutdown_complete:  return("SHUTDOWN COMPLETE");
+  case spindump_sctp_chunk_type_auth: return("AUTH");
+  default: return("UNKNOWN CHUNK TYPE");
+  }
+}
 
 //
 // Mark the sending of a TSN from one of the peers.
@@ -134,6 +167,46 @@ spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* stat
 
   }
 
+}
+
+//
+// Remember HB info.
+//
+// If fromResponder = 1, the sending party is the server of the
+// connection, if fromResponder = 0, it is the client. Based on
+// this HB one can track RTT later when HB ACK is received.
+//
+static void
+spindump_analyze_process_sctp_marksent_hb(struct spindump_connection* connection,
+                                          int fromResponder,
+                                          struct timeval* t)
+{
+  // ignore if not in Established state
+  if (connection->state == spindump_connection_state_established) {
+
+  spindump_deepdeepdebugf("HB received, fromResponder %d", fromResponder);
+
+  // increment number of HBs inflight and remember timestamp
+  if (fromResponder) {
+
+    connection->u.sctp.side2HbCnt += 1;
+    connection->u.sctp.side2hbTime = *t;
+    spindump_deepdeepdebugf("After processing side2HbCnt %d, side2hbTime %llu", 
+                            connection->u.sctp.side2HbCnt, connection->u.sctp.side2hbTime);
+
+    } else {
+                
+      connection->u.sctp.side1HbCnt += 1;
+      connection->u.sctp.side1hbTime = *t;
+      spindump_deepdeepdebugf("After processing side1HbCnt %d, side1hbTime %llu", 
+                              connection->u.sctp.side1HbCnt, connection->u.sctp.side1hbTime);
+
+      }
+    } else {
+
+      spindump_deepdeepdebugf("HB hasn't been processed cause the connection is not in Established state");
+      
+    }
 }
 
 //
@@ -292,7 +365,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
     // Check what chunks are present in packet,
     // create, update or delete the connection accordingly
     //
-    spindump_deepdebugf("sctp chunk: type = %u", sctp_chunk.ch_type);
+    spindump_deepdebugf("sctp chunk: type = %s", spindump_analyze_sctp_chunk_type_to_string(sctp_chunk.ch_type));
     spindump_deepdebugf("sctp chunk: flags = %u", sctp_chunk.ch_flags);
     spindump_deepdebugf("sctp chunk: length = %u", sctp_chunk.ch_length);
 
@@ -307,6 +380,50 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
     nParsedChunks++;
 
     switch (sctp_chunk.ch_type) {
+        case spindump_sctp_chunk_type_data:
+        // DATA
+
+        //
+        // If connection found, remember TSN. If not found, ignore.
+        //
+        if (connection != 0) {
+
+          spindump_analyze_process_sctp_marktsnsent(connection,
+                                                  fromResponder,
+                                                  sctp_chunk.ch.data.tsn,
+                                                  &packet->timestamp);
+
+        } else {
+
+          state->stats->unknownSctpConnection++;
+          *p_connection = 0;
+          return;
+
+        }
+        break; // DATA
+      case spindump_sctp_chunk_type_sack:
+        // SACK
+
+        //
+        // If connection found, fetch cumulative TSN Ack. If not found, ignore.
+        //
+        if (connection != 0) {
+
+          spindump_analyze_process_sctp_markackreceived_data(state,
+                                                        packet,
+                                                        connection,
+                                                        fromResponder,
+                                                        sctp_chunk.ch.sack.cumulativeTsnAck,
+                                                        &packet->timestamp);
+
+        } else {
+
+          state->stats->unknownSctpConnection++;
+          *p_connection = 0;
+          return;
+
+        }
+        break; // SACK
       case spindump_sctp_chunk_type_init:
         // INIT
 
@@ -497,50 +614,6 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
         }
         break; // ABORT
-      case spindump_sctp_chunk_type_data:
-        // DATA
-
-        //
-        // If connection found, remember TSN. If not found, ignore.
-        //
-        if (connection != 0) {
-
-          spindump_analyze_process_sctp_marktsnsent(connection,
-                                                  fromResponder,
-                                                  sctp_chunk.ch.data.tsn,
-                                                  &packet->timestamp);
-
-        } else {
-
-          state->stats->unknownSctpConnection++;
-          *p_connection = 0;
-          return;
-
-        }
-        break; // DATA
-      case spindump_sctp_chunk_type_sack:
-        // SACK
-
-        //
-        // If connection found, fetch cumulative TSN Ack. If not found, ignore.
-        //
-        if (connection != 0) {
-
-          spindump_analyze_process_sctp_markackreceived_data(state,
-                                                        packet,
-                                                        connection,
-                                                        fromResponder,
-                                                        sctp_chunk.ch.sack.cumulativeTsnAck,
-                                                        &packet->timestamp);
-
-        } else {
-
-          state->stats->unknownSctpConnection++;
-          *p_connection = 0;
-          return;
-
-        }
-        break; // SACK
       case spindump_sctp_chunk_type_heartbeat:
 
         // HEARTBEAT (HB) 
@@ -551,29 +624,8 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
         if (connection != 0) {
         
-          // ignore if not in Established state
-          if (connection->state == spindump_connection_state_established) {
-
-            spindump_deepdeepdebugf("HB received, fromResponder %d", fromResponder);
-
-            // TODO: Maksim Proshin: create a new func
-            // increment number of HBs inflight and remember timestamp
-            if (fromResponder) {
-              connection->u.sctp.side2HbCnt += 1;
-              connection->u.sctp.side2hbTime = packet->timestamp;
-              spindump_deepdeepdebugf("After processing side2HbCnt %d, side2hbTime %llu", 
-                                      connection->u.sctp.side2HbCnt, connection->u.sctp.side2hbTime);
-            } else {
-                
-              connection->u.sctp.side1HbCnt += 1;
-              connection->u.sctp.side1hbTime = packet->timestamp;
-              spindump_deepdeepdebugf("After processing side1HbCnt %d, side1hbTime %llu", 
-                                      connection->u.sctp.side1HbCnt, connection->u.sctp.side1hbTime);
-            }
-          } else {
-            spindump_deepdeepdebugf("HB hasn't been processed cause the connection is not in Established state");
-          }
-
+          spindump_analyze_process_sctp_marksent_hb(connection, fromResponder, &packet->timestamp);
+          
         } else {
 
           state->stats->unknownSctpConnection++;
@@ -592,10 +644,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         if (connection != 0) {
         
           spindump_analyze_process_sctp_markackreceived_hb(state,
-                                                          packet,
-                                                          connection,
-                                                          fromResponder,
-                                                          &packet->timestamp);
+                                                           packet,
+                                                           connection,
+                                                           fromResponder,
+                                                           &packet->timestamp);
         } else {
 
 
@@ -604,6 +656,9 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
           return;
 
         } 
+        break;
+      default:
+        spindump_deepdebugf("sctp chunk hasn't been processed by spindump");
         break;
     }
   }

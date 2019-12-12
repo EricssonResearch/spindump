@@ -30,23 +30,24 @@
 //
 // Parameters ---------------------------------------------------------------------------------
 //
-
-#define spindump_sctp_chunk_type_data               0 // 0x00
-#define spindump_sctp_chunk_type_init               1 // 0x01
-#define spindump_sctp_chunk_type_init_ack           2 // 0x02
-#define spindump_sctp_chunk_type_sack               3 // 0x03
-#define spindump_sctp_chunk_type_heartbeat          4 // 0x04
-#define spindump_sctp_chunk_type_heartbeat_ack      5 // 0x05
-#define spindump_sctp_chunk_type_abort              6 // 0x06
-#define spindump_sctp_chunk_type_shutdown           7 // 0x07
-#define spindump_sctp_chunk_type_shutdown_ack       8 // 0x08
-#define spindump_sctp_chunk_type_error              9 // 0x09
-#define spindump_sctp_chunk_type_cookie_echo        10 // 0x0A
-#define spindump_sctp_chunk_type_cookie_ack         11 // 0x0B
-#define spindump_sctp_chunk_type_ecne               12 // 0x0C
-#define spindump_sctp_chunk_type_cwr                13 // 0x0D
-#define spindump_sctp_chunk_type_shutdown_complete  14 // 0x0E
-#define spindump_sctp_chunk_type_auth               15 // 0x0F
+enum spindump_sctp_chunk_type {
+  spindump_sctp_chunk_type_data,               // 0x00
+  spindump_sctp_chunk_type_init,               // 0x01
+  spindump_sctp_chunk_type_init_ack,           // 0x02
+  spindump_sctp_chunk_type_sack,               // 0x03
+  spindump_sctp_chunk_type_heartbeat,          // 0x04
+  spindump_sctp_chunk_type_heartbeat_ack,      // 0x05
+  spindump_sctp_chunk_type_abort,              // 0x06
+  spindump_sctp_chunk_type_shutdown,           // 0x07
+  spindump_sctp_chunk_type_shutdown_ack,       // 0x08
+  spindump_sctp_chunk_type_error,              // 0x09
+  spindump_sctp_chunk_type_cookie_echo,        // 0x0A
+  spindump_sctp_chunk_type_cookie_ack,         // 0x0B
+  spindump_sctp_chunk_type_ecne,               // 0x0C
+  spindump_sctp_chunk_type_cwr,                // 0x0D
+  spindump_sctp_chunk_type_shutdown_complete,  // 0x0E
+  spindump_sctp_chunk_type_auth                // 0x0F
+};
 
 #define spindump_sctp_chunk_header_length     (1+1+2)
 
