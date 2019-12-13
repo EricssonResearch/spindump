@@ -342,6 +342,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   uint16_t side1port = sctp.sh_sport;
   uint16_t side2port = sctp.sh_dport;
   int fromResponder;  // to be used in spindump_connections_searchconnection_sctp_either()
+  int new = 0;
 
   // search the connection
   connection = spindump_connections_searchconnection_sctp_either(&source,
@@ -444,8 +445,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
             return;
           }
 
+          new = 1;
           state->stats->connections++;
           state->stats->connectionsSctp++;
+          spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
 
         } else {
             // update side1Vtag for the existing connection if INIT was retransmitted
@@ -672,9 +675,16 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
   } 
 
-  // Add this packet to bandwidth stats for connection
-  spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
+  //
+  // Call some handlers based on what happened here, if needed
+  //
+
+  if (new) {
+    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+  } else {
+    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+  }
+
   *p_connection = connection;
   return;
-  // TODO: add handler invocation below.
 }

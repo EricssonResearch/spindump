@@ -164,9 +164,9 @@ target_link_libraries(spindump_test spindumplib)
 
 include( CTest )
 
-add_test( spindump_checksource spindump_checksource.sh )  
-add_test( spindump_test spindump_test )  
-add_test( spindump_testtraces spindump_testtraces.sh )
+add_test( NAME spindump_checksource COMMAND spindump_checksource.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})  
+add_test( NAME spindump_test COMMAND spindump_test )  
+add_test( NAME spindump_testtraces COMMAND spindump_testtraces.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 #
 # Tar file
