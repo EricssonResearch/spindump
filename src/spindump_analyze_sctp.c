@@ -276,7 +276,6 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 
 }
 
-// TODO: Maksim Proshin: refactor the function
 //
 // This is the main function to process an incoming SCTP packet, parse
 // the packet as much as we can and process it appropriately. The
@@ -433,12 +432,12 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         //
         if (connection == 0) {
           connection = spindump_connections_newconnection_sctp(&source,
-                                                            &destination,
-                                                            side1port,
-                                                            side2port,
-                                                            sctp_chunk.ch.init.initiateTag,
-                                                            &packet->timestamp,
-                                                            state->table);
+                                                               &destination,
+                                                               side1port,
+                                                               side2port,
+                                                               sctp_chunk.ch.init.initiateTag,
+                                                               &packet->timestamp,
+                                                               state->table);
 
           if (connection == 0) {
             *p_connection = 0;
@@ -451,12 +450,16 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
           spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
 
         } else {
-            // update side1Vtag for the existing connection if INIT was retransmitted
+
             if (fromResponder == 0)
             {
+              // Assoc is restarted, update side1Vtag for the existing connection
               connection->u.sctp.side1Vtag = sctp_chunk.ch.init.initiateTag;
+            } else if (connection->state == spindump_connection_state_establishing) {
+              // Initialization collision case, update side2Vtag for the existing connection
+              connection->u.sctp.side2Vtag = sctp_chunk.ch.init.initiateTag;
             }
-            // TODO: Maksim Proshin: what if INIT has been received from the other side
+
         }
 
         break; // INIT
@@ -464,12 +467,16 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         // INIT ACK
 
         //
-        // If connection found, parse the chunk, update side2.vTag and stats. If not found, ignore.
+        // If connection found, update side2.vTag. If not found, ignore.
         //
 
         if (connection != 0) {
 
-          connection->u.sctp.side2Vtag = sctp_chunk.ch.init_ack.initiateTag;
+          if ((fromResponder == 1) && 
+              (connection->state == spindump_connection_state_establishing)) {
+            // this is INIT ACK to original (created connection) or retransmitted INIT
+            connection->u.sctp.side2Vtag = sctp_chunk.ch.init_ack.initiateTag;
+          }
 
         } else {
 
