@@ -1,0 +1,4 @@
+A test between two SCTP IPv4 peers with medium traffic
+- one assoc is established
+- DATAs in both directions
+- graceful shutdown

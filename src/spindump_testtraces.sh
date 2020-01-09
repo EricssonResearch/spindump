@@ -97,7 +97,8 @@ traces="trace_icmpv4_short
         trace_tcp_large_snap80
         trace_ping_tooold
         trace_empty
-        trace_sctp_short_lo"
+        trace_sctp_short_lo
+        trace_sctp_medium"
 
 #
 # Check options

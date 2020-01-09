@@ -92,51 +92,47 @@ spindump_tsntracker_ackto(struct spindump_tsntracker* tracker,
     // Is this previously seen SCTP DATA the one
     // acked by Cumulative TSN Ack "ackTsn"?
     // 
-    
+
     spindump_deepdebugf("compare received cumulative SACK %u to candidate TSN %u",
                         ackTsn,
                         candidate->tsn);
     if (candidate->tsn <= ackTsn) {
-      
+
       //
       // It is. Now see if this is the earliest one.
       // 
-      
+
       if (chosen == 0)
         chosen = candidate;
-      else if (spindump_isearliertime(&chosen->received,&candidate->received))
+      else if (candidate->tsn < chosen->tsn)
         chosen = candidate;
+
+      //
+      // Clear an every TSN that was acked by cumulative ACK
+      //
+      candidate->outstanding = 0;
     }
   }
+
   if (chosen != 0) {
-    
+
     //
     // Found. Return the time when that packet was sent.
-    // But first, clear the TSN stores from all entries
-    // sent earlier than the one that we found. And clear this
-    // entry too.
-    // 
+    //
 
-    for (unsigned int j = 0; j < spindump_tsntracker_nstored; j++) {
-      struct spindump_tsnstore* other = &tracker->stored[j];
-      if (other->outstanding && spindump_isearliertime(&chosen->received,&other->received)) {
-        other->outstanding = 0;
-      }
-    }
-    
     chosen->outstanding = 0;
     *sentTsn = chosen->tsn;
     return(&chosen->received);
-    
+
   } else {
-    
+
     //
     // Not found
     // 
-    
+
     *sentTsn = 0;
     return(0);
-    
+
   }
 }
 
