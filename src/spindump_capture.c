@@ -208,6 +208,9 @@ spindump_capture_initialize_aux(const char* interface,
   case DLT_EN10MB:
     state->linktype = spindump_capture_linktype_ethernet;
     break;
+  case DLT_LINUX_SLL:
+    state->linktype = spindump_capture_linktype_linux_sll;
+    break;
   default:
     spindump_errorf("device %s doesn't provide Ethernet headers - value %u not supported",
                     interface, linktype);

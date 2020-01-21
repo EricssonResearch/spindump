@@ -42,7 +42,8 @@
 
 enum spindump_capture_linktype {
   spindump_capture_linktype_ethernet,
-  spindump_capture_linktype_null
+  spindump_capture_linktype_null,
+  spindump_capture_linktype_linux_sll
 };
 
 struct spindump_capture_state {
