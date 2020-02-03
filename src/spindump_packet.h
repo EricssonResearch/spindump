@@ -31,14 +31,14 @@
 //
 
 struct spindump_packet {
-  unsigned int etherlen;                    // The size of the packet, including the
-                                            // Ethernet header
-  unsigned int caplen;                      // How much of the packet was captured
-  struct timeval timestamp;                 // Reception time of the packet
-  const unsigned char* contents;            // The whole received packet
-  unsigned int analyzerHandlerCalls;        // A counter, used to determine whether to call
-                                            // an extra handler, in case no other handler was
-                                            // called
+  unsigned int etherlen;                       // The size of the packet, including the
+                                               // Ethernet header
+  unsigned int caplen;                         // How much of the packet was captured
+  struct timeval timestamp;                    // Reception time of the packet
+  const unsigned char* contents;               // The whole received packet
+  spindump_counter_32bit analyzerHandlerCalls; // A counter, used to determine whether to call
+                                               // an extra handler, in case no other handler was
+                                               // called
 };
 
 //
