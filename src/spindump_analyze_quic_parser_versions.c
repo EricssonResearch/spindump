@@ -120,6 +120,7 @@ spindump_analyze_quic_parser_version_getextrameasfunc_or_qrloss(uint32_t version
 static const struct spindump_quic_versiondescr versions[] = {
   //      version number            get name   basename supported? LongCIDs? getmessage     parselengths   getspinbit  getextrameas
   { spindump_quic_version_rfc,     fixednamefn,  "RFC",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_draft25, fixednamefn,  "v25",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_draft24, fixednamefn,  "v24",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_draft23, fixednamefn,  "v23",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_draft22, fixednamefn,  "v22",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
@@ -145,6 +146,7 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_draft02, fixednamefn,  "v02",    0,        0,    0,              0,               0        , 0          },
   { spindump_quic_version_draft01, fixednamefn,  "v01",    0,        0,    0,              0,               0        , 0          },
   { spindump_quic_version_draft00, fixednamefn,  "v00",    0,        0,    0,              0,               0        , 0          },
+  { spindump_quic_version_quant25, fixednamefn,  "v.qn25", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_quant24, fixednamefn,  "v.qn24", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_quant23, fixednamefn,  "v.qn23", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_quant22, fixednamefn,  "v.qn22", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
