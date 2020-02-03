@@ -74,21 +74,20 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   //
 
   state->stats->receivedIcmp++;
-  if (icmpLength < spindump_icmp_header_size ||
-      remainingCaplen < spindump_icmp_header_size) {
+  if (icmpLength < spindump_icmp_header_size) {
+    state->stats->invalidIcmpHdrSize++;
+    spindump_warnf("ICMP header length %u invalid", icmpLength);
+    *p_connection = 0;
+    return;
+  }
+
+  if (remainingCaplen < spindump_icmp_header_size) {
     state->stats->notEnoughPacketForIcmpHdr++;
     spindump_warnf("not enough payload bytes for an ICMP header", icmpLength);
     *p_connection = 0;
     return;
   }
-  unsigned int hdrsize_icmp = spindump_max(4,icmpLength);
-  if (hdrsize_icmp < spindump_icmp_header_size ||
-      remainingCaplen < spindump_icmp_header_size) {
-    state->stats->invalidIcmpHdrSize++;
-    spindump_warnf("ICMP header length %u invalid", hdrsize_icmp);
-    *p_connection = 0;
-    return;
-  }
+  
   struct spindump_icmp icmp;
   spindump_protocols_icmp_header_decode(packet->contents + icmpHeaderPosition,&icmp);
   spindump_debugf("received an IPv%u ICMP packet of %u bytes",
@@ -319,23 +318,22 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
   //
 
   state->stats->receivedIcmp++;
-  if (icmpLength < spindump_icmp_header_size ||
-      remainingCaplen < spindump_icmp_header_size) {
+  if (icmpLength < spindump_icmp_header_size) {
+    state->stats->invalidIcmpHdrSize++;
+    spindump_warnf("ICMPv6 header length %u invalid", icmpLength);
+    *p_connection = 0;
+    return;
+  }
+
+  if (remainingCaplen < spindump_icmp_header_size) {
     state->stats->notEnoughPacketForIcmpHdr++;
     spindump_warnf("not enough payload bytes for an ICMPv6 header", icmpLength);
     *p_connection = 0;
     return;
   }
+  
   struct spindump_icmpv6 icmp6;
   spindump_protocols_icmp6_header_decode(packet->contents + icmpHeaderPosition,&icmp6);
-  unsigned int hdrsize_icmp6 = spindump_max(4,icmpLength);
-  if (hdrsize_icmp6 < spindump_icmp_header_size ||
-      remainingCaplen < spindump_icmp_header_size) {
-    state->stats->invalidIcmpHdrSize++;
-    spindump_warnf("ICMPv6 header length %u invalid", hdrsize_icmp6);
-    *p_connection = 0;
-    return;
-  }
   spindump_debugf("received an IPv%u ICMP packet of %u bytes",
                   ipVersion,
                   packet->etherlen);

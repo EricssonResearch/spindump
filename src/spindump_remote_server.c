@@ -558,7 +558,7 @@ spindump_remote_server_postiterator(void *coninfo_cls,
                                     const char *data,
                                     uint64_t off,
                                     size_t size) {
-  spindump_deepdebugf("post iterator (%s, %s, %u bytes) %s", content_type, transfer_encoding, size, data);
+  spindump_deepdebugf("post iterator (%s, %s, %lu bytes) %s", content_type, transfer_encoding, size, data);
   struct spindump_remote_connection* connectionObject =
     (struct spindump_remote_connection*)coninfo_cls;
   spindump_assert(connectionObject != 0);
@@ -583,7 +583,7 @@ spindump_remote_server_answertopost(struct spindump_remote_server* server,
   spindump_assert(server != 0);
   spindump_assert(connectionObject != 0);
   spindump_assert(connection != 0);
-  spindump_deepdebugf("spindump_remote_server_answertopost, collected submission length %u (error %u)",
+  spindump_deepdebugf("spindump_remote_server_answertopost, collected submission length %lu (error %u)",
                       connectionObject->submissionLength,
                       connectionObject->isBufferOverrun);
   
@@ -658,13 +658,13 @@ spindump_remote_server_adddata(struct spindump_remote_connection* connectionObje
            data,
            length);
     connectionObject->submissionLength += length;
-    spindump_deepdebugf("submission from %s grew to %u bytes by %u bytes",
+    spindump_deepdebugf("submission from %s grew to %lu bytes by %lu bytes",
                         connectionObject->identifier,
                         connectionObject->submissionLength,
                         length);
     return(MHD_YES);
   } else {
-    spindump_errorf("cannot add extra %u bytes of bdata to a buffer from a request from %s",
+    spindump_errorf("cannot add extra %lu bytes of bdata to a buffer from a request from %s",
                     length,
                     connectionObject->identifier);
     connectionObject->isBufferOverrun = 1;

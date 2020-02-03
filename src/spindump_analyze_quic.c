@@ -269,10 +269,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
     if (fromResponder && sourceCidPresent &&
         !spindump_analyze_quic_quicidequal(&sourceCid,&connection->u.quic.peer2ConnectionID)) {
+      char tempid[100];
       spindump_debugf("changing the initial destination connection id to %s",
-                      spindump_connection_quicconnectionid_tostring(&sourceCid));
+                      spindump_connection_quicconnectionid_tostring(&sourceCid,tempid,sizeof(tempid)));
       spindump_debugf("(initial destination connection id was %s)",
-                      spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+                      spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID,tempid,sizeof(tempid)));
       connection->u.quic.peer2ConnectionID = sourceCid;
       spindump_deepdeepdebugf("calling spindump_connections_changeidentifiers");
       spindump_connections_changeidentifiers(state,packet,connection);
@@ -344,9 +345,10 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
       if (!spindump_analyze_quic_quicidequal(&destinationCid,&connection->u.quic.peer1ConnectionID)) {
 
+        char tempid[100];
         connection->u.quic.peer1ConnectionID = destinationCid;
         spindump_deepdebugf("changed peer 1 connection id to %s",
-                            spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
+                            spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID,tempid,sizeof(tempid)));
 
       }
 
@@ -360,9 +362,10 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
       if (!spindump_analyze_quic_quicidequal(&sourceCid,&connection->u.quic.peer2ConnectionID)) {
 
+        char tempid[100];
         connection->u.quic.peer2ConnectionID = sourceCid;
         spindump_deepdebugf("changed peer 2 connection id to %s",
-                            spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+                            spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID,tempid,sizeof(tempid)));
 
       }
 

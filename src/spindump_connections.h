@@ -314,7 +314,9 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
                                   char* buffer,
                                   size_t maxlen);
 const char*
-spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id);
+spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id,
+                                              char* output,
+                                              size_t outputLength);
 const char*
 spindump_connection_statestring(struct spindump_connection* connection);
 const char*

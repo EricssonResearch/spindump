@@ -153,7 +153,8 @@ unittests_util(void) {
 
   struct spindump_quic_connectionid id1;
   id1.len = 0;
-  const char* id1s = spindump_connection_quicconnectionid_tostring(&id1);
+  char tempid[100];
+  const char* id1s = spindump_connection_quicconnectionid_tostring(&id1,tempid,sizeof(tempid));
   spindump_debugf("id1s = %s", id1s);
   spindump_checktest(strcmp(id1s,"null") == 0);
   struct spindump_quic_connectionid id2;
@@ -172,7 +173,7 @@ unittests_util(void) {
   id2.id[11] = 0x0c;
   id2.id[12] = 0x0d;
   id2.id[13] = 0x0e;
-  const char* id2s = spindump_connection_quicconnectionid_tostring(&id2);
+  const char* id2s = spindump_connection_quicconnectionid_tostring(&id2,tempid,sizeof(tempid));
   spindump_debugf("id2s = %s", id2s);
   spindump_checktest(strcmp(id2s,"0102030405060708090a0b0c0d0e") == 0);
 }
@@ -451,7 +452,7 @@ unittests_eventtextparser(void) {
   spindump_assert(ret == 0);
   ret = spindump_event_parser_text_print(&event,buf,sizeof(buf),&consumed);
   spindump_assert(ret == 1);
-  spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
+  spindump_deepdebugf("event text = %s (consumed %lu bytes)", buf, consumed);
   const char* expected = "TCP 1.2.3.4 <-> 5.6.7.8 123:456 at 1892188800001234 new up packets 1 0 bytes 2 3 bandwidth 1000 1000\n";
   spindump_assert(strcmp(buf,expected) == 0);
 }
@@ -516,7 +517,7 @@ unittests_eventjsonparser(void) {
   spindump_assert(ret == 0);
   ret = spindump_event_parser_json_print(&event1,buf,sizeof(buf),&consumed);
   spindump_assert(ret == 1);
-  spindump_deepdebugf("event text = %s (consumed %u bytes)", buf, consumed);
+  spindump_deepdebugf("event text = %s (consumed %lu bytes)", buf, consumed);
   const char* expected =
     "{ \"Event\": \"new\", \"Type\": \"TCP\", \"Addrs\": [\"1.2.3.4\",\"5.6.7.8\"], "
     "\"Session\": \"123:456\", \"Ts\": 1892188800001234, \"State\": \"Starting\", "

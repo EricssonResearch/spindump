@@ -159,7 +159,7 @@ spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze *state,
 
         // Error during counters processing, skipping measurement
 
-        spindump_warnf("rtloss2 rflCounter (%lu) is greater than genCounter (%lu), triggered at %lu (usec)",
+        spindump_warnf("rtloss2 rflCounter (%u) is greater than genCounter (%u), triggered at %lu (usec)",
                        tracker->rflCounter,
                        tracker->genCounter,
                        tracker->lastRflTime.tv_usec);

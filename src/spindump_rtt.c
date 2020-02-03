@@ -133,7 +133,7 @@ spindump_rtt_valuewithinlimits(unsigned long val,
     rtt->lastMovingAvgRTT > limitdiff ? rtt->lastMovingAvgRTT - limitdiff : 0;
   unsigned long upperlimit =
     (rtt->lastMovingAvgRTT + limitdiff >= rtt->lastMovingAvgRTT) ? rtt->lastMovingAvgRTT + limitdiff : spindump_rtt_max;
-  spindump_deepdeepdebugf("filter value %lu limitdiff %u to within %lu..%lu", val, limitdiff, lowerlimit, upperlimit);
+  spindump_deepdeepdebugf("filter value %lu limitdiff %lu to within %lu..%lu", val, limitdiff, lowerlimit, upperlimit);
   if (val < lowerlimit) {
     spindump_deepdeepdebugf("filter away, too low");
     return(0);
@@ -272,7 +272,7 @@ spindump_rtt_calculateLastMovingAvgRTT(struct spindump_rtt* rtt,
   // Return
   //
   
-  spindump_debugf("new calculated avg RTT = %lu us (n = %u, std. dev. = %u)",
+  spindump_debugf("new calculated avg RTT = %lu us (n = %u, std. dev. = %lu)",
                   (unsigned long)avg, n, (unsigned long)dev);
   return((unsigned long)avg);
 }

@@ -101,7 +101,7 @@ spindump_timediffinusecs(const struct timeval* later,
   }
   if (later->tv_sec == earlier->tv_sec) {
     if (later->tv_usec < earlier->tv_usec) {
-      spindump_errorf("spindump_timediffinusec: expected later time to be greater, secs both %uls, microsecond go back %ulus (%ul to %ul)",
+      spindump_errorf("spindump_timediffinusec: expected later time to be greater, secs both %lus, microsecond go back %luus (%lu to %lu)",
                       earlier->tv_sec,
                       earlier->tv_usec - later->tv_usec,
                       earlier->tv_usec, later->tv_usec);
@@ -156,20 +156,23 @@ spindump_zerotime(struct timeval* result) {
 // Get time as string. The result need not be deallocated, but is only
 // valid for one call at a time
 //
-// Note: This function is not thread safe.
-//
 
 const char*
-spindump_timetostring(const struct timeval* result) {
-  spindump_assert(result != 0);
-  static char buf[100];
-  struct tm* t = localtime(&result->tv_sec);
-  snprintf(buf,sizeof(buf)-1,"%02lu:%02lu:%02lu.%06lu",
-           (unsigned long)t->tm_hour,
-           (unsigned long)t->tm_min,
-           (unsigned long)t->tm_sec,
-           (unsigned long)result->tv_usec);
-  return(buf);
+spindump_timetostring(const struct timeval* input,
+                      char* output,
+                      size_t outputLength) {
+  spindump_assert(input != 0);
+  spindump_assert(output != 0);
+  spindump_assert(outputLength > 0);
+  struct tm t;
+  localtime_r(&input->tv_sec,&t);
+  memset(output,0,outputLength);
+  snprintf(output,outputLength - 1,"%02lu:%02lu:%02lu.%06lu",
+           (unsigned long)t.tm_hour,
+           (unsigned long)t.tm_min,
+           (unsigned long)t.tm_sec,
+           (unsigned long)input->tv_usec);
+  return(output);
 }
 
 //
@@ -194,8 +197,8 @@ spindump_timeval_to_timestamp(const struct timeval* timev,
 void
 spindump_timestamp_to_timeval(const unsigned long long timestamp,
                               struct timeval* timev) {
-  spindump_deepdeepdebugf("spindump_timestamp_to_timeval %llu %lx",
-                          timestamp, timev);
+  spindump_deepdeepdebugf("spindump_timestamp_to_timeval %llu",
+                          timestamp);
   spindump_assert(timestamp != 0);
   spindump_assert(timev != 0);
   timev->tv_sec = timestamp / (1000*1000);
@@ -739,7 +742,7 @@ spindump_network_fromstring(spindump_network* network,
   }
   char* addressString = spindump_strdup(string);
   if (addressString == 0) {
-    spindump_errorf("cannot allocate memory for string of %u bytes", strlen(string));
+    spindump_errorf("cannot allocate memory for string of %lu bytes", strlen(string));
     return(0);
   }
   char* slashPlace = index(addressString,'/');

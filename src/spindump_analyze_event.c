@@ -310,8 +310,9 @@ spindump_analyze_event_string_to_quicconnectionid(const char* buf,
     buf += 2;
     id->id[id->len++] = byte;
   }
+  char tempid[100];
   spindump_deepdeepdebugf("successfully parsed quicconnectionid %s",
-                          spindump_connection_quicconnectionid_tostring(id));
+                          spindump_connection_quicconnectionid_tostring(id,tempid,sizeof(tempid)));
   return(1);
 }
 

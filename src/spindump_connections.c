@@ -334,7 +334,7 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   //
 
   spindump_deepdebugf("spindump_connections_newrttmeasurement due to %s", why);
-  spindump_deepdebugf("matching packet sent at %u:%u, response received %u:%u",
+  spindump_deepdebugf("matching packet sent at %lu:%lu, response received %lu:%lu",
                       sent->tv_sec, sent->tv_usec,
                       rcvd->tv_sec, rcvd->tv_usec);
   unsigned long long diff = spindump_timediffinusecs(rcvd,sent);

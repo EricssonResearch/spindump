@@ -74,7 +74,7 @@ spindump_event_initialize(enum spindump_event_type eventType,
   if (notes != 0) {
     strncpy(event->notes,notes,sizeof(event->notes)-1);
   }
-  spindump_deepdeepdebugf("new event bandwidths %u %u from bytes %u %u",
+  spindump_deepdeepdebugf("new event bandwidths %llu %llu from bytes %llu %llu",
                           bandwidthFromSide1, bandwidthFromSide2,
                           bytesFromSide1, bytesFromSide2);
 }

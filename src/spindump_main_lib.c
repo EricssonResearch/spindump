@@ -583,7 +583,7 @@ spindump_main_processargs(int argc,
         spindump_deepdebugf("initial filter component...");
         config->filter = spindump_strdup(argv[0]);
         if (config->filter == 0) {
-          spindump_errorf("Cannot allocate %u bytes", strlen(argv[0])+1);
+          spindump_errorf("Cannot allocate %lu bytes", strlen(argv[0])+1);
           exit(1);
         }
 
@@ -600,7 +600,7 @@ spindump_main_processargs(int argc,
         config->filter = spindump_malloc(n);
         
         if (config->filter == 0) {
-          spindump_errorf("Cannot allocate %u bytes", n);
+          spindump_errorf("Cannot allocate %lu bytes", n);
           exit(1);
         } else {
           spindump_strlcpy(config->filter,prevfilter,n);

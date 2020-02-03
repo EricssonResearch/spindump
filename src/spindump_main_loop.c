@@ -182,7 +182,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
       exit(1);
     }
   }
-  spindump_deepdeepdebugf("main loop operation, server init done %lx", server);
+  spindump_deepdeepdebugf("main loop operation, server init done");
   
   //
   // Draw screen once before waiting for packets

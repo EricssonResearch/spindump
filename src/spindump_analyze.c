@@ -174,7 +174,7 @@ spindump_analyze_registerhandler(struct spindump_analyze* state,
   state->handlers[state->nHandlers].eventmask = eventmask;
   state->handlers[state->nHandlers].function = handler;
   state->handlers[state->nHandlers].handlerData = handlerData;
-  spindump_deepdeepdebugf("registered %uth handler %lx for %u", state->nHandlers, handler, eventmask);
+  spindump_deepdeepdebugf("registered %uth handler %lx for %u", state->nHandlers, (unsigned long)handler, eventmask);
   state->nHandlers++;
 }
 
@@ -334,7 +334,7 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
                       spindump_analyze_eventtostring(event),
                       connection->id,
                       connection->type,
-                      packet);
+                      (unsigned long)packet);
   spindump_assert(state != 0);
   spindump_assert(packet == 0 || spindump_packet_isvalid(packet));
   
@@ -348,7 +348,7 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
     if ((handler->eventmask & event) != 0) {
       spindump_assert(spindump_analyze_max_handlers == spindump_connection_max_handlers);
       spindump_assert(i < spindump_connection_max_handlers);
-      spindump_deepdebugf("calling handler %x (%lx)", handler->eventmask, handler->function);
+      spindump_deepdebugf("calling handler %x (%lx)", handler->eventmask, (unsigned long)handler->function);
       (*(handler->function))(state,
                              handler->handlerData,
                              &connection->handlerConnectionDatas[i],

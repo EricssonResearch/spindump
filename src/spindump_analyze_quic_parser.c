@@ -423,15 +423,16 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   spindump_deepdebugf("may have 0-rtt = %u (based on seeking QUIC packets)", *p_0rttAttempted);
   *p_version = originalVersion;
   *p_type = type;
-  spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %lx, type = %s",
+  spindump_deepdebugf("successfully parsed the QUIC packet, long form = %u, version = %x, type = %s",
                       longForm,
                       version,
                       spindump_analyze_quic_parser_util_typetostring(type));
+  char tempid[100];
   spindump_deepdebugf("destination cid = %s (length known %u)",
-                      spindump_connection_quicconnectionid_tostring(p_destinationCid),
+                      spindump_connection_quicconnectionid_tostring(p_destinationCid,tempid,sizeof(tempid)),
                       *p_destinationCidLengthKnown);
   spindump_deepdebugf("source cid = %s (present %u)",
-                      spindump_connection_quicconnectionid_tostring(p_sourceCid),
+                      spindump_connection_quicconnectionid_tostring(p_sourceCid,tempid,sizeof(tempid)),
                       *p_sourceCidPresent);
   return(1);
 }
@@ -513,7 +514,7 @@ spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
        (((uint32_t)payload[versionPosition+1]) << 16) +
        (((uint32_t)payload[versionPosition+2]) << 8) +
        (((uint32_t)payload[versionPosition+3]) << 0));
-    spindump_deepdebugf("QUIC Google QUIC packet version = %lx", version);
+    spindump_deepdebugf("QUIC Google QUIC packet version = %x", version);
     
     googleVersion=spindump_analyze_quic_parser_getgoogleversion(version);
     if (googleVersion == spindump_quic_version_unknown) {
@@ -586,7 +587,7 @@ spindump_analyze_quic_parser_parse_google_quic(const unsigned char* payload,
   *p_mayHaveSpinBit = 0;
   *p_version = version;
   *p_type = type;
-  spindump_deepdebugf("successfully parsed the Google QUIC packet, version = %lx, sn = %lx, type = %s",
+  spindump_deepdebugf("successfully parsed the Google QUIC packet, version = %x, sn = %x, type = %s",
                       version,
                       sequenceNumber,
                       spindump_analyze_quic_parser_util_typetostring(type));
@@ -1461,7 +1462,7 @@ spindump_analyze_quic_parser_parseversionnumber(const unsigned char* payload,
                           (((uint32_t)quic->u.longheader.qh_version[1]) << 16) +
                           (((uint32_t)quic->u.longheader.qh_version[2]) << 8) +
                           (((uint32_t)quic->u.longheader.qh_version[3]) << 0));
-  spindump_deepdebugf("QUIC long form packet version = %lx", *p_version);
+  spindump_deepdebugf("QUIC long form packet version = %x", *p_version);
   if (spindump_quic_version_isforcenegot(*p_version)) {
     *p_version = spindump_quic_version_forcenegotiation;
   }
@@ -1481,7 +1482,7 @@ spindump_analyze_quic_parser_parseversionnumber(const unsigned char* payload,
     const struct spindump_quic_versiondescr* descriptor =
     spindump_analyze_quic_parser_version_findversion(*p_version);
     if (descriptor == 0) {
-      spindump_deepdebugf("QUIC version just not recognised !ok (ver = %lx)", *p_version);
+      spindump_deepdebugf("QUIC version just not recognised !ok (ver = %x)", *p_version);
       *p_version = spindump_quic_version_unknown;
       stats->unrecognisedQuicVersion++;
       return(0);
@@ -1629,8 +1630,9 @@ spindump_analyze_quic_parser_parsecids(uint32_t version,
     *p_sourceCidPresent = 1;
     p_sourceCid->len = sourceLen;
     memcpy(p_sourceCid->id,&((payload + spindump_quic_longheader_length)[destLen]),sourceLen);
-    spindump_deepdebugf("destination CID = %s", spindump_connection_quicconnectionid_tostring(p_destinationCid));
-    spindump_deepdebugf("source CID = %s", spindump_connection_quicconnectionid_tostring(p_sourceCid));
+    char tempid[100];
+    spindump_deepdebugf("destination CID = %s", spindump_connection_quicconnectionid_tostring(p_destinationCid,tempid,sizeof(tempid)));
+    spindump_deepdebugf("source CID = %s", spindump_connection_quicconnectionid_tostring(p_sourceCid,tempid,sizeof(tempid)));
   } else {
     *p_destinationCidLengthKnown = 0;
     memcpy(p_destinationCid->id,payload + spindump_quic_header_length,spindump_min(18,payload_len-1));
@@ -1680,7 +1682,7 @@ spindump_analyze_quic_parser_getspinbit(const unsigned char* payload,
                           fromResponder ? "responder" : "initiator");
       return(1);
     } else {
-      spindump_deepdebugf("SPIN not parseable for this version (%lx)", version);
+      spindump_deepdebugf("SPIN not parseable for this version (%x)", version);
       return(0);
     }
 
@@ -1725,7 +1727,7 @@ spindump_analyze_quic_parser_getextrameas(const unsigned char* payload,
                           fromResponder ? "responder" : "initiator");*/
       return(1);
     } else {
-      spindump_deepdebugf("Reserved bits are not parseable for this version (%lx)", version);
+      spindump_deepdebugf("Reserved bits are not parseable for this version (%x)", version);
       return(0);
     }
 

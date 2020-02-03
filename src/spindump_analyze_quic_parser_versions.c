@@ -215,7 +215,7 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version,
   // Clear the buffer
   //
   
-  spindump_deepdeepdebugf("versiontostring %08x %u", version, bufsize);
+  spindump_deepdeepdebugf("versiontostring %08x %lu", version, bufsize);
   memset(buf,0,bufsize);
   
   //
@@ -224,7 +224,7 @@ spindump_analyze_quic_parser_versiontostring(uint32_t version,
 
   const struct spindump_quic_versiondescr* descriptor =
     spindump_analyze_quic_parser_version_findversion(version);
-  spindump_deepdeepdebugf("versiontostring got a descriptor %lx", descriptor);
+  spindump_deepdeepdebugf("versiontostring got a descriptor %lx", (unsigned long)descriptor);
   if (descriptor == 0) {
     snprintf(buf,bufsize-1,"v.0x%08x", version);
   } else {

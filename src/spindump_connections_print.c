@@ -285,29 +285,32 @@ spindump_connection_report_coap(struct spindump_connection* connection,
 }
 
 //
-// Convert a QUIC connection ID to a string. The returned string need
-// not be freed, but will not survive the next call to this function.
-//
-// Note: This function is not thread safe.
+// Convert a QUIC connection ID to a string. The string is placed in the output buffer,
+// whose size is given in outputLength.
 //
 
 const char*
-spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id) {
+spindump_connection_quicconnectionid_tostring(struct spindump_quic_connectionid* id,
+                                              char* output,
+                                              size_t outputLength) {
   spindump_assert(id != 0);
   spindump_assert(id->len <= 255);
-  static char buf[50];
-  memset(buf,0,sizeof(buf));
-  if (id->len == 0) return("null");
-  unsigned int sizeRemains = sizeof(buf)-1;
+  spindump_assert(output != 0);
+  spindump_assert(outputLength > 0);
+  memset(output,0,outputLength);
+  if (id->len == 0) {
+    snprintf(output,outputLength-1,"null");
+    return(output);
+  }
   unsigned int position = 0;
   for (unsigned int i = 0; i < id->len; i++) {
-    spindump_assert(position < sizeof(buf));
-    int ans = snprintf(buf + position, sizeRemains, "%02x", id->id[i]);
-    unsigned int howmuch = (unsigned int)ans;
-    position += howmuch;
-    sizeRemains -= howmuch;
+    int ans = snprintf(output + position, outputLength - 1, "%02x", id->id[i]);
+    if (ans > 0) {
+      position += (unsigned int)ans;
+      outputLength -= (unsigned int)ans;
+    }
   }
-  return(buf);
+  return(output);
 }
 
 //
@@ -325,10 +328,11 @@ spindump_connection_report_quic(struct spindump_connection* connection,
   fprintf(file,"  host 2:                %10s:%u\n",
           spindump_connection_address_tostring(anonymize,&connection->u.quic.side2peerAddress,querier),
           connection->u.quic.side2peerPort);
+  char tempid[100];
   fprintf(file,"  peer 1 connection ID:  %40s\n",
-          spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
+          spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID,tempid,sizeof(tempid)));
   fprintf(file,"  peer 2 connection ID:  %40s\n",
-          spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+          spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID,tempid,sizeof(tempid)));
   fprintf(file,"  initial right RTT:     %40s\n",
           spindump_rtt_tostring(connection->u.quic.initialRightRTT));
   fprintf(file,"  initial left RTT:      %40s\n",
@@ -753,6 +757,7 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
   }
   
   memset(buffer,0,maxlen);
+  char tempid[100];
   
   switch (connection->type) {
   case spindump_connection_transport_tcp:
@@ -781,9 +786,9 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
     
   case spindump_connection_transport_quic:
     snprintf(buffer,maxlen-1,"%s-",
-             spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID));
+             spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer1ConnectionID,tempid,sizeof(tempid)));
     snprintf(buffer+strlen(buffer),maxlen-strlen(buffer)-1,"%s",
-             spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID));
+             spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID,tempid,sizeof(tempid)));
     snprintf(buffer+strlen(buffer),maxlen-strlen(buffer)-1," (%u:%u)",
              connection->u.quic.side1peerPort,
              connection->u.quic.side2peerPort);

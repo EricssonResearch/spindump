@@ -94,7 +94,9 @@ spindump_isearliertime(const struct timeval* later,
 void
 spindump_zerotime(struct timeval* result);
 const char*
-spindump_timetostring(const struct timeval* result);
+spindump_timetostring(const struct timeval* input,
+                      char* output,
+                      size_t outputLength);
 void
 spindump_timeval_to_timestamp(const struct timeval* timev,
                               unsigned long long* timestamp);

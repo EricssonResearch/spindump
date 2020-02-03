@@ -341,6 +341,7 @@ spindump_connections_match(struct spindump_connection* connection,
 
   struct spindump_quic_connectionid* side1connectionId = 0;
   struct spindump_quic_connectionid* side2connectionId = 0;
+  char tempid[100];
   
   switch (criteria->matchQuicCids) {
 
@@ -352,7 +353,7 @@ spindump_connections_match(struct spindump_connection* connection,
     spindump_assert(criteria->matchType && criteria->type == spindump_connection_transport_quic);
     side1connectionId = &connection->u.quic.peer1ConnectionID;
     spindump_deepdeepdebugf("source cid match needed to %s",
-                            spindump_connection_quicconnectionid_tostring(side1connectionId));
+                            spindump_connection_quicconnectionid_tostring(side1connectionId,tempid,sizeof(tempid)));
     if (!spindump_analyze_quic_quicidequal(side1connectionId,&criteria->side1connectionId)) return(0);
     if (fromResponderSet && *fromResponder != 1) return(0);
     *fromResponder = 1;
@@ -363,7 +364,7 @@ spindump_connections_match(struct spindump_connection* connection,
     spindump_assert(criteria->matchType && criteria->type == spindump_connection_transport_quic);
     side2connectionId = &connection->u.quic.peer2ConnectionID;
     spindump_deepdeepdebugf("destination cid match needed to %s",
-                            spindump_connection_quicconnectionid_tostring(side2connectionId));
+                            spindump_connection_quicconnectionid_tostring(side2connectionId,tempid,sizeof(tempid)));
     if (!spindump_analyze_quic_quicidequal(side2connectionId,&criteria->side2connectionId)) return(0);
     if (fromResponderSet && *fromResponder != 0) return(0);
     *fromResponder = 0;
@@ -375,9 +376,9 @@ spindump_connections_match(struct spindump_connection* connection,
     side1connectionId = &connection->u.quic.peer1ConnectionID;
     side2connectionId = &connection->u.quic.peer2ConnectionID;
     spindump_deepdeepdebugf("destination and source cid match needed to destination %s",
-                            spindump_connection_quicconnectionid_tostring(side2connectionId));
+                            spindump_connection_quicconnectionid_tostring(side2connectionId,tempid,sizeof(tempid)));
     spindump_deepdeepdebugf("destination and source cid match needed to souerce %s",
-                            spindump_connection_quicconnectionid_tostring(side1connectionId));
+                            spindump_connection_quicconnectionid_tostring(side1connectionId,tempid,sizeof(tempid)));
     if (!spindump_analyze_quic_quicidequal(side1connectionId,&criteria->side1connectionId)) return(0);
     if (!spindump_analyze_quic_quicidequal(side2connectionId,&criteria->side2connectionId)) return(0);
     if (fromResponderSet && *fromResponder != 0) return(0);
@@ -390,9 +391,9 @@ spindump_connections_match(struct spindump_connection* connection,
     side1connectionId = &connection->u.quic.peer1ConnectionID;
     side2connectionId = &connection->u.quic.peer2ConnectionID;
     spindump_deepdeepdebugf("destination and source cid match needed to destination %s (allow reverse)",
-                            spindump_connection_quicconnectionid_tostring(side2connectionId));
+                            spindump_connection_quicconnectionid_tostring(side2connectionId,tempid,sizeof(tempid)));
     spindump_deepdeepdebugf("destination and source cid match needed to souerce %s (allow reverse)",
-                            spindump_connection_quicconnectionid_tostring(side1connectionId));
+                            spindump_connection_quicconnectionid_tostring(side1connectionId,tempid,sizeof(tempid)));
     if (spindump_analyze_quic_quicidequal(side1connectionId,&criteria->side1connectionId) &&
         spindump_analyze_quic_quicidequal(side2connectionId,&criteria->side2connectionId) &&
         (!fromResponderSet || *fromResponder == 0)) {
@@ -874,8 +875,9 @@ spindump_connections_searchconnection_quic_cids(struct spindump_quic_connectioni
   spindump_assert(sourceCid != 0);
   spindump_assert(table != 0);
 
-  spindump_deepdeepdebugf("searchconnection_quic_cids source %s", spindump_connection_quicconnectionid_tostring(sourceCid));
-  spindump_deepdeepdebugf("searchconnection_quic_cids destination %s", spindump_connection_quicconnectionid_tostring(destinationCid));
+  char tempid[100];
+  spindump_deepdeepdebugf("searchconnection_quic_cids source %s", spindump_connection_quicconnectionid_tostring(sourceCid,tempid,sizeof(tempid)));
+  spindump_deepdeepdebugf("searchconnection_quic_cids destination %s", spindump_connection_quicconnectionid_tostring(destinationCid,tempid,sizeof(tempid)));
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -906,8 +908,9 @@ spindump_connections_searchconnection_quic_destcid(struct spindump_quic_connecti
   spindump_assert(destinationCid != 0);
   spindump_assert(table != 0);
   
+  char tempid[100];
   spindump_deepdeepdebugf("searchconnection_quic_destcid %s",
-                          spindump_connection_quicconnectionid_tostring(destinationCid));
+                          spindump_connection_quicconnectionid_tostring(destinationCid,tempid,sizeof(tempid)));
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   
@@ -1035,9 +1038,12 @@ spindump_connections_searchconnection_quic_cids_either(struct spindump_quic_conn
   spindump_assert(destinationCid != 0);
   spindump_assert(sourceCid != 0);
   spindump_assert(table != 0);
-  
-  spindump_deepdeepdebugf("searchconnection_quic_cids_either source %s", spindump_connection_quicconnectionid_tostring(sourceCid));
-  spindump_deepdeepdebugf("searchconnection_quic_cids_either destination %s", spindump_connection_quicconnectionid_tostring(destinationCid));
+
+  char tempid[100];
+  spindump_deepdeepdebugf("searchconnection_quic_cids_either source %s",
+                          spindump_connection_quicconnectionid_tostring(sourceCid,tempid,sizeof(tempid)));
+  spindump_deepdeepdebugf("searchconnection_quic_cids_either destination %s",
+                          spindump_connection_quicconnectionid_tostring(destinationCid,tempid,sizeof(tempid)));
   struct spindump_connection_searchcriteria criteria;
   memset(&criteria,0,sizeof(criteria));
   

@@ -139,7 +139,7 @@ spindump_connectionstable_uninitialize(struct spindump_connectionstable* table) 
   //
   
   memset(table->connections,0xFF,table->maxNConnections * sizeof(struct spindump_connection*));
-  spindump_deepdebugf("free table->connections %lx in spindump_connections_freetable", table->connections);
+  spindump_deepdebugf("free table->connections in spindump_connections_freetable");
   spindump_free(table->connections);
   memset(table,0xFF,sizeof(*table));
   spindump_deepdebugf("free table in spindump_connections_freetable");
