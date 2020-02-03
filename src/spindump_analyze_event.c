@@ -527,6 +527,19 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
                                                             state->table);
     break;
     
+  case spindump_connection_transport_sctp:
+    if (!spindump_analyze_event_parsehostpair(event)) return;
+    if (!spindump_analyze_event_parseportpair(event,&side1port,&side2port)) return;
+    *p_connection =
+      spindump_connections_newconnection_sctp(&event->initiatorAddress.address,
+                                              &event->responderAddress.address,
+                                              side1port,
+                                              side2port,
+                                              0,
+                                              &when,
+                                              state->table);
+    break;
+    
   case spindump_connection_transport_icmp:
     if (!spindump_analyze_event_parsehostpair(event)) return;
     if (!spindump_analyze_event_parseicmpsessionid(event,&peerid)) return;
@@ -948,6 +961,17 @@ spindump_analyze_processevent_find_connection(struct spindump_analyze* state,
                                                           side2port,
                                                           state->table);
     }
+    break;
+    
+  case spindump_connection_transport_sctp:
+    if (!spindump_analyze_event_parsehostpair(event)) return(0);
+    if (!spindump_analyze_event_parseportpair(event,&side1port,&side2port)) return(0);
+    connection =
+      spindump_connections_searchconnection_sctp(&event->initiatorAddress.address,
+                                                 &event->responderAddress.address,
+                                                 side1port,
+                                                 side2port,
+                                                 state->table);
     break;
     
   case spindump_connection_transport_icmp:

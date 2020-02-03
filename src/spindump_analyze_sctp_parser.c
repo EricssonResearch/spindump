@@ -28,26 +28,31 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
-void
+static void
 spindump_protocols_sctp_chunk_init_parse(const unsigned char* packet,
-                                        struct spindump_sctp_chunk* decoded);
+                                         struct spindump_sctp_chunk* decoded);
 
-void
+static void
 spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* packet,
-                                            struct spindump_sctp_chunk* decoded);
+                                             struct spindump_sctp_chunk* decoded);
 
-void
+static void
 spindump_protocols_sctp_chunk_data_parse(const unsigned char* packet,
-                                        struct spindump_sctp_chunk* decoded);
+                                         struct spindump_sctp_chunk* decoded);
 
-void
+static void
 spindump_protocols_sctp_chunk_sack_parse(const unsigned char* packet,
                                         struct spindump_sctp_chunk* decoded);
 
-unsigned int
+static unsigned int
 spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
                                           struct spindump_sctp_chunk* decoded,
                                           unsigned int remainingLen);
+#if 0
+static void
+spindump_protocols_sctp_chunk_header_parse(const unsigned char* packet,
+                                           struct spindump_sctp_chunk* decoded);
+#endif
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -58,15 +63,19 @@ spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |   Type = 1    |  Chunk Flags  |      Chunk Length             |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-void
+//
+
+#if 0
+static void
 spindump_protocols_sctp_chunk_header_parse(const unsigned char* packet,
-                                     struct spindump_sctp_chunk* decoded){
+                                           struct spindump_sctp_chunk* decoded) {
 
   unsigned int pos = 0;
   spindump_decodebyte(decoded->ch_type,packet,pos);
   spindump_decodebyte(decoded->ch_flags,packet,pos);
   spindump_decode2byteint(decoded->ch_length,packet,pos);
 }
+#endif
 
 //  0                   1                   2                   3
 //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -87,9 +96,11 @@ spindump_protocols_sctp_chunk_header_parse(const unsigned char* packet,
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //
 // Note, packet must point to chunk value
-void
+//
+
+static void
 spindump_protocols_sctp_chunk_init_parse(const unsigned char* packet,
-                                     struct spindump_sctp_chunk* decoded){
+                                     struct spindump_sctp_chunk* decoded) {
   
   unsigned int pos = 0;
   spindump_decode4byteint(decoded->ch.init.initiateTag,packet,pos);          // Initiate Tag
@@ -118,9 +129,11 @@ spindump_protocols_sctp_chunk_init_parse(const unsigned char* packet,
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //
 // Note, packet must point to chunk value
-void
+//
+
+static void
 spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* packet,
-                                     struct spindump_sctp_chunk* decoded){
+                                             struct spindump_sctp_chunk* decoded) {
 
   unsigned int pos = 0;
   spindump_decode4byteint(decoded->ch.init_ack.initiateTag,packet,pos);          // Initiate Tag
@@ -148,9 +161,11 @@ spindump_protocols_sctp_chunk_init_ack_parse(const unsigned char* packet,
 //  |                 User Data (seq n of Stream S)                 |
 //  |                                                               |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-void
+//
+
+static void
 spindump_protocols_sctp_chunk_data_parse(const unsigned char* packet,
-                                     struct spindump_sctp_chunk* decoded){
+                                     struct spindump_sctp_chunk* decoded) {
 
   unsigned int pos = 0;
   spindump_decode4byteint(decoded->ch.data.tsn,packet,pos);                // TSN
@@ -189,9 +204,11 @@ spindump_protocols_sctp_chunk_data_parse(const unsigned char* packet,
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |                       Duplicate TSN X                         |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-void
+//
+
+static void
 spindump_protocols_sctp_chunk_sack_parse(const unsigned char* packet,
-                                     struct spindump_sctp_chunk* decoded){
+                                     struct spindump_sctp_chunk* decoded) {
 
   unsigned int pos = 0;
   spindump_decode4byteint(decoded->ch.sack.cumulativeTsnAck,packet,pos);  // Cumulative TSN Ack
@@ -200,7 +217,7 @@ spindump_protocols_sctp_chunk_sack_parse(const unsigned char* packet,
   spindump_decode2byteint(decoded->ch.sack.nDupTsn,packet,pos);           // Number of Duplicate TSNs
 }
 
-unsigned int
+static unsigned int
 spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
                                           struct spindump_sctp_chunk* decoded,
                                           unsigned int remainingLen) {
@@ -208,7 +225,6 @@ spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
   switch (decoded->ch_type) {
 
     case spindump_sctp_chunk_type_init:
-
       if (remainingLen >= spindump_sctp_chunk_init_parse_length) {
         spindump_protocols_sctp_chunk_init_parse(packet, decoded);
         return spindump_sctp_parse_ok;
@@ -216,9 +232,7 @@ spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
         return spindump_sctp_parse_error;
       }
 
-      break;
     case spindump_sctp_chunk_type_init_ack:
-
       if (remainingLen >= spindump_sctp_chunk_initack_parse_length) {
         spindump_protocols_sctp_chunk_init_ack_parse(packet, decoded);
         return spindump_sctp_parse_ok;
@@ -226,9 +240,7 @@ spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
         return spindump_sctp_parse_error;
       }
 
-      break;
     case spindump_sctp_chunk_type_data:
-
       if (remainingLen >= spindump_sctp_chunk_data_parse_length) {
         spindump_protocols_sctp_chunk_data_parse(packet, decoded);
         return spindump_sctp_parse_ok;
@@ -236,15 +248,14 @@ spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
         return spindump_sctp_parse_error;
       }
 
-      break;
     case spindump_sctp_chunk_type_sack:
-
       if (remainingLen >= spindump_sctp_chunk_sack_parse_length) {
         spindump_protocols_sctp_chunk_sack_parse(packet, decoded);
         return spindump_sctp_parse_ok;
       } else {
         return spindump_sctp_parse_error;
       }
+      
     case spindump_sctp_chunk_type_cookie_echo:
     case spindump_sctp_chunk_type_cookie_ack:
     case spindump_sctp_chunk_type_shutdown:
@@ -254,12 +265,11 @@ spindump_protocols_sctp_chunk_value_parse(const unsigned char* packet,
     case spindump_sctp_chunk_type_heartbeat:
     case spindump_sctp_chunk_type_heartbeat_ack:
       return spindump_sctp_parse_ok;
-      break;
-    default:
 
+    default:
       spindump_deepdeepdebugf("Unknown chunk received: %d", decoded->ch_type);
       return spindump_sctp_parse_error;
-      break;
+      
   }
 }
 

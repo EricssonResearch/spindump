@@ -58,6 +58,7 @@ spindump_connections_set_unlinkfromset(struct spindump_connection* connection,
     
   case spindump_connection_transport_udp:
   case spindump_connection_transport_tcp:
+  case spindump_connection_transport_sctp:
   case spindump_connection_transport_quic:
   case spindump_connection_transport_dns:
   case spindump_connection_transport_coap:

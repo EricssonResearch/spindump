@@ -55,6 +55,9 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
                                                  struct spindump_connection* connection,
                                                  int fromResponder,
                                                  struct timeval* t);
+static const char*
+spindump_analyze_sctp_chunk_type_to_string(enum spindump_sctp_chunk_type type);
+
 //
 // Actual code --------------------------------------------------------------------------------
 //
@@ -64,7 +67,7 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 // static value, and need not be deallocated.
 //
 
-const char*
+static const char*
 spindump_analyze_sctp_chunk_type_to_string(enum spindump_sctp_chunk_type type) {
   switch (type) {
   case spindump_sctp_chunk_type_data: return("DATA");              
@@ -192,14 +195,14 @@ spindump_analyze_process_sctp_marksent_hb(struct spindump_connection* connection
     connection->u.sctp.side2HbCnt += 1;
     connection->u.sctp.side2hbTime = *t;
     spindump_deepdeepdebugf("After processing side2HbCnt %d, side2hbTime %llu", 
-                            connection->u.sctp.side2HbCnt, connection->u.sctp.side2hbTime);
+                            connection->u.sctp.side2HbCnt, connection->u.sctp.side2hbTime.tv_sec);
 
     } else {
                 
       connection->u.sctp.side1HbCnt += 1;
       connection->u.sctp.side1hbTime = *t;
       spindump_deepdeepdebugf("After processing side1HbCnt %d, side1hbTime %llu", 
-                              connection->u.sctp.side1HbCnt, connection->u.sctp.side1hbTime);
+                              connection->u.sctp.side1HbCnt, connection->u.sctp.side1hbTime.tv_sec);
 
       }
     } else {
@@ -314,8 +317,8 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   //
   // Parse the header
   //
-  int remainingLen = (remainingCaplen < sctpLength) ? remainingCaplen : sctpLength;
-  unsigned char* position = (unsigned char*)packet->contents + sctpHeaderPosition;
+  unsigned int remainingLen = (remainingCaplen < sctpLength) ? remainingCaplen : sctpLength;
+  const unsigned char* position = packet->contents + sctpHeaderPosition;
 
   state->stats->receivedSctp++;
 
