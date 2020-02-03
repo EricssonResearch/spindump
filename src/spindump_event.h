@@ -113,7 +113,7 @@ struct spindump_event_qrloss_measurement {
 };
 
 #define spindump_event_sessioidmaxlength   (18*2*2+1)
-#define spindump_event_notes_maxlength     20
+#define spindump_event_notes_maxlength     30
 
 struct spindump_event {
   enum spindump_event_type eventType;
