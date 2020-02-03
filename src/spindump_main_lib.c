@@ -142,6 +142,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->reportSpinFlips = 0;
   config->reportRtLoss = 0;
   config->reportQrLoss = 0;
+  config->reportPackets = 0;
   config->reportNotes = 1;
   config->anonymizeLeft = 0;
   config->anonymizeRight = 0;
@@ -272,6 +273,14 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--not-report-qr-loss") == 0) {
 
       config->reportQrLoss = 0;
+
+    } else if (strcmp(argv[0],"--report-packets") == 0) {
+
+      config->reportPackets = 1;
+
+    } else if (strcmp(argv[0],"--not-report-packets") == 0) {
+
+      config->reportPackets = 0;
 
     } else if (strcmp(argv[0],"--report-notes") == 0) {
 
@@ -667,6 +676,11 @@ spindump_main_help(void) {
   printf("    --not-rt-loss\n");
   printf("    --report-qr-loss        Report unidirectional loss in --textual mode.\n");
   printf("    --not-report-qr-loss\n");
+  printf("\n");
+  printf("    --report-packets        Report update on every packet (default is not).\n");
+  printf("    --no-report-packets     Do not report update on every packet.\n");
+  printf("    --report-notes          Report additional textual notes in events (default is not).\n");
+  printf("    --no-report-notes       Do not report additional textual notes.\n");
   printf("\n");
   printf("    --anonymize             Anonymization control.\n");
   printf("    --not-anonymize\n");

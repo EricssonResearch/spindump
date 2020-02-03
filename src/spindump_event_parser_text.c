@@ -183,6 +183,9 @@ spindump_event_parser_text_print(const struct spindump_event* event,
     }
     break;
     
+  case spindump_event_type_packet:
+    break;
+    
   default:
     spindump_errorf("invalid event type");
   }

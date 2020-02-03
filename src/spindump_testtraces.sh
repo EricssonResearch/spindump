@@ -98,6 +98,7 @@ traces="trace_icmpv4_short
         trace_tcp_medium_snap80
         trace_tcp_large_snap80
         trace_ping_tooold
+        trace_icmp_allpackets
         trace_empty
         trace_sctp_short_lo
         trace_sctp_medium"
@@ -147,6 +148,7 @@ do
     descr=$testdir/$trace.txt
     outpre=$testdir/$trace.out.pre
     out=$testdir/$trace.out
+    cmd=$testdir/$trace.cmd
     corr=$testdir/$trace.expected
     optsfile=$testdir/$trace.options
     perfoptsfile=$testdir/$trace.optionsperf
@@ -164,8 +166,10 @@ do
     #
     # Now run it!
     #
-    
-    if $spindump --input-file $pcap --textual --format text --not-report-notes $opts $debugopts > $outpre
+
+    allopts="--input-file $pcap --textual --format text --not-report-notes $opts $debugopts"
+    echo $spindump $allopts > $cmd
+    if $spindump $allopts > $outpre
      then
         echo "  run ok..."
     else

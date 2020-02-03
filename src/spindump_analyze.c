@@ -348,7 +348,11 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
     if ((handler->eventmask & event) != 0) {
       spindump_assert(spindump_analyze_max_handlers == spindump_connection_max_handlers);
       spindump_assert(i < spindump_connection_max_handlers);
-      spindump_deepdebugf("calling handler %x (%lx)", handler->eventmask, (unsigned long)handler->function);
+      state->stats->analyzerHandlerCalls++;
+      spindump_deepdebugf("calling %uth handler %x (%lx)",
+                          state->stats->analyzerHandlerCalls,
+                          handler->eventmask,
+                          (unsigned long)handler->function);
       (*(handler->function))(state,
                              handler->handlerData,
                              &connection->handlerConnectionDatas[i],
@@ -451,10 +455,19 @@ spindump_analyze_process(struct spindump_analyze* state,
   //
 
   spindump_assert(state != 0);
+  spindump_assert(state->stats != 0);
   spindump_assert(packet != 0);
   spindump_assert(spindump_packet_isvalid(packet));
   spindump_assert(p_connection != 0);
 
+  //
+  // Store a count of events before processing this packet
+  //
+  
+  packet->analyzerHandlerCalls = state->stats->analyzerHandlerCalls;
+  spindump_deepdebugf("initialized handler counter to %u for spindump_analyze_process",
+                      packet->analyzerHandlerCalls);
+  
   //
   // Switch based on type of L2
   //
@@ -699,21 +712,27 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
                                       connection);
   }
 
-  spindump_analyze_process_handlers(state,
-                                    spindump_analyze_event_newpacket,
-                                    packet,
-                                    connection);
-
-        if (ecnCe) {
-                spindump_analyze_process_handlers(state,
+  if (ecnCe) {
+    spindump_analyze_process_handlers(state,
                                       fromResponder ? spindump_analyze_event_responderecnce :
-                                                                                                                                                        spindump_analyze_event_initiatorecnce,
+                                      spindump_analyze_event_initiatorecnce,
                                       packet,
                                       connection);
-        }
+  }
 
+  //
+  // Call the generic "new packet" handler unless some other handler was called earlier
+  //
 
-
+  spindump_deepdebugf("considering whether to call newpacket handler %u == %u?",
+                      packet->analyzerHandlerCalls,state->stats->analyzerHandlerCalls);
+  if (packet->analyzerHandlerCalls == state->stats->analyzerHandlerCalls) {
+    spindump_analyze_process_handlers(state,
+                                      spindump_analyze_event_newpacket,
+                                      packet,
+                                      connection);
+  }
+  
   //
   // Loop through any possible aggregated connections this connection
   // belongs to, and report the same measurement udpates there.

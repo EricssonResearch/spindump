@@ -20,5 +20,6 @@ spindump_test.out
 install_manifest.txt
 test/*.out.pre
 test/*.out
+test/*.cmd
 src/*.out
 build

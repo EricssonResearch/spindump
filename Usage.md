@@ -83,9 +83,16 @@ Sets the tool to either report or not report individual spin bit values or spin 
     --report-qr-loss
     --not-report-qr-loss
 
-Sets the tool to either report or not report round-trip loss rates or unidirectional loss rates for QUIC connections based on two experimental algorithms, when using the --textual mode. The default is to not report packet loss rates.
+ Sets the tool to either report or not report round-trip loss rates or unidirectional loss rates for QUIC connections based on two experimental algorithms, when using the --textual mode. The default is to not report packet loss rates.
 
-    --debug
+    --report-packets
+    --no-report-packets
+    --report-notes
+    --no-report-notes
+
+The first two options set the tool to either report statistics on every packet or not. Note that --report-spins also sets reporting for all packets, but only for QUIC flows. The second two options set the tool to either report the textual "note" field on JSON or textual outputs or not.
+
+    --debug 
     --no-debug
     --deepdebug
     --no-deepdebug

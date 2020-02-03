@@ -57,7 +57,10 @@ spindump_event_parser_json_parse_aux_rtloss_measurement(const struct spindump_js
                                                         struct spindump_event* event);
 static int
 spindump_event_parser_json_parse_aux_qrloss_measurement(const struct spindump_json_value* json,
-                                                          struct spindump_event* event);
+                                                        struct spindump_event* event);
+static int
+spindump_event_parser_json_parse_aux_packet(const struct spindump_json_value* json,
+                                            struct spindump_event* event);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -221,6 +224,12 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
 
   case spindump_event_type_qrloss_measurement:
     if (!spindump_event_parser_json_parse_aux_qrloss_measurement(json,event)) {
+      return(0);
+    }
+    break;
+    
+  case spindump_event_type_packet:
+    if (!spindump_event_parser_json_parse_aux_packet(json,event)) {
       return(0);
     }
     break;
@@ -479,7 +488,7 @@ spindump_event_parser_json_parse_aux_rtloss_measurement(const struct spindump_js
 
 static int
 spindump_event_parser_json_parse_aux_qrloss_measurement(const struct spindump_json_value* json,
-                                                struct spindump_event* event) {
+                                                        struct spindump_event* event) {
   const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
   const struct spindump_json_value* qField = spindump_json_value_getfield("Q_loss",json);
   const struct spindump_json_value* rField = spindump_json_value_getfield("R_loss",json);
@@ -508,6 +517,16 @@ spindump_event_parser_json_parse_aux_qrloss_measurement(const struct spindump_js
     spindump_errorf("qrloss value direction does not have the right value in JSON: %s", whoValue);
     return(0);
   }
+  return(1);
+}
+
+//
+// Parse the record about a new packet. It has no extra information.
+//
+
+static int
+spindump_event_parser_json_parse_aux_packet(const struct spindump_json_value* json,
+                                            struct spindump_event* event) {
   return(1);
 }
 
@@ -654,6 +673,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
                  event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");  
     addtobuffer2(", \"Q_loss\": \"%s\"", event->u.qrlossMeasurement.qLoss);
     addtobuffer2(", \"R_loss\": \"%s\"", event->u.qrlossMeasurement.rLoss);
+    break;
+    
+  case spindump_event_type_packet:
     break;
     
   default:

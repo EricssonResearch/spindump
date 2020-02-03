@@ -36,6 +36,9 @@ struct spindump_packet {
   unsigned int caplen;                      // How much of the packet was captured
   struct timeval timestamp;                 // Reception time of the packet
   const unsigned char* contents;            // The whole received packet
+  unsigned int analyzerHandlerCalls;        // A counter, used to determine whether to call
+                                            // an extra handler, in case no other handler was
+                                            // called
 };
 
 //

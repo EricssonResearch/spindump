@@ -69,6 +69,7 @@ void
 spindump_stats_report(struct spindump_stats* stats,
                       FILE* file) {
   fprintf(file,"received frames:                        %8u\n", stats->receivedFrames);
+  fprintf(file,"analyzer handler calls:                 %8u\n", stats->analyzerHandlerCalls);
   fprintf(file,"frame not long enough for Ethernet hdr: %8u\n", stats->notEnoughPacketForEthernetHdr);
   fprintf(file,"received IPv4 packets:                  %8u\n", stats->receivedIp);
   fprintf(file,"received IPv4 bytes:                    %8sB\n",

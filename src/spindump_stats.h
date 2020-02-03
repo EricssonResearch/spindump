@@ -31,6 +31,7 @@
 
 struct spindump_stats {
   unsigned int receivedFrames;
+  unsigned int analyzerHandlerCalls;
   unsigned int notEnoughPacketForEthernetHdr;
   unsigned int receivedIp;
   unsigned int receivedIpv6;

@@ -96,6 +96,7 @@ spindump_event_type_tostring(enum spindump_event_type type) {
   case spindump_event_type_ecn_congestion_event: return("ecnce");
   case spindump_event_type_rtloss_measurement: return("rtloss");
   case spindump_event_type_qrloss_measurement: return("qrloss");
+  case spindump_event_type_packet: return("packet");
   default:
     spindump_errorf("invalid event type");
     return("UNKNOWN");
@@ -182,6 +183,8 @@ spindump_event_equal(const struct spindump_event* event1,
     if (event1->u.qrlossMeasurement.direction != event2->u.qrlossMeasurement.direction) return(0);
     if (strcmp(event1->u.qrlossMeasurement.qLoss, event2->u.qrlossMeasurement.qLoss) != 0) return(0);
     if (strcmp(event1->u.qrlossMeasurement.rLoss, event2->u.qrlossMeasurement.rLoss) != 0) return(0);
+    break;
+  case spindump_event_type_packet:
     break;
   default:
     spindump_errorf("unrecognised event type %u", event1->eventType);

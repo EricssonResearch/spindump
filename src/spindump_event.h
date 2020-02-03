@@ -40,7 +40,8 @@ enum spindump_event_type {
   spindump_event_type_spin_value = 6,
   spindump_event_type_ecn_congestion_event = 7,
   spindump_event_type_rtloss_measurement = 8,
-  spindump_event_type_qrloss_measurement = 9
+  spindump_event_type_qrloss_measurement = 9,
+  spindump_event_type_packet = 10
 };
 
 enum spindump_direction {

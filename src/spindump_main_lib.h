@@ -67,6 +67,7 @@ struct spindump_main_configuration {
   unsigned int maxReceive;
   int showStats;
   int reverseDns;
+  int reportPackets;
   int reportSpins;
   int reportSpinFlips;
   int reportRtLoss;

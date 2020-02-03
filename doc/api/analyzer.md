@@ -145,7 +145,7 @@ Called whenever there's a spin bit value in a QUIC connection from the responder
 
 ### spindump_analyze_event_newpacket
 
-Called whenever there's a new packet.
+Called whenever there's a new packet but no other callback was made (e.g., no new RTT measurements were made).
 
 ### spindump_analyze_event_firstresponsepacket
 
