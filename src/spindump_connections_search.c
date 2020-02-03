@@ -605,6 +605,80 @@ spindump_connections_searchconnection_tcp_either(const spindump_address* side1ad
 }
 
 //
+// Search for a SCTP connection, based on addresses and ports. Return
+// the found object, or 0 if not found.
+//
+
+struct spindump_connection*
+spindump_connections_searchconnection_sctp(const spindump_address* side1address,
+                                          const spindump_address* side2address,
+                                          spindump_port side1port,
+                                          spindump_port side2port,
+                                          struct spindump_connectionstable* table) {
+
+  spindump_assert(side1address != 0);
+  spindump_assert(side2address != 0);
+  spindump_assert(table != 0);
+
+  struct spindump_connection_searchcriteria criteria;
+  memset(&criteria,0,sizeof(criteria));
+  
+  criteria.matchType = 1;
+  criteria.type = spindump_connection_transport_sctp;
+  
+  criteria.matchPorts = spindump_connection_searchcriteria_srcdst_both;
+  criteria.side1port = side1port;
+  criteria.side2port = side2port;
+  
+  criteria.matchAddresses = spindump_connection_searchcriteria_srcdst_both;
+  criteria.side1address = *side1address;
+  criteria.side2address = *side2address;
+  
+  int fromResponder;
+  
+  return(spindump_connections_search(&criteria,
+                                     table,
+                                     &fromResponder));
+}
+
+//
+// Search for a SCTP connection, based on addresses and ports; allow
+// finding either direction object. Return the found object, or 0 if
+// not found.
+//
+
+struct spindump_connection*
+spindump_connections_searchconnection_sctp_either(const spindump_address* side1address,
+                                                 const spindump_address* side2address,
+                                                 spindump_port side1port,
+                                                 spindump_port side2port,
+                                                 struct spindump_connectionstable* table,
+                                                 int* fromResponder) {
+  
+  spindump_assert(side1address != 0);
+  spindump_assert(side2address != 0);
+  spindump_assert(table != 0);
+  
+  struct spindump_connection_searchcriteria criteria;
+  memset(&criteria,0,sizeof(criteria));
+  
+  criteria.matchType = 1;
+  criteria.type = spindump_connection_transport_sctp;
+  
+  criteria.matchPorts = spindump_connection_searchcriteria_srcdst_both_allowreverse;
+  criteria.side1port = side1port;
+  criteria.side2port = side2port;
+  
+  criteria.matchAddresses = spindump_connection_searchcriteria_srcdst_both_allowreverse;
+  criteria.side1address = *side1address;
+  criteria.side2address = *side2address;
+  
+  return(spindump_connections_search(&criteria,
+                                     table,
+                                     fromResponder));
+}
+
+//
 // Search for a UDP connection, based on addresses and ports. Return
 // the found object, or 0 if not found.
 //

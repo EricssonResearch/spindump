@@ -90,6 +90,7 @@ spindump_analyze_process_aggregate(struct spindump_analyze* state,
     break;
   case spindump_connection_transport_udp:
   case spindump_connection_transport_tcp:
+  case spindump_connection_transport_sctp:
   case spindump_connection_transport_quic:
   case spindump_connection_transport_dns:
   case spindump_connection_transport_coap:

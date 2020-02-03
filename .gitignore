@@ -21,3 +21,4 @@ install_manifest.txt
 test/*.out.pre
 test/*.out
 src/*.out
+build

@@ -688,6 +688,169 @@ struct spindump_tcp {
 };
 
 //
+// SCTP header from RFC 4960:
+//
+// 0                   1                   2                   3
+// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |     Source Port Number        |     Destination Port Number   |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                      Verification Tag                         |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Checksum                            |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+//
+
+#define spindump_sctp_packet_header_length     (2+2+4+4)
+
+struct spindump_sctp_packet_header {
+  spindump_port sh_sport;       // source port
+  spindump_port sh_dport;       // destination port
+  uint32_t sh_vtag;             // Verification Tag
+  uint32_t sh_checksum;         // Checksum
+};
+
+//
+// SCTP Chunk Field from RFC 4960:
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Chunk Type  | Chunk  Flags  |        Chunk Length           |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                          Chunk Value                          |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+struct spindump_sctp_chunk {
+  uint8_t ch_type;       // Chunk Type
+  uint8_t ch_flags;      // Chunk Flags
+  uint16_t ch_length;    // Chunk Length
+  union {
+
+//
+// SCTP DATA chunk from RFC 4960:
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 0    | Reserved|U|B|E|    Length                     |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                              TSN                              |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |      Stream Identifier S      |   Stream Sequence Number n    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                  Payload Protocol Identifier                  |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                 User Data (seq n of Stream S)                 |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    struct {
+      uint32_t tsn;
+      uint16_t streamId;
+      uint16_t streamSn;
+      uint32_t payloadProtoId;
+    } data;
+
+// TODO: Denis S: Implement Gaps and Duplicate TSNs
+//
+// SCTP SACK chunk from RFC 4960:
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 3    |Chunk  Flags   |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                      Cumulative TSN Ack                       |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |          Advertised Receiver Window Credit (a_rwnd)           |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  | Number of Gap Ack Blocks = N  |  Number of Duplicate TSNs = X |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Gap Ack Block #1 Start       |   Gap Ack Block #1 End        |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                              ...                              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Gap Ack Block #N Start      |  Gap Ack Block #N End         |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                       Duplicate TSN 1                         |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |                              ...                              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                       Duplicate TSN X                         |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    struct {
+      uint32_t cumulativeTsnAck;
+      uint32_t arwnd;
+      uint16_t nGapAckBlock;
+      uint16_t nDupTsn;
+    } sack;
+
+//  SCTP INIT chunk from RFC 4960:
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 1    |  Chunk Flags  |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                         Initiate Tag                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |           Advertised Receiver Window Credit (a_rwnd)          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Number of Outbound Streams   |  Number of Inbound Streams    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                          Initial TSN                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |              Optional/Variable-Length Parameters              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    struct {
+      uint32_t initiateTag;             // Initiate Tag
+      uint32_t arwnd;
+      uint16_t outStreams;
+      uint16_t inStreams;
+      uint32_t initTsn;
+    } init;
+
+//  SCTP INIT ACK chunk from RFC 4960
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |   Type = 2    |  Chunk Flags  |      Chunk Length             |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                         Initiate Tag                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |              Advertised Receiver Window Credit                |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |  Number of Outbound Streams   |  Number of Inbound Streams    |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                          Initial TSN                          |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//  |                                                               |
+//  |              Optional/Variable-Length Parameters              |
+//  |                                                               |
+//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    struct {
+       uint32_t initiateTag;             // Initiate Tag
+       uint32_t arwnd;
+       uint16_t outStreams;
+       uint16_t inStreams;
+       uint32_t initTsn;
+    } init_ack;
+
+  } ch;
+
+};
+
+//
 // Draft 17 (and later) high order bits
 //
 
@@ -968,6 +1131,9 @@ spindump_protocols_coap_header_decode(const unsigned char* header,
 void
 spindump_protocols_tcp_header_decode(const unsigned char* header,
                                      struct spindump_tcp* decoded);
+void
+spindump_protocols_sctp_header_decode(const unsigned char* header,
+                                     struct spindump_sctp_packet_header* decoded);
 void
 spindump_protocols_quic_header_decode(const unsigned char* header,
                                       unsigned char* decoded);

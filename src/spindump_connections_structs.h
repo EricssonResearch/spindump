@@ -32,6 +32,7 @@
 #include "spindump_rtt.h"
 #include "spindump_seq.h"
 #include "spindump_mid.h"
+#include "spindump_sctp_tsn.h"
 #include "spindump_bandwidth.h"
 #include "spindump_spin_structs.h"
 #include "spindump_rtloss_structs.h"
@@ -54,6 +55,7 @@ enum spindump_connection_type {
   spindump_connection_transport_coap,
   spindump_connection_transport_quic,
   spindump_connection_transport_icmp,
+  spindump_connection_transport_sctp,
   spindump_connection_aggregate_hostpair,
   spindump_connection_aggregate_hostnetwork,
   spindump_connection_aggregate_networknetwork,
@@ -137,6 +139,22 @@ struct spindump_connection {
       int finFromSide1;                             // seen a FIN from side1?
       int finFromSide2;                             // seen a FIN from side2?
     } tcp;
+
+    struct {
+      spindump_address side1peerAddress;            // source address for the initial packet
+      spindump_address side2peerAddress;            // destination address for the initial packet
+      spindump_port side1peerPort;                  // source port for the initial packe
+      spindump_port side2peerPort;                  // destination port for the initial packet
+      uint32_t side1Vtag;                           // Vtag of association for side1
+      uint32_t side2Vtag;                           // Vtag of association for side2
+      struct spindump_tsntracker side1Seqs;         // when did we see sequence numbers from side1?
+      struct spindump_tsntracker side2Seqs;         // when did we see sequence numbers from side2?
+      //uint8_t padding[4];                           // unused
+      uint8_t side1HbCnt;                           // Number of HBs inflight seen from side 1
+      struct timeval side1hbTime;                   // the time of the last HB seen from side 1
+      uint8_t side2HbCnt;                           // Number of HBs inflight seen from side 2
+      struct timeval side2hbTime;                   // the time of the last HB seen from side 2
+    } sctp;
 
     struct {
       spindump_address side1peerAddress;            // source address for the initial packet

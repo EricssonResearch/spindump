@@ -80,6 +80,14 @@ spindump_connections_newconnection_tcp(const spindump_address* side1address,
                                        const struct timeval* when,
                                        struct spindump_connectionstable* table);
 struct spindump_connection*
+spindump_connections_newconnection_sctp(const spindump_address* side1address,
+                                        const spindump_address* side2address,
+                                        spindump_port side1port,
+                                        spindump_port side2port,
+                                        uint32_t side1Vtag,
+                                        const struct timeval* when,
+                                        struct spindump_connectionstable* table);
+struct spindump_connection*
 spindump_connections_newconnection_udp(const spindump_address* side1address,
                                        const spindump_address* side2address,
                                        spindump_port side1port,
@@ -157,6 +165,19 @@ spindump_connections_searchconnection_tcp(const spindump_address* side1address,
                                           struct spindump_connectionstable* table);
 struct spindump_connection*
 spindump_connections_searchconnection_tcp_either(const spindump_address* side1address,
+                                                 const spindump_address* side2address,
+                                                 spindump_port side1port,
+                                                 spindump_port side2port,
+                                                 struct spindump_connectionstable* table,
+                                                 int* fromResponder);
+struct spindump_connection*
+spindump_connections_searchconnection_sctp(const spindump_address* side1address,
+                                          const spindump_address* side2address,
+                                          spindump_port side1port,
+                                          spindump_port side2port,
+                                          struct spindump_connectionstable* table);
+struct spindump_connection*
+spindump_connections_searchconnection_sctp_either(const spindump_address* side1address,
                                                  const spindump_address* side2address,
                                                  spindump_port side1port,
                                                  spindump_port side2port,

@@ -61,6 +61,8 @@ add_library(spindumplib
   spindump_analyze_quic_parser_util.c 
   spindump_analyze_quic_parser_versions.c 
   spindump_analyze_tcp.c
+  spindump_analyze_sctp.c
+  spindump_analyze_sctp_parser.c
   spindump_analyze_tls_parser.c
   spindump_analyze_udp.c
   spindump_bandwidth.c 
@@ -92,6 +94,7 @@ add_library(spindumplib
   spindump_rtloss.c
   spindump_qrloss.c
   spindump_rtt.c
+  spindump_sctp_tsn.c
   spindump_seq.c
   spindump_spin.c
   spindump_stats.c
@@ -161,9 +164,9 @@ target_link_libraries(spindump_test spindumplib)
 
 include( CTest )
 
-add_test( spindump_checksource spindump_checksource.sh )  
-add_test( spindump_test spindump_test )  
-add_test( spindump_testtraces spindump_testtraces.sh )
+add_test( NAME spindump_checksource COMMAND spindump_checksource.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})  
+add_test( NAME spindump_test COMMAND spindump_test )  
+add_test( NAME spindump_testtraces COMMAND spindump_testtraces.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 #
 # Tar file

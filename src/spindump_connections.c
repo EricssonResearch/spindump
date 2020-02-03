@@ -119,6 +119,10 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
     *p_side1address = &connection->u.tcp.side1peerAddress;
     *p_side2address = &connection->u.tcp.side2peerAddress;
     break;
+  case spindump_connection_transport_sctp:
+    *p_side1address = &connection->u.sctp.side1peerAddress;
+    *p_side2address = &connection->u.sctp.side2peerAddress;
+    break;
   case spindump_connection_transport_udp:
     *p_side1address = &connection->u.udp.side1peerAddress;
     *p_side2address = &connection->u.udp.side2peerAddress;
@@ -182,6 +186,10 @@ spindump_connections_getnetworks(struct spindump_connection* connection,
   case spindump_connection_transport_tcp:
     spindump_network_fromaddress(&connection->u.tcp.side1peerAddress,p_side1network);
     spindump_network_fromaddress(&connection->u.tcp.side2peerAddress,p_side2network);
+    break;
+  case spindump_connection_transport_sctp:
+    spindump_network_fromaddress(&connection->u.sctp.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.sctp.side2peerAddress,p_side2network);
     break;
   case spindump_connection_transport_udp:
     spindump_network_fromaddress(&connection->u.udp.side1peerAddress,p_side1network);
@@ -249,6 +257,10 @@ spindump_connections_getports(struct spindump_connection* connection,
     *p_side1port = connection->u.tcp.side1peerPort;
     *p_side2port = connection->u.tcp.side2peerPort;
     break;
+  case spindump_connection_transport_sctp:
+    *p_side1port = connection->u.sctp.side1peerPort;
+    *p_side2port = connection->u.sctp.side2peerPort;
+    break;
   case spindump_connection_transport_udp:
     *p_side1port = connection->u.udp.side1peerPort;
     *p_side2port = connection->u.udp.side2peerPort;
@@ -297,7 +309,7 @@ spindump_connections_getports(struct spindump_connection* connection,
 //
 // Report a new RTT measurement. This could have been determined in
 // many ways, by way of the initial packet exchange, looking at QUIC
-// spin bit or TCP sequence numbers.
+// spin bit or TCP sequence numbers or SCTP data tsn and hearbeat.
 //
 // In any case, the new measurement is recorded, proper averages etc
 // are counted, and also any handlers associated with this connection
@@ -431,7 +443,7 @@ spindump_connections_setisclosed(const struct spindump_connection_set* set) {
     struct spindump_connection* other = set->set[i];
     if (other != 0) {
       if (!spindump_connections_isclosed(other)) {
-                                return(0);
+        return(0);
       }
     }
   }
@@ -517,6 +529,7 @@ spindump_connections_isaggregate(const struct spindump_connection* connection) {
   spindump_assert(connection != 0);
   switch (connection->type) {
   case spindump_connection_transport_tcp:
+  case spindump_connection_transport_sctp:
   case spindump_connection_transport_udp:
   case spindump_connection_transport_dns:
   case spindump_connection_transport_coap:
@@ -568,6 +581,7 @@ spindump_connections_aggregateset(const struct spindump_connection* connection) 
 
   switch (connection->type) {
   case spindump_connection_transport_tcp:
+  case spindump_connection_transport_sctp:
   case spindump_connection_transport_udp:
   case spindump_connection_transport_dns:
   case spindump_connection_transport_coap:
@@ -640,6 +654,7 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
            spindump_address_equal(side2address,&aggregate->u.aggregatemulticastgroup.group));
 
   case spindump_connection_transport_tcp:
+  case spindump_connection_transport_sctp:
   case spindump_connection_transport_udp:
   case spindump_connection_transport_dns:
   case spindump_connection_transport_coap:
@@ -670,6 +685,7 @@ spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
   switch (aggregate->type) {
 
   case spindump_connection_transport_tcp:
+  case spindump_connection_transport_sctp:
   case spindump_connection_transport_udp:
   case spindump_connection_transport_dns:
   case spindump_connection_transport_coap:

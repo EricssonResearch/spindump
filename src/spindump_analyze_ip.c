@@ -34,6 +34,7 @@
 #include "spindump_analyze_udp.h"
 #include "spindump_analyze_quic.h"
 #include "spindump_analyze_icmp.h"
+#include "spindump_analyze_sctp.h"
 #include "spindump_analyze_aggregate.h"
 
 //
@@ -412,6 +413,20 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
 
   case IPPROTO_ICMPV6:
     spindump_analyze_process_icmp6(state,
+                                   packet,
+                                   ipHeaderPosition,
+                                   ipHeaderSize,
+                                   ipVersion,
+                                   ecnFlags,
+                                   ipPacketLength,
+                                   ipHeaderPosition + ipHeaderSize,
+                                   protolen,
+                                   remainingCaplen,
+                                   p_connection);
+    break;
+
+  case IPPROTO_SCTP:
+    spindump_analyze_process_sctp(state,
                                    packet,
                                    ipHeaderPosition,
                                    ipHeaderSize,

@@ -1,0 +1,5 @@
+A short test where SCTP communicates with itslef:
+- one assoc is established
+- one data in both directions
+- HBs in both directions
+- graceful shutdown
