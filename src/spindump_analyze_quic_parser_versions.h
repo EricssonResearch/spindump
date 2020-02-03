@@ -70,7 +70,7 @@
 #define spindump_quic_version_draft02          0xff000002
 #define spindump_quic_version_draft01          0xff000001
 #define spindump_quic_version_draft00          0xff000000
-#define spindump_quic_version_quant25          0x45474718
+#define spindump_quic_version_quant25          0x45474719
 #define spindump_quic_version_quant24          0x45474718
 #define spindump_quic_version_quant23          0x45474717
 #define spindump_quic_version_quant22          0x45474716
