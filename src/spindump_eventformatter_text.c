@@ -90,7 +90,7 @@ spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* for
                                              const struct spindump_event* eventobj,
                                              struct spindump_connection* connection) {
   
-  char buf[250];
+  char buf[400];
   size_t consumed;
   spindump_event_parser_text_print(eventobj,buf,sizeof(buf)-1,&consumed);
   spindump_assert(consumed < sizeof(buf));

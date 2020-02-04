@@ -445,7 +445,7 @@ unittests_eventtextparser(void) {
                             1000,
                             0,
                             &event);
-  char buf[200];
+  char buf[400];
   int ret;
   size_t consumed;
   ret = spindump_event_parser_text_print(&event,buf,1,&consumed);

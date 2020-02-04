@@ -699,6 +699,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   spindump_deepdeepdebugf("calling spindump_event_initialize, really and now second pb2bps");
   spindump_counter_64bit bw2 = spindump_bandwidth_periodbytes_to_bytespersec(&connection->bytesFromSide2);
   spindump_deepdeepdebugf("calling spindump_event_initialize, really really");
+  spindump_deepdeepdebugf("notes field pt 1 = %s", notes);
   spindump_event_initialize(eventType,
                             connection->type,
                             connection->state,

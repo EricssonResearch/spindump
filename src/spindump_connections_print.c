@@ -58,10 +58,6 @@ spindump_connection_addtobuf(char* buf,
                              const char* text,
                              const char* value,
                              int compress);
-void
-spindump_connection_report_brief_notefieldval(struct spindump_connection* connection,
-                                              unsigned bufsiz,
-                                              char* buf);
 static void
 spindump_connection_report_udp(struct spindump_connection* connection,
                                FILE* file,
@@ -1117,6 +1113,7 @@ spindump_connection_report_brief_notefieldval(struct spindump_connection* connec
   // 
   
   spindump_deepdeepdebugf("report_brief_notefieldval point 999");
+  spindump_deepdeepdebugf("notes field pt 4 = %s", buf);
 }
 
 //
@@ -1185,9 +1182,11 @@ spindump_connection_report_brief(struct spindump_connection* connection,
     spindump_deepdeepdebugf("report_brief point 5b");
     char notebuf[spindump_connection_report_brief_notefieldval_length_val+1];
     spindump_connection_report_brief_notefieldval(connection,sizeof(notebuf),notebuf);
+    spindump_deepdeepdebugf("notes field pt 5 = %s", notebuf);
     snprintf(buf + strlen(buf),bufsiz - strlen(buf),"  %-*s",
              spindump_connection_report_brief_notefieldval_length_val,
              notebuf);
   }
   spindump_deepdeepdebugf("report_brief point 6");
+  spindump_deepdeepdebugf("notes field and everything pt 6 = %s", buf);
 }

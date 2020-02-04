@@ -92,6 +92,7 @@ traces="trace_icmpv4_short
         trace_quic_v25_quant_0rtt
         trace_quic_v25_quant_quantum
         trace_quic_v25_quant_update
+        trace_quic_v25_picoquic
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google

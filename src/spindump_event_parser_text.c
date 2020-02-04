@@ -68,10 +68,11 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   //
   // Check length
   //
-  
+
   if (length < 2) return(0);
   memset(buffer,0,length);
-
+  length--;
+  
   //
   // Some utilities to put strings onto the buffer
   //
@@ -218,13 +219,15 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   //
   // The end of the record
   //
-  
-  addtobuffer1("\n");
 
+  length++;
+  addtobuffer1("\n");
+  
   //
   // Done.
   //
   
   *consumed = strlen(buffer);
+  spindump_deepdeepdebugf("notes field and event pt 7 = %s", buffer);
   return(strlen(buffer) < length - 1);
 }
