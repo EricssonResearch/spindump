@@ -1,0 +1,16 @@
+A test with AIORTC QUIC implementation server and Quant client.
+
+There are four sessions:
+
+- key update + full start
+- key update + 0rtt
+- quantum-mode (fails)
+- regular
+
+The commands used were:
+
+   ./bin/client -u -i en0 https://quic.aiortc.org:443/15000
+   ./bin/client -u -i en0 https://quic.aiortc.org:443/15000
+   ./bin/client -m -i en0 https://quic.aiortc.org:443/15000
+   ./bin/client -i en0 https://quic.aiortc.org:443/15000
+
