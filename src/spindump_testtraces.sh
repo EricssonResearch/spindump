@@ -98,6 +98,7 @@ traces="trace_icmpv4_short
         trace_quic_v25_f5
         trace_quic_v25_haskell
         trace_quic_v25_lsquic
+        trace_quic_v25_msquic
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google

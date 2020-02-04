@@ -1,0 +1,22 @@
+A test with Msquic QUIC implementation server and Quant client.
+
+There are four sessions:
+
+- regular + full start
+- regular + 0rtt 
+- regular + h3
+- regular + stateless retry
+- key update
+- quantum-mode
+
+The commands used were:
+
+   (rm /tmp/quant*;
+   ./bin/client -i en0 https://quic.westus.cloudapp.azure.com:4433/5000 ;
+   ./Bin/client -i en0 https://quic.westus.cloudapp.azure.com:4433/15000 ; 
+   ./Bin/client -3 -i en0 https://quic.westus.cloudapp.azure.com:4433/15000 ; 
+   ./Bin/client -i en0 https://quic.westus.cloudapp.azure.com:4434/15000 ;
+   ./bin/client -u -i en0 https://quic.westus.cloudapp.azure.com:4433/10000 ;
+   ./bin/client -m -i en0 https://quic.westus.cloudapp.azure.com:4433/20000 )
+
+
