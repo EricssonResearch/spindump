@@ -1,0 +1,17 @@
+A test with Haskell QUIC implementation server and Quant client.
+
+There are four sessions:
+
+- regular + full start
+- regular + 0rtt
+- key update
+- quantum-mode
+
+The commands used were:
+
+   rm /tmp/quant*
+   ./bin/client -i en0 https://mew.org:4433/15000 
+   ./Bin/client -i en0 https://mew.org:4433/15000 
+   ./bin/client -u -i en0 https://mew.org:4433/15000 
+   ./bin/client -m -i en0 https://mew.org:4433/15000 
+
