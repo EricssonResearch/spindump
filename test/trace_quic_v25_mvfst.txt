@@ -1,0 +1,19 @@
+A test with Mvfst QUIC implementation server and Quant client.
+
+There are four sessions:
+
+- regular + h3 + full start
+- regular + h3 + 0rtt 
+- regular + h3
+- key update + h3
+- quantum + h3
+
+The commands used were:
+
+   (rm /tmp/quant*;
+   ./bin/client -3 -i en0 https://fb.mvfst.net:443/5000 ;
+   ./Bin/client -3 -i en0 https://fb.mvfst.net:443/15000 ; 
+   ./Bin/client -3 -i en0 https://fb.mvfst.net:443/15000 ; 
+   ./bin/client -3 -u -i en0 https://fb.mvfst.net:443/10000;
+   ./bin/client -3 -m -i en0 https://fb.mvfst.net:443/20000)
+

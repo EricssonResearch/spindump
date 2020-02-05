@@ -1,0 +1,23 @@
+A test with the Quicly QUIC implementation server and Quant client.
+
+There are six sessions:
+
+- regular + full start
+- regular + 0rtt
+- regular + larger file
+- regular  + h3
+- key update
+- quantum
+
+The commands used were:
+
+  (rm /tmp/quant-session;
+  ./Bin/client -i en0 https://quic.examp1e.net:4433; 
+  ./Bin/client -i en0 https://quic.examp1e.net:4433; 
+  ./Bin/client -i en0 https://quic.examp1e.net:4433/30000;
+  ./Bin/client -3 -i en0 https://h2o.examp1e.net:8443; 
+  ./Bin/client -u -i en0 https://quic.examp1e.net:4433; 
+  ./Bin/client -m -i en0 https://quic.examp1e.net:4433)
+  
+  
+  

@@ -1,0 +1,2 @@
+QUIC 2a00:79e1:abc:301:18d2:7b31:c60c:74c6 <-> 2606:4700:10::6814:6a32 584ec51070d9e6375e711a04a430-null (61074:443) at 1580831453867421 new starting packets 0 0 bytes 0 0 note "No rsp,v.0xbabababa,no spin"
+QUIC 2a00:79e1:abc:301:18d2:7b31:c60c:74c6 <-> 2606:4700:10::6814:6a32 584ec51070d9e6375e711a04a430-a430d5130b584e (61074:443) at 1580831453876818 measurement starting right 9397 packets 1 0 bytes 1248 0 bandwidth 1248 0 note "No rsp,v.0x00000000,no spin"

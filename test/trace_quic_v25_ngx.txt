@@ -1,0 +1,9 @@
+A test with NGX QUIC implementation server and Quant client.
+
+NGX does not support current versions, so this just fails. Spindump should still see the failure and attempt.
+
+The commands used were:
+
+   (rm /tmp/quant*;
+   ./bin/client -i en0 https://cloudflare-quic.com:443/5000 )
+

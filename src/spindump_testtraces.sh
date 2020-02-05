@@ -99,6 +99,11 @@ traces="trace_icmpv4_short
         trace_quic_v25_haskell
         trace_quic_v25_lsquic
         trace_quic_v25_msquic
+        trace_quic_v25_mvfst
+        trace_quic_v25_ngtcp2
+        trace_quic_v25_ngx
+        trace_quic_v25_quiche
+        trace_quic_v25_quicly
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
@@ -195,6 +200,8 @@ do
     # from test run to test run.
     #
 
+    cat $outpre |
+    sed 's/ at .* delete / at delete /g' |
     awk '
       /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*H2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
@@ -202,7 +209,7 @@ do
       /^H2NET.* new .*/ { gsub(/ at [0-9]+ /," "); print $0; next; }
       /^HOSTS.* new .*/ { gsub(/ at [0-9]+ /," "); print $0; next; }
       /.*/ { print $0; next; }
-    ' < $outpre > $out
+    ' > $out
     
     #
     # Check results
