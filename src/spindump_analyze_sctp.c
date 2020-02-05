@@ -317,14 +317,15 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   //
   // Parse the header
   //
-  unsigned int remainingLen = (remainingCaplen < sctpLength) ? remainingCaplen : sctpLength;
+  unsigned int parsedBytes = 0;
+  unsigned int maxLengthToParse = (remainingCaplen < sctpLength) ? remainingCaplen : sctpLength;
   const unsigned char* position = packet->contents + sctpHeaderPosition;
 
   state->stats->receivedSctp++;
 
-  if ( remainingLen < spindump_sctp_packet_header_length ) {
+  if ( maxLengthToParse < spindump_sctp_packet_header_length ) {
     state->stats->notEnoughPacketForSctpHdr++;
-    spindump_warnf("not enough payload bytes for a SCTP header: %u", remainingLen);
+    spindump_warnf("not enough payload bytes for a SCTP header: %u", maxLengthToParse);
     *p_connection = 0;
     return;
   }
@@ -358,12 +359,11 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   // Parse all chunks
   //
   unsigned int nParsedChunks = 0;
-  remainingLen -= spindump_sctp_packet_header_length;
-  position += spindump_sctp_packet_header_length;
+  parsedBytes += spindump_sctp_packet_header_length;
 
   struct spindump_sctp_chunk sctp_chunk;
-  while ( ( remainingLen > 0 ) && 
-    (spindump_sctp_parse_error != spindump_protocols_sctp_chunk_parse(position,&sctp_chunk,remainingLen)) ) {
+  while ( ( parsedBytes < maxLengthToParse ) && 
+    (spindump_sctp_parse_error != spindump_protocols_sctp_chunk_parse(position + parsedBytes,&sctp_chunk,maxLengthToParse - parsedBytes)) ) {
     //
     // Check what chunks are present in packet,
     // create, update or delete the connection accordingly
@@ -377,8 +377,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
     unsigned int padded = (sctp_chunk.ch_length%4) ? 
         sctp_chunk.ch_length + (4 - (sctp_chunk.ch_length%4)) : sctp_chunk.ch_length;
     spindump_deepdeepdebugf("padded length: %u", padded);
-    position += padded;
-    remainingLen -= padded;
+    parsedBytes += padded;
 
     nParsedChunks++;
 
@@ -679,7 +678,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   if ( 0 == nParsedChunks ) {
 
     state->stats->notEnoughPacketForSctpHdr++;
-    spindump_warnf("not enough payload bytes for a SCTP chunk", remainingLen);
+    spindump_warnf("not enough payload bytes for a SCTP chunk", maxLengthToParse);
     *p_connection = 0;
     return;
 
