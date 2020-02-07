@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2019 BY ERICSSON AB
+//  SPINDUMP (C) 2019-2020 BY ERICSSON AB
 //  AUTHOR: MAKSIM PROSHIN, DENIS SCHERBAKOV
 //
 //
@@ -284,8 +284,7 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 // the packet as much as we can and process it appropriately. The
 // function sets the p_connection output parameter to the connection
 // that this packet belongs to (and possibly creates this connection
-// if the packet is the first in a flow, e.g., for SCTP INIT
-// packets).
+// if the packet is the first in a flow, i.e. with SCTP INIT).
 //
 // It is assumed that prior modules, i.e., the capture module has
 // filled in the relevant fields in the packet structure "packet"
@@ -293,16 +292,16 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 //
 void
 spindump_analyze_process_sctp(struct spindump_analyze* state,
-                             struct spindump_packet* packet,
-                             unsigned int ipHeaderPosition,
-                             unsigned int ipHeaderSize,
-                             uint8_t ipVersion,
-                             uint8_t ecnFlags,
-                             unsigned int ipPacketLength,
-                             unsigned int sctpHeaderPosition,
-                             unsigned int sctpLength,
-                             unsigned int remainingCaplen,
-                             struct spindump_connection** p_connection) {
+                              struct spindump_packet* packet,
+                              unsigned int ipHeaderPosition,
+                              unsigned int ipHeaderSize,
+                              uint8_t ipVersion,
+                              uint8_t ecnFlags,
+                              unsigned int ipPacketLength,
+                              unsigned int sctpHeaderPosition,
+                              unsigned int sctpLength,
+                              unsigned int remainingCaplen,
+                              struct spindump_connection** p_connection) {
   //
   // Some checks first
   //
@@ -349,11 +348,11 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
   // search the connection
   connection = spindump_connections_searchconnection_sctp_either(&source,
-                                                                &destination,
-                                                                side1port,
-                                                                side2port,
-                                                                state->table,
-                                                                &fromResponder);
+                                                                 &destination,
+                                                                 side1port,
+                                                                 side2port,
+                                                                 state->table,
+                                                                 &fromResponder);
 
   //
   // Parse all chunks

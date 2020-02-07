@@ -1,0 +1,1 @@
+A simple SCTP test where traces are captured with snaplen equal to 128.
