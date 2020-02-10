@@ -112,7 +112,8 @@ traces="trace_icmpv4_short
         trace_icmp_allpackets
         trace_empty
         trace_sctp_short_lo
-        trace_sctp_medium"
+        trace_sctp_medium
+        trace_sctp_two_addr"
 
 #
 # Check options

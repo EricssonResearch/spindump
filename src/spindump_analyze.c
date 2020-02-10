@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2018-2020 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO AND MARCUS IHLAR
 //
 //
@@ -51,8 +51,8 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
                                   struct spindump_connection** p_connection);
 static void
 spindump_analyze_process_linux_sll(struct spindump_analyze* state,
-                                  struct spindump_packet* packet,
-                                  struct spindump_connection** p_connection);
+                                   struct spindump_packet* packet,
+                                   struct spindump_connection** p_connection);
 static int
 spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
                                                      spindump_handler_mask mask);
@@ -629,8 +629,8 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
 }
 
 //
-// Process a packet when the datalink layer is the LINUX_SLL.
-// This layer has the following structure
+// Process a packet when the datalink layer is the LINUX_SLL ("any" device).
+// This layer has the following structure:
 //
 // +---------------------------+
 // |         Packet type       |
@@ -654,8 +654,8 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
 
 void
 spindump_analyze_process_linux_sll(struct spindump_analyze* state,
-                                  struct spindump_packet* packet,
-                                  struct spindump_connection** p_connection) {
+                                   struct spindump_packet* packet,
+                                   struct spindump_connection** p_connection) {
   //
   // Check there is enough of the linux_sll header
   //
