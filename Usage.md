@@ -64,7 +64,7 @@ For the textual mode, the output format is selectable as either readable text or
     --anonymize
 	--not-anonymize
 
-These options are used to control the amount of anonymization that spindump does. Anonymization can be turned on or off either for hosts whose traffic is displayed, or for hosts on the "left" or "right" side of the in-network measurement point. "Left" side is defined as the traffic initiating the connection. And the "right" side is defined as the traffic from the responder.
+These options are used to control the amount of anonymization that Spindump does. Anonymization can be turned on or off either for hosts whose traffic is displayed, or for hosts on the "left" or "right" side of the in-network measurement point. "Left" side is defined as the traffic initiating the connection. And the "right" side is defined as the traffic from the responder.
 
     --names
     --addresses
@@ -119,7 +119,7 @@ This option sets the measurement period for bandwidth. Each connection is measur
     --no-stats
     --stats
 
-The option --stats makes spindump provide various levels of final statistics once the process completes. The default is --no-stats.
+The option --stats makes Spindump provide various levels of final statistics once the process completes. The default is --no-stats.
 
     --aggregate pattern1 pattern2
 
@@ -133,7 +133,7 @@ Sets a limit of how many packets the tool accepts before finishing. The default 
     --snaplen n
     --input-file f
 
-The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. Arguments "lo" and "any" are supported. The --snaplen option is used to control how many bytes of the packets are captured for analysis. The --input-file option sets the packets to be read from a PCAP-format file. While reading a PCAP-format file, spindump ignores the --snaplen option. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
+The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. Arguments "lo" and "any" are supported. The --snaplen option is used to control how many bytes of the packets are captured for analysis. The --input-file option sets the packets to be read from a PCAP-format file. While reading a PCAP-format file, Spindump ignores the --snaplen option. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
 
     --remote u
     --remote-block-size n
@@ -141,7 +141,7 @@ The --interface option sets the local interface to listen on. The default is wha
     --collector 
     --no-collector 
 
-The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040/data/1". By default, Spindump uses the port 5040, which is reflected in the URL. The path component "data" is required when submitting data to another Spindump instance, and the path component "1" is simply an identifier that distinguishes different submitters from each other.
+The --remote option sets software to submit connection information it collects to another Spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040/data/1". By default, Spindump uses the port 5040, which is reflected in the URL. The path component "data" is required when submitting data to another Spindump instance, and the path component "1" is simply an identifier that distinguishes different submitters from each other.
 
 As noted, the collector is turned on by using the --collector option. On the collector side the port can be changed with the --collector-port option. Also, a given Spindump instance running as a collector can accept connections from multiple other instances. The Spindump instance that is running as a collector will not listen to the local interfaces at all, only the collector port.
 
