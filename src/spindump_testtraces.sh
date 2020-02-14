@@ -104,6 +104,7 @@ traces="trace_icmpv4_short
         trace_quic_v25_ngx
         trace_quic_v25_quiche
         trace_quic_v25_quicly
+        trace_quic_v25_apple
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
