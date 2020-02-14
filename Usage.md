@@ -132,13 +132,14 @@ Sets a limit of how many packets the tool accepts before finishing. The default 
     --interface i
     --snaplen n
     --input-file f
-    --remote u
-	--remote-block-size n
-	--collector-port p
-	--collector 
-	--no-collector 
 
-The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. The --snaplen option is used to control how many bytes of the packets are captured for analysis. The --input-file option sets the packets to be read from a PCAP-format file. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
+The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. Arguments "lo" and "any" are supported. The --snaplen option is used to control how many bytes of the packets are captured for analysis. The --input-file option sets the packets to be read from a PCAP-format file. While reading a PCAP-format file, spindump ignores the --snaplen option. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
+
+    --remote u
+    --remote-block-size n
+    --collector-port p
+    --collector 
+    --no-collector 
 
 The --remote option sets software to submit connection information it collects to another spindump instance running elsewhere with the --collector option specified. The machine where the other instance runs in is specified by the URL u, e.g., "http://example.com:5040/data/1". By default, Spindump uses the port 5040, which is reflected in the URL. The path component "data" is required when submitting data to another Spindump instance, and the path component "1" is simply an identifier that distinguishes different submitters from each other.
 
