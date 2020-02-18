@@ -63,7 +63,7 @@ struct spindump_reverse_dns {
 struct spindump_reverse_dns*
 spindump_reverse_dns_initialize_noop(void);
 struct spindump_reverse_dns*
-spindump_reverse_dns_initialize_full(void);
+spindump_reverse_dns_initialize_full(int reverseDns);
 const char*
 spindump_reverse_dns_query(spindump_address* address,
                            struct spindump_reverse_dns* service);
@@ -73,4 +73,6 @@ spindump_reverse_dns_address_tostring(spindump_address* address,
 void
 spindump_reverse_dns_uninitialize(struct spindump_reverse_dns* service);
 
+void
+spindump_reverse_dns_toggle(int state);
 #endif // SPINDUMP_REVERSEDNS_H

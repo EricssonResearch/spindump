@@ -57,7 +57,8 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                               int averageMode,
                               int aggregateMode,
                               int closedMode,
-                              int udpMode);
+                              int udpMode,
+                              int reverseDnsMode);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -157,10 +158,11 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   int aggregateMode = state->config.aggregateMode;
   int closedMode = 1;
   int udpMode = 0;
+  int reverseDnsMode = state->config.reverseDns;
+
   struct spindump_reverse_dns* querier =
-    config->reverseDns ?
-    spindump_reverse_dns_initialize_full() :
-    spindump_reverse_dns_initialize_noop();
+    spindump_reverse_dns_initialize_full(config->reverseDns);
+
   struct spindump_report_state* reporter =
     (config->toolmode != spindump_toolmode_visual ?
      spindump_report_initialize_quiet() :
@@ -194,6 +196,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                          aggregateMode,
                          closedMode,
                          udpMode,
+                         reverseDnsMode,
                          analyzer->table,
                          spindump_analyze_getstats(analyzer));
 
@@ -265,7 +268,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                 averageMode,
                                 aggregateMode,
                                 closedMode,
-                                udpMode);
+                                udpMode,
+                                reverseDnsMode);
   
   //
   // Done
@@ -312,7 +316,8 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                               int averageMode,
                               int aggregateMode,
                               int closedMode,
-                              int udpMode) {
+                              int udpMode,
+                              int reverseDnsMode) {
   
   //
   // Main operation
@@ -424,6 +429,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                              aggregateMode,
                              closedMode,
                              udpMode,
+                             reverseDnsMode,
                              analyzer->table,
                              spindump_analyze_getstats(analyzer));
       if (spindump_isearliertime(&now,&previousupdate)) previousupdate = now;
@@ -462,6 +468,9 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
         config->updatePeriod = (unsigned long long)result;
       }
       break;
+    case spindump_report_command_toggle_reverse_dns:
+      reverseDnsMode = !reverseDnsMode;
+      spindump_reverse_dns_toggle(reverseDnsMode);
     case spindump_report_command_none:
       break;
     default:
@@ -474,6 +483,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                              aggregateMode,
                              closedMode,
                              udpMode,
+                             reverseDnsMode,
                              analyzer->table,
                              spindump_analyze_getstats(analyzer));
     }

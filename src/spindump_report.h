@@ -45,6 +45,7 @@ enum spindump_report_command {
   spindump_report_command_toggle_closed,
   spindump_report_command_toggle_udp,
   spindump_report_command_update_interval,
+  spindump_report_command_toggle_reverse_dns,
   spindump_report_command_quit
 };
 
@@ -79,6 +80,7 @@ spindump_report_update(struct spindump_report_state* reporter,
                        int aggregate,
                        int closed,
                        int udp,
+                       int reverseDns,
                        struct spindump_connectionstable* table,
                        struct spindump_stats* stats);
 enum spindump_report_command
