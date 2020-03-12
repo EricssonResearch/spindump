@@ -35,6 +35,7 @@
 #define SPINDUMP_QUIC_PORT1         80
 #define SPINDUMP_QUIC_PORT2        443
 #define SPINDUMP_QUIC_PORT3       4433
+#define SPINDUMP_QUIC_PORT4       8443
 
 //
 // Convenient macros --------------------------------------------------------------------------
@@ -42,7 +43,8 @@
 
 #define SPINDUMP_IS_QUIC_PORT(x)  ((x) == SPINDUMP_QUIC_PORT1 ||   \
                                    (x) == SPINDUMP_QUIC_PORT2 ||   \
-                                   (x) == SPINDUMP_QUIC_PORT3)
+                                   (x) == SPINDUMP_QUIC_PORT3 ||   \
+                                   (x) == SPINDUMP_QUIC_PORT4)
 
 //
 // External API interface to this module ------------------------------------------------------

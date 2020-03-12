@@ -1,0 +1,26 @@
+A test with the Quiche QUIC implementation server and Quant client.
+
+There are six sessions:
+
+- regular + full start
+- regular + full start, larger file
+- regular + h3
+- regular  +h3 + retry
+- key update
+- quantum
+
+The commands used were:
+
+   (rm /tmp/quant*;
+   ./bin/client -i en0 https://quic.tech:4433/5000 ;
+   rm /tmp/quant*; 
+   ./Bin/client -i en0 https://quic.tech:4433/15000 ; 
+   rm /tmp/quant*; 
+   ./Bin/client -3 -i en0 https://quic.tech:8443/15000 ; 
+   rm /tmp/quant*; 
+   ./Bin/client -3 -i en0 https://quic.tech:8444/15000 ; 
+   rm /tmp/quant*; 
+   ./bin/client -u -i en0 https://quic.tech:4433/10000;
+   rm /tmp/quant*; 
+   ./bin/client -m -i en0 https://quic.tech:4433/20000)
+

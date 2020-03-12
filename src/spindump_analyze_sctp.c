@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2019 BY ERICSSON AB
+//  SPINDUMP (C) 2019-2020 BY ERICSSON AB
 //  AUTHOR: MAKSIM PROSHIN, DENIS SCHERBAKOV
 //
 //
@@ -284,8 +284,7 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 // the packet as much as we can and process it appropriately. The
 // function sets the p_connection output parameter to the connection
 // that this packet belongs to (and possibly creates this connection
-// if the packet is the first in a flow, e.g., for SCTP INIT
-// packets).
+// if the packet is the first in a flow, i.e. with SCTP INIT).
 //
 // It is assumed that prior modules, i.e., the capture module has
 // filled in the relevant fields in the packet structure "packet"
@@ -293,16 +292,16 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
 //
 void
 spindump_analyze_process_sctp(struct spindump_analyze* state,
-                             struct spindump_packet* packet,
-                             unsigned int ipHeaderPosition,
-                             unsigned int ipHeaderSize,
-                             uint8_t ipVersion,
-                             uint8_t ecnFlags,
-                             unsigned int ipPacketLength,
-                             unsigned int sctpHeaderPosition,
-                             unsigned int sctpLength,
-                             unsigned int remainingCaplen,
-                             struct spindump_connection** p_connection) {
+                              struct spindump_packet* packet,
+                              unsigned int ipHeaderPosition,
+                              unsigned int ipHeaderSize,
+                              uint8_t ipVersion,
+                              uint8_t ecnFlags,
+                              unsigned int ipPacketLength,
+                              unsigned int sctpHeaderPosition,
+                              unsigned int sctpLength,
+                              unsigned int remainingCaplen,
+                              struct spindump_connection** p_connection) {
   //
   // Some checks first
   //
@@ -317,14 +316,15 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   //
   // Parse the header
   //
-  unsigned int remainingLen = (remainingCaplen < sctpLength) ? remainingCaplen : sctpLength;
+  unsigned int parsedBytes = 0;
+  unsigned int maxLengthToParse = (remainingCaplen < sctpLength) ? remainingCaplen : sctpLength;
   const unsigned char* position = packet->contents + sctpHeaderPosition;
 
   state->stats->receivedSctp++;
 
-  if ( remainingLen < spindump_sctp_packet_header_length ) {
+  if ( maxLengthToParse < spindump_sctp_packet_header_length ) {
     state->stats->notEnoughPacketForSctpHdr++;
-    spindump_warnf("not enough payload bytes for a SCTP header: %u", remainingLen);
+    spindump_warnf("not enough payload bytes for a SCTP header: %u", maxLengthToParse);
     *p_connection = 0;
     return;
   }
@@ -348,22 +348,21 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
   // search the connection
   connection = spindump_connections_searchconnection_sctp_either(&source,
-                                                                &destination,
-                                                                side1port,
-                                                                side2port,
-                                                                state->table,
-                                                                &fromResponder);
+                                                                 &destination,
+                                                                 side1port,
+                                                                 side2port,
+                                                                 state->table,
+                                                                 &fromResponder);
 
   //
   // Parse all chunks
   //
   unsigned int nParsedChunks = 0;
-  remainingLen -= spindump_sctp_packet_header_length;
-  position += spindump_sctp_packet_header_length;
+  parsedBytes += spindump_sctp_packet_header_length;
 
   struct spindump_sctp_chunk sctp_chunk;
-  while ( ( remainingLen > 0 ) && 
-    (spindump_sctp_parse_error != spindump_protocols_sctp_chunk_parse(position,&sctp_chunk,remainingLen)) ) {
+  while ( ( parsedBytes < maxLengthToParse ) && 
+    (spindump_sctp_parse_error != spindump_protocols_sctp_chunk_parse(position + parsedBytes,&sctp_chunk,maxLengthToParse - parsedBytes)) ) {
     //
     // Check what chunks are present in packet,
     // create, update or delete the connection accordingly
@@ -377,8 +376,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
     unsigned int padded = (sctp_chunk.ch_length%4) ? 
         sctp_chunk.ch_length + (4 - (sctp_chunk.ch_length%4)) : sctp_chunk.ch_length;
     spindump_deepdeepdebugf("padded length: %u", padded);
-    position += padded;
-    remainingLen -= padded;
+    parsedBytes += padded;
 
     nParsedChunks++;
 
@@ -679,7 +677,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   if ( 0 == nParsedChunks ) {
 
     state->stats->notEnoughPacketForSctpHdr++;
-    spindump_warnf("not enough payload bytes for a SCTP chunk", remainingLen);
+    spindump_warnf("not enough payload bytes for a SCTP chunk", maxLengthToParse);
     *p_connection = 0;
     return;
 

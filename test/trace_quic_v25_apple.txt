@@ -1,0 +1,1 @@
+Test trace gotten from an Apple implementation against Apple implementation during the February 2020 interop session. This is a basic test.
