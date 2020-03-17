@@ -16,7 +16,7 @@
 //
 
 #include <stdlib.h>
-#include "spindump_qrloss.h"
+#include "spindump_orange_qlloss.h"
 #include "spindump_extrameas.h"
 #include "spindump_analyze.h"
 #include "spindump_util.h"
@@ -24,24 +24,24 @@
 #define QPERIOD 64
 
 void
-spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
-                                                struct spindump_packet* packet,
-                                                struct spindump_connection* connection,
-                                                struct timeval* ts,
-                                                int fromResponder,
-                                                int extrameas) {
-  struct spindump_qrlosstracker* tracker;
+spindump_qllosstracker_observeandcalculateloss(struct spindump_analyze* state,
+                                               struct spindump_packet* packet,
+                                               struct spindump_connection* connection,
+                                               struct timeval* ts,
+                                               int fromResponder,
+                                               int ql) {
+  struct spindump_qllosstracker* tracker;
   if (fromResponder)
-    tracker = &connection->u.quic.qrFromPeer2to1;
+    tracker = &connection->u.quic.qlFromPeer2to1;
   else
-    tracker = &connection->u.quic.qrFromPeer1to2;
+    tracker = &connection->u.quic.qlFromPeer1to2;
   
   // 
   // Let's extract the sQuare and Retransmit bits
   //
 
-  uint q=((extrameas & spindump_extrameas_qrloss_bit1)!=0);
-  uint r=((extrameas & spindump_extrameas_qrloss_bit2)!=0);
+  uint q=((ql & spindump_extrameas_qlloss_bit1) != 0);
+  uint l=((ql & spindump_extrameas_qlloss_bit2) != 0);
 
   //
   // Is this the first packet?
@@ -71,17 +71,17 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
     }
 
     spindump_analyze_process_handlers(state,
-                                  fromResponder ? spindump_analyze_event_responderqrlossmeasurement
-                                  : spindump_analyze_event_initiatorqrlossmeasurement,
+                                      fromResponder ? spindump_analyze_event_responderqllossmeasurement
+                                  : spindump_analyze_event_initiatorqllossmeasurement,
                                   packet,
                                   connection);
   }
-  tracker->rloss += (r != 0);
+  tracker->lloss += (l != 0);
 
   if (fromResponder) {
-    connection->rLossesFrom2to1 = (float)tracker->rloss / connection->packetsFromSide2;
+    connection->rLossesFrom2to1 = (float)tracker->lloss / connection->packetsFromSide2;
   } else {
-    connection->rLossesFrom1to2 = (float)tracker->rloss / connection->packetsFromSide1; 
+    connection->rLossesFrom1to2 = (float)tracker->lloss / connection->packetsFromSide1;
   }
 }
 
@@ -89,7 +89,7 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
 // Initialize the loss tracker object
 //
 void
-spindump_qrlosstracker_initialize(struct spindump_qrlosstracker* tracker) {
+spindump_qllosstracker_initialize(struct spindump_qllosstracker* tracker) {
   spindump_assert(tracker != 0);
   memset(tracker,0,sizeof(*tracker));
 }
@@ -98,7 +98,7 @@ spindump_qrlosstracker_initialize(struct spindump_qrlosstracker* tracker) {
 // Uninitialize the loss tracker object
 //
 void
-spindump_qrlosstracker_uninitialize(struct spindump_qrlosstracker* tracker) {
+spindump_qllosstracker_uninitialize(struct spindump_qllosstracker* tracker) {
   spindump_assert(tracker != 0);
   // no-op//
 }

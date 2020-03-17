@@ -1,0 +1,912 @@
+QUIC 10.0.0.1 <-> 10.0.0.2 null-e83a17b4ce965df5eeb447 (58184:6121) at 1584466907807960 new starting packets 0 0 bytes 0 0
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04fcca45 (58184:6121) at 1584466907831200 measurement starting left 11112 packets 1 1 bytes 1228 138 bandwidth 1228 138
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907846299 measurement up right 15099 packets 2 1 bytes 2456 138 bandwidth 2456 138
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907910183 measurement up right 10103 packets 17 41 bytes 4650 43199 bandwidth 4650 43199
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907921444 measurement up left 11261 packets 23 80 bytes 4986 93119 bandwidth 4986 93119
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907921444 measurement up full (initiator) 21364 packets 23 80 bytes 4986 93119 bandwidth 4986 93119
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907931504 measurement up right 10060 packets 40 108 bytes 5967 128959 bandwidth 5967 128959
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907931504 measurement up full (responder) 21321 packets 40 108 bytes 5967 128959 bandwidth 5967 128959
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907942127 measurement up left 10623 packets 52 156 bytes 6678 190399 bandwidth 6678 190399
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907942127 measurement up full (initiator) 20683 packets 52 156 bytes 6678 190399 bandwidth 6678 190399
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907952203 measurement up right 10076 packets 57 172 bytes 6983 210879 bandwidth 6983 210879
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907952203 measurement up full (responder) 20699 packets 57 172 bytes 6983 210879 bandwidth 6983 210879
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907961383 qrloss up AVG (ref) 0.521 (0.000), TOT (ref) 0.521 (0.000) (responder) packets 59 204 bytes 7106 251839 bandwidth 7106 251839
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907962341 measurement up left 10138 packets 60 208 bytes 7169 256959 bandwidth 7169 256959
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907962341 measurement up full (initiator) 20214 packets 60 208 bytes 7169 256959 bandwidth 7169 256959
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907974404 measurement up right 12063 packets 65 231 bytes 7493 286399 bandwidth 7493 286399
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907974404 measurement up full (responder) 22201 packets 65 231 bytes 7493 286399 bandwidth 7493 286399
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907987401 measurement up left 12997 packets 67 261 bytes 7628 324799 bandwidth 7628 324799
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907987401 measurement up full (initiator) 25060 packets 67 261 bytes 7628 324799 bandwidth 7628 324799
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907992311 qrloss up AVG (ref) 0.781 (0.000), TOT (ref) 0.781 (0.000) (responder) packets 69 267 bytes 7761 332479 bandwidth 7761 332479
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907997736 measurement up right 10335 packets 71 274 bytes 7893 340213 bandwidth 7893 340213
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907997736 measurement up full (responder) 23332 packets 71 274 bytes 7893 340213 bandwidth 7893 340213
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908007872 measurement up left 10136 packets 72 295 bytes 7959 367093 bandwidth 7959 367093
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908007872 measurement up full (initiator) 20471 packets 72 295 bytes 7959 367093 bandwidth 7959 367093
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908016314 qrloss up AVG (ref) 3.125 (0.000), TOT (ref) 3.125 (0.000) (initiator) packets 75 315 bytes 8148 392693 bandwidth 8148 392693
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908017935 measurement up right 10063 packets 76 315 bytes 8215 392693 bandwidth 8215 392693
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908017935 measurement up full (responder) 20199 packets 76 315 bytes 8215 392693 bandwidth 8215 392693
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908029413 measurement up left 11478 packets 78 334 bytes 8349 417013 bandwidth 8349 417013
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908029413 measurement up full (initiator) 21541 packets 78 334 bytes 8349 417013 bandwidth 8349 417013
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908039475 measurement up right 10062 packets 80 354 bytes 8485 442613 bandwidth 8485 442613
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908039475 measurement up full (responder) 21540 packets 80 354 bytes 8485 442613 bandwidth 8485 442613
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908049865 measurement up left 10390 packets 82 365 bytes 8623 455467 bandwidth 8623 455467
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908049865 measurement up full (initiator) 20452 packets 82 365 bytes 8623 455467 bandwidth 8623 455467
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908059941 measurement up right 10076 packets 85 379 bytes 8818 473387 bandwidth 8818 473387
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908059941 measurement up full (responder) 20466 packets 85 379 bytes 8818 473387 bandwidth 8818 473387
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908065610 qrloss up AVG (ref) 0.781 (0.000), TOT (ref) 0.781 (0.000) (responder) packets 86 394 bytes 8888 492587 bandwidth 8888 492587
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908075192 measurement up left 15251 packets 87 403 bytes 8958 504107 bandwidth 8958 504107
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908075192 measurement up full (initiator) 25327 packets 87 403 bytes 8958 504107 bandwidth 8958 504107
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908085268 measurement up right 10076 packets 90 411 bytes 9157 514347 bandwidth 9157 514347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908085268 measurement up full (responder) 25327 packets 90 411 bytes 9157 514347 bandwidth 9157 514347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908092966 qrloss up AVG (ref) 0.781 (3.125), TOT (ref) 0.781 (3.125) (responder) packets 91 426 bytes 9228 533547 bandwidth 9228 533547
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908100534 measurement up left 15266 packets 92 436 bytes 9301 546347 bandwidth 9301 546347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908100534 measurement up full (initiator) 25342 packets 92 436 bytes 9301 546347 bandwidth 9301 546347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908110716 measurement up right 10182 packets 94 437 bytes 9447 547627 bandwidth 9447 547627
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908110716 measurement up full (responder) 25448 packets 94 437 bytes 9447 547627 bandwidth 9447 547627
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908123451 measurement up left 12735 packets 96 457 bytes 9593 573227 bandwidth 9593 573227
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908123451 measurement up full (initiator) 22917 packets 96 457 bytes 9593 573227 bandwidth 9593 573227
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908133498 measurement up right 10047 packets 98 460 bytes 9745 577067 bandwidth 9745 577067
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908133498 measurement up full (responder) 22782 packets 98 460 bytes 9745 577067 bandwidth 9745 577067
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908144374 measurement up left 10876 packets 99 467 bytes 9822 586027 bandwidth 9822 586027
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908144374 measurement up full (initiator) 20923 packets 99 467 bytes 9822 586027 bandwidth 9822 586027
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908154440 measurement up right 10066 packets 101 475 bytes 9975 596267 bandwidth 9975 596267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908154440 measurement up full (responder) 20942 packets 101 475 bytes 9975 596267 bandwidth 9975 596267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908169760 measurement up left 15320 packets 102 483 bytes 10052 606507 bandwidth 10052 606507
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908169760 measurement up full (initiator) 25386 packets 102 483 bytes 10052 606507 bandwidth 10052 606507
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908178221 qrloss up AVG (ref) 0.781 (3.125), TOT (ref) 0.781 (3.125) (responder) packets 104 488 bytes 10206 612907 bandwidth 10206 612907
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908179902 measurement up right 10142 packets 104 491 bytes 10206 616747 bandwidth 10206 616747
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908179902 measurement up full (responder) 25462 packets 104 491 bytes 10206 616747 bandwidth 10206 616747
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908194808 measurement up left 14906 packets 105 500 bytes 10283 628267 bandwidth 10283 628267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908194808 measurement up full (initiator) 25048 packets 105 500 bytes 10283 628267 bandwidth 10283 628267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908204953 measurement up right 10145 packets 108 507 bytes 10494 637227 bandwidth 10494 637227
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908204953 measurement up full (responder) 25051 packets 108 507 bytes 10494 637227 bandwidth 10494 637227
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908220237 measurement up left 15284 packets 109 518 bytes 10571 651307 bandwidth 10571 651307
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908220237 measurement up full (initiator) 25429 packets 109 518 bytes 10571 651307 bandwidth 10571 651307
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908230386 measurement up right 10149 packets 111 525 bytes 10727 660267 bandwidth 10727 660267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908230386 measurement up full (responder) 25433 packets 111 525 bytes 10727 660267 bandwidth 10727 660267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908241897 measurement up left 11511 packets 112 536 bytes 10807 674347 bandwidth 10807 674347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908241897 measurement up full (initiator) 21660 packets 112 536 bytes 10807 674347 bandwidth 10807 674347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908251960 measurement up right 10063 packets 115 539 bytes 11024 678187 bandwidth 11024 678187
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908251960 measurement up full (responder) 21574 packets 115 539 bytes 11024 678187 bandwidth 11024 678187
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908262665 qrloss up AVG (ref) 0.781 (3.646), TOT (ref) 0.781 (3.646) (responder) packets 115 549 bytes 11024 690987 bandwidth 11024 690987
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908265738 measurement up left 13778 packets 115 550 bytes 11024 692267 bandwidth 11024 692267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908265738 measurement up full (initiator) 23841 packets 115 550 bytes 11024 692267 bandwidth 11024 692267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908276092 measurement up right 10354 packets 117 550 bytes 11188 692267 bandwidth 11188 692267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908276092 measurement up full (responder) 24132 packets 117 550 bytes 11188 692267 bandwidth 11188 692267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908291527 measurement up left 15435 packets 118 563 bytes 11270 708907 bandwidth 11270 708907
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908291527 measurement up full (initiator) 25789 packets 118 563 bytes 11270 708907 bandwidth 11270 708907
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908301726 measurement up right 10199 packets 121 563 bytes 11518 708907 bandwidth 11518 708907
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908301726 measurement up full (responder) 25634 packets 121 563 bytes 11518 708907 bandwidth 11518 708907
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908316949 measurement up left 15223 packets 121 575 bytes 11518 724267 bandwidth 11518 724267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908316949 measurement up full (initiator) 25422 packets 121 575 bytes 11518 724267 bandwidth 11518 724267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908327327 measurement up right 10378 packets 123 575 bytes 11686 724267 bandwidth 11686 724267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908327327 measurement up full (responder) 25601 packets 123 575 bytes 11686 724267 bandwidth 11686 724267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908336872 qrloss up AVG (ref) 0.868 (3.646), TOT (ref) 0.868 (3.646) (responder) packets 123 584 bytes 11686 735787 bandwidth 11686 735787
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908342610 measurement up left 15283 packets 123 586 bytes 11686 738347 bandwidth 11686 738347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908342610 measurement up full (initiator) 25661 packets 123 586 bytes 11686 738347 bandwidth 11686 738347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908352905 measurement up right 10295 packets 125 586 bytes 11854 738347 bandwidth 11854 738347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908352905 measurement up full (responder) 25578 packets 125 586 bytes 11854 738347 bandwidth 11854 738347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908368182 measurement up left 15277 packets 126 598 bytes 11938 753707 bandwidth 11938 753707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908368182 measurement up full (initiator) 25572 packets 126 598 bytes 11938 753707 bandwidth 11938 753707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908378325 measurement up right 10143 packets 128 598 bytes 12106 753707 bandwidth 12106 753707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908378325 measurement up full (responder) 25420 packets 128 598 bytes 12106 753707 bandwidth 12106 753707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908390061 qrloss up AVG (ref) 0.868 (3.906), TOT (ref) 0.868 (3.906) (responder) packets 129 610 bytes 12190 769067 bandwidth 12190 769067
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908393513 measurement up left 15188 packets 129 611 bytes 12190 770347 bandwidth 12190 770347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908393513 measurement up full (initiator) 25331 packets 129 611 bytes 12190 770347 bandwidth 12190 770347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908403719 measurement up right 10206 packets 132 611 bytes 12414 770347 bandwidth 12414 770347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908403719 measurement up full (responder) 25394 packets 132 611 bytes 12414 770347 bandwidth 12414 770347
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908418974 measurement up left 15255 packets 133 625 bytes 12498 788267 bandwidth 12498 788267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908418974 measurement up full (initiator) 25461 packets 133 625 bytes 12498 788267 bandwidth 12498 788267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908429190 measurement up right 10216 packets 135 625 bytes 12664 788267 bandwidth 12664 788267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908429190 measurement up full (responder) 25471 packets 135 625 bytes 12664 788267 bandwidth 12664 788267
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908444508 measurement up left 15318 packets 136 640 bytes 12748 807467 bandwidth 12748 807467
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908444508 measurement up full (initiator) 25534 packets 136 640 bytes 12748 807467 bandwidth 12748 807467
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908454669 measurement up right 10161 packets 138 640 bytes 12918 807467 bandwidth 12918 807467
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908454669 measurement up full (responder) 25479 packets 138 640 bytes 12918 807467 bandwidth 12918 807467
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908469901 measurement up left 15232 packets 139 656 bytes 13003 827947 bandwidth 13003 827947
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908469901 measurement up full (initiator) 25393 packets 139 656 bytes 13003 827947 bandwidth 13003 827947
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908480138 measurement up right 10237 packets 141 656 bytes 13172 827947 bandwidth 13172 827947
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908480138 measurement up full (responder) 25469 packets 141 656 bytes 13172 827947 bandwidth 13172 827947
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908495405 measurement up left 15267 packets 142 673 bytes 13257 849707 bandwidth 13257 849707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908495405 measurement up full (initiator) 25504 packets 142 673 bytes 13257 849707 bandwidth 13257 849707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908505665 measurement up right 10260 packets 144 673 bytes 13427 849707 bandwidth 13427 849707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908505665 measurement up full (responder) 25527 packets 144 673 bytes 13427 849707 bandwidth 13427 849707
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908521011 measurement up left 15346 packets 145 691 bytes 13512 872747 bandwidth 13512 872747
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908521011 measurement up full (initiator) 25606 packets 145 691 bytes 13512 872747 bandwidth 13512 872747
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908531248 measurement up right 10237 packets 148 691 bytes 13738 872747 bandwidth 13738 872747
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908531248 measurement up full (responder) 25583 packets 148 691 bytes 13738 872747 bandwidth 13738 872747
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908546492 measurement up left 15244 packets 149 710 bytes 13823 897067 bandwidth 13823 897067
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908546492 measurement up full (initiator) 25481 packets 149 710 bytes 13823 897067 bandwidth 13823 897067
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908556566 measurement up right 10074 packets 151 710 bytes 13992 897067 bandwidth 13992 897067
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908556566 measurement up full (responder) 25318 packets 151 710 bytes 13992 897067 bandwidth 13992 897067
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908568464 measurement up left 11898 packets 152 727 bytes 14077 918827 bandwidth 14077 918827
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908568464 measurement up full (initiator) 21972 packets 152 727 bytes 14077 918827 bandwidth 14077 918827
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908581109 measurement up right 12645 packets 155 730 bytes 14303 922667 bandwidth 14303 922667
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908581109 measurement up full (responder) 24543 packets 155 730 bytes 14303 922667 bandwidth 14303 922667
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908597007 measurement up left 15898 packets 156 752 bytes 14388 949601 bandwidth 14388 949601
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908597007 measurement up full (initiator) 28543 packets 156 752 bytes 14388 949601 bandwidth 14388 949601
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908607213 measurement up right 10206 packets 158 752 bytes 14557 949601 bandwidth 14557 949601
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908607213 measurement up full (responder) 26104 packets 158 752 bytes 14557 949601 bandwidth 14557 949601
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908622464 measurement up left 15251 packets 159 774 bytes 14642 977761 bandwidth 14642 977761
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908622464 measurement up full (initiator) 25457 packets 159 774 bytes 14642 977761 bandwidth 14642 977761
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908632667 measurement up right 10203 packets 161 774 bytes 14811 977761 bandwidth 14811 977761
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908632667 measurement up full (responder) 25454 packets 161 774 bytes 14811 977761 bandwidth 14811 977761
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908647905 measurement up left 15238 packets 162 797 bytes 14896 1007201 bandwidth 14896 1007201
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908647905 measurement up full (initiator) 25441 packets 162 797 bytes 14896 1007201 bandwidth 14896 1007201
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908658075 measurement up right 10170 packets 164 797 bytes 15065 1007201 bandwidth 15065 1007201
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908658075 measurement up full (responder) 25408 packets 164 797 bytes 15065 1007201 bandwidth 15065 1007201
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908673302 measurement up left 15227 packets 165 821 bytes 15150 1037921 bandwidth 15150 1037921
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908673302 measurement up full (initiator) 25397 packets 165 821 bytes 15150 1037921 bandwidth 15150 1037921
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908683468 measurement up right 10166 packets 167 821 bytes 15319 1037921 bandwidth 15319 1037921
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908683468 measurement up full (responder) 25393 packets 167 821 bytes 15319 1037921 bandwidth 15319 1037921
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908693545 measurement up left 10077 packets 168 836 bytes 15404 1057121 bandwidth 15404 1057121
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908693545 measurement up full (initiator) 20243 packets 168 836 bytes 15404 1057121 bandwidth 15404 1057121
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908708772 measurement up right 15227 packets 171 846 bytes 15632 1069921 bandwidth 15632 1069921
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908708772 measurement up full (responder) 25304 packets 171 846 bytes 15632 1069921 bandwidth 15632 1069921
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908709839 qrloss up AVG (ref) 3.125 (1.562), TOT (ref) 3.125 (1.562) (initiator) packets 171 848 bytes 15632 1072481 bandwidth 15632 1072481
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908724151 measurement up left 15379 packets 172 864 bytes 15719 1092961 bandwidth 15719 1092961
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908724151 measurement up full (initiator) 30606 packets 172 864 bytes 15719 1092961 bandwidth 15719 1092961
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908734425 measurement up right 10274 packets 176 864 bytes 16037 1092961 bandwidth 16037 1092961
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908734425 measurement up full (responder) 25653 packets 176 864 bytes 16037 1092961 bandwidth 16037 1092961
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908747470 measurement up left 13045 packets 176 873 bytes 16037 1103255 bandwidth 16037 1103255
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908747470 measurement up full (initiator) 23319 packets 176 873 bytes 16037 1103255 bandwidth 16037 1103255
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908757816 measurement up right 10346 packets 178 873 bytes 16219 1103255 bandwidth 16219 1103255
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908757816 measurement up full (responder) 23391 packets 178 873 bytes 16219 1103255 bandwidth 16219 1103255
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908773052 measurement up left 15236 packets 178 886 bytes 16219 1119895 bandwidth 16219 1119895
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908773052 measurement up full (initiator) 25582 packets 178 886 bytes 16219 1119895 bandwidth 16219 1119895
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908783310 measurement up right 10258 packets 180 886 bytes 16401 1119895 bandwidth 16401 1119895
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908783310 measurement up full (responder) 25494 packets 180 886 bytes 16401 1119895 bandwidth 16401 1119895
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908798454 measurement up left 15144 packets 180 900 bytes 16401 1137815 bandwidth 16401 1137815
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908798454 measurement up full (initiator) 25402 packets 180 900 bytes 16401 1137815 bandwidth 16401 1137815
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908810459 measurement up right 12005 packets 182 900 bytes 16581 1137815 bandwidth 16581 1137815
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908810459 measurement up full (responder) 27149 packets 182 900 bytes 16581 1137815 bandwidth 16581 1137815
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908825668 measurement up left 15209 packets 183 915 bytes 16672 1157015 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908825668 measurement up full (initiator) 27214 packets 183 915 bytes 16672 1157015 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908835840 measurement up right 10172 packets 185 915 bytes 16855 1157015 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908835840 measurement up full (responder) 25381 packets 185 915 bytes 16855 1157015 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908851247 measurement up left 15407 packets 186 926 bytes 16948 1171095 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908851247 measurement up full (initiator) 25579 packets 186 926 bytes 16948 1171095 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908861442 measurement up right 10195 packets 187 926 bytes 17040 1171095 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908861442 measurement up full (responder) 25602 packets 187 926 bytes 17040 1171095 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908876693 measurement up left 15251 packets 188 937 bytes 17133 1185175 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908876693 measurement up full (initiator) 25446 packets 188 937 bytes 17133 1185175 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908886893 measurement up right 10200 packets 191 937 bytes 17375 1185175 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908886893 measurement up full (responder) 25451 packets 191 937 bytes 17375 1185175 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908902202 measurement up left 15309 packets 192 949 bytes 17468 1200535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908902202 measurement up full (initiator) 25509 packets 192 949 bytes 17468 1200535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908912427 measurement up right 10225 packets 194 949 bytes 17654 1200535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908912427 measurement up full (responder) 25534 packets 194 949 bytes 17654 1200535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908927633 measurement up left 15206 packets 195 961 bytes 17747 1215895 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908927633 measurement up full (initiator) 25431 packets 195 961 bytes 17747 1215895 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908937795 measurement up right 10162 packets 197 961 bytes 17932 1215895 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908937795 measurement up full (responder) 25368 packets 197 961 bytes 17932 1215895 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908953094 measurement up left 15299 packets 198 973 bytes 18027 1231255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908953094 measurement up full (initiator) 25461 packets 198 973 bytes 18027 1231255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908963468 measurement up right 10374 packets 200 973 bytes 18217 1231255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908963468 measurement up full (responder) 25673 packets 200 973 bytes 18217 1231255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908978772 measurement up left 15304 packets 201 983 bytes 18312 1244055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908978772 measurement up full (initiator) 25678 packets 201 983 bytes 18312 1244055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908988927 measurement up right 10155 packets 203 983 bytes 18501 1244055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466908988927 measurement up full (responder) 25459 packets 203 983 bytes 18501 1244055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909000261 qrloss up AVG (ref) 0.868 (1.719), TOT (ref) 0.868 (1.719) (responder) packets 204 993 bytes 18596 1256855 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909004191 measurement up left 15264 packets 204 994 bytes 18596 1258135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909004191 measurement up full (initiator) 25419 packets 204 994 bytes 18596 1258135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909014415 measurement up right 10224 packets 206 994 bytes 18785 1258135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909014415 measurement up full (responder) 25488 packets 206 994 bytes 18785 1258135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909029650 measurement up left 15235 packets 206 1006 bytes 18785 1273495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909029650 measurement up full (initiator) 25459 packets 206 1006 bytes 18785 1273495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909039930 measurement up right 10280 packets 208 1006 bytes 18975 1273495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909039930 measurement up full (responder) 25515 packets 208 1006 bytes 18975 1273495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909055301 measurement up left 15371 packets 209 1019 bytes 19070 1290135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909055301 measurement up full (initiator) 25651 packets 209 1019 bytes 19070 1290135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909065518 measurement up right 10217 packets 212 1019 bytes 19316 1290135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909065518 measurement up full (responder) 25588 packets 212 1019 bytes 19316 1290135 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909076426 qrloss up AVG (ref) 0.469 (1.719), TOT (ref) 0.586 (1.719) (responder) packets 213 1031 bytes 19411 1305495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909080738 measurement up left 15220 packets 213 1033 bytes 19411 1308055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909080738 measurement up full (initiator) 25437 packets 213 1033 bytes 19411 1308055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909091007 measurement up right 10269 packets 215 1033 bytes 19602 1308055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909091007 measurement up full (responder) 25489 packets 215 1033 bytes 19602 1308055 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909106285 measurement up left 15278 packets 216 1048 bytes 19660 1327255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909106285 measurement up full (initiator) 25547 packets 216 1048 bytes 19660 1327255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909116610 measurement up right 10325 packets 219 1048 bytes 19833 1327255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909116610 measurement up full (responder) 25603 packets 219 1048 bytes 19833 1327255 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909131855 measurement up left 15245 packets 220 1064 bytes 19891 1347735 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909131855 measurement up full (initiator) 25570 packets 220 1064 bytes 19891 1347735 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909142082 measurement up right 10227 packets 222 1064 bytes 20006 1347735 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909142082 measurement up full (responder) 25472 packets 222 1064 bytes 20006 1347735 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909157327 measurement up left 15245 packets 223 1081 bytes 20064 1369495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909157327 measurement up full (initiator) 25472 packets 223 1081 bytes 20064 1369495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909167533 measurement up right 10206 packets 225 1081 bytes 20180 1369495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909167533 measurement up full (responder) 25451 packets 225 1081 bytes 20180 1369495 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909182740 measurement up left 15207 packets 226 1099 bytes 20238 1392535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909182740 measurement up full (initiator) 25413 packets 226 1099 bytes 20238 1392535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909192908 measurement up right 10168 packets 228 1099 bytes 20356 1392535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909192908 measurement up full (responder) 25375 packets 228 1099 bytes 20356 1392535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909208080 measurement up left 15172 packets 229 1118 bytes 20415 1416855 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909208080 measurement up full (initiator) 25340 packets 229 1118 bytes 20415 1416855 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909218296 measurement up right 10216 packets 231 1118 bytes 20532 1416855 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909218296 measurement up full (responder) 25388 packets 231 1118 bytes 20532 1416855 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909233604 measurement up left 15308 packets 232 1138 bytes 20591 1442455 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909233604 measurement up full (initiator) 25524 packets 232 1138 bytes 20591 1442455 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909243811 measurement up right 10207 packets 234 1138 bytes 20708 1442455 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909243811 measurement up full (responder) 25515 packets 234 1138 bytes 20708 1442455 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909244919 qrloss up AVG (ref) 3.125 (1.562), TOT (ref) 3.125 (1.562) (initiator) packets 234 1140 bytes 20708 1445015 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909258965 measurement up left 15154 packets 235 1159 bytes 20767 1469335 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909258965 measurement up full (initiator) 25361 packets 235 1159 bytes 20767 1469335 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909269140 measurement up right 10175 packets 238 1159 bytes 20947 1469335 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909269140 measurement up full (responder) 25329 packets 238 1159 bytes 20947 1469335 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909282972 measurement up left 13832 packets 238 1174 bytes 20947 1488535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909282972 measurement up full (initiator) 24007 packets 238 1174 bytes 20947 1488535 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909294557 measurement up right 11585 packets 241 1175 bytes 21122 1488589 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909294557 measurement up full (responder) 25417 packets 241 1175 bytes 21122 1488589 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909308622 measurement up left 14065 packets 241 1188 bytes 21122 1505229 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909308622 measurement up full (initiator) 25650 packets 241 1188 bytes 21122 1505229 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909319876 measurement up right 11254 packets 244 1190 bytes 21292 1507789 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909319876 measurement up full (responder) 25319 packets 244 1190 bytes 21292 1507789 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909335078 measurement up left 15202 packets 245 1206 bytes 21350 1528269 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909335078 measurement up full (initiator) 26456 packets 245 1206 bytes 21350 1528269 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909345147 measurement up right 10069 packets 247 1206 bytes 21469 1528269 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909345147 measurement up full (responder) 25271 packets 247 1206 bytes 21469 1528269 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909360318 measurement up left 15171 packets 248 1218 bytes 21529 1543629 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909360318 measurement up full (initiator) 25240 packets 248 1218 bytes 21529 1543629 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909370467 measurement up right 10149 packets 250 1218 bytes 21650 1543629 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909370467 measurement up full (responder) 25320 packets 250 1218 bytes 21650 1543629 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909385669 measurement up left 15202 packets 251 1230 bytes 21712 1558989 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909385669 measurement up full (initiator) 25351 packets 251 1230 bytes 21712 1558989 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909395874 measurement up right 10205 packets 253 1231 bytes 21836 1560269 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909395874 measurement up full (responder) 25407 packets 253 1231 bytes 21836 1560269 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909411203 measurement up left 15329 packets 254 1243 bytes 21898 1575629 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909411203 measurement up full (initiator) 25534 packets 254 1243 bytes 21898 1575629 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909421493 measurement up right 10290 packets 256 1245 bytes 22021 1578189 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909421493 measurement up full (responder) 25619 packets 256 1245 bytes 22021 1578189 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909436758 measurement up left 15265 packets 258 1258 bytes 22145 1594829 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909436758 measurement up full (initiator) 25555 packets 258 1258 bytes 22145 1594829 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909446945 measurement up right 10187 packets 260 1260 bytes 22269 1597389 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909446945 measurement up full (responder) 25452 packets 260 1260 bytes 22269 1597389 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909462166 measurement up left 15221 packets 262 1273 bytes 22393 1614029 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909462166 measurement up full (initiator) 25408 packets 262 1273 bytes 22393 1614029 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909472363 measurement up right 10197 packets 265 1276 bytes 22582 1616643 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909472363 measurement up full (responder) 25418 packets 265 1276 bytes 22582 1616643 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909486567 qrloss up AVG (ref) 0.312 (1.719), TOT (ref) 0.547 (1.719) (responder) packets 266 1286 bytes 22646 1629443 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909487674 measurement up left 15311 packets 266 1287 bytes 22646 1630723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909487674 measurement up full (initiator) 25508 packets 266 1287 bytes 22646 1630723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909497910 measurement up right 10236 packets 269 1287 bytes 22823 1630723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909497910 measurement up full (responder) 25547 packets 269 1287 bytes 22823 1630723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909513220 measurement up left 15310 packets 270 1295 bytes 22885 1640963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909513220 measurement up full (initiator) 25546 packets 270 1295 bytes 22885 1640963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909523478 measurement up right 10258 packets 272 1295 bytes 23008 1640963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909523478 measurement up full (responder) 25568 packets 272 1295 bytes 23008 1640963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909538854 measurement up left 15376 packets 273 1303 bytes 23070 1651203 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909538854 measurement up full (initiator) 25634 packets 273 1303 bytes 23070 1651203 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909549093 measurement up right 10239 packets 275 1303 bytes 23194 1651203 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909549093 measurement up full (responder) 25615 packets 275 1303 bytes 23194 1651203 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909562957 qrloss up AVG (ref) 0.312 (0.469), TOT (ref) 0.547 (1.354) (responder) packets 276 1311 bytes 23256 1661443 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909564394 measurement up left 15301 packets 276 1312 bytes 23256 1662723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909564394 measurement up full (initiator) 25540 packets 276 1312 bytes 23256 1662723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909574647 measurement up right 10253 packets 278 1312 bytes 23378 1662723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909574647 measurement up full (responder) 25554 packets 278 1312 bytes 23378 1662723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909590029 measurement up left 15382 packets 279 1322 bytes 23440 1675523 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909590029 measurement up full (initiator) 25635 packets 279 1322 bytes 23440 1675523 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909600243 measurement up right 10214 packets 281 1322 bytes 23564 1675523 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909600243 measurement up full (responder) 25596 packets 281 1322 bytes 23564 1675523 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909621696 measurement up left 21453 packets 282 1333 bytes 23626 1689603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909621696 measurement up full (initiator) 31667 packets 282 1333 bytes 23626 1689603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909632008 measurement up right 10312 packets 284 1333 bytes 23750 1689603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909632008 measurement up full (responder) 31765 packets 284 1333 bytes 23750 1689603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909647154 measurement up left 15146 packets 284 1345 bytes 23750 1704963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909647154 measurement up full (initiator) 25458 packets 284 1345 bytes 23750 1704963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909657400 measurement up right 10246 packets 287 1345 bytes 23929 1704963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909657400 measurement up full (responder) 25392 packets 287 1345 bytes 23929 1704963 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909661403 qrloss up AVG (ref) 0.469 (0.469), TOT (ref) 0.595 (1.354) (responder) packets 288 1349 bytes 23991 1710083 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909672635 measurement up left 15235 packets 288 1358 bytes 23991 1721603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909672635 measurement up full (initiator) 25481 packets 288 1358 bytes 23991 1721603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909683016 measurement up right 10381 packets 290 1358 bytes 24118 1721603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909683016 measurement up full (responder) 25616 packets 290 1358 bytes 24118 1721603 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909698458 measurement up left 15442 packets 291 1367 bytes 24182 1733123 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909698458 measurement up full (initiator) 25823 packets 291 1367 bytes 24182 1733123 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909708718 measurement up right 10260 packets 293 1367 bytes 24310 1733123 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909708718 measurement up full (responder) 25702 packets 293 1367 bytes 24310 1733123 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909724066 measurement up left 15348 packets 294 1377 bytes 24374 1745923 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909724066 measurement up full (initiator) 25608 packets 294 1377 bytes 24374 1745923 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909734266 measurement up right 10200 packets 296 1377 bytes 24501 1745923 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909734266 measurement up full (responder) 25548 packets 296 1377 bytes 24501 1745923 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909736611 qrloss up AVG (ref) 3.125 (2.083), TOT (ref) 3.125 (2.083) (initiator) packets 296 1378 bytes 24501 1747203 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909749474 measurement up left 15208 packets 297 1387 bytes 24565 1758723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909749474 measurement up full (initiator) 25408 packets 297 1387 bytes 24565 1758723 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909759641 measurement up right 10167 packets 300 1388 bytes 24750 1760003 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909759641 measurement up full (responder) 25375 packets 300 1388 bytes 24750 1760003 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909774915 measurement up left 15274 packets 301 1399 bytes 24814 1774083 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909774915 measurement up full (initiator) 25441 packets 301 1399 bytes 24814 1774083 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909785150 measurement up right 10235 packets 303 1400 bytes 24942 1775363 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909785150 measurement up full (responder) 25509 packets 303 1400 bytes 24942 1775363 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909800410 measurement up left 15260 packets 304 1411 bytes 25005 1789443 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909800410 measurement up full (initiator) 25495 packets 304 1411 bytes 25005 1789443 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909810678 measurement up right 10268 packets 306 1413 bytes 25133 1792003 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909810678 measurement up full (responder) 25528 packets 306 1413 bytes 25133 1792003 bandwidth 16581 1150615
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909825941 measurement up left 15263 packets 308 1424 bytes 25262 1806083 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909825941 measurement up full (initiator) 25531 packets 308 1424 bytes 25262 1806083 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909836211 measurement up right 10270 packets 310 1427 bytes 25392 1809923 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909836211 measurement up full (responder) 25533 packets 310 1427 bytes 25392 1809923 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909851459 measurement up left 15248 packets 312 1439 bytes 25522 1825283 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909851459 measurement up full (initiator) 25518 packets 312 1439 bytes 25522 1825283 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909861667 measurement up right 10208 packets 314 1442 bytes 25650 1829123 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909861667 measurement up full (responder) 25456 packets 314 1442 bytes 25650 1829123 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909876955 measurement up left 15288 packets 316 1454 bytes 25780 1844483 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909876955 measurement up full (initiator) 25496 packets 316 1454 bytes 25780 1844483 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909887219 measurement up right 10264 packets 318 1458 bytes 25910 1849603 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909887219 measurement up full (responder) 25552 packets 318 1458 bytes 25910 1849603 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909902580 measurement up left 15361 packets 320 1470 bytes 26041 1864963 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909902580 measurement up full (initiator) 25625 packets 320 1470 bytes 26041 1864963 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909912823 measurement up right 10243 packets 322 1476 bytes 26171 1871417 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909912823 measurement up full (responder) 25604 packets 322 1476 bytes 26171 1871417 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909928072 measurement up left 15249 packets 324 1489 bytes 26293 1888057 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909928072 measurement up full (initiator) 25492 packets 324 1489 bytes 26293 1888057 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909938313 measurement up right 10241 packets 326 1494 bytes 26409 1894457 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909938313 measurement up full (responder) 25490 packets 326 1494 bytes 26409 1894457 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909948533 measurement up left 10220 packets 328 1500 bytes 26524 1902137 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909948533 measurement up full (initiator) 20461 packets 328 1500 bytes 26524 1902137 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909956630 qrloss up AVG (ref) 0.938 (2.083), TOT (ref) 0.938 (2.083) (initiator) packets 330 1511 bytes 26639 1916217 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909963777 measurement up right 15244 packets 332 1512 bytes 26762 1917497 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909963777 measurement up full (responder) 25464 packets 332 1512 bytes 26762 1917497 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909979719 measurement up left 15942 packets 333 1527 bytes 26824 1935471 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909979719 measurement up full (initiator) 31186 packets 333 1527 bytes 26824 1935471 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909989926 measurement up right 10207 packets 336 1527 bytes 27004 1935471 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466909989926 measurement up full (responder) 26149 packets 336 1527 bytes 27004 1935471 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910005142 measurement up left 15216 packets 337 1537 bytes 27066 1947045 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910005142 measurement up full (initiator) 25423 packets 337 1537 bytes 27066 1947045 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910008150 qrloss up AVG (ref) 0.625 (0.469), TOT (ref) 0.586 (1.354) (responder) packets 338 1540 bytes 27128 1950885 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910015288 measurement up right 10146 packets 339 1543 bytes 27190 1954725 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910015288 measurement up full (responder) 25362 packets 339 1543 bytes 27190 1954725 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910030420 measurement up left 15132 packets 341 1552 bytes 27314 1966245 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910030420 measurement up full (initiator) 25278 packets 341 1552 bytes 27314 1966245 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910040591 measurement up right 10171 packets 343 1559 bytes 27438 1975205 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910040591 measurement up full (responder) 25303 packets 343 1559 bytes 27438 1975205 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910052557 qrloss up AVG (ref) 0.625 (0.781), TOT (ref) 0.586 (1.234) (responder) packets 345 1565 bytes 27562 1982885 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910055819 measurement up left 15228 packets 345 1568 bytes 27562 1986725 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910055819 measurement up full (initiator) 25399 packets 345 1568 bytes 27562 1986725 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910065964 measurement up right 10145 packets 347 1576 bytes 27687 1996965 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910065964 measurement up full (responder) 25373 packets 347 1576 bytes 27687 1996965 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910081241 measurement up left 15277 packets 349 1585 bytes 27812 2008485 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910081241 measurement up full (initiator) 25422 packets 349 1585 bytes 27812 2008485 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910091429 measurement up right 10188 packets 351 1594 bytes 27937 2020005 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910091429 measurement up full (responder) 25465 packets 351 1594 bytes 27937 2020005 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910106601 measurement up left 15172 packets 353 1604 bytes 28062 2032805 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910106601 measurement up full (initiator) 25360 packets 353 1604 bytes 28062 2032805 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910116697 measurement up right 10096 packets 355 1613 bytes 28189 2044325 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910116697 measurement up full (responder) 25268 packets 355 1613 bytes 28189 2044325 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910131994 measurement up left 15297 packets 358 1623 bytes 28372 2055899 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910131994 measurement up full (initiator) 25393 packets 358 1623 bytes 28372 2055899 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910135170 qrloss up AVG (ref) 0.625 (0.781), TOT (ref) 0.586 (1.250) (responder) packets 359 1628 bytes 28435 2062299 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910140913 qrloss up AVG (ref) 0.938 (1.953), TOT (ref) 0.938 (1.953) (initiator) packets 359 1634 bytes 28435 2069979 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910142063 measurement up right 10069 packets 360 1634 bytes 28498 2069979 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910142063 measurement up full (responder) 25366 packets 360 1634 bytes 28498 2069979 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910152258 measurement up left 10195 packets 361 1638 bytes 28555 2075099 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910152258 measurement up full (initiator) 20264 packets 361 1638 bytes 28555 2075099 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910162326 measurement up right 10068 packets 363 1652 bytes 28670 2093019 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910162326 measurement up full (responder) 20263 packets 363 1652 bytes 28670 2093019 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910177470 measurement up left 15144 packets 365 1659 bytes 28785 2101979 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910177470 measurement up full (initiator) 25212 packets 365 1659 bytes 28785 2101979 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910187595 measurement up right 10125 packets 367 1673 bytes 28901 2119899 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910187595 measurement up full (responder) 25269 packets 367 1673 bytes 28901 2119899 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910202534 measurement up left 14939 packets 369 1680 bytes 29018 2128859 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910202534 measurement up full (initiator) 25064 packets 369 1680 bytes 29018 2128859 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910210999 qrloss up AVG (ref) 0.625 (0.938), TOT (ref) 0.586 (1.265) (responder) packets 371 1691 bytes 29136 2142939 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910212683 measurement up right 10149 packets 372 1695 bytes 29192 2148059 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910212683 measurement up full (responder) 25088 packets 372 1695 bytes 29192 2148059 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910227895 measurement up left 15212 packets 374 1703 bytes 29310 2157074 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910227895 measurement up full (initiator) 25361 packets 374 1703 bytes 29310 2157074 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910238016 measurement up right 10121 packets 376 1719 bytes 29428 2177554 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910238016 measurement up full (responder) 25333 packets 376 1719 bytes 29428 2177554 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910248208 measurement up left 10192 packets 378 1727 bytes 29543 2187794 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910248208 measurement up full (initiator) 20313 packets 378 1727 bytes 29543 2187794 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910258378 measurement up right 10170 packets 380 1734 bytes 29660 2196754 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910258378 measurement up full (responder) 20362 packets 380 1734 bytes 29660 2196754 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910273668 measurement up left 15290 packets 382 1752 bytes 29778 2219794 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910273668 measurement up full (initiator) 25460 packets 382 1752 bytes 29778 2219794 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910279780 qrloss up AVG (ref) 0.625 (1.094), TOT (ref) 0.586 (1.278) (responder) packets 384 1754 bytes 29895 2222354 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910283840 measurement up right 10172 packets 384 1759 bytes 29895 2228754 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910283840 measurement up full (responder) 25462 packets 384 1759 bytes 29895 2228754 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910298729 measurement up left 14889 packets 386 1778 bytes 30013 2253074 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910298729 measurement up full (initiator) 25061 packets 386 1778 bytes 30013 2253074 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910308872 measurement up right 10143 packets 389 1785 bytes 30193 2262034 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910308872 measurement up full (responder) 25032 packets 389 1785 bytes 30193 2262034 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910319502 measurement up left 10630 packets 389 1797 bytes 30193 2277394 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910319502 measurement up full (initiator) 20773 packets 389 1797 bytes 30193 2277394 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910329727 measurement up right 10225 packets 391 1797 bytes 30314 2277394 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910329727 measurement up full (responder) 20855 packets 391 1797 bytes 30314 2277394 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910344946 measurement up left 15219 packets 392 1816 bytes 30375 2301714 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910344946 measurement up full (initiator) 25444 packets 392 1816 bytes 30375 2301714 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910355036 measurement up right 10090 packets 394 1816 bytes 30496 2301714 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910355036 measurement up full (responder) 25309 packets 394 1816 bytes 30496 2301714 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910368621 measurement up left 13585 packets 395 1834 bytes 30557 2324754 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910368621 measurement up full (initiator) 23675 packets 395 1834 bytes 30557 2324754 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910380565 measurement up right 11944 packets 398 1836 bytes 30735 2327314 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910380565 measurement up full (responder) 25529 packets 398 1836 bytes 30735 2327314 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910393963 measurement up left 13398 packets 399 1855 bytes 30797 2351634 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910393963 measurement up full (initiator) 25342 packets 399 1855 bytes 30797 2351634 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910405982 measurement up right 12019 packets 403 1857 bytes 31042 2354194 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910405982 measurement up full (responder) 25417 packets 403 1857 bytes 31042 2354194 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910421364 measurement up left 15382 packets 404 1872 bytes 31106 2372167 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910421364 measurement up full (initiator) 27401 packets 404 1872 bytes 31106 2372167 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910431534 measurement up right 10170 packets 406 1872 bytes 31234 2372167 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910431534 measurement up full (responder) 25552 packets 406 1872 bytes 31234 2372167 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910441473 qrloss up AVG (ref) 0.625 (1.250), TOT (ref) 0.586 (1.237) (responder) packets 407 1881 bytes 31300 2383687 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910455137 measurement up left 23603 packets 407 1884 bytes 31300 2387527 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910455137 measurement up full (initiator) 33773 packets 407 1884 bytes 31300 2387527 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910465462 measurement up right 10325 packets 408 1884 bytes 31366 2387527 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910465462 measurement up full (responder) 33928 packets 408 1884 bytes 31366 2387527 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910480815 measurement up left 15353 packets 408 1894 bytes 31366 2400327 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910480815 measurement up full (initiator) 25678 packets 408 1894 bytes 31366 2400327 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910491069 measurement up right 10254 packets 410 1894 bytes 31497 2400327 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910491069 measurement up full (responder) 25607 packets 410 1894 bytes 31497 2400327 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910506342 measurement up left 15273 packets 410 1905 bytes 31497 2414407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910506342 measurement up full (initiator) 25527 packets 410 1905 bytes 31497 2414407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910516500 measurement up right 10158 packets 412 1905 bytes 31628 2414407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910516500 measurement up full (responder) 25431 packets 412 1905 bytes 31628 2414407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910531876 measurement up left 15376 packets 413 1917 bytes 31694 2429767 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910531876 measurement up full (initiator) 25534 packets 413 1917 bytes 31694 2429767 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910541956 measurement up right 10080 packets 415 1917 bytes 31825 2429767 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910541956 measurement up full (responder) 25456 packets 415 1917 bytes 31825 2429767 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910548384 qrloss up AVG (ref) 0.469 (1.250), TOT (ref) 0.521 (1.237) (responder) packets 416 1923 bytes 31891 2437447 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910557145 measurement up left 15189 packets 416 1930 bytes 31891 2446407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910557145 measurement up full (initiator) 25269 packets 416 1930 bytes 31891 2446407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910567456 measurement up right 10311 packets 418 1930 bytes 32022 2446407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910567456 measurement up full (responder) 25500 packets 418 1930 bytes 32022 2446407 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910577635 measurement up left 10179 packets 419 1941 bytes 32089 2460487 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910577635 measurement up full (initiator) 20490 packets 419 1941 bytes 32089 2460487 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910592844 measurement up right 15209 packets 422 1945 bytes 32279 2464383 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910592844 measurement up full (responder) 25388 packets 422 1945 bytes 32279 2464383 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910594000 qrloss up AVG (ref) 0.938 (1.875), TOT (ref) 0.938 (1.875) (initiator) packets 422 1947 bytes 32279 2465719 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910609014 measurement up left 16170 packets 423 1961 bytes 32336 2483639 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910609014 measurement up full (initiator) 31379 packets 423 1961 bytes 32336 2483639 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910619158 measurement up right 10144 packets 425 1961 bytes 32451 2483639 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910619158 measurement up full (responder) 26314 packets 425 1961 bytes 32451 2483639 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910634350 measurement up left 15192 packets 426 1977 bytes 32509 2504119 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910634350 measurement up full (initiator) 25336 packets 426 1977 bytes 32509 2504119 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910644635 measurement up right 10285 packets 428 1977 bytes 32624 2504119 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910644635 measurement up full (responder) 25477 packets 428 1977 bytes 32624 2504119 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910659911 measurement up left 15276 packets 429 1994 bytes 32682 2525879 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910659911 measurement up full (initiator) 25561 packets 429 1994 bytes 32682 2525879 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910670108 measurement up right 10197 packets 431 1994 bytes 32797 2525879 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910670108 measurement up full (responder) 25473 packets 431 1994 bytes 32797 2525879 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910685298 measurement up left 15190 packets 432 2012 bytes 32855 2548919 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910685298 measurement up full (initiator) 25387 packets 432 2012 bytes 32855 2548919 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910695449 measurement up right 10151 packets 435 2012 bytes 33028 2548919 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910695449 measurement up full (responder) 25341 packets 435 2012 bytes 33028 2548919 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910710714 measurement up left 15265 packets 436 2031 bytes 33087 2573239 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910710714 measurement up full (initiator) 25416 packets 436 2031 bytes 33087 2573239 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910720971 measurement up right 10257 packets 438 2031 bytes 33205 2573239 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910720971 measurement up full (responder) 25522 packets 438 2031 bytes 33205 2573239 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910735502 measurement up left 14531 packets 439 2051 bytes 33264 2598839 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910735502 measurement up full (initiator) 24788 packets 439 2051 bytes 33264 2598839 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910745769 measurement up right 10267 packets 441 2051 bytes 33386 2598839 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910745769 measurement up full (responder) 24798 packets 441 2051 bytes 33386 2598839 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910756048 measurement up left 10279 packets 442 2060 bytes 33447 2610359 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910756048 measurement up full (initiator) 20546 packets 442 2060 bytes 33447 2610359 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910771526 measurement up right 15478 packets 445 2065 bytes 33626 2616759 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910771526 measurement up full (responder) 25757 packets 445 2065 bytes 33626 2616759 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910787612 measurement up left 16086 packets 446 2080 bytes 33687 2634733 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910787612 measurement up full (initiator) 31564 packets 446 2080 bytes 33687 2634733 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910797739 measurement up right 10127 packets 448 2081 bytes 33808 2636013 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910797739 measurement up full (responder) 26213 packets 448 2081 bytes 33808 2636013 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910812929 measurement up left 15190 packets 449 2095 bytes 33869 2653933 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910812929 measurement up full (initiator) 25317 packets 449 2095 bytes 33869 2653933 bandwidth 8552 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910823035 measurement up right 10106 packets 451 2097 bytes 33990 2656493 bandwidth 8736 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910823035 measurement up full (responder) 25296 packets 451 2097 bytes 33990 2656493 bandwidth 8736 649068
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910838322 measurement up left 15287 packets 452 2111 bytes 34051 2674413 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910838322 measurement up full (initiator) 25393 packets 452 2111 bytes 34051 2674413 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910848582 measurement up right 10260 packets 454 2114 bytes 34175 2678253 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910848582 measurement up full (responder) 25547 packets 454 2114 bytes 34175 2678253 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910863848 measurement up left 15266 packets 455 2129 bytes 34236 2697453 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910863848 measurement up full (initiator) 25526 packets 455 2129 bytes 34236 2697453 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910873992 measurement up right 10144 packets 457 2132 bytes 34360 2701293 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910873992 measurement up full (responder) 25410 packets 457 2132 bytes 34360 2701293 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910875367 qrloss up AVG (ref) 0.893 (1.875), TOT (ref) 0.893 (1.875) (initiator) packets 457 2134 bytes 34360 2703853 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910881059 qrloss up AVG (ref) 0.469 (1.094), TOT (ref) 0.521 (1.116) (responder) packets 459 2136 bytes 34483 2706413 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910889198 measurement up left 15206 packets 459 2147 bytes 34483 2720493 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910889198 measurement up full (initiator) 25350 packets 459 2147 bytes 34483 2720493 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910899507 measurement up right 10309 packets 461 2151 bytes 34607 2725613 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910899507 measurement up full (responder) 25515 packets 461 2151 bytes 34607 2725613 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910914792 measurement up left 15285 packets 463 2166 bytes 34732 2744813 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910914792 measurement up full (initiator) 25594 packets 463 2166 bytes 34732 2744813 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910925047 measurement up right 10255 packets 466 2172 bytes 34913 2751267 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910925047 measurement up full (responder) 25540 packets 466 2172 bytes 34913 2751267 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910940411 measurement up left 15364 packets 469 2189 bytes 35092 2771801 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910940411 measurement up full (initiator) 25619 packets 469 2189 bytes 35092 2771801 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910950665 measurement up right 10254 packets 471 2195 bytes 35208 2778255 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910950665 measurement up full (responder) 25618 packets 471 2195 bytes 35208 2778255 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910957343 qrloss up AVG (ref) 0.469 (0.938), TOT (ref) 0.521 (1.131) (responder) packets 473 2199 bytes 35327 2783375 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910965883 measurement up left 15218 packets 473 2212 bytes 35327 2800015 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910965883 measurement up full (initiator) 25472 packets 473 2212 bytes 35327 2800015 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910975991 measurement up right 10108 packets 476 2217 bytes 35508 2806415 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910975991 measurement up full (responder) 25326 packets 476 2217 bytes 35508 2806415 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910991140 measurement up left 15149 packets 477 2227 bytes 35570 2819215 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466910991140 measurement up full (initiator) 25257 packets 477 2227 bytes 35570 2819215 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911001452 measurement up right 10312 packets 479 2234 bytes 35694 2828175 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911001452 measurement up full (responder) 25461 packets 479 2234 bytes 35694 2828175 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911016585 measurement up left 15133 packets 480 2244 bytes 35756 2840975 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911016585 measurement up full (initiator) 25445 packets 480 2244 bytes 35756 2840975 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911026774 measurement up right 10189 packets 482 2251 bytes 35880 2849935 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911026774 measurement up full (responder) 25322 packets 482 2251 bytes 35880 2849935 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911038484 qrloss up AVG (ref) 0.469 (0.938), TOT (ref) 0.521 (1.146) (responder) packets 484 2262 bytes 36003 2864015 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911042010 measurement up left 15236 packets 484 2263 bytes 36003 2865295 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911042010 measurement up full (initiator) 25425 packets 484 2263 bytes 36003 2865295 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911052238 measurement up right 10228 packets 486 2269 bytes 36126 2872975 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911052238 measurement up full (responder) 25464 packets 486 2269 bytes 36126 2872975 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911062924 measurement up left 10686 packets 488 2279 bytes 36250 2885775 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911062924 measurement up full (initiator) 20914 packets 488 2279 bytes 36250 2885775 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911074589 measurement up right 11665 packets 491 2287 bytes 36433 2896015 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911074589 measurement up full (responder) 22351 packets 491 2287 bytes 36433 2896015 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911084724 measurement up left 10135 packets 492 2294 bytes 36498 2903749 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911084724 measurement up full (initiator) 21800 packets 492 2294 bytes 36498 2903749 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911094934 measurement up right 10210 packets 494 2297 bytes 36617 2907589 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911094934 measurement up full (responder) 20345 packets 494 2297 bytes 36617 2907589 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911110028 qrloss up AVG (ref) 0.312 (0.938), TOT (ref) 0.477 (1.146) (responder) packets 495 2306 bytes 36677 2919109 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911110184 measurement up left 15250 packets 495 2307 bytes 36677 2920389 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911110184 measurement up full (initiator) 25460 packets 495 2307 bytes 36677 2920389 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911120322 measurement up right 10138 packets 497 2311 bytes 36797 2925509 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911120322 measurement up full (responder) 25388 packets 497 2311 bytes 36797 2925509 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911135542 measurement up left 15220 packets 498 2321 bytes 36856 2938309 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911135542 measurement up full (initiator) 25358 packets 498 2321 bytes 36856 2938309 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911138805 qrloss up AVG (ref) 0.312 (1.094), TOT (ref) 0.477 (1.210) (responder) packets 499 2324 bytes 36916 2942149 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911145738 measurement up right 10196 packets 500 2326 bytes 36975 2944709 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911145738 measurement up full (responder) 25416 packets 500 2326 bytes 36975 2944709 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911160906 measurement up left 15168 packets 502 2336 bytes 37095 2957509 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911160906 measurement up full (initiator) 25364 packets 502 2336 bytes 37095 2957509 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911171048 measurement up right 10142 packets 504 2342 bytes 37215 2965189 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911171048 measurement up full (responder) 25310 packets 504 2342 bytes 37215 2965189 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911186180 measurement up left 15132 packets 507 2352 bytes 37390 2977989 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911186180 measurement up full (initiator) 25274 packets 507 2352 bytes 37390 2977989 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911196335 measurement up right 10155 packets 509 2359 bytes 37512 2986949 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911196335 measurement up full (responder) 25287 packets 509 2359 bytes 37512 2986949 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911211508 measurement up left 15173 packets 511 2369 bytes 37634 2999749 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911211508 measurement up full (initiator) 25328 packets 511 2369 bytes 37634 2999749 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911221672 measurement up right 10164 packets 513 2377 bytes 37756 3009989 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911221672 measurement up full (responder) 25337 packets 513 2377 bytes 37756 3009989 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911232519 measurement up left 10847 packets 515 2385 bytes 37878 3020229 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911232519 measurement up full (initiator) 21011 packets 515 2385 bytes 37878 3020229 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911237478 qrloss up AVG (ref) 0.312 (1.094), TOT (ref) 0.477 (1.221) (responder) packets 517 2387 bytes 37996 3022789 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911246900 measurement up right 14381 packets 518 2396 bytes 38057 3034309 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911246900 measurement up full (responder) 25228 packets 518 2396 bytes 38057 3034309 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911271474 measurement up left 24574 packets 520 2416 bytes 38178 3059909 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911271474 measurement up full (initiator) 38955 packets 520 2416 bytes 38178 3059909 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911281723 measurement up right 10249 packets 522 2416 bytes 38299 3059909 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911281723 measurement up full (responder) 34823 packets 522 2416 bytes 38299 3059909 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911296970 measurement up left 15247 packets 523 2437 bytes 38360 3086789 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911296970 measurement up full (initiator) 25496 packets 523 2437 bytes 38360 3086789 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911307212 measurement up right 10242 packets 525 2437 bytes 38481 3086789 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911307212 measurement up full (responder) 25489 packets 525 2437 bytes 38481 3086789 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911322564 measurement up left 15352 packets 526 2459 bytes 38542 3114949 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911322564 measurement up full (initiator) 25594 packets 526 2459 bytes 38542 3114949 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911332777 measurement up right 10213 packets 528 2459 bytes 38663 3114949 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911332777 measurement up full (responder) 25565 packets 528 2459 bytes 38663 3114949 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911348043 measurement up left 15266 packets 529 2482 bytes 38724 3144389 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911348043 measurement up full (initiator) 25479 packets 529 2482 bytes 38724 3144389 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911358258 measurement up right 10215 packets 531 2482 bytes 38845 3144389 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911358258 measurement up full (responder) 25481 packets 531 2482 bytes 38845 3144389 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911369953 measurement up left 11695 packets 532 2503 bytes 38906 3171269 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911369953 measurement up full (initiator) 21910 packets 532 2503 bytes 38906 3171269 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911383525 measurement up right 13572 packets 536 2506 bytes 39140 3175109 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911383525 measurement up full (responder) 25267 packets 536 2506 bytes 39140 3175109 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911397474 measurement up left 13949 packets 537 2530 bytes 39201 3205829 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911397474 measurement up full (initiator) 27521 packets 537 2530 bytes 39201 3205829 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911407762 measurement up right 10288 packets 539 2531 bytes 39326 3207109 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911407762 measurement up full (responder) 24237 packets 539 2531 bytes 39326 3207109 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911423191 measurement up left 15429 packets 540 2549 bytes 39388 3230149 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911423191 measurement up full (initiator) 25717 packets 540 2549 bytes 39388 3230149 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911433387 measurement up right 10196 packets 542 2549 bytes 39512 3230149 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911433387 measurement up full (responder) 25625 packets 542 2549 bytes 39512 3230149 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911448606 measurement up left 15219 packets 543 2567 bytes 39575 3253189 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911448606 measurement up full (initiator) 25415 packets 543 2567 bytes 39575 3253189 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911458782 measurement up right 10176 packets 545 2568 bytes 39700 3254469 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911458782 measurement up full (responder) 25395 packets 545 2568 bytes 39700 3254469 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911473995 measurement up left 15213 packets 546 2586 bytes 39763 3277509 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911473995 measurement up full (initiator) 25389 packets 546 2586 bytes 39763 3277509 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911484233 measurement up right 10238 packets 548 2588 bytes 39889 3280069 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911484233 measurement up full (responder) 25451 packets 548 2588 bytes 39889 3280069 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911485346 qrloss up AVG (ref) 0.893 (1.786), TOT (ref) 0.893 (1.786) (initiator) packets 548 2591 bytes 39889 3283909 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911499502 measurement up left 15269 packets 549 2601 bytes 39955 3296709 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911499502 measurement up full (initiator) 25507 packets 549 2601 bytes 39955 3296709 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911509854 measurement up right 10352 packets 552 2601 bytes 40144 3296709 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911509854 measurement up full (responder) 25621 packets 552 2601 bytes 40144 3296709 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911526370 measurement up left 16516 packets 553 2617 bytes 40210 3315963 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911526370 measurement up full (initiator) 26868 packets 553 2617 bytes 40210 3315963 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911536666 measurement up right 10296 packets 555 2617 bytes 40340 3315963 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911536666 measurement up full (responder) 26812 packets 555 2617 bytes 40340 3315963 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911551802 measurement up left 15136 packets 556 2633 bytes 40406 3336443 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911551802 measurement up full (initiator) 25432 packets 556 2633 bytes 40406 3336443 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911562018 measurement up right 10216 packets 558 2633 bytes 40537 3336443 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911562018 measurement up full (responder) 25352 packets 558 2633 bytes 40537 3336443 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911577204 measurement up left 15186 packets 559 2650 bytes 40603 3358203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911577204 measurement up full (initiator) 25402 packets 559 2650 bytes 40603 3358203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911587482 measurement up right 10278 packets 561 2650 bytes 40734 3358203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911587482 measurement up full (responder) 25464 packets 561 2650 bytes 40734 3358203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911602639 measurement up left 15157 packets 562 2668 bytes 40801 3381243 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911602639 measurement up full (initiator) 25435 packets 562 2668 bytes 40801 3381243 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911612708 measurement up right 10069 packets 565 2668 bytes 40990 3381243 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911612708 measurement up full (responder) 25226 packets 565 2668 bytes 40990 3381243 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911627955 measurement up left 15247 packets 566 2687 bytes 41057 3405563 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911627955 measurement up full (initiator) 25316 packets 566 2687 bytes 41057 3405563 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911638076 measurement up right 10121 packets 568 2687 bytes 41194 3405563 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911638076 measurement up full (responder) 25368 packets 568 2687 bytes 41194 3405563 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911653383 measurement up left 15307 packets 569 2707 bytes 41263 3431163 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911653383 measurement up full (initiator) 25428 packets 569 2707 bytes 41263 3431163 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911663592 measurement up right 10209 packets 571 2707 bytes 41400 3431163 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911663592 measurement up full (responder) 25516 packets 571 2707 bytes 41400 3431163 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911674338 measurement up left 10746 packets 572 2723 bytes 41469 3451643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911674338 measurement up full (initiator) 20955 packets 572 2723 bytes 41469 3451643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911688914 measurement up right 14576 packets 575 2728 bytes 41664 3458043 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911688914 measurement up full (responder) 25322 packets 575 2728 bytes 41664 3458043 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911704139 measurement up left 15225 packets 576 2750 bytes 41733 3486203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911704139 measurement up full (initiator) 29801 packets 576 2750 bytes 41733 3486203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911714276 measurement up right 10137 packets 578 2750 bytes 41871 3486203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911714276 measurement up full (responder) 25362 packets 578 2750 bytes 41871 3486203 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911729616 measurement up left 15340 packets 579 2773 bytes 41941 3515643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911729616 measurement up full (initiator) 25477 packets 579 2773 bytes 41941 3515643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911739824 measurement up right 10208 packets 581 2773 bytes 42081 3515643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911739824 measurement up full (responder) 25548 packets 581 2773 bytes 42081 3515643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911754982 measurement up left 15158 packets 582 2797 bytes 42151 3546363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911754982 measurement up full (initiator) 25366 packets 582 2797 bytes 42151 3546363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911765171 measurement up right 10189 packets 584 2797 bytes 42291 3546363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911765171 measurement up full (responder) 25347 packets 584 2797 bytes 42291 3546363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911765744 qrloss up AVG (ref) 0.868 (1.786), TOT (ref) 0.868 (1.786) (initiator) packets 584 2798 bytes 42291 3547643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911780403 measurement up left 15232 packets 585 2822 bytes 42361 3578363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911780403 measurement up full (initiator) 25421 packets 585 2822 bytes 42361 3578363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911790540 measurement up right 10137 packets 588 2822 bytes 42557 3578363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911790540 measurement up full (responder) 25369 packets 588 2822 bytes 42557 3578363 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911798369 qrloss up AVG (ref) 0.312 (0.781), TOT (ref) 0.477 (1.042) (responder) packets 589 2834 bytes 42627 3593723 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911800625 measurement up left 10085 packets 589 2839 bytes 42627 3600123 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911800625 measurement up full (initiator) 20222 packets 589 2839 bytes 42627 3600123 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911815757 measurement up right 15132 packets 592 2848 bytes 42822 3611643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911815757 measurement up full (responder) 25217 packets 592 2848 bytes 42822 3611643 bandwidth 8736 856810
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911830953 measurement up left 15196 packets 593 2875 bytes 42892 3646203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911830953 measurement up full (initiator) 30328 packets 593 2875 bytes 42892 3646203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911841112 measurement up right 10159 packets 595 2875 bytes 43030 3646203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911841112 measurement up full (responder) 25355 packets 595 2875 bytes 43030 3646203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911853295 qrloss up AVG (ref) 0.312 (0.781), TOT (ref) 0.477 (1.055) (responder) packets 596 2897 bytes 43100 3674363 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911856335 measurement up left 15223 packets 596 2903 bytes 43100 3682043 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911856335 measurement up full (initiator) 25382 packets 596 2903 bytes 43100 3682043 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911866534 measurement up right 10199 packets 599 2903 bytes 43308 3682043 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911866534 measurement up full (responder) 25422 packets 599 2903 bytes 43308 3682043 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911881720 measurement up left 15186 packets 599 2932 bytes 43308 3719163 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911881720 measurement up full (initiator) 25385 packets 599 2932 bytes 43308 3719163 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911891796 measurement up right 10076 packets 603 2932 bytes 43573 3719163 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911891796 measurement up full (responder) 25262 packets 603 2932 bytes 43573 3719163 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911904369 qrloss up AVG (ref) 0.312 (0.625), TOT (ref) 0.477 (1.067) (responder) packets 603 2960 bytes 43573 3755003 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911906430 measurement up left 14634 packets 603 2962 bytes 43573 3757563 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911906430 measurement up full (initiator) 24710 packets 603 2962 bytes 43573 3757563 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911916649 measurement up right 10219 packets 606 2962 bytes 43780 3757563 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911916649 measurement up full (responder) 24853 packets 606 2962 bytes 43780 3757563 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911930926 measurement up left 14277 packets 606 2993 bytes 43780 3797243 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911930926 measurement up full (initiator) 24496 packets 606 2993 bytes 43780 3797243 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911941088 measurement up right 10162 packets 610 2993 bytes 44043 3797243 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911941088 measurement up full (responder) 24439 packets 610 2993 bytes 44043 3797243 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911954101 qrloss up AVG (ref) 0.312 (0.625), TOT (ref) 0.477 (1.079) (responder) packets 611 3023 bytes 44113 3835643 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911955269 measurement up left 14181 packets 611 3024 bytes 44113 3836923 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911955269 measurement up full (initiator) 24343 packets 611 3024 bytes 44113 3836923 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911965378 measurement up right 10109 packets 614 3025 bytes 44320 3838203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911965378 measurement up full (responder) 24290 packets 614 3025 bytes 44320 3838203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911977187 measurement up left 11809 packets 615 3055 bytes 44390 3876603 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911977187 measurement up full (initiator) 21918 packets 615 3055 bytes 44390 3876603 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911989242 measurement up right 12055 packets 619 3058 bytes 44654 3880443 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466911989242 measurement up full (responder) 23864 packets 619 3058 bytes 44654 3880443 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912000081 qrloss up AVG (ref) 0.312 (0.781), TOT (ref) 0.477 (1.090) (responder) packets 620 3086 bytes 44724 3916283 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912002964 measurement up left 13722 packets 620 3090 bytes 44724 3921403 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912002964 measurement up full (initiator) 25777 packets 620 3090 bytes 44724 3921403 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912013117 measurement up right 10153 packets 623 3092 bytes 44931 3923963 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912013117 measurement up full (responder) 23875 packets 623 3092 bytes 44931 3923963 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912026673 measurement up left 13556 packets 624 3125 bytes 45001 3966203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912026673 measurement up full (initiator) 23709 packets 624 3125 bytes 45001 3966203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912036762 measurement up right 10089 packets 627 3127 bytes 45208 3968763 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912036762 measurement up full (responder) 23645 packets 627 3127 bytes 45208 3968763 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912045212 qrloss up AVG (ref) 0.312 (0.938), TOT (ref) 0.477 (1.101) (responder) packets 628 3149 bytes 45278 3996923 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912050326 measurement up left 13564 packets 628 3160 bytes 45278 4011003 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912050326 measurement up full (initiator) 23653 packets 628 3160 bytes 45278 4011003 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912060437 measurement up right 10111 packets 633 3163 bytes 45598 4014843 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912060437 measurement up full (responder) 23675 packets 633 3163 bytes 45598 4014843 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912073614 measurement up left 13177 packets 634 3195 bytes 45668 4055803 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912073614 measurement up full (initiator) 23288 packets 634 3195 bytes 45668 4055803 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912083680 measurement up right 10066 packets 637 3200 bytes 45877 4062203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912083680 measurement up full (responder) 23243 packets 637 3200 bytes 45877 4062203 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912088649 qrloss up AVG (ref) 0.312 (1.094), TOT (ref) 0.477 (1.111) (responder) packets 638 3212 bytes 45949 4077563 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912096878 measurement up left 13198 packets 638 3231 bytes 45949 4101883 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912096878 measurement up full (initiator) 23264 packets 638 3231 bytes 45949 4101883 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912107004 measurement up right 10126 packets 641 3237 bytes 46162 4109563 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912107004 measurement up full (responder) 23324 packets 641 3237 bytes 46162 4109563 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912118262 qrloss up AVG (ref) 0.156 (1.094), TOT (ref) 0.368 (1.111) (responder) packets 642 3265 bytes 46236 4145403 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912120509 measurement up left 13505 packets 642 3269 bytes 46236 4150523 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912120509 measurement up full (initiator) 23631 packets 642 3269 bytes 46236 4150523 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912130710 measurement up right 10201 packets 646 3269 bytes 46512 4150523 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912130710 measurement up full (responder) 23706 packets 646 3269 bytes 46512 4150523 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912131109 qrloss up AVG (ref) 0.156 (1.406), TOT (ref) 0.368 (1.155) (responder) packets 646 3274 bytes 46512 4156923 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912145618 measurement up left 14908 packets 647 3297 bytes 46586 4185137 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912145618 measurement up full (initiator) 25109 packets 647 3297 bytes 46586 4185137 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912155679 measurement up right 10061 packets 650 3297 bytes 46809 4185137 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912155679 measurement up full (responder) 24969 packets 650 3297 bytes 46809 4185137 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912170205 measurement up left 14526 packets 651 3317 bytes 46885 4210737 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912170205 measurement up full (initiator) 24587 packets 651 3317 bytes 46885 4210737 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912180284 measurement up right 10079 packets 654 3317 bytes 47092 4210737 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912180284 measurement up full (responder) 24605 packets 654 3317 bytes 47092 4210737 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912195539 measurement up left 15255 packets 655 3335 bytes 47168 4233777 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912195539 measurement up full (initiator) 25334 packets 655 3335 bytes 47168 4233777 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912205678 measurement up right 10139 packets 657 3335 bytes 47320 4233777 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912205678 measurement up full (responder) 25394 packets 657 3335 bytes 47320 4233777 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912220936 measurement up left 15258 packets 658 3355 bytes 47396 4259377 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912220936 measurement up full (initiator) 25397 packets 658 3355 bytes 47396 4259377 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912231094 measurement up right 10158 packets 660 3355 bytes 47546 4259377 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912231094 measurement up full (responder) 25416 packets 660 3355 bytes 47546 4259377 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912246314 measurement up left 15220 packets 661 3376 bytes 47623 4286257 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912246314 measurement up full (initiator) 25378 packets 661 3376 bytes 47623 4286257 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912256620 measurement up right 10306 packets 663 3376 bytes 47776 4286257 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912256620 measurement up full (responder) 25526 packets 663 3376 bytes 47776 4286257 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912267300 measurement up left 10680 packets 664 3395 bytes 47853 4310577 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912267300 measurement up full (initiator) 20986 packets 664 3395 bytes 47853 4310577 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912282573 measurement up right 15273 packets 668 3398 bytes 48141 4314417 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912282573 measurement up full (responder) 25953 packets 668 3398 bytes 48141 4314417 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912302307 measurement up left 19734 packets 668 3422 bytes 48141 4343911 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912302307 measurement up full (initiator) 35007 packets 668 3422 bytes 48141 4343911 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912312613 measurement up right 10306 packets 670 3422 bytes 48294 4343911 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912312613 measurement up full (responder) 30040 packets 670 3422 bytes 48294 4343911 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912327885 measurement up left 15272 packets 671 3446 bytes 48371 4374631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912327885 measurement up full (initiator) 25578 packets 671 3446 bytes 48371 4374631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912337960 measurement up right 10075 packets 673 3446 bytes 48523 4374631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912337960 measurement up full (responder) 25347 packets 673 3446 bytes 48523 4374631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912353277 measurement up left 15317 packets 674 3471 bytes 48600 4406631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912353277 measurement up full (initiator) 25392 packets 674 3471 bytes 48600 4406631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912363423 measurement up right 10146 packets 676 3471 bytes 48753 4406631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912363423 measurement up full (responder) 25463 packets 676 3471 bytes 48753 4406631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912374700 measurement up left 11277 packets 677 3493 bytes 48830 4434791 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912374700 measurement up full (initiator) 21423 packets 677 3493 bytes 48830 4434791 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912388339 measurement up right 13639 packets 681 3497 bytes 49095 4439911 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912388339 measurement up full (responder) 24916 packets 681 3497 bytes 49095 4439911 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912402327 measurement up left 13988 packets 682 3524 bytes 49172 4474471 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912402327 measurement up full (initiator) 27627 packets 682 3524 bytes 49172 4474471 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912412563 measurement up right 10236 packets 684 3524 bytes 49324 4474471 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912412563 measurement up full (responder) 24224 packets 684 3524 bytes 49324 4474471 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912427190 measurement up left 14627 packets 685 3552 bytes 49401 4510311 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912427190 measurement up full (initiator) 24863 packets 685 3552 bytes 49401 4510311 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912437329 measurement up right 10139 packets 687 3552 bytes 49553 4510311 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912437329 measurement up full (responder) 24766 packets 687 3552 bytes 49553 4510311 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912451620 measurement up left 14291 packets 688 3581 bytes 49630 4547431 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912451620 measurement up full (initiator) 24430 packets 688 3581 bytes 49630 4547431 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912461744 measurement up right 10124 packets 690 3581 bytes 49782 4547431 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912461744 measurement up full (responder) 24415 packets 690 3581 bytes 49782 4547431 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912476174 measurement up left 14430 packets 691 3610 bytes 49859 4584551 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912476174 measurement up full (initiator) 24554 packets 691 3610 bytes 49859 4584551 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912486420 measurement up right 10246 packets 694 3611 bytes 50068 4585831 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912486420 measurement up full (responder) 24676 packets 694 3611 bytes 50068 4585831 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912500262 measurement up left 13842 packets 695 3641 bytes 50144 4624231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912500262 measurement up full (initiator) 24088 packets 695 3641 bytes 50144 4624231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912510450 measurement up right 10188 packets 698 3642 bytes 50352 4625511 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912510450 measurement up full (responder) 24030 packets 698 3642 bytes 50352 4625511 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912524600 measurement up left 14150 packets 700 3673 bytes 50505 4665191 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912524600 measurement up full (initiator) 24338 packets 700 3673 bytes 50505 4665191 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912534726 measurement up right 10126 packets 703 3674 bytes 50733 4666471 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912534726 measurement up full (responder) 24276 packets 703 3674 bytes 50733 4666471 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912548612 measurement up left 13886 packets 704 3705 bytes 50810 4706151 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912548612 measurement up full (initiator) 24012 packets 704 3705 bytes 50810 4706151 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912558779 measurement up right 10167 packets 708 3707 bytes 51095 4708711 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912558779 measurement up full (responder) 24053 packets 708 3707 bytes 51095 4708711 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912572705 measurement up left 13926 packets 709 3738 bytes 51172 4748391 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912572705 measurement up full (initiator) 24093 packets 709 3738 bytes 51172 4748391 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912582808 measurement up right 10103 packets 712 3741 bytes 51402 4752231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912582808 measurement up full (responder) 24029 packets 712 3741 bytes 51402 4752231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912596290 measurement up left 13482 packets 713 3763 bytes 51481 4780391 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912596290 measurement up full (initiator) 23585 packets 713 3763 bytes 51481 4780391 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912606495 measurement up right 10205 packets 715 3766 bytes 51637 4784231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912606495 measurement up full (responder) 23687 packets 715 3766 bytes 51637 4784231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912612012 qrloss up AVG (ref) 0.156 (0.781), TOT (ref) 0.368 (1.042) (responder) packets 716 3784 bytes 51716 4807271 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912617383 measurement up left 10888 packets 717 3788 bytes 51795 4812391 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912617383 measurement up full (initiator) 21093 packets 717 3788 bytes 51795 4812391 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912627572 measurement up right 10189 packets 719 3791 bytes 51951 4816231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912627572 measurement up full (responder) 21077 packets 719 3791 bytes 51951 4816231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912639934 measurement up left 12362 packets 720 3812 bytes 52030 4843111 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912639934 measurement up full (initiator) 22551 packets 720 3812 bytes 52030 4843111 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912650142 measurement up right 10208 packets 724 3814 bytes 52300 4845671 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912650142 measurement up full (responder) 22570 packets 724 3814 bytes 52300 4845671 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912665515 measurement up left 15373 packets 726 3839 bytes 52460 4877671 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912665515 measurement up full (initiator) 25581 packets 726 3839 bytes 52460 4877671 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912675713 measurement up right 10198 packets 728 3841 bytes 52619 4880231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912675713 measurement up full (responder) 25571 packets 728 3841 bytes 52619 4880231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912678077 qrloss up AVG (ref) 0.156 (0.938), TOT (ref) 0.368 (1.080) (responder) packets 729 3846 bytes 52699 4886631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912690347 measurement up left 14634 packets 730 3867 bytes 52779 4913511 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912690347 measurement up full (initiator) 24832 packets 730 3867 bytes 52779 4913511 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912700589 measurement up right 10242 packets 732 3869 bytes 52940 4916071 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912700589 measurement up full (responder) 24876 packets 732 3869 bytes 52940 4916071 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912715143 measurement up left 14554 packets 734 3887 bytes 53104 4939111 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912715143 measurement up full (initiator) 24796 packets 734 3887 bytes 53104 4939111 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912725441 measurement up right 10298 packets 736 3889 bytes 53267 4941671 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912725441 measurement up full (responder) 24852 packets 736 3889 bytes 53267 4941671 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912736576 measurement up left 11135 packets 738 3900 bytes 53431 4955751 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912736576 measurement up full (initiator) 21433 packets 738 3900 bytes 53431 4955751 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912744646 qrloss up AVG (ref) 0.156 (0.938), TOT (ref) 0.368 (1.116) (responder) packets 739 3908 bytes 53512 4965991 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912746179 qrloss up AVG (ref) 0.868 (1.406), TOT (ref) 0.868 (1.406) (initiator) packets 739 3909 bytes 53512 4967271 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912746692 measurement up right 10116 packets 740 3909 bytes 53594 4967271 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912746692 measurement up full (responder) 21251 packets 740 3909 bytes 53594 4967271 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912759274 measurement up left 12582 packets 741 3921 bytes 53676 4982631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912759274 measurement up full (initiator) 22698 packets 741 3921 bytes 53676 4982631 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912769471 measurement up right 10197 packets 744 3928 bytes 53897 4991591 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912769471 measurement up full (responder) 22779 packets 744 3928 bytes 53897 4991591 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912784822 measurement up left 15351 packets 746 3943 bytes 54063 5010791 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912784822 measurement up full (initiator) 25548 packets 746 3943 bytes 54063 5010791 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912795016 measurement up right 10194 packets 748 3950 bytes 54229 5019751 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912795016 measurement up full (responder) 25545 packets 748 3950 bytes 54229 5019751 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912810375 measurement up left 15359 packets 750 3966 bytes 54395 5040231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912810375 measurement up full (initiator) 25553 packets 750 3966 bytes 54395 5040231 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912816587 qrloss up AVG (ref) 0.156 (1.250), TOT (ref) 0.368 (1.151) (responder) packets 753 3970 bytes 54617 5045351 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912820594 measurement up right 10219 packets 753 3973 bytes 54617 5049191 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912820594 measurement up full (responder) 25578 packets 753 3973 bytes 54617 5049191 bandwidth 8953 970510
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912836528 measurement up left 15934 packets 755 3990 bytes 54783 5070951 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912836528 measurement up full (initiator) 26153 packets 755 3990 bytes 54783 5070951 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912848200 measurement up right 11672 packets 757 3997 bytes 54948 5079911 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912848200 measurement up full (responder) 27606 packets 757 3997 bytes 54948 5079911 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912863473 measurement up left 15273 packets 759 4015 bytes 55114 5102951 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912863473 measurement up full (initiator) 26945 packets 759 4015 bytes 55114 5102951 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912873550 measurement up right 10077 packets 761 4022 bytes 55279 5111911 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912873550 measurement up full (responder) 25350 packets 761 4022 bytes 55279 5111911 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912879640 qrloss up AVG (ref) 0.156 (1.562), TOT (ref) 0.368 (1.185) (responder) packets 762 4032 bytes 55362 5124711 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912883620 measurement up left 10070 packets 763 4039 bytes 55445 5133671 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912883620 measurement up full (initiator) 20147 packets 763 4039 bytes 55445 5133671 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912898906 measurement up right 15286 packets 766 4048 bytes 55668 5145191 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912898906 measurement up full (responder) 25356 packets 766 4048 bytes 55668 5145191 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912914768 measurement up left 15862 packets 768 4067 bytes 55834 5168285 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912914768 measurement up full (initiator) 31148 packets 768 4067 bytes 55834 5168285 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912924864 measurement up right 10096 packets 770 4076 bytes 55999 5179805 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912924864 measurement up full (responder) 25958 packets 770 4076 bytes 55999 5179805 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912934498 qrloss up AVG (ref) 0.156 (1.875), TOT (ref) 0.368 (1.218) (responder) packets 771 4094 bytes 56082 5202845 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912940172 measurement up left 15308 packets 771 4095 bytes 56082 5204125 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912940172 measurement up full (initiator) 25404 packets 771 4095 bytes 56082 5204125 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912950247 measurement up right 10075 packets 773 4104 bytes 56247 5215645 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912950247 measurement up full (responder) 25383 packets 773 4104 bytes 56247 5215645 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912964942 measurement up left 14695 packets 774 4124 bytes 56330 5241245 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912964942 measurement up full (initiator) 24770 packets 774 4124 bytes 56330 5241245 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912975084 measurement up right 10142 packets 777 4133 bytes 56550 5252765 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912975084 measurement up full (responder) 24837 packets 777 4133 bytes 56550 5252765 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912989300 measurement up left 14216 packets 779 4154 bytes 56690 5279645 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912989300 measurement up full (initiator) 24358 packets 779 4154 bytes 56690 5279645 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912993194 qrloss up AVG (ref) 0.156 (2.031), TOT (ref) 0.368 (1.224) (responder) packets 780 4157 bytes 56772 5283485 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912999385 measurement up right 10085 packets 782 4163 bytes 56941 5291165 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466912999385 measurement up full (responder) 24301 packets 782 4163 bytes 56941 5291165 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913010002 measurement up left 10617 packets 783 4176 bytes 57027 5307805 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913010002 measurement up full (initiator) 20702 packets 783 4176 bytes 57027 5307805 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913020075 measurement up right 10073 packets 785 4183 bytes 57200 5316765 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913020075 measurement up full (responder) 20690 packets 785 4183 bytes 57200 5316765 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913035212 measurement up left 15137 packets 787 4197 bytes 57376 5334685 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913035212 measurement up full (initiator) 25210 packets 787 4197 bytes 57376 5334685 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913045356 measurement up right 10144 packets 789 4198 bytes 57554 5335965 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913045356 measurement up full (responder) 25281 packets 789 4198 bytes 57554 5335965 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913060673 measurement up left 15317 packets 790 4212 bytes 57643 5353885 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913060673 measurement up full (initiator) 25461 packets 790 4212 bytes 57643 5353885 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913070840 measurement up right 10167 packets 792 4213 bytes 57821 5355165 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913070840 measurement up full (responder) 25484 packets 792 4213 bytes 57821 5355165 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913078914 qrloss up AVG (ref) 0.156 (2.188), TOT (ref) 0.368 (1.230) (responder) packets 792 4220 bytes 57821 5364125 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913086189 measurement up left 15349 packets 792 4227 bytes 57821 5373085 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913086189 measurement up full (initiator) 25516 packets 792 4227 bytes 57821 5373085 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913096454 measurement up right 10265 packets 794 4227 bytes 57999 5373085 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913096454 measurement up full (responder) 25614 packets 794 4227 bytes 57999 5373085 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913111655 measurement up left 15201 packets 795 4244 bytes 58088 5394845 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913111655 measurement up full (initiator) 25466 packets 795 4244 bytes 58088 5394845 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913121798 measurement up right 10143 packets 798 4244 bytes 58322 5394845 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913121798 measurement up full (responder) 25344 packets 798 4244 bytes 58322 5394845 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913136983 measurement up left 15185 packets 799 4263 bytes 58412 5417943 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913136983 measurement up full (initiator) 25328 packets 799 4263 bytes 58412 5417943 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913147122 measurement up right 10139 packets 801 4263 bytes 58592 5417943 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913147122 measurement up full (responder) 25324 packets 801 4263 bytes 58592 5417943 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913162379 measurement up left 15257 packets 802 4282 bytes 58682 5442263 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913162379 measurement up full (initiator) 25396 packets 802 4282 bytes 58682 5442263 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913162379 qrloss up AVG (ref) 0.868 (1.406), TOT (ref) 0.868 (1.420) (initiator) packets 802 4282 bytes 58682 5442263 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913172600 measurement up right 10221 packets 804 4282 bytes 58862 5442263 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913172600 measurement up full (responder) 25478 packets 804 4282 bytes 58862 5442263 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913173273 qrloss up AVG (ref) 0.156 (2.344), TOT (ref) 0.368 (1.235) (responder) packets 804 4283 bytes 58862 5443543 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913184094 measurement up left 11494 packets 805 4296 bytes 58952 5460183 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913184094 measurement up full (initiator) 21715 packets 805 4296 bytes 58952 5460183 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913197981 measurement up right 13887 packets 808 4302 bytes 59188 5467863 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913197981 measurement up full (responder) 25381 packets 808 4302 bytes 59188 5467863 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913213172 measurement up left 15191 packets 809 4322 bytes 59278 5493463 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913213172 measurement up full (initiator) 29078 packets 809 4322 bytes 59278 5493463 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913223318 measurement up right 10146 packets 811 4323 bytes 59458 5494743 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913223318 measurement up full (responder) 25337 packets 811 4323 bytes 59458 5494743 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913238684 measurement up left 15366 packets 812 4333 bytes 59549 5505304 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913238684 measurement up full (initiator) 25512 packets 812 4333 bytes 59549 5505304 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913254713 measurement up right 16029 packets 815 4333 bytes 59787 5505304 bandwidth 11795 1429868
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466913254713 measurement up full (responder) 31395 packets 815 4333 bytes 59787 5505304 bandwidth 11795 1429868

@@ -41,7 +41,8 @@ enum spindump_event_type {
   spindump_event_type_ecn_congestion_event = 7,
   spindump_event_type_rtloss_measurement = 8,
   spindump_event_type_qrloss_measurement = 9,
-  spindump_event_type_packet = 10
+  spindump_event_type_qlloss_measurement = 10,
+  spindump_event_type_packet = 11
 };
 
 enum spindump_direction {
@@ -108,8 +109,16 @@ struct spindump_event_rtloss_measurement {
 
 struct spindump_event_qrloss_measurement {
   enum spindump_direction direction;
+  char avgLoss[10];
+  char totLoss[10];
+  char avgRefLoss[10];
+  char totRefLoss[10];
+};
+
+struct spindump_event_qlloss_measurement {
+  enum spindump_direction direction;
   char qLoss[10];
-  char rLoss[10];
+  char lLoss[10];
 };
 
 #define spindump_event_sessioidmaxlength   (18*2*2+1)
@@ -140,6 +149,7 @@ struct spindump_event {
     struct spindump_event_ecn_congestion_event ecnCongestionEvent;
     struct spindump_event_rtloss_measurement rtlossMeasurement;
     struct spindump_event_qrloss_measurement qrlossMeasurement;
+    struct spindump_event_qlloss_measurement qllossMeasurement;
   } u;
 };
 

@@ -35,8 +35,9 @@
 #include "spindump_sctp_tsn.h"
 #include "spindump_bandwidth.h"
 #include "spindump_spin_structs.h"
-#include "spindump_rtloss_structs.h"
-#include "spindump_qrloss_structs.h"
+#include "spindump_titalia_rtloss_structs.h"
+#include "spindump_titalia_qrloss_structs.h"
+#include "spindump_orange_qlloss_structs.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -205,12 +206,16 @@ struct spindump_connection {
       unsigned long initialLeftRTT;                 // initial packet exchange RTT in us (only available sometimes)
       struct spindump_spintracker spinFromPeer1to2; // tracking spin bit flips from side 1 to 2
       struct spindump_spintracker spinFromPeer2to1; // tracking spin bit flips from side 2 to 1
-      struct spindump_rtloss1tracker rtloss1FromPeer1to2;       // tracking round trip loss (1 bit) from side 1 to 2
-      struct spindump_rtloss1tracker rtloss1FromPeer2to1;       // tracking round trip loss (1 bit) from side 2 to 1
-      struct spindump_rtloss2tracker rtloss2FromPeer1to2;       // tracking round trip loss (2 bits) from side 1 to 2
-      struct spindump_rtloss2tracker rtloss2FromPeer2to1;       // tracking round trip loss (2 bits) from side 2 to 1
-      struct spindump_qrlosstracker qrFromPeer1to2;       // tracking QR from side 1 to 2
-      struct spindump_qrlosstracker qrFromPeer2to1;       // tracking QR from side 2 to 1
+      struct spindump_rtloss1tracker rtloss1FromPeer1to2;  // tracking round trip loss (1 bit) from side 1 to 2
+      struct spindump_rtloss1tracker rtloss1FromPeer2to1;  // tracking round trip loss (1 bit) from side 2 to 1
+      struct spindump_rtloss2tracker rtloss2FromPeer1to2;  // tracking round trip loss (2 bits) from side 1 to 2
+      struct spindump_rtloss2tracker rtloss2FromPeer2to1;  // tracking round trip loss (2 bits) from side 2 to 1
+      struct spindump_qrlosstracker qrFromPeer1to2;        // tracking T.Italia QR from side 1 to 2
+      struct spindump_qrlosstracker qrFromPeer2to1;        // tracking T.Italia QR from side 2 to 1
+      struct spindump_qllosstracker qlFromPeer1to2;        // tracking Orange QL from side 1 to 2
+      struct spindump_qllosstracker qlFromPeer2to1;        // tracking Orange QL from side 2 to 1
+      struct spindump_qrloss qrLossesFrom1to2;        // T.Italia QR lossrate measured from side 1 to 2
+      struct spindump_qrloss qrLossesFrom2to1;        // T.Italia QR lossrate measured from side 2 to 1
       //uint8_t padding2[8];                          // unused padding to align the structure size properly
     } quic;
 

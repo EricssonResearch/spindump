@@ -69,6 +69,7 @@ struct spindump_eventformatter {
   int reportSpinFlips;
   int reportRtLoss;
   int reportQrLoss;
+  int reportQlLoss;
   int reportPackets;
   int reportNotes;
   int anonymizeLeft;
@@ -94,6 +95,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         int reportSpinFlips,
                                         int reportRtLoss,
                                         int reportQrLoss,
+                                        int reportQlLoss,
                                         int reportPackets,
                                         int reportNotes,
                                         int anonymizeLeft,
@@ -112,6 +114,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           int reportSpinFlips,
                                           int reportRtLoss,
                                           int reportQrLoss,
+                                          int reportQlLoss,
                                           int reportPackets,
                                           int reportNotes,
                                           int anonymizeLeft,

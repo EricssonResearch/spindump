@@ -153,6 +153,8 @@ The currently defined events that can be caught are:
     #define spindump_analyze_event_responderrtlossmeasurement       131072
     #define spindump_analyze_event_initiatorqrlossmeasurement       262144
     #define spindump_analyze_event_responderqrlossmeasurement       524288
+    #define spindump_analyze_event_initiatorqllossmeasurement      1048576
+    #define spindump_analyze_event_responderqllossmeasurement      2097152
 
 These can be mixed together in one handler by ORing them together. The pseudo-event "spindump_analyze_event_alllegal" represents all of the events.
 
