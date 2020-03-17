@@ -144,10 +144,10 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
     spindump_rtloss1tracker_initialize(&connection->u.quic.rtloss1FromPeer2to1);
     spindump_rtloss2tracker_initialize(&connection->u.quic.rtloss2FromPeer1to2);
     spindump_rtloss2tracker_initialize(&connection->u.quic.rtloss2FromPeer2to1);
-      spindump_qrlosstracker_initialize(&connection->u.quic.qrFromPeer1to2);
-      spindump_qrlosstracker_initialize(&connection->u.quic.qrFromPeer2to1);
-      spindump_qllosstracker_initialize(&connection->u.quic.qlFromPeer1to2);
-      spindump_qllosstracker_initialize(&connection->u.quic.qlFromPeer2to1);
+    spindump_qrlosstracker_initialize(&connection->u.quic.qrFromPeer1to2);
+    spindump_qrlosstracker_initialize(&connection->u.quic.qrFromPeer2to1);
+    spindump_qllosstracker_initialize(&connection->u.quic.qlFromPeer1to2);
+    spindump_qllosstracker_initialize(&connection->u.quic.qlFromPeer2to1);
     connection->u.quic.side1initialPacket = *when;
     spindump_zerotime(&connection->u.quic.side2initialResponsePacket);
     connection->u.quic.initialRightRTT = spindump_rtt_infinite;

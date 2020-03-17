@@ -155,19 +155,19 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_draft00, fixednamefn,  "v00",    0,        0,    0,              0,               0        , 0          },
   { spindump_quic_version_quant25, fixednamefn,  "v.qn25", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_quant24, fixednamefn,  "v.qn24", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
-  {spindump_quic_version_quant23, fixednamefn,  "v.qn23", 1, 1, messagefunc17, parselengths17, spinbit17, 0          },
-  {spindump_quic_version_quant22, fixednamefn,  "v.qn22", 1, 1, messagefunc17, parselengths17, spinbit17, 0          },
-  {spindump_quic_version_quant21, fixednamefn,  "v.qn21", 1, 0, messagefunc17, parselengths17, spinbit17, 0          },
-  {spindump_quic_version_quant20, fixednamefn,  "v.qn20", 1, 0, messagefunc17, parselengths17, spinbit17, 0          },
-  {spindump_quic_version_quant19, fixednamefn,  "v.qn19", 1, 0, messagefunc17, parselengths17, spinbit17, 0          },
-  {spindump_quic_version_huitema, fixednamefn,  "v.huit", 1, 0, messagefunc17, parselengths17, spinbit17, 0          },
-  {spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1, 0, messagefunc17, parselengths17, spinbit17, 0          },
-  {spindump_quic_version_google,  googlenamefn, "g.",     1, 0, messagefuncgo,  0,               0        , 0          },
-  {spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1, 1, messagefunc17, parselengths17, spinbit17, emrtloss1  },
-  {spindump_quic_version_titrlo2, fixednamefn,  "v.til2", 1, 1, messagefunc17, parselengths17, spinbit17, emrtloss2  },
-  {spindump_quic_version_titqrlo, fixednamefn,  "v.tiqr", 1, 1, messagefunc17, parselengths17, spinbit17, emqrloss   },
-  {spindump_quic_version_orqllos, fixednamefn,  "v.orql", 1, 0, messagefunc17, parselengths17, spinbit17, emqlloss   },
-  {spindump_quic_version_unknown, 0,            0,        0, 0,    0,              0,               0        , 0          }
+  { spindump_quic_version_quant23, fixednamefn,  "v.qn23", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_quant22, fixednamefn,  "v.qn22", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_quant21, fixednamefn,  "v.qn21", 1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_quant20, fixednamefn,  "v.qn20", 1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_quant19, fixednamefn,  "v.qn19", 1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_huitema, fixednamefn,  "v.huit", 1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_mozilla, fixednamefn,  "v.moz",  1,        0,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_google,  googlenamefn, "g.",     1,        0,    messagefuncgo,  0,               0        , 0          },
+  { spindump_quic_version_titrlo1, fixednamefn,  "v.til1", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emrtloss1  },
+  { spindump_quic_version_titrlo2, fixednamefn,  "v.til2", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emrtloss2  },
+  { spindump_quic_version_titqrlo, fixednamefn,  "v.tiqr", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emqrloss   },
+  { spindump_quic_version_orqllos, fixednamefn,  "v.orql", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emqlloss   },
+  { spindump_quic_version_unknown, 0,            0,        0,        0,    0,              0,               0        , 0          }
 };
   
 //
