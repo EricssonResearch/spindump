@@ -870,6 +870,10 @@ spindump_analyze_eventtostring(spindump_analyze_event event) {
     return("initiatorrtlossmeasurement");
   } else if (event == spindump_analyze_event_responderrtlossmeasurement) {
     return("responderrtlossmeasurement");
+  } else if (event == spindump_analyze_event_initiatorqrlossmeasurement) {
+    return("initiatorqrlossmeasurement");
+  } else if (event == spindump_analyze_event_responderqrlossmeasurement) {
+    return("responderqrlossmeasurement");
   } else {
     return("multiple");
   }

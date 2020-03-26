@@ -59,6 +59,9 @@ static int
 spindump_event_parser_json_parse_aux_qrloss_measurement(const struct spindump_json_value* json,
                                                         struct spindump_event* event);
 static int
+spindump_event_parser_json_parse_aux_qlloss_measurement(const struct spindump_json_value* json,
+                                                        struct spindump_event* event);
+static int
 spindump_event_parser_json_parse_aux_packet(const struct spindump_json_value* json,
                                             struct spindump_event* event);
 
@@ -223,7 +226,13 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
     break;
 
   case spindump_event_type_qrloss_measurement:
-    if (!spindump_event_parser_json_parse_aux_qrloss_measurement(json,event)) {
+    if (!spindump_event_parser_json_parse_aux_qrloss_measurement(json, event)) {
+      return(0);
+    }
+    break;
+
+  case spindump_event_type_qlloss_measurement:
+    if (!spindump_event_parser_json_parse_aux_qlloss_measurement(json, event)) {
       return(0);
     }
     break;
@@ -490,24 +499,24 @@ static int
 spindump_event_parser_json_parse_aux_qrloss_measurement(const struct spindump_json_value* json,
                                                         struct spindump_event* event) {
   const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
-  const struct spindump_json_value* qField = spindump_json_value_getfield("Q_loss",json);
-  const struct spindump_json_value* rField = spindump_json_value_getfield("R_loss",json);
-  
-  if (whoField == 0 || qField == 0 || rField == 0) {
+  const struct spindump_json_value* avgField = spindump_json_value_getfield("Avg_loss",json);
+  const struct spindump_json_value* totField = spindump_json_value_getfield("Tot_loss",json);
+
+  if (whoField == 0 || avgField == 0 || totField == 0) {
     spindump_errorf("qrloss event does not have the necessary JSON fields");
     return(0);
   }
 
+  const char* avgValue = spindump_json_value_getstring(avgField);
+  const char* totValue = spindump_json_value_getstring(totField);
   const char* whoValue = spindump_json_value_getstring(whoField);
-  const char* qValue = spindump_json_value_getstring(qField);
-  const char* rValue = spindump_json_value_getstring(rField);
 
   // Implement validity check
-  memset(event->u.qrlossMeasurement.qLoss, '\0', sizeof(event->u.qrlossMeasurement.qLoss));
-  strcpy(event->u.qrlossMeasurement.qLoss, qValue);
+  memset(event->u.qrlossMeasurement.avgLoss, '\0', sizeof(event->u.qrlossMeasurement.avgLoss));
+  strcpy(event->u.qrlossMeasurement.avgLoss, avgValue);
 
-  memset(event->u.qrlossMeasurement.rLoss, '\0', sizeof(event->u.qrlossMeasurement.rLoss));
-  strcpy(event->u.qrlossMeasurement.rLoss, rValue);
+  memset(event->u.qrlossMeasurement.totLoss, '\0', sizeof(event->u.qrlossMeasurement.totLoss));
+  strcpy(event->u.qrlossMeasurement.totLoss, totValue);
 
   if (strcasecmp(whoValue,"initiator") == 0) {
     event->u.qrlossMeasurement.direction = spindump_direction_frominitiator;
@@ -515,6 +524,40 @@ spindump_event_parser_json_parse_aux_qrloss_measurement(const struct spindump_js
     event->u.qrlossMeasurement.direction = spindump_direction_fromresponder;
   } else {
     spindump_errorf("qrloss value direction does not have the right value in JSON: %s", whoValue);
+    return(0);
+  }
+  return(1);
+}
+
+static int
+spindump_event_parser_json_parse_aux_qlloss_measurement(const struct spindump_json_value* json,
+                                                        struct spindump_event* event) {
+  const struct spindump_json_value* whoField = spindump_json_value_getfield("Who",json);
+  const struct spindump_json_value* qField = spindump_json_value_getfield("Q_loss",json);
+  const struct spindump_json_value* lField = spindump_json_value_getfield("L_loss", json);
+  
+  if (whoField == 0 || qField == 0 || lField == 0) {
+    spindump_errorf("qlloss event does not have the necessary JSON fields");
+    return(0);
+  }
+
+  const char* whoValue = spindump_json_value_getstring(whoField);
+  const char* qValue = spindump_json_value_getstring(qField);
+  const char* lValue = spindump_json_value_getstring(lField);
+
+  // Implement validity check
+  memset(event->u.qllossMeasurement.qLoss, '\0', sizeof(event->u.qllossMeasurement.qLoss));
+  strcpy(event->u.qllossMeasurement.qLoss, qValue);
+
+  memset(event->u.qllossMeasurement.lLoss, '\0', sizeof(event->u.qllossMeasurement.lLoss));
+  strcpy(event->u.qllossMeasurement.lLoss, lValue);
+
+  if (strcasecmp(whoValue,"initiator") == 0) {
+    event->u.qllossMeasurement.direction = spindump_direction_frominitiator;
+  } else if (strcasecmp(whoValue,"responder") == 0) {
+    event->u.qllossMeasurement.direction = spindump_direction_fromresponder;
+  } else {
+    spindump_errorf("qlloss value direction does not have the right value in JSON: %s", whoValue);
     return(0);
   }
   return(1);
@@ -670,9 +713,16 @@ spindump_event_parser_json_print(const struct spindump_event* event,
 
   case spindump_event_type_qrloss_measurement:
     addtobuffer2(", \"Who\": \"%s\"",
+                 event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+    addtobuffer2(", \"Avg_loss\": \"%s\"", event->u.qrlossMeasurement.avgLoss);
+    addtobuffer2(", \"Tot_loss\": \"%s\"", event->u.qrlossMeasurement.totLoss);
+    break;
+
+  case spindump_event_type_qlloss_measurement:
+    addtobuffer2(", \"Who\": \"%s\"",
                  event->u.ecnCongestionEvent.direction == spindump_direction_frominitiator ? "initiator" : "responder");  
-    addtobuffer2(", \"Q_loss\": \"%s\"", event->u.qrlossMeasurement.qLoss);
-    addtobuffer2(", \"R_loss\": \"%s\"", event->u.qrlossMeasurement.rLoss);
+    addtobuffer2(", \"Q_loss\": \"%s\"", event->u.qllossMeasurement.qLoss);
+    addtobuffer2(", \"R_loss\": \"%s\"", event->u.qllossMeasurement.lLoss);
     break;
     
   case spindump_event_type_packet:

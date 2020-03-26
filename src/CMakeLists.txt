@@ -84,6 +84,7 @@ add_library(spindumplib
   spindump_json_value.c 
   spindump_memdebug.c
   spindump_mid.c
+  spindump_orange_qlloss.c
   spindump_packet.c
   spindump_protocols.c
   spindump_remote_client.c
@@ -91,14 +92,14 @@ add_library(spindumplib
   spindump_report.c
   spindump_reversedns.c
   spindump_reversedns_full.c
-  spindump_rtloss.c
-  spindump_qrloss.c
   spindump_rtt.c
   spindump_sctp_tsn.c
   spindump_seq.c
   spindump_spin.c
   spindump_stats.c
   spindump_table.c
+  spindump_titalia_qrloss.c
+  spindump_titalia_rtloss.c
   spindump_util.c 
   spindump_utildebug.c 
   spindump_utilerror.c 

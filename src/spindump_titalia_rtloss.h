@@ -22,7 +22,7 @@
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include "spindump_rtloss_structs.h"
+#include "spindump_titalia_rtloss_structs.h"
 #include "spindump_connections_structs.h"
 
 struct spindump_analyze;

@@ -67,6 +67,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int reportSpinFlips,
                                    int reportRtLoss,
                                    int reportQrLoss,
+                                   int reportQlLoss,
                                    int reportPackets,
                                    int reportNotes,
                                    int anonymizeLeft,
@@ -93,6 +94,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int reportSpinFlips,
                                    int reportRtLoss,
                                    int reportQrLoss,
+                                   int reportQlLoss,
                                    int reportPackets,
                                    int reportNotes,
                                    int anonymizeLeft,
@@ -130,6 +132,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   formatter->reportSpinFlips = reportSpinFlips;
   formatter->reportRtLoss = reportRtLoss;
   formatter->reportQrLoss = reportQrLoss;
+  formatter->reportQlLoss = reportQlLoss;
   formatter->reportPackets = reportPackets;
   formatter->reportNotes = reportNotes;
   formatter->anonymizeLeft = anonymizeLeft;
@@ -168,6 +171,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         int reportSpinFlips,
                                         int reportRtLoss,
                                         int reportQrLoss,
+                                        int reportQlLoss,
                                         int reportPackets,
                                         int reportNotes,
                                         int anonymizeLeft,
@@ -187,6 +191,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                                                                  reportSpinFlips,
                                                                                  reportRtLoss,
                                                                                  reportQrLoss,
+                                                                                 reportQlLoss,
                                                                                  reportPackets,
                                                                                  reportNotes,
                                                                                  anonymizeLeft,
@@ -228,6 +233,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           int reportSpinFlips,
                                           int reportRtLoss,
                                           int reportQrLoss,
+                                          int reportQlLoss,
                                           int reportPackets,
                                           int reportNotes,
                                           int anonymizeLeft,
@@ -248,6 +254,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                                                                  reportSpinFlips,
                                                                                  reportRtLoss,
                                                                                  reportQrLoss,
+                                                                                 reportQlLoss,
                                                                                  reportPackets,
                                                                                  reportNotes,
                                                                                  anonymizeLeft,
@@ -664,8 +671,22 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventType = spindump_event_type_qrloss_measurement;
     break;
 
-  default:
+  case spindump_analyze_event_initiatorqllossmeasurement:
     spindump_deepdeepdebugf("point 5q");
+    if (!formatter->reportQlLoss) return;
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventType = spindump_event_type_qlloss_measurement;
+    break;
+
+  case spindump_analyze_event_responderqllossmeasurement:
+    spindump_deepdeepdebugf("point 5r");
+    if (!formatter->reportQlLoss) return;
+    spindump_assert(connection->type == spindump_connection_transport_quic);
+    eventType = spindump_event_type_qlloss_measurement;
+    break;
+
+  default:
+    spindump_deepdeepdebugf("point 5s");
     return;
 
   }
@@ -866,14 +887,30 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_initiatorqrlossmeasurement:
     eventobj.u.qrlossMeasurement.direction = spindump_direction_frominitiator;
-    sprintf(eventobj.u.qrlossMeasurement.qLoss, "%.3f", connection->qLossesFrom1to2*100);
-    sprintf(eventobj.u.qrlossMeasurement.rLoss, "%.3f", connection->rLossesFrom1to2*100);
+    sprintf(eventobj.u.qrlossMeasurement.avgLoss, "%.3f", connection->u.quic.qrLossesFrom1to2.averageLossRate * 100);
+    sprintf(eventobj.u.qrlossMeasurement.totLoss, "%.3f", connection->u.quic.qrLossesFrom1to2.totalLossRate * 100);
+    sprintf(eventobj.u.qrlossMeasurement.avgRefLoss, "%.3f", connection->u.quic.qrLossesFrom1to2.averageRefLossRate * 100);
+    sprintf(eventobj.u.qrlossMeasurement.totRefLoss, "%.3f", connection->u.quic.qrLossesFrom1to2.totalRefLossRate * 100);
     break;
-  
+
   case spindump_analyze_event_responderqrlossmeasurement:
     eventobj.u.qrlossMeasurement.direction = spindump_direction_fromresponder;
-    sprintf(eventobj.u.qrlossMeasurement.qLoss, "%.3f", connection->qLossesFrom2to1*100);
-    sprintf(eventobj.u.qrlossMeasurement.rLoss, "%.3f", connection->rLossesFrom2to1*100);
+    sprintf(eventobj.u.qrlossMeasurement.avgLoss, "%.3f", connection->u.quic.qrLossesFrom2to1.averageLossRate * 100);
+    sprintf(eventobj.u.qrlossMeasurement.totLoss, "%.3f", connection->u.quic.qrLossesFrom2to1.totalLossRate * 100);
+    sprintf(eventobj.u.qrlossMeasurement.avgRefLoss, "%.3f", connection->u.quic.qrLossesFrom2to1.averageRefLossRate * 100);
+    sprintf(eventobj.u.qrlossMeasurement.totRefLoss, "%.3f", connection->u.quic.qrLossesFrom2to1.totalRefLossRate * 100);
+    break;
+
+  case spindump_analyze_event_initiatorqllossmeasurement:
+    eventobj.u.qllossMeasurement.direction = spindump_direction_frominitiator;
+    sprintf(eventobj.u.qllossMeasurement.qLoss, "%.3f", connection->qLossesFrom1to2 * 100);
+    sprintf(eventobj.u.qllossMeasurement.lLoss, "%.3f", connection->rLossesFrom1to2 * 100);
+    break;
+  
+  case spindump_analyze_event_responderqllossmeasurement:
+    eventobj.u.qllossMeasurement.direction = spindump_direction_fromresponder;
+    sprintf(eventobj.u.qllossMeasurement.qLoss, "%.3f", connection->qLossesFrom2to1 * 100);
+    sprintf(eventobj.u.qllossMeasurement.lLoss, "%.3f", connection->rLossesFrom2to1 * 100);
     break;
 
   case spindump_analyze_event_newpacket:

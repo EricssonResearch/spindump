@@ -15,33 +15,23 @@
 //
 //
 
-#ifndef SPINDUMP_QRLOSS_H
-#define SPINDUMP_QRLOSS_H
+#ifndef SPINDUMP_ORANGE_QLLOSS_STRUCTS_H
+#define SPINDUMP_ORANGE_QLLOSS_STRUCTS_H
 
 //
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include "spindump_qrloss_structs.h"
-#include "spindump_connections_structs.h"
+#include <stdint.h>
+#include <time.h>
+#include "spindump_util.h"
 
-struct spindump_analyze;
-struct spindump_packet;
-
-//
-// External API interface to this module ------------------------------------------------------
-//
-
-void
-spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze* state,
-                                                struct spindump_packet* packet,
-                                                struct spindump_connection* connection,
-                                                struct timeval* ts,
-                                                int fromResponder,
-                                                int qr);
-void
-spindump_qrlosstracker_initialize(struct spindump_qrlosstracker* tracker);
-void
-spindump_qrlosstracker_uninitialize(struct spindump_qrlosstracker* tracker);
+struct spindump_qllosstracker {
+  spindump_counter_32bit qrank;
+  spindump_counter_32bit qcur;
+  spindump_counter_32bit qcnt;
+  spindump_counter_32bit qloss;
+  spindump_counter_32bit lloss;
+};
 
 #endif

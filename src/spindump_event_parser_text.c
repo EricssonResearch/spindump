@@ -77,10 +77,11 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   // Some utilities to put strings onto the buffer
   //
   
-#define addtobuffer1(x)       snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x)
-#define addtobuffer2(x,y)     snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y)
-#define addtobuffer3(x,y,z)   snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z)
-#define addtobuffer4(x,y,z,v) snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z,v)
+#define addtobuffer1(x)         snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x)
+#define addtobuffer2(x,y)       snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y)
+#define addtobuffer3(x,y,z)     snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z)
+#define addtobuffer4(x,y,z,v)   snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z,v)
+#define addtobuffer5(x,y,z,v,t) snprintf(buffer + strlen(buffer),length - 1 - strlen(buffer),x,y,z,v,t)
 
   //
   // Basic information about the connection
@@ -174,13 +175,29 @@ spindump_event_parser_text_print(const struct spindump_event* event,
 
   case spindump_event_type_qrloss_measurement:
     if (event->u.qrlossMeasurement.direction == spindump_direction_frominitiator) {
+      addtobuffer5("AVG (ref) %s (%s), TOT (ref) %s (%s) (initiator) ",
+                   event->u.qrlossMeasurement.avgLoss,
+                   event->u.qrlossMeasurement.avgRefLoss,
+                   event->u.qrlossMeasurement.totLoss,
+                   event->u.qrlossMeasurement.totRefLoss);
+    } else {
+      addtobuffer5("AVG (ref) %s (%s), TOT (ref) %s (%s) (responder) ",
+                   event->u.qrlossMeasurement.avgLoss,
+                   event->u.qrlossMeasurement.avgRefLoss,
+                   event->u.qrlossMeasurement.totLoss,
+                   event->u.qrlossMeasurement.totRefLoss);
+    }
+    break;
+
+  case spindump_event_type_qlloss_measurement:
+    if (event->u.qllossMeasurement.direction == spindump_direction_frominitiator) {
       addtobuffer3("Upstream loss %s, E2E loss %s (initiator) ",
-                   event->u.qrlossMeasurement.qLoss,
-                   event->u.qrlossMeasurement.rLoss);  
+                   event->u.qllossMeasurement.qLoss,
+                   event->u.qllossMeasurement.lLoss);
     } else {
       addtobuffer3("Upstream loss %s, E2E loss %s (responder) ",
-                   event->u.qrlossMeasurement.qLoss,
-                   event->u.qrlossMeasurement.rLoss); 
+                   event->u.qllossMeasurement.qLoss,
+                   event->u.qllossMeasurement.lLoss);
     }
     break;
     

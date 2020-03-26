@@ -20,12 +20,14 @@
 
 #include <stdint.h>
 
-#define spindump_extrameas_rtloss1      0x01 // Telecom Italia loss measurement single bit version
-#define spindump_extrameas_rtloss2_bit1 0x10 // Telecom Italia loss measurement two bits version (bit1)
-#define spindump_extrameas_rtloss2_bit2 0x08 // Telecom Italia loss measurement two bits version (bit2)
+#define spindump_extrameas_rtloss1      0x01 // Telecom Italia rt loss measurement single bit version
+#define spindump_extrameas_rtloss2_bit1 0x10 // Telecom Italia rt loss measurement two bits version (bit1)
+#define spindump_extrameas_rtloss2_bit2 0x08 // Telecom Italia rt loss measurement two bits version (bit2)
+#define spindump_extrameas_qrloss_qbit  0x40 // Telecom Italia qr loss measurement bit1
+#define spindump_extrameas_qrloss_rbit  0x20 // Telecom Italia qr loss measurement bit2
 
-#define spindump_extrameas_qrloss_bit1 0x02 // Orange loss measurement bit1
-#define spindump_extrameas_qrloss_bit2 0x04 // Orange loss measurement bit2
+#define spindump_extrameas_qlloss_bit1 0x02 // Orange loss measurement bit1
+#define spindump_extrameas_qlloss_bit2 0x04 // Orange loss measurement bit2
 
 #define spindump_quic_byte_reserved1    0x10
 #define spindump_quic_byte_reserved2    0x08

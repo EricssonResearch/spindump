@@ -110,7 +110,8 @@ traces="trace_icmpv4_short
         trace_quic_google
         trace_quic_pandora
         trace_quic_apple
-        trace_quic_bug_ls 
+        trace_quic_bug_ls
+        trace_quic_titalia_qrloss
         trace_tunnel_interface_ping
         trace_tcp_medium_snap80
         trace_tcp_large_snap80
