@@ -26,6 +26,7 @@
 #include <pthread.h>
 #include <stdatomic.h>
 #include <netdb.h>
+#include <pthread.h>
 #include "spindump_util.h"
 
 //
@@ -54,6 +55,9 @@ struct spindump_reverse_dns {
   atomic_uint nextEntryIndex;                  // written by main thread, read by background thread
   struct spindump_reverse_dns_entry entries[spindump_reverse_dns_maxnentries];
   spindump_reverse_dns_cleanupfn cleanupfn;    // written and read by main thread only
+  int reverseDnsEnabled;
+  pthread_mutex_t reverseDns_mt;
+  pthread_cond_t reverseDns_cv;
 };
 
 //
@@ -74,5 +78,7 @@ void
 spindump_reverse_dns_uninitialize(struct spindump_reverse_dns* service);
 
 void
-spindump_reverse_dns_toggle(int state);
+spindump_reverse_dns_toggle(struct spindump_reverse_dns* service,
+                            int state);
+
 #endif // SPINDUMP_REVERSEDNS_H

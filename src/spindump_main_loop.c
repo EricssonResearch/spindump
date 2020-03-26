@@ -54,6 +54,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                               struct spindump_eventformatter* formatter,
                               struct spindump_eventformatter* remoteFormatter,
                               struct spindump_remote_server* server,
+                              struct spindump_reverse_dns* querier,
                               int averageMode,
                               int aggregateMode,
                               int closedMode,
@@ -267,6 +268,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                 formatter,
                                 remoteFormatter,
                                 server,
+                                querier,
                                 averageMode,
                                 aggregateMode,
                                 closedMode,
@@ -315,6 +317,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                               struct spindump_eventformatter* formatter,
                               struct spindump_eventformatter* remoteFormatter,
                               struct spindump_remote_server* server,
+                              struct spindump_reverse_dns* querier,
                               int averageMode,
                               int aggregateMode,
                               int closedMode,
@@ -445,40 +448,54 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
 
     double commandArgument;
     enum spindump_report_command command = spindump_report_checkinput(reporter,&commandArgument);
+    
     switch (command) {
+      
     case spindump_report_command_quit:
       state->interrupt = 1;
       break;
+      
     case spindump_report_command_help:
       spindump_report_showhelp(reporter);
       break;
+      
     case spindump_report_command_toggle_average:
       averageMode = !averageMode;
       break;
+      
     case spindump_report_command_toggle_aggregate:
       aggregateMode = !aggregateMode;
       break;
+      
     case spindump_report_command_toggle_closed:
       closedMode = !closedMode;
       break;
+      
     case spindump_report_command_toggle_udp:
       udpMode = !udpMode;
       break;
+      
     case spindump_report_command_update_interval:
       {
         double result = floor(commandArgument * 1000 * 1000);
         config->updatePeriod = (unsigned long long)result;
       }
       break;
+      
     case spindump_report_command_toggle_reverse_dns:
       reverseDnsMode = !reverseDnsMode;
-      spindump_reverse_dns_toggle(reverseDnsMode);
+      spindump_reverse_dns_toggle(querier,reverseDnsMode);
+      break;
+      
     case spindump_report_command_none:
       break;
+      
     default:
       spindump_errorf("invalid command");
       break;
+      
     }
+    
     if (command != spindump_report_command_none) {
       spindump_report_update(reporter,
                              averageMode,

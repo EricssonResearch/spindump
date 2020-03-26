@@ -44,9 +44,6 @@ static void
 spindump_reverse_dns_backgroundfunction_resolveone(struct spindump_reverse_dns_entry* entry);
 static void
 spindump_reverse_dns_cleanup(struct spindump_reverse_dns* service);
-static int reverseDnsEnabled = 0;
-static pthread_mutex_t reverseDns_mt = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t reverseDns_cv = PTHREAD_COND_INITIALIZER;
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -84,7 +81,12 @@ spindump_reverse_dns_initialize_full(int reverseDns) {
   //
 
   service->exit = 0;
-
+  service->reverseDnsEnabled = reverseDns;
+  const pthread_mutex_t mutexEmpty = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t condEmpty = PTHREAD_COND_INITIALIZER;
+  service->reverseDns_mt = mutexEmpty;
+  service->reverseDns_cv = condEmpty;
+  
   //
   // Setup a local cache of address-to-name mappings & the request table
   // for the background thread
@@ -95,7 +97,6 @@ spindump_reverse_dns_initialize_full(int reverseDns) {
   //
   // Setup a separate thread to make queries in the background
   //
-  reverseDnsEnabled = reverseDns;
 
   if (pthread_create(&service->thread,0,spindump_reverse_dns_backgroundfunction,(void*)service) != 0) {
     spindump_errorf("cannot create a thread for reverse DNS process");
@@ -249,7 +250,7 @@ spindump_reverse_dns_backgroundfunction(void* data) {
 
   unsigned int previousNextEntryIndex = 0;
 
-  pthread_mutex_lock(&reverseDns_mt);
+  pthread_mutex_lock(&service->reverseDns_mt);
 
   while (!service->exit) {
 
@@ -263,8 +264,8 @@ spindump_reverse_dns_backgroundfunction(void* data) {
     // See if we should proceed with the names resolution
     //
 
-    if (!reverseDnsEnabled) {
-      pthread_cond_wait(&reverseDns_cv, &reverseDns_mt);
+    if (!service->reverseDnsEnabled) {
+      pthread_cond_wait(&service->reverseDns_cv, &service->reverseDns_mt);
       continue;
     }
 
@@ -299,11 +300,11 @@ spindump_reverse_dns_backgroundfunction(void* data) {
 
     timeout.tv_sec  = nsecToWait / (1000 * 1000 * 1000);
     timeout.tv_nsec = nsecToWait % (1000 * 1000 * 1000);
-
-    pthread_cond_timedwait(&reverseDns_cv, &reverseDns_mt, &timeout);
+    
+    pthread_cond_timedwait(&service->reverseDns_cv, &service->reverseDns_mt, &timeout);
   }
 
-  pthread_mutex_unlock(&reverseDns_mt);
+  pthread_mutex_unlock(&service->reverseDns_mt);
 
   //
   // Done.
@@ -317,18 +318,19 @@ spindump_reverse_dns_cleanup(struct spindump_reverse_dns* service) {
   spindump_assert(service != 0);
   spindump_assert(spindump_isbool(service->noop));
 
-  pthread_mutex_lock(&reverseDns_mt);
+  pthread_mutex_lock(&service->reverseDns_mt);
   service->exit = 1;
-  pthread_cond_signal(&reverseDns_cv);
-  pthread_mutex_unlock(&reverseDns_mt);
+  pthread_cond_signal(&service->reverseDns_cv);
+  pthread_mutex_unlock(&service->reverseDns_mt);
 
   pthread_join(service->thread,0);
 }
 
 void
-spindump_reverse_dns_toggle(int state) {
-  pthread_mutex_lock(&reverseDns_mt);
-  reverseDnsEnabled = state;
-  pthread_cond_signal(&reverseDns_cv);
-  pthread_mutex_unlock(&reverseDns_mt);
+spindump_reverse_dns_toggle(struct spindump_reverse_dns* service,
+                            int state) {
+  pthread_mutex_lock(&service->reverseDns_mt);
+  service->reverseDnsEnabled = state;
+  pthread_cond_signal(&service->reverseDns_cv);
+  pthread_mutex_unlock(&service->reverseDns_mt);
 }
