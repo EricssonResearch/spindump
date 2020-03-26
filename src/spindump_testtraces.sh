@@ -88,6 +88,7 @@ traces="trace_icmpv4_short
         trace_quic_v23_apple
         trace_quic_v25_quant_short
         trace_quic_v25_quant_long
+        trace_quic_v25_quant_long_qrloss
         trace_quic_v25_quant_h3
         trace_quic_v25_quant_0rtt
         trace_quic_v25_quant_quantum

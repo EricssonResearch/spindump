@@ -1,0 +1,1 @@
+Draft-25 test with QUIC and Quant, expecting to see some spin bits. Using an additional option for QR/QL loss measurements, making sure that does not disrupt regular QUIC flows without those bits.
