@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2018-2020 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
 // 
@@ -207,6 +207,9 @@ spindump_capture_initialize_aux(const char* interface,
     break;
   case DLT_EN10MB:
     state->linktype = spindump_capture_linktype_ethernet;
+    break;
+  case DLT_LINUX_SLL:
+    state->linktype = spindump_capture_linktype_linux_sll;
     break;
   default:
     spindump_errorf("device %s doesn't provide Ethernet headers - value %u not supported",

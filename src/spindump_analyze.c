@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2018-2020 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO AND MARCUS IHLAR
 //
 //
@@ -49,6 +49,10 @@ static void
 spindump_analyze_process_ethernet(struct spindump_analyze* state,
                                   struct spindump_packet* packet,
                                   struct spindump_connection** p_connection);
+static void
+spindump_analyze_process_linux_sll(struct spindump_analyze* state,
+                                   struct spindump_packet* packet,
+                                   struct spindump_connection** p_connection);
 static int
 spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
                                                      spindump_handler_mask mask);
@@ -479,6 +483,9 @@ spindump_analyze_process(struct spindump_analyze* state,
   case spindump_capture_linktype_ethernet:
     spindump_analyze_process_ethernet(state,packet,p_connection);
     break;
+  case spindump_capture_linktype_linux_sll:
+    spindump_analyze_process_linux_sll(state,packet,p_connection);
+    break;
   default:
     spindump_errorf("unsupported linktype");
   }
@@ -619,6 +626,80 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
 
   }
 
+}
+
+//
+// Process a packet when the datalink layer is the LINUX_SLL ("any" device).
+// This layer has the following structure:
+//
+// +---------------------------+
+// |         Packet type       |
+// |         (2 Octets)        |
+// +---------------------------+
+// |        ARPHRD_ type       |
+// |         (2 Octets)        |
+// +---------------------------+
+// | Link-layer address length |
+// |         (2 Octets)        |
+// +---------------------------+
+// |    Link-layer address     |
+// |         (8 Octets)        |
+// +---------------------------+
+// |        Protocol type      |
+// |         (2 Octets)        |
+// +---------------------------+
+// |           Payload         |
+// .                           .
+//
+
+void
+spindump_analyze_process_linux_sll(struct spindump_analyze* state,
+                                   struct spindump_packet* packet,
+                                   struct spindump_connection** p_connection) {
+  //
+  // Check there is enough of the linux_sll header
+  //
+  if (packet->etherlen < spindump_linux_sll_header_size ||
+      packet->caplen < spindump_linux_sll_header_size) {
+    spindump_warnf("not enough bytes for the linux_sll header, only %u bytes in received frame",
+                   packet->etherlen);
+    *p_connection = 0;
+    return;
+  }
+
+  //
+  // Branch based on the stored int
+  //
+
+  uint16_t protoType;
+  memcpy(&protoType,packet->contents + 14,sizeof(protoType));
+
+  switch (protoType) {
+  // byte order is not clear, so we need to prepare to be ready to
+  // receive in either byte order
+  case 0x0800:
+  case 0x0008:
+    spindump_analyze_ip_decodeiphdr(state,
+                                    packet,
+                                    spindump_linux_sll_header_size,
+                                    p_connection);
+    return;
+
+  case 0x86DD:
+  case 0xDD86:
+    spindump_analyze_ip_decodeip6hdr(state,
+                                     packet,
+                                     spindump_linux_sll_header_size,
+                                     p_connection);
+    return;
+
+  default:
+    spindump_debugf("received an unsupported LINUX_SLL protocol type %2x", protoType);
+    state->stats->unsupportedEthertype++;
+    *p_connection = 0;
+    return;
+
+  }
 }
 
 //

@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2018-2020 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
 // 
@@ -42,7 +42,8 @@
 
 enum spindump_capture_linktype {
   spindump_capture_linktype_ethernet,
-  spindump_capture_linktype_null
+  spindump_capture_linktype_null,
+  spindump_capture_linktype_linux_sll
 };
 
 struct spindump_capture_state {

@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2018-2020 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
 //
@@ -32,6 +32,7 @@
 #define spindump_ethernet_address_length        6
 #define spindump_ethernet_header_size           (spindump_ethernet_address_length*2 + 2)
 #define spindump_null_header_size               4
+#define spindump_linux_sll_header_size          16
 
 typedef uint16_t spindump_port;
 

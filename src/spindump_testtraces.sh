@@ -119,6 +119,8 @@ traces="trace_icmpv4_short
         trace_empty
         trace_sctp_short_lo
         trace_sctp_medium
+        trace_sctp_snap128
+        trace_sctp_two_addr
         trace_sctp_snap128"
 
 #
