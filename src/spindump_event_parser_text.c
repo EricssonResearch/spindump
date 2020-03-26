@@ -163,11 +163,11 @@ spindump_event_parser_text_print(const struct spindump_event* event,
 
   case spindump_event_type_rtloss_measurement:
     if (event->u.rtlossMeasurement.direction == spindump_direction_frominitiator) {
-      addtobuffer3("Moving avg loss %s, Session avg loss %s (initiator) ",
+      addtobuffer3("moving avg loss %s, session avg loss %s (initiator) ",
                    event->u.rtlossMeasurement.avgLoss,
                    event->u.rtlossMeasurement.totLoss);
     } else {
-      addtobuffer3("Moving avg loss %s, Session avg loss %s (responder) ",
+      addtobuffer3("moving avg loss %s, session avg loss %s (responder) ",
                    event->u.rtlossMeasurement.avgLoss,
                    event->u.rtlossMeasurement.totLoss);
     }
