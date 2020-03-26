@@ -216,6 +216,7 @@ spindump_report_update(struct spindump_report_state* reporter,
                        int aggregate,
                        int closed,
                        int udp,
+                       int reverseDns,
                        struct spindump_connectionstable* table,
                        struct spindump_stats* stats) {
   
@@ -224,6 +225,7 @@ spindump_report_update(struct spindump_report_state* reporter,
   spindump_assert(aggregate == 0 || aggregate == 1);
   spindump_assert(closed == 0 || closed == 1);
   spindump_assert(udp == 0 || udp == 1);
+  spindump_assert(reverseDns == 0 || reverseDns == 1);
   spindump_assert(table != 0);
   spindump_assert(stats != 0);
 
@@ -239,11 +241,12 @@ spindump_report_update(struct spindump_report_state* reporter,
              spindump_meganumberll_tostring(stats->receivedIpBytes + stats->receivedIpv6Bytes));
     snprintf(connectionsstatus+strlen(connectionsstatus),
              sizeof(connectionsstatus)-strlen(connectionsstatus)-1,
-             " (showing %s%s%s%s)",
-             average ? "avg RTTs" : "latest RTTs",
-             aggregate ? ", aggregated connections" : "",
-             udp ? "" : ", not showing UDP",
-             closed ? "" : (udp ? ", not showing closed" : " or closed"));
+             " (showing %s%s%s%s%s)",
+             average    ? "avg RTTs"                 : "latest RTTs",
+             aggregate  ? ", aggregated connections" : "",
+             udp        ? ""                         : ", not showing UDP",
+             closed     ? ""                         : (udp ? ", not showing closed" : " or closed"),
+             reverseDns ? ", showing names"          : ", showing addresses");
     
     clear();
     
@@ -284,6 +287,10 @@ spindump_report_update(struct spindump_report_state* reporter,
       struct spindump_connection* actualTable[maxActualConnections];
       
       spindump_deepdebugf("report gathering");
+
+      reporter->querier->noop =
+          reverseDns ? 0 : 1;
+
       for (i = 0;
            (i < table->nConnections &&
             actualConnections < maxActualConnections &&
@@ -418,33 +425,34 @@ enum spindump_report_command
 spindump_report_checkinput(struct spindump_report_state* reporter,
                            double* p_argument) {
   
-    int ch;
+  int ch;
     
-    if ((ch = getch()) == ERR) {
+  if ((ch = getch()) == ERR) {
       
-      return(spindump_report_command_none);
+    return(spindump_report_command_none);
       
-    } else {
+  } else {
       
-      char c = (char)(tolower((char)ch));
-      switch (c) {
-      case 'q': return(spindump_report_command_quit);
-      case 'h': return(spindump_report_command_help);
-      case 'g': return(spindump_report_command_toggle_average);
-      case 'a': return(spindump_report_command_toggle_aggregate);
-      case 'c': return(spindump_report_command_toggle_closed);
-      case 'u': return(spindump_report_command_toggle_udp);
-      case 's':
-        if (spindump_report_checkinput_updateinterval(reporter,p_argument)) {
-          return(spindump_report_command_update_interval);
-        } else {
-          return(spindump_report_command_none);
-        }
-        
-      default: return(spindump_report_command_none);
+    char c = (char)(tolower((char)ch));
+    switch (c) {
+    case 'q': return(spindump_report_command_quit);
+    case 'h': return(spindump_report_command_help);
+    case 'g': return(spindump_report_command_toggle_average);
+    case 'a': return(spindump_report_command_toggle_aggregate);
+    case 'c': return(spindump_report_command_toggle_closed);
+    case 'u': return(spindump_report_command_toggle_udp);
+    case 's':
+      if (spindump_report_checkinput_updateinterval(reporter,p_argument)) {
+        return(spindump_report_command_update_interval);
+      } else {
+        return(spindump_report_command_none);
       }
-      
+    case 'n': return(spindump_report_command_toggle_reverse_dns);
+
+    default: return(spindump_report_command_none);
     }
+
+  }
     
 }
 
