@@ -489,6 +489,7 @@ spindump_report_showhelp(struct spindump_report_state* reporter) {
     mvaddstr(y++, 0, "          connections or host pairs.");
     mvaddstr(y++, 0, "    C     Toggle showing of closed connections");
     mvaddstr(y++, 0, "    U     Toggle showing of UDP connections");
+    mvaddstr(y++, 0, "    N     Toggle showing addresses vs. names");
     mvaddstr(y++, 0, "    S     Set the update period");
     mvaddstr(y++, 0, "    H     Display a help screen");
     mvaddstr(y++, 0, "    Q     Quit");
