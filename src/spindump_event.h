@@ -101,24 +101,26 @@ struct spindump_event_ecn_congestion_event {
   spindump_counter_64bit ce;
 };
 
+#define spindump_lossfield_charlength 10
+
 struct spindump_event_rtloss_measurement {
   enum spindump_direction direction;
-  char avgLoss[10];
-  char totLoss[10];
+  char avgLoss[spindump_lossfield_charlength];
+  char totLoss[spindump_lossfield_charlength];
 };
 
 struct spindump_event_qrloss_measurement {
   enum spindump_direction direction;
-  char avgLoss[10];
-  char totLoss[10];
-  char avgRefLoss[10];
-  char totRefLoss[10];
+  char avgLoss[spindump_lossfield_charlength];
+  char totLoss[spindump_lossfield_charlength];
+  char avgRefLoss[spindump_lossfield_charlength];
+  char totRefLoss[spindump_lossfield_charlength];
 };
 
 struct spindump_event_qlloss_measurement {
   enum spindump_direction direction;
-  char qLoss[10];
-  char lLoss[10];
+  char qLoss[spindump_lossfield_charlength];
+  char lLoss[spindump_lossfield_charlength];
 };
 
 #define spindump_event_sessioidmaxlength   (18*2*2+1)

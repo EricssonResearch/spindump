@@ -202,6 +202,11 @@ static struct spindump_json_schema fieldceschema = {
   .callback = 0
 };
 
+static struct spindump_json_schema fieldlossschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
 static struct spindump_json_schema fieldnotesschema = {
   .type = spindump_json_schema_type_string,
   .callback = 0
@@ -212,7 +217,7 @@ static struct spindump_json_schema recordschema = {
   .callback = 0,
   .u = {
     .record = {
-      .nFields = 35,
+      .nFields = 39,
       .fields = {
         { .required = 1, .name = "Event", .schema = &fieldeventschema },
         { .required = 1, .name = "Type", .schema = &fieldtypeschema },
@@ -248,6 +253,10 @@ static struct spindump_json_schema recordschema = {
         { .required = 0, .name = "Ecn0", .schema = &fieldecn0schema },
         { .required = 0, .name = "Ecn1", .schema = &fieldecn1schema },
         { .required = 0, .name = "Ce", .schema = &fieldceschema },
+        { .required = 0, .name = "Avg_loss", .schema = &fieldlossschema },
+        { .required = 0, .name = "Tot_loss", .schema = &fieldlossschema },
+        { .required = 0, .name = "Q_loss", .schema = &fieldlossschema },
+        { .required = 0, .name = "L_loss", .schema = &fieldlossschema },
         { .required = 0, .name = "Notes", .schema = &fieldnotesschema }
       }
     }
