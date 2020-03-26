@@ -215,6 +215,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
     return(0);
   }
   
+  
   //
   // Look at the message type
   // 
@@ -223,7 +224,7 @@ spindump_analyze_quic_parser_isprobablequickpacket(const unsigned char* payload,
   if (!spindump_analyze_quic_parser_version_getmessagetype(version,headerByte,&type)) {
     return(0);
   }
-  
+
   //
   // If we got this far, the packet is likely a QUIC
   // long form packet from a recent draft version.
