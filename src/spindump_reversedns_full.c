@@ -34,8 +34,10 @@
 // Function prototypese -----------------------------------------------------------------------
 //
 
-static const char*
-spindump_reverse_dns_resolveinternal(spindump_address* address);
+static int
+spindump_reverse_dns_resolveinternal(spindump_address* address,
+                                     char* hbuf,
+                                     size_t hbufsiz);
 static void*
 spindump_reverse_dns_backgroundfunction(void* data);
 static void
@@ -112,18 +114,20 @@ spindump_reverse_dns_initialize_full(int reverseDns) {
 // The actual function that performs the resolving on address to a
 // name.
 //
-// Note: This function is not thread safe.
-//
 
-static const char*
-spindump_reverse_dns_resolveinternal(spindump_address* address) {
+static int
+spindump_reverse_dns_resolveinternal(spindump_address* address,
+                                     char* hbuf,
+                                     size_t hbufsiz) {
 
   //
   // Checks
   //
 
   spindump_assert(address != 0);
-
+  spindump_assert(hbuf != 0);
+  spindump_assert(hbufsiz > 10);
+  
   //
   // Convert the given address to a sockaddr (that includes a port; we
   // set the port to 0).
@@ -153,20 +157,19 @@ spindump_reverse_dns_resolveinternal(spindump_address* address) {
   // The sockaddr definition is different between Linux and BSD
   //
 
-  static char hbuf[NI_MAXHOST+1];
-  memset(hbuf,0,sizeof(hbuf));
+  memset(hbuf,0,hbufsiz);
   int err;
 #if defined(__linux__)
-  if ((err = getnameinfo(sa, sizeof(*sa), hbuf, sizeof(hbuf)-1, NULL, 0,
+  if ((err = getnameinfo(sa, sizeof(*sa), hbuf, (socklen_t)(hbufsiz-1), NULL, 0,
                   NI_NAMEREQD))) {
 #else
-  if ((err = getnameinfo(sa, sa->sa_len, hbuf, sizeof(hbuf)-1, NULL, 0,
+  if ((err = getnameinfo(sa, sa->sa_len, hbuf, (socklen_t)(hbufsiz-1), NULL, 0,
                   NI_NAMEREQD))) {
 #endif
     spindump_deepdebugf("spindump_reversedns getnameinfo returned error code %s ", gai_strerror(err));
     return(0);
   } else {
-    return(hbuf);
+    return(1);
   }
 }
 
@@ -193,9 +196,10 @@ spindump_reverse_dns_backgroundfunction_resolveone(struct spindump_reverse_dns_e
   //
   // Ask
   //
-
-  const char* result = spindump_reverse_dns_resolveinternal(&entry->address);
-
+  
+  char hbuf[NI_MAXHOST+1];
+  int result = spindump_reverse_dns_resolveinternal(&entry->address,hbuf,sizeof(hbuf));
+  
   //
   // Fill in the answer
   //
@@ -203,10 +207,10 @@ spindump_reverse_dns_backgroundfunction_resolveone(struct spindump_reverse_dns_e
   if (result == 0) {
     entry->responseName[0] = 0;
   } else {
-    spindump_assert(strlen(result) < sizeof(entry->responseName)-1);
-    spindump_strlcpy(&entry->responseName[0],result,sizeof(entry->responseName));
+    spindump_assert(strlen(hbuf) < sizeof(entry->responseName)-1);
+    spindump_strlcpy(&entry->responseName[0],hbuf,sizeof(entry->responseName));
   }
-
+  
   //
   // Mark the entry as answered
   //
