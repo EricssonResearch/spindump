@@ -24,3 +24,4 @@ test/*.out
 test/*.cmd
 src/*.out
 build
+.vscode

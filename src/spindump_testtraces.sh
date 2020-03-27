@@ -75,6 +75,7 @@ traces="trace_icmpv4_short
         trace_quic_v23_lsquic_fine
         trace_quic_v23_aiortc
         trace_quic_v23_aiortc_spin
+        trace_quic_v23_apple
         trace_quic_v23_ats
         trace_quic_v23_ats_retry
         trace_quic_v23_ats_readdr
@@ -89,7 +90,6 @@ traces="trace_icmpv4_short
         trace_quic_v23_gquic
         trace_quic_v23_quinn
         trace_quic_v23_f5
-        trace_quic_v23_apple
         trace_quic_v25_quant_short
         trace_quic_v25_quant_long
         trace_quic_v25_quant_long_qrloss
@@ -110,6 +110,7 @@ traces="trace_icmpv4_short
         trace_quic_v25_quiche
         trace_quic_v25_quicly
         trace_quic_v25_apple
+        trace_quic_v27_mvfst
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google
@@ -117,6 +118,8 @@ traces="trace_icmpv4_short
         trace_quic_apple
         trace_quic_bug_ls
         trace_quic_titalia_qrloss
+        trace_quic_mvfst_d24
+        trace_quic_mvfst 
         trace_tunnel_interface_ping
         trace_tcp_medium_snap80
         trace_tcp_large_snap80
@@ -128,6 +131,7 @@ traces="trace_icmpv4_short
         trace_sctp_snap128
         trace_sctp_two_addr
         trace_sctp_snap128"
+        
 
 #
 # Check options
