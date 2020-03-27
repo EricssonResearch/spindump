@@ -62,7 +62,7 @@ struct spindump_remote_server {
   struct MHD_Daemon* daemon;                          // used by main thread only
   struct spindump_remote_connection
    clients[SPINDUMP_REMOTE_SERVER_MAX_CONNECTIONS];   // used by main thread only
-  const struct spindump_json_schema* schema;          // written by main thread only, read by daemon thread
+  struct spindump_json_schema schema;                 // written by main thread only, read by daemon thread
   atomic_bool exit;                                   // written by main thread, read by daemon thread
   atomic_uint nextAddItemIndex;                       // written by daemon thread, read by main thread
   atomic_uint nextConsumeItemIndex;                   // written by main thread, read by daemon thread

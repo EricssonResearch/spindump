@@ -118,6 +118,10 @@ spindump_json_parse_record_aux_addtofields(char* fieldName,
 // definition will be called when the input is read correctly, and the
 // "data" parameter is one of the parameters passed to the callbacks.
 //
+// The input text point moves further as the input is read. Only a
+// single JSON object is read at one time. That object may of course
+// be a composite object, such as an array.
+//
 // This function returns 1 upon successful parsing, and 0 upon
 // failure.
 //
@@ -396,6 +400,7 @@ spindump_json_parse_array(const struct spindump_json_schema* schema,
   if (value == 0) {
     return(0);
   }
+  spindump_deepdeepdebugf("spindump_json_parse_array next char after opening bracket = %c", **input);
   while (**input != ']') {
     if (**input == 0) {
       spindump_errorf("cannot parse JSON array: missing closing bracket in field %s",
@@ -434,6 +439,7 @@ spindump_json_parse_array(const struct spindump_json_schema* schema,
       return(0);
     }
   }
+  spindump_deepdeepdebugf("spindump_json_parse_array next char after contents = %c", **input);
   spindump_assert(**input == ']');
   spindump_json_parse_movetonextchar(input);
   return(value);

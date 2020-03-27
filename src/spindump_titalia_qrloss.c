@@ -44,6 +44,7 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze *state,
                                                struct spindump_connection *connection,
                                                struct timeval *ts,
                                                int fromResponder,
+                                               unsigned int ipPacketLength,
                                                int lossbits) {
   struct spindump_qrlosstracker *tracker;
   struct spindump_qrloss *lossRates;
@@ -100,8 +101,11 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze *state,
 
         // Call handlers if any
         spindump_analyze_process_handlers(state,
-                                          fromResponder ? spindump_analyze_event_responderqrlossmeasurement
-                                                        : spindump_analyze_event_initiatorqrlossmeasurement,
+                                          (fromResponder ? spindump_analyze_event_responderqrlossmeasurement :
+                                           spindump_analyze_event_initiatorqrlossmeasurement),
+                                          ts,
+                                          fromResponder,
+                                          ipPacketLength,
                                           packet,
                                           connection);
       }
@@ -157,8 +161,12 @@ spindump_qrlosstracker_observeandcalculateloss(struct spindump_analyze *state,
 
         // Call handlers if any
         spindump_analyze_process_handlers(state,
-                                          fromResponder ? spindump_analyze_event_responderqrlossmeasurement
-                                                        : spindump_analyze_event_initiatorqrlossmeasurement,
+                                          (fromResponder ?
+                                           spindump_analyze_event_responderqrlossmeasurement :
+                                           spindump_analyze_event_initiatorqrlossmeasurement),
+                                          ts,
+                                          fromResponder,
+                                          ipPacketLength,
                                           packet,
                                           connection);
       }

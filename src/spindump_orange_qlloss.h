@@ -38,6 +38,7 @@ spindump_qllosstracker_observeandcalculateloss(struct spindump_analyze* state,
                                                struct spindump_connection* connection,
                                                struct timeval* ts,
                                                int fromResponder,
+                                               unsigned int ipPacketLength,
                                                int ql);
 void
 spindump_qllosstracker_initialize(struct spindump_qllosstracker* tracker);

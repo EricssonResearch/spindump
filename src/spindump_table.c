@@ -300,6 +300,9 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
   spindump_deepdeepdebugf("delete calling handlers");
   spindump_analyze_process_handlers(analyzer,
                                     spindump_analyze_event_connectiondelete,
+                                    &dummy.timestamp,
+                                    0,
+                                    0,
                                     &dummy,
                                     connection);
   spindump_deepdeepdebugf("delete calling handlers... done");

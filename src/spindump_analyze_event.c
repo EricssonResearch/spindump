@@ -154,7 +154,9 @@ spindump_analyze_processevent(struct spindump_analyze* state,
   spindump_assert(state != 0);
   spindump_assert(event != 0);
   spindump_assert(p_connection != 0);
-  spindump_deepdeepdebugf("spindump_analyze_processevent type %u", event->eventType);
+  spindump_deepdeepdebugf("spindump_analyze_processevent type %u, timestamp = %llu",
+                          event->eventType,
+                          event->timestamp);
   
   *p_connection = 0;
   switch (event->eventType) {
@@ -737,6 +739,7 @@ spindump_analyze_processevent_new_rtt_measurement(struct spindump_analyze* state
   spindump_connections_newrttmeasurement(state,
                                          0,
                                          *p_connection,
+                                         0, // packet length not known in this event
                                          right,
                                          unidirectional,
                                          &sent,
@@ -956,6 +959,20 @@ spindump_analyze_processevent_packet(struct spindump_analyze* state,
   //
 
   spindump_analyze_event_updateinfo(state,*p_connection,event);
+
+  //
+  // Generate a packet event
+  //
+
+  struct spindump_packet dummypacket;
+  spindump_timestamp_to_timeval(event->timestamp,&dummypacket.timestamp);
+  spindump_analyze_process_pakstats(state,
+                                    *p_connection,
+                                    &dummypacket.timestamp,
+                                    event->u.packet.direction == spindump_direction_fromresponder,
+                                    &dummypacket,
+                                    (unsigned int)(event->u.packet.length),
+                                    0);
 }
 
 //

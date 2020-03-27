@@ -70,6 +70,9 @@ typedef void (*spindump_analyze_handler)(struct spindump_analyze* state,
                                          void* handlerData,
                                          void** handlerConnectionData,
                                          spindump_analyze_event event,
+                                         const struct timeval* timestamp,
+                                         const int fromResponder,
+                                         const unsigned int ipPacketLength,
                                          struct spindump_packet* packet,
                                          struct spindump_connection* connection);
 
@@ -146,13 +149,17 @@ spindump_analyze_eventtostring(spindump_analyze_event event);
 void
 spindump_analyze_process_pakstats(struct spindump_analyze* state,
                                   struct spindump_connection* connection,
-                                  int fromResponder,
+                                  const struct timeval* timestamp,
+                                  const int fromResponder,
                                   struct spindump_packet* packet,
                                   unsigned int ipPacketLength,
-                                        uint8_t ecnFlags);
+                                   uint8_t ecnFlags);
 void
 spindump_analyze_process_handlers(struct spindump_analyze* state,
                                   spindump_analyze_event event,
+                                  const struct timeval* timestamp,
+                                  const int fromResponder,
+                                  const unsigned int ipPacketLength,
                                   struct spindump_packet* packet,
                                   struct spindump_connection* connection);
 

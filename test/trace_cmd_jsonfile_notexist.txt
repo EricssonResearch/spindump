@@ -1,0 +1,1 @@
+Use the --json-input-file with a file that does not exist. Should return an error.

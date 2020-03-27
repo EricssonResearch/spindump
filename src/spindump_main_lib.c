@@ -131,6 +131,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   memset(config,0,sizeof(*config));
   config->interface = 0;
   config->inputFile = 0;
+  config->jsonInputFile = 0;
   config->filter = 0;
   config->snaplen = spindump_capture_snaplen;
   config->toolmode = spindump_toolmode_visual;
@@ -386,6 +387,11 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--input-file") == 0 && argc > 1) {
 
       config->inputFile = argv[1];
+      argc--; argv++;
+
+    } else if (strcmp(argv[0],"--json-input-file") == 0 && argc > 1) {
+
+      config->jsonInputFile = argv[1];
       argc--; argv++;
 
     } else if (strcmp(argv[0],"--remote") == 0 && argc > 1) {
@@ -723,7 +729,8 @@ spindump_main_help(void) {
   printf("\n");
   printf("    --interface i           Set the interface to listen on, or the capture\n");
   printf("    --snaplen n             How many bytes of the packet is captured (default is %u)\n", spindump_capture_snaplen);
-  printf("    --input-file f          file to read from.\n");
+  printf("    --input-file f          Give a PCAP file to read from.\n");
+  printf("    --json-input-file f     Give a JSON file (produced by Spindump) to read from.\n");
   printf("    --remote u              Send connections information to spindump running elsewhere, at URL u\n");
   printf("    --remote-block-size n   When sending information, collect as much as n bytes of information\n");
   printf("                            in each batch\n");

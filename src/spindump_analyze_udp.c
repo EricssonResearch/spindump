@@ -57,7 +57,8 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
                              unsigned int ipHeaderPosition,
                              unsigned int ipHeaderSize,
                              uint8_t ipVersion,
-                                         uint8_t ecnFlags,
+                             uint8_t ecnFlags,
+                             const struct timeval* timestamp,
                              unsigned int ipPacketLength,
                              unsigned int udpHeaderPosition,
                              unsigned int udpLength,
@@ -148,6 +149,7 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
                                  ipHeaderSize,
                                  ipVersion,
                                  ecnFlags,
+                                 timestamp,
                                  ipPacketLength,
                                  ipHeaderPosition + ipHeaderSize,
                                  udpLength,
@@ -172,7 +174,8 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
                                   ipHeaderPosition,
                                   ipHeaderSize,
                                   ipVersion,
-                                        ecnFlags,
+                                  ecnFlags,
+                                  timestamp,
                                   ipPacketLength,
                                   ipHeaderPosition + ipHeaderSize,
                                   udpLength,
@@ -196,7 +199,8 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
                                   ipHeaderPosition,
                                   ipHeaderSize,
                                   ipVersion,
-                                        ecnFlags,
+                                  ecnFlags,
+                                  timestamp,
                                   ipPacketLength,
                                   udpHeaderPosition,
                                   udpLength,
@@ -217,7 +221,8 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
                                   ipHeaderPosition,
                                   ipHeaderSize,
                                   ipVersion,
-                                        ecnFlags,
+                                  ecnFlags,
+                                  timestamp,
                                   ipPacketLength,
                                   udpHeaderPosition,
                                   udpLength,
@@ -268,7 +273,13 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   //
 
   if (new) {
-    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    spindump_analyze_process_handlers(state,
+                                      spindump_analyze_event_newconnection,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
+                                      packet,
+                                      connection);
   }
 
   //
@@ -278,14 +289,14 @@ spindump_analyze_process_udp(struct spindump_analyze* state,
   //
 
   if (fromResponder && connection->state == spindump_connection_state_establishing) {
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+    spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_established);
   }
 
   //
   // Update stats
   //
 
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+  spindump_analyze_process_pakstats(state,connection,timestamp,fromResponder,packet,ipPacketLength,ecnFlags);
 
   //
   // Done. Inform caller of the connection.

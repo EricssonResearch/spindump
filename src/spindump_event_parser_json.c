@@ -23,6 +23,8 @@
 #include "spindump_event.h"
 #include "spindump_event_parser_json.h"
 #include "spindump_connections.h"
+#include "spindump_json.h"
+#include "spindump_json_value.h"
 
 //
 // Function prototypes ------------------------------------------------------------------------
@@ -64,21 +66,319 @@ spindump_event_parser_json_parse_aux_qlloss_measurement(const struct spindump_js
 static int
 spindump_event_parser_json_parse_aux_packet(const struct spindump_json_value* json,
                                             struct spindump_event* event);
+static void
+spindump_event_parser_json_textparse_callback(const struct spindump_json_value* value,
+                                              const struct spindump_json_schema* type,
+                                              void* data);
+
+//
+// Data types ---------------------------------------------------------------------------------
+//
+
+struct spindump_event_parser_json_parsingcontext {
+  spindump_event_parser_json_callback callback;
+  void* data;
+  int success;
+};
+
+//
+// Variables and constants --------------------------------------------------------------------
+//
+
+static struct spindump_json_schema fieldeventschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldtypeschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldstateschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldaddrschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldaddrsschema = {
+  .type = spindump_json_schema_type_array,
+  .callback = 0,
+  .u = {
+    .array = {
+      .schema = &fieldaddrschema
+    }
+  }
+};
+
+static struct spindump_json_schema fieldsessionschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldtsschema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldrttschema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldvalueschema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldtransitionschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldwhoschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldpackets1schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldpackets2schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldbytes1schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldbytes2schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldbandwidth1schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldbandwidth2schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldecn0schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldecn1schema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldceschema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldlossschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldlengthschema = {
+  .type = spindump_json_schema_type_integer,
+  .callback = 0
+};
+
+static struct spindump_json_schema fielddirschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema fieldnotesschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
+static struct spindump_json_schema recordschema = {
+  .type = spindump_json_schema_type_record,
+  .callback = 0,
+  .u = {
+    .record = {
+      .nFields = 39,
+      .fields = {
+        { .required = 1, .name = "Event", .schema = &fieldeventschema },
+        { .required = 1, .name = "Type", .schema = &fieldtypeschema },
+        { .required = 1, .name = "State", .schema = &fieldstateschema },
+        { .required = 1, .name = "Addrs", .schema = &fieldaddrsschema },
+        { .required = 1, .name = "Session", .schema = &fieldsessionschema },
+        { .required = 1, .name = "Ts", .schema = &fieldtsschema },
+        { .required = 0, .name = "Left_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Right_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Full_rtt_initiator", .schema = &fieldrttschema },
+        { .required = 0, .name = "Full_rtt_responder", .schema = &fieldrttschema },
+        { .required = 0, .name = "Avg_left_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Avg_right_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Avg_full_rtt_initiator", .schema = &fieldrttschema },
+        { .required = 0, .name = "Avg_full_rtt_responder", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_left_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_right_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_full_rtt_initiator", .schema = &fieldrttschema },
+        { .required = 0, .name = "Filt_avg_full_rtt_responder", .schema = &fieldrttschema },
+        { .required = 0, .name = "Dev_left_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Dev_right_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Dev_full_rtt_initiator", .schema = &fieldrttschema },
+        { .required = 0, .name = "Dev_full_rtt_responder", .schema = &fieldrttschema },
+        { .required = 0, .name = "Value", .schema = &fieldvalueschema },
+        { .required = 0, .name = "Transition", .schema = &fieldtransitionschema },
+        { .required = 0, .name = "Who", .schema = &fieldwhoschema },
+        { .required = 1, .name = "Packets1", .schema = &fieldpackets1schema },
+        { .required = 1, .name = "Packets2", .schema = &fieldpackets2schema },
+        { .required = 1, .name = "Bytes1", .schema = &fieldbytes1schema },
+        { .required = 1, .name = "Bytes2", .schema = &fieldbytes2schema },
+        { .required = 0, .name = "Bandwidth1", .schema = &fieldbandwidth1schema },
+        { .required = 0, .name = "Bandwidth2", .schema = &fieldbandwidth2schema },
+        { .required = 0, .name = "Ecn0", .schema = &fieldecn0schema },
+        { .required = 0, .name = "Ecn1", .schema = &fieldecn1schema },
+        { .required = 0, .name = "Ce", .schema = &fieldceschema },
+        { .required = 0, .name = "Avg_loss", .schema = &fieldlossschema },
+        { .required = 0, .name = "Tot_loss", .schema = &fieldlossschema },
+        { .required = 0, .name = "Q_loss", .schema = &fieldlossschema },
+        { .required = 0, .name = "L_loss", .schema = &fieldlossschema },
+        { .required = 0, .name = "Length", .schema = &fieldlengthschema },
+        { .required = 0, .name = "Dir", .schema = &fielddirschema },
+        { .required = 0, .name = "Notes", .schema = &fieldnotesschema }
+      }
+    }
+  }
+};
+
+static struct spindump_json_schema arrayschema = {
+  .type = spindump_json_schema_type_array,
+  .callback = 0,
+  .u = {
+    .array = {
+      .schema = &recordschema
+    }
+  }
+};
+
+static struct spindump_json_schema schema = {
+  .type = spindump_json_schema_type_recordorarray,
+  .callback = 0,
+  .u = {
+    .arrayorrecord = {
+      .array = &arrayschema,
+      .record = &recordschema
+    }
+  }
+};
 
 //
 // Actual code --------------------------------------------------------------------------------
 //
 
 //
-// Take a buffer of data in "buffer" (whose length is given in
-// "length") and parse it as a JSON-formatted event description from
-// Spindump, placing the result in the output parqmeter "event".
+// Return the schema for the JSON that we should be using for Spindump logs.
 //
-// If successful, return 1, upon no non-whitespace input to read in
-// the buffer, return 0 for EOF, and upon parsing error return -1.
+
+const struct spindump_json_schema*
+spindump_event_parser_json_getschema() {
+  return(&schema);
+}
+
 //
-// In any case, set the output parameter "consumed" to the number of
-// bytes consumed from the buffer.
+// Parse text as JSON and call a callback for every Spindump event
+// found from it.
+//
+// The input text point moves further as the input is read. Only a
+// single JSON object is read at one time. That object may of course
+// be a composite object, such as an array.
+//
+// If successful, return 1, otherwise 0.
+//
+
+int
+spindump_event_parser_json_textparse(const char** jsonText,
+                                     spindump_event_parser_json_callback callback,
+                                     void* data) {
+  struct spindump_event_parser_json_parsingcontext context;
+  context.callback = callback;
+  context.data = data;
+  context.success = 1;
+  struct spindump_json_schema usedSchema = *spindump_event_parser_json_getschema();
+  usedSchema.callback = spindump_event_parser_json_textparse_callback;
+  int ans =
+    spindump_json_parse(&usedSchema,
+                        &context,
+                        jsonText);
+  if (ans == 0) context.success = 0;
+  return(context.success);
+}
+
+//
+// Helper function to be called upon every JSON object being
+// parsed. Called by spindump_event_parser_json_textparse and
+// spindump_json_parse.
+//
+
+static void
+spindump_event_parser_json_textparse_callback(const struct spindump_json_value* value,
+                                              const struct spindump_json_schema* type,
+                                              void* data) {
+  spindump_assert(value != 0);
+  spindump_assert(type != 0);
+  spindump_assert(data != 0);
+  struct spindump_event_parser_json_parsingcontext* context = (struct spindump_event_parser_json_parsingcontext*)data;
+  struct spindump_event event;
+
+  spindump_deepdeepdebugf("spindump_event_parser_json_textparse_callback");
+  switch (value->type) {
+  case spindump_json_value_type_integer:
+  case spindump_json_value_type_string:
+    spindump_deepdeepdebugf("spindump_event_parser_json_textparse_callback case literal");
+    break;
+  case spindump_json_value_type_record:
+    spindump_deepdeepdebugf("spindump_event_parser_json_textparse_callback case record");
+    if (spindump_event_parser_json_parse(value,&event)) {
+      (*(context->callback))(&event,context->data);
+    } else {
+      context->success = 0;
+    }
+    break;
+  case spindump_json_value_type_array:
+    spindump_deepdeepdebugf("spindump_event_parser_json_textparse_callback case array n = %u",
+                            value->u.array.n);
+    for (unsigned int i = 0; i < value->u.array.n; i++) {
+      const struct spindump_json_value* element = value->u.array.elements[i];
+      if (spindump_event_parser_json_parse(element,&event)) {
+        (*(context->callback))(&event,context->data);
+      } else {
+        context->success = 0;
+      }
+    }
+    break;
+  default:
+    break;
+  }
+}
+
+//
+// Take a JSON object and parse it as a JSON-formatted event
+// description from Spindump, placing the result in the output
+// parameter "event".
+//
+// If successful, return 1, otherwise 0.
 //
 
 int
@@ -138,6 +438,7 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
   strncpy(&event->session[0],session,sizeof(event->session));
   unsigned long long ts = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Ts",json));
   event->timestamp = ts;
+  spindump_deepdeepdebugf("spindump_event_parser_json reading timestamp %llu from JSON", event->timestamp);
   unsigned long long packets1 = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Packets1",json));
   event->packetsFromSide1 = (unsigned int)packets1;
   unsigned long long packets2 = spindump_json_value_getinteger(spindump_json_value_getrequiredfield("Packets2",json));
@@ -570,6 +871,26 @@ spindump_event_parser_json_parse_aux_qlloss_measurement(const struct spindump_js
 static int
 spindump_event_parser_json_parse_aux_packet(const struct spindump_json_value* json,
                                             struct spindump_event* event) {
+  const struct spindump_json_value* dirField = spindump_json_value_getfield("Dir",json);
+  const struct spindump_json_value* lengthField = spindump_json_value_getfield("Length",json);
+  
+  if (dirField == 0 || lengthField == 0) {
+    spindump_errorf("packet event does not have the necessary JSON fields");
+    return(0);
+  }
+
+  const char* dirValue = spindump_json_value_getstring(dirField);
+  unsigned long long lengthValue = spindump_json_value_getinteger(lengthField);
+
+  if (strcasecmp(dirValue,"initiator") == 0) {
+    event->u.packet.direction = spindump_direction_frominitiator;
+  } else if (strcasecmp(dirValue,"responder") == 0) {
+    event->u.packet.direction = spindump_direction_fromresponder;
+  } else {
+    spindump_errorf("Dir value direction does not have the right value in JSON: %s", dirValue);
+    return(0);
+  }
+  event->u.packet.length = (unsigned long)lengthValue;
   return(1);
 }
 
@@ -726,6 +1047,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
     break;
     
   case spindump_event_type_packet:
+    addtobuffer2(", \"Dir\": \"%s\"",
+                 event->u.packet.direction == spindump_direction_frominitiator ? "initiator" : "responder");
+    addtobuffer2(", \"Length\": %lu", event->u.packet.length);
     break;
     
   default:
@@ -766,6 +1090,13 @@ spindump_event_parser_json_print(const struct spindump_event* event,
   return(strlen(buffer) < length - 1);
 }
 
+//
+// The next helper function maps a string to an event type.
+//
+// The mapping in this function needs to match what's given in the
+// function spindump_event_type_tostring in spindump_event.c.
+//
+
 static int
 spindump_event_parser_json_converteventtype(const char* string,
                                             enum spindump_event_type* type) {
@@ -791,6 +1122,18 @@ spindump_event_parser_json_converteventtype(const char* string,
     return(1);
   } else if (strcasecmp("ecnce",string) == 0) {
     *type = spindump_event_type_ecn_congestion_event;
+    return(1);
+  } else if (strcasecmp("rtloss",string) == 0) {
+    *type = spindump_event_type_rtloss_measurement;
+    return(1);
+  } else if (strcasecmp("qrloss",string) == 0) {
+    *type = spindump_event_type_qrloss_measurement;
+    return(1);
+  } else if (strcasecmp("qlloss",string) == 0) {
+    *type = spindump_event_type_qlloss_measurement;
+    return(1);
+  } else if (strcasecmp("packet",string) == 0) {
+    *type = spindump_event_type_packet;
     return(1);
   } else {
     return(0);

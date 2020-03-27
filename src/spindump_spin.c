@@ -38,6 +38,7 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
                                  struct timeval* ts,
                                  int spin,
                                  int fromResponder,
+                                 unsigned int ipPacketLength,
                                  int* p_spin0to1);
 
 static struct timeval*
@@ -157,6 +158,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
                                                 struct timeval* ts,
                                                 int spin,
                                                 int fromResponder,
+                                                unsigned int ipPacketLength,
                                                 int *isFlip) {
   int spin0to1;
   if (spindump_spintracker_observespin(state,
@@ -166,6 +168,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
                                        ts,
                                        spin,
                                        fromResponder,
+                                       ipPacketLength,
                                        &spin0to1)) {
     
     *isFlip=1;
@@ -186,6 +189,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
+                                             ipPacketLength,
                                              fromResponder, // 0 = left, 1 = right
                                              0, // bidirectional
                                              otherSpinTime,
@@ -211,6 +215,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
+                                             ipPacketLength,
                                              fromResponder,
                                              1, // unidirectional
                                              otherSpinTime,
@@ -234,6 +239,7 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
                                  struct timeval* ts,
                                  int spin,
                                  int fromResponder,
+                                 unsigned int ipPacketLength,
                                  int* p_spin0to1) {
 
   //
@@ -260,6 +266,9 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
     spindump_analyze_process_handlers(state,
                                       (fromResponder ? spindump_analyze_event_responderspinvalue :
                                        spindump_analyze_event_initiatorspinvalue),
+                                      ts,
+                                      fromResponder,
+                                      ipPacketLength,
                                       packet,
                                       connection);
     return(0);
@@ -282,6 +291,9 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
     spindump_analyze_process_handlers(state,
                                       (fromResponder ? spindump_analyze_event_responderspinvalue :
                                        spindump_analyze_event_initiatorspinvalue),
+                                      ts,
+                                      fromResponder,
+                                      ipPacketLength,
                                       packet,
                                       connection);
     spindump_spintracker_add(tracker,ts,spin0to1);
@@ -289,6 +301,9 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
     spindump_analyze_process_handlers(state,
                                       (fromResponder ? spindump_analyze_event_responderspinflip :
                                        spindump_analyze_event_initiatorspinflip),
+                                      ts,
+                                      fromResponder,
+                                      ipPacketLength,
                                       packet,
                                       connection);
     return(1);
@@ -305,6 +320,9 @@ spindump_spintracker_observespin(struct spindump_analyze* state,
   spindump_analyze_process_handlers(state,
                                     (fromResponder ? spindump_analyze_event_responderspinvalue :
                                      spindump_analyze_event_initiatorspinvalue),
+                                    ts,
+                                    fromResponder,
+                                    ipPacketLength,
                                     packet,
                                     connection);
   return(0);

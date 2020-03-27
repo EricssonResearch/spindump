@@ -36,7 +36,8 @@
 static void
 spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
                                    struct spindump_packet* packet,
-                                         uint8_t ecnFlags,
+                                   uint8_t ecnFlags,
+                                   const struct timeval* timestamp,
                                    unsigned int ipPacketLength,
                                    unsigned int udpLength,
                                    unsigned int remainingCaplen,
@@ -50,6 +51,7 @@ static void
 spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
                                         struct spindump_packet* packet,
                                         uint8_t ecnFlags,
+                                        const struct timeval* timestamp,
                                         unsigned int ipPacketLength,
                                         unsigned int udpLength,
                                         unsigned int remainingCaplen,
@@ -69,6 +71,7 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
                                       struct spindump_packet* packet,
                                       struct spindump_connection* connection,
                                       const int fromResponder,
+                                      const unsigned int ipPacketLength,
                                       const uint16_t mid,
                                       const struct timeval* t);
 static void
@@ -76,6 +79,7 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
                                                   struct spindump_packet* packet,
                                                   struct spindump_connection* connection,
                                                   const int fromResponder,
+                                                  const unsigned int ipPacketLength,
                                                   const struct timeval* t);
 
 //
@@ -176,6 +180,7 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
                                       struct spindump_packet* packet,
                                       struct spindump_connection* connection,
                                       const int fromResponder,
+                                      const unsigned int ipPacketLength,
                                       const uint16_t mid,
                                       const struct timeval* t) {
 
@@ -211,6 +216,7 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
+                                             ipPacketLength,
                                              1,
                                              0,
                                              ackto,
@@ -238,6 +244,7 @@ spindump_analyze_coap_markmidreceived(struct spindump_analyze* state,
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
+                                             ipPacketLength,
                                              0,
                                              0,
                                              ackto,
@@ -265,6 +272,7 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
                                                   struct spindump_packet* packet,
                                                   struct spindump_connection* connection,
                                                   const int fromResponder,
+                                                  const unsigned int ipPacketLength,
                                                   const struct timeval* t) {
 
   //
@@ -289,6 +297,7 @@ spindump_analyze_coap_markinitialresponsereceived(struct spindump_analyze* state
   spindump_connections_newrttmeasurement(state,
                                          packet,
                                          connection,
+                                         ipPacketLength,
                                          1,
                                          0,
                                          ackto,
@@ -321,7 +330,8 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
                               unsigned int ipHeaderPosition,
                               unsigned int ipHeaderSize,
                               uint8_t ipVersion,
-                                                uint8_t ecnFlags,
+                              uint8_t ecnFlags,
+                              const struct timeval* timestamp,
                               unsigned int ipPacketLength,
                               unsigned int udpHeaderPosition,
                               unsigned int udpLength,
@@ -360,6 +370,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
     spindump_analyze_process_coap_dtls(state,
                                        packet,
                                        ecnFlags,
+                                       timestamp,
                                        ipPacketLength,
                                        udpLength,
                                        remainingCaplen,
@@ -375,6 +386,7 @@ spindump_analyze_process_coap(struct spindump_analyze* state,
     spindump_analyze_process_coap_cleartext(state,
                                             packet,
                                             ecnFlags,
+                                            timestamp,
                                             ipPacketLength,
                                             udpLength,
                                             remainingCaplen,
@@ -407,6 +419,7 @@ static void
 spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
                                         struct spindump_packet* packet,
                                         uint8_t ecnFlags,
+                                        const struct timeval* timestamp,
                                         unsigned int ipPacketLength,
                                         unsigned int udpLength,
                                         unsigned int remainingCaplen,
@@ -546,6 +559,7 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
                                                      packet,
                                                      connection,
                                                      fromResponder,
+                                                     ipPacketLength,
                                                      mid,
                                                      &packet->timestamp);
   } else {
@@ -560,14 +574,26 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   //
 
   if (new) {
-    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    spindump_analyze_process_handlers(state,
+                                      spindump_analyze_event_newconnection,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
+                                      packet,
+                                      connection );
   }
 
   //
   // Update stats.
   //
 
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+  spindump_analyze_process_pakstats(state,
+                                    connection,
+                                    timestamp,
+                                    fromResponder,
+                                    packet,
+                                    ipPacketLength,
+                                    ecnFlags);
 
   //
   // If we've seen a response from the responder, mark state as
@@ -575,8 +601,8 @@ spindump_analyze_process_coap_cleartext(struct spindump_analyze* state,
   //
 
   if (fromResponder && foundmid && connection->state == spindump_connection_state_establishing) {
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
+    spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_established);
+    spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_closed);
   }
 
   //
@@ -605,7 +631,8 @@ static void
 spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
                                    struct spindump_packet* packet,
                                    uint8_t ecnFlags,
-                                                                                                                                         unsigned int ipPacketLength,
+                                   const struct timeval* timestamp,
+                                   unsigned int ipPacketLength,
                                    unsigned int udpLength,
                                    unsigned int remainingCaplen,
                                    spindump_address* source,
@@ -726,7 +753,12 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
 
     if (isHandshake && isInitialHandshake && isResponse && connection->packetsFromSide2 == 0) {
 
-      spindump_analyze_coap_markinitialresponsereceived(state,packet,connection,1,&packet->timestamp);
+      spindump_analyze_coap_markinitialresponsereceived(state,
+                                                        packet,
+                                                        connection,
+                                                        1,
+                                                        ipPacketLength,
+                                                        &packet->timestamp);
 
     } else {
 
@@ -744,7 +776,7 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
   if (fromResponder && isHandshake && isInitialHandshake && isResponse &&
       connection->state == spindump_connection_state_establishing) {
 
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+    spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_established);
 
   }
 
@@ -753,6 +785,12 @@ spindump_analyze_process_coap_dtls(struct spindump_analyze* state,
   //
 
   *p_connection = connection;
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+  spindump_analyze_process_pakstats(state,
+                                    connection,
+                                    timestamp,
+                                    fromResponder,
+                                    packet,
+                                    ipPacketLength,
+                                    ecnFlags);
 
 }

@@ -48,6 +48,7 @@ spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
                                                 struct timeval* ts,
                                                 int spin,
                                                 int fromResponder,
+                                                unsigned int ipPacketLength,
                                                 int *isFlip);
 void
 spindump_spintracker_uninitialize(struct spindump_spintracker* tracker);

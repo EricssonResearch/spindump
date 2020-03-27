@@ -31,15 +31,16 @@
 
 void
 spindump_analyze_process_sctp(struct spindump_analyze* table,
-                             struct spindump_packet* packet,
-                             unsigned int ipHeaderPosition,
-                             unsigned int ipHeaderSize,
-                             uint8_t ipVersion,
-                             uint8_t ecnFlags,
-                             unsigned int ipPacketLength,
-                             unsigned int sctpHeaderPosition,
-                             unsigned int sctpLength,
-                             unsigned int remainingCaplen,
-                             struct spindump_connection** p_connection);
+                              struct spindump_packet* packet,
+                              unsigned int ipHeaderPosition,
+                              unsigned int ipHeaderSize,
+                              uint8_t ipVersion,
+                              uint8_t ecnFlags,
+                              const struct timeval* timestamp,
+                              unsigned int ipPacketLength,
+                              unsigned int sctpHeaderPosition,
+                              unsigned int sctpLength,
+                              unsigned int remainingCaplen,
+                              struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_SCTP_H

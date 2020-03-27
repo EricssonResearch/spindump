@@ -55,7 +55,8 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                               unsigned int ipHeaderPosition,
                               unsigned int ipHeaderSize,
                               uint8_t ipVersion,
-                                                uint8_t ecnFlags,
+                              uint8_t ecnFlags,
+                              const struct timeval* timestamp,
                               unsigned int ipPacketLength,
                               unsigned int udpHeaderPosition,
                               unsigned int udpLength,
@@ -277,7 +278,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                       spindump_connection_quicconnectionid_tostring(&connection->u.quic.peer2ConnectionID,tempid,sizeof(tempid)));
       connection->u.quic.peer2ConnectionID = sourceCid;
       spindump_deepdeepdebugf("calling spindump_connections_changeidentifiers");
-      spindump_connections_changeidentifiers(state,packet,connection);
+      spindump_connections_changeidentifiers(state,packet,timestamp,connection);
     }
     
     //
@@ -286,7 +287,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
 
     if (fromResponder && type == spindump_quic_message_type_initial) {
 
-      spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+      spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_established);
       spindump_debugf("moved QUIC connection %u state to ESTABLISHED", connection->id);
 
     }
@@ -308,6 +309,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
         spindump_connections_newrttmeasurement(state,
                                                packet,
                                                connection,
+                                               ipPacketLength,
                                                1,
                                                0,
                                                &connection->u.quic.side1initialPacket,
@@ -325,6 +327,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
         spindump_connections_newrttmeasurement(state,
                                                packet,
                                                connection,
+                                               ipPacketLength,
                                                0,
                                                0,
                                                &connection->u.quic.side2initialResponsePacket,
@@ -379,7 +382,13 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   //
 
   if (new) {
-    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    spindump_analyze_process_handlers(state,
+                                      spindump_analyze_event_newconnection,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
+                                      packet,
+                                      connection);
   }
 
   //
@@ -405,6 +414,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       &packet->timestamp,
                                                       spin,
                                                       fromResponder,
+                                                      ipPacketLength,
                                                       &isFlip);
     } else {
       spindump_spintracker_observespinandcalculatertt(state,
@@ -415,6 +425,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       &packet->timestamp,
                                                       spin,
                                                       fromResponder,
+                                                      ipPacketLength,
                                                       &isFlip);
     }
 
@@ -436,6 +447,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                         connection,
                                                         &packet->timestamp,
                                                         fromResponder,
+                                                        ipPacketLength,
                                                         extrameas.extrameasbits & spindump_extrameas_rtloss1?1:0,
                                                         isFlip);
       }
@@ -446,6 +458,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                         connection,
                                                         &packet->timestamp,
                                                         fromResponder,
+                                                        ipPacketLength,
                                                         extrameas.extrameasbits >> 3);
       }
 
@@ -455,6 +468,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                        connection,
                                                        &packet->timestamp,
                                                        fromResponder,
+                                                       ipPacketLength,
                                                        extrameas.extrameasbits);
       }
 
@@ -464,6 +478,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                        connection,
                                                        &packet->timestamp,
                                                        fromResponder,
+                                                       ipPacketLength,
                                                        extrameas.extrameasbits);
       }
     }
@@ -473,7 +488,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   // Update stats.
   //
 
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+  spindump_analyze_process_pakstats(state,connection,timestamp,fromResponder,packet,ipPacketLength,ecnFlags);
 
   //
   // Done. Update stats and tell caller which connection we used.

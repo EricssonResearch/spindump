@@ -33,11 +33,13 @@ void
 spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
                                 struct spindump_packet* packet,
                                 unsigned int position,
+                                const struct timeval* timestamp,
                                 struct spindump_connection** p_connection);
 void
 spindump_analyze_ip_decodeip6hdr(struct spindump_analyze* state,
                                  struct spindump_packet* packet,
                                  unsigned int position,
+                                 const struct timeval* timestamp,
                                  struct spindump_connection** p_connection);
 
 #endif // SPINDUMP_ANALYZE_IP_H

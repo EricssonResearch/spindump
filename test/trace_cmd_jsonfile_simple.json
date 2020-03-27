@@ -1,0 +1,6 @@
+[
+{ "Event": "new", "Type": "ICMP", "Addrs": ["31.133.149.35","212.16.98.51"], "Session": "48895", "Ts": 1553417873690045, "State": "Starting", "Notes": "No response", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
+{ "Event": "measurement", "Type": "ICMP", "Addrs": ["31.133.149.35","212.16.98.51"], "Session": "48895", "Ts": 1553417873728020, "State": "Up", "Notes": "No response", "Right_rtt": 37975, "Packets1": 1, "Packets2": 0, "Bytes1": 84, "Bytes2": 0, "Bandwidth1": 84, "Bandwidth2": 0 },
+{ "Event": "packet", "Type": "ICMP", "Addrs": ["31.133.149.35","212.16.98.51"], "Session": "48895", "Ts": 1553417874694664, "State": "Up", "Dir": "initiator", "Length": 84, "Packets1": 2, "Packets2": 1, "Bytes1": 168, "Bytes2": 84, "Bandwidth1": 84, "Bandwidth2": 84 },
+{ "Event": "measurement", "Type": "ICMP", "Addrs": ["31.133.149.35","212.16.98.51"], "Session": "48895", "Ts": 1553417874732523, "State": "Up", "Right_rtt": 37859, "Packets1": 2, "Packets2": 1, "Bytes1": 168, "Bytes2": 84, "Bandwidth1": 84, "Bandwidth2": 84 }
+]

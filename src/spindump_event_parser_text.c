@@ -202,6 +202,13 @@ spindump_event_parser_text_print(const struct spindump_event* event,
     break;
     
   case spindump_event_type_packet:
+    if (event->u.packet.direction == spindump_direction_frominitiator) {
+      addtobuffer2("initiator length %lu ",
+                   event->u.packet.length);
+    } else {
+      addtobuffer2("responder length %lu ",
+                   event->u.packet.length);
+    }
     break;
     
   default:

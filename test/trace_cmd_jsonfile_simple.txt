@@ -1,0 +1,1 @@
+Providing a JSON event file as input, containing a simple ICMP exchange. Should succeed.

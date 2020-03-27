@@ -1,0 +1,1 @@
+Use the --json-input-file with a file that a JSON syntax error and cannot be parsed. Should return an error.

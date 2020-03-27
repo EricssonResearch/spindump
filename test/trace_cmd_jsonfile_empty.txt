@@ -1,0 +1,1 @@
+An empty JSON file, given to --json-input-file

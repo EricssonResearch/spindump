@@ -31,6 +31,9 @@
 // Data types ---------------------------------------------------------------------------------
 //
 
+typedef void (*spindump_event_parser_json_callback)(const struct spindump_event* event,
+                                                    void* data);
+
 //
 // Parameters ---------------------------------------------------------------------------------
 //
@@ -43,6 +46,12 @@
 // External API interface to this module ------------------------------------------------------
 //
 
+const struct spindump_json_schema*
+spindump_event_parser_json_getschema(void);
+int
+spindump_event_parser_json_textparse(const char** jsonText,
+                                     spindump_event_parser_json_callback callback,
+                                     void* data);
 int
 spindump_event_parser_json_parse(const struct spindump_json_value* json,
                                  struct spindump_event* event);

@@ -75,6 +75,11 @@ struct spindump_event_connection_delete {
   unsigned char padding;
 };
 
+struct spindump_event_packet {
+  enum spindump_direction direction;
+  unsigned long length;
+};
+
 struct spindump_event_new_rtt_measurement {
   enum spindump_measurement_type measurement;
   enum spindump_direction direction;
@@ -145,6 +150,7 @@ struct spindump_event {
     struct spindump_event_new_connection newConnection;
     struct spindump_event_change_connection changeConnection;
     struct spindump_event_connection_delete connectionDelete;
+    struct spindump_event_packet packet;
     struct spindump_event_new_rtt_measurement newRttMeasurement;
     struct spindump_event_spin_flip spinFlip;
     struct spindump_event_spin_value spinValue;

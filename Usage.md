@@ -134,8 +134,9 @@ Sets a limit of how many packets the tool accepts before finishing. The default 
     --interface i
     --snaplen n
     --input-file f
+    --json-input-file f
 
-The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. Arguments "lo" and "any" are supported. The --snaplen option is used to control how many bytes of the packets are captured for analysis. The --input-file option sets the packets to be read from a PCAP-format file. While reading a PCAP-format file, Spindump ignores the --snaplen option. PCAP-format files can be stored, e.g., with the tcpdump option "-w".
+The --interface option sets the local interface to listen on. The default is whatever is the default interface on the given system. Arguments "lo" and "any" are supported. The --snaplen option is used to control how many bytes of the packets are captured for analysis. The --input-file option sets the packets to be read from a PCAP-format file. While reading a PCAP-format file, Spindump ignores the --snaplen option. PCAP-format files can be stored, e.g., with the tcpdump option "-w". Finally, the --json-input-file option can be used to give Spindump a JSON output produced by another Spindump run.
 
     --remote u
     --remote-block-size n

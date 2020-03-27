@@ -19,6 +19,7 @@ CTestTestfile.cmake
 spindump_test.out
 install_manifest.txt
 test/*.out.pre
+test/*.out.err
 test/*.out
 test/*.cmd
 src/*.out

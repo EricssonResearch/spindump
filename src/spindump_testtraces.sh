@@ -42,6 +42,10 @@ traces="trace_icmpv4_short
         trace_ping_bandwidthperiods3
         trace_ping_bandwidthperiods4
         trace_ping_bandwidthperiods5
+        trace_cmd_jsonfile_notexist
+        trace_cmd_jsonfile_syntaxerror
+        trace_cmd_jsonfile_empty
+        trace_cmd_jsonfile_simple
         trace_tcp_short
         trace_tcp_short_json trace_dns
         trace_quic_v18_short_spin
@@ -170,8 +174,11 @@ do
     descr=$testdir/$trace.txt
     outpre=$testdir/$trace.out.pre
     out=$testdir/$trace.out
+    outerr=$testdir/$trace.out.err
     cmd=$testdir/$trace.cmd
     corr=$testdir/$trace.expected
+    noinputfile=$testdir/$trace.noinput
+    exitcodefile=$testdir/$trace.exitcode
     optsfile=$testdir/$trace.options
     perfoptsfile=$testdir/$trace.optionsperf
     profilefile=$testdir/$trace.perf
@@ -184,21 +191,40 @@ do
     then
         pcap=$pcapng
     fi
+    if [ -f $noinputfile ]
+    then
+        inputfiles=""
+    else
+        inputfiles="--input-file $pcap"
+    fi
     
     #
     # Now run it!
     #
 
-    allopts="--input-file $pcap --textual --format text --not-report-notes $opts $debugopts"
+    allopts="$inputfiles --textual --format text --not-report-notes $opts $debugopts"
     echo $spindump $allopts > $cmd
-    if $spindump $allopts > $outpre
+    if $spindump $allopts 2> $outerr > $outpre
      then
-        echo "  run ok..."
+        if [ -f $exitcodefile ]
+        then
+            echo "**run failed by not failing per expectation"
+            RESULT=1
+            FAILCTR=`expr $FAILCTR + 1`
+            if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
+        else
+            echo "  run ok..."
+        fi
     else
-        echo "**run failed"
-        RESULT=1
-        FAILCTR=`expr $FAILCTR + 1`
-        if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
+        if [ -f $exitcodefile ]
+        then
+            echo "  run ok (expected failure)..."
+        else
+            echo "**run failed"
+            RESULT=1
+            FAILCTR=`expr $FAILCTR + 1`
+            if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
+        fi
     fi
 
     #
@@ -206,7 +232,7 @@ do
     # from test run to test run.
     #
 
-    cat $outpre |
+    cat $outerr $outpre |
     sed 's/ at .* delete / at delete /g' |
     awk '
       /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }

@@ -63,6 +63,8 @@ But in the end, when a handler has been registered, if the noted event occurs th
                    void* handlerData,
                    void** handlerConnectionData,
                    spindump_analyze_event event,
+                   int fromResponder,
+                   unsigned int ipPacketLength,
                    struct spindump_packet* packet,
                    struct spindump_connection* connection) {
        

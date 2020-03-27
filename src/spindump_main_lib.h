@@ -60,6 +60,7 @@ struct spindump_main_aggregate {
 struct spindump_main_configuration {
   char* interface;
   const char* inputFile;
+  const char* jsonInputFile;
   char* filter;
   unsigned int snaplen;
   enum spindump_toolmode toolmode;

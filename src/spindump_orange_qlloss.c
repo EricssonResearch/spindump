@@ -29,6 +29,7 @@ spindump_qllosstracker_observeandcalculateloss(struct spindump_analyze* state,
                                                struct spindump_connection* connection,
                                                struct timeval* ts,
                                                int fromResponder,
+                                               unsigned int ipPacketLength,
                                                int ql) {
   struct spindump_qllosstracker* tracker;
   if (fromResponder)
@@ -71,10 +72,14 @@ spindump_qllosstracker_observeandcalculateloss(struct spindump_analyze* state,
     }
 
     spindump_analyze_process_handlers(state,
-                                      fromResponder ? spindump_analyze_event_responderqllossmeasurement
-                                  : spindump_analyze_event_initiatorqllossmeasurement,
-                                  packet,
-                                  connection);
+                                      (fromResponder ?
+                                       spindump_analyze_event_responderqllossmeasurement :
+                                       spindump_analyze_event_initiatorqllossmeasurement),
+                                      ts,
+                                      fromResponder,
+                                      ipPacketLength,
+                                      packet,
+                                      connection);
   }
   tracker->lloss += (l != 0);
 

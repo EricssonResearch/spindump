@@ -57,6 +57,9 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                                         void* handlerData,
                                         void** handlerConnectionData,
                                         spindump_analyze_event event,
+                                        const struct timeval* timestamp,
+                                        const int fromResponder,
+                                        const unsigned int ipPacketLength,
                                         struct spindump_packet* packet,
                                         struct spindump_connection* connection);
 static struct spindump_eventformatter*
@@ -350,7 +353,7 @@ spindump_eventformatter_uninitialize(struct spindump_eventformatter* formatter) 
   //
   // Unregister whatever we registered as handlers in the analyzer
   //
-
+  
   spindump_analyze_unregisterhandler(formatter->analyzer,
                                      spindump_analyze_event_alllegal,
                                      0,
@@ -510,6 +513,9 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                                         void* handlerData,
                                         void** handlerConnectionData,
                                         spindump_analyze_event event,
+                                        const struct timeval* timestamp,
+                                        const int fromResponder,
+                                        const unsigned int ipPacketLength,
                                         struct spindump_packet* packet,
                                         struct spindump_connection* connection) {
 
@@ -545,17 +551,17 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   
   spindump_deepdeepdebugf("point 3");
   unsigned long long timestamplonglong;
-  if (packet != 0) {
-    timestamplonglong =
-      ((unsigned long long)packet->timestamp.tv_sec) * 1000 * 1000 +
-      (unsigned long long)packet->timestamp.tv_usec;
-  } else {
-    struct timeval now;
-    spindump_getcurrenttime(&now);
-    timestamplonglong =
-      ((unsigned long long)now.tv_sec) * 1000 * 1000 +
-      (unsigned long long)now.tv_usec;
-  }
+  //  if (packet != 0) {
+  timestamplonglong =
+      ((unsigned long long)timestamp->tv_sec) * 1000 * 1000 +
+      (unsigned long long)timestamp->tv_usec;
+  //} else {
+  //struct timeval now;
+  //spindump_getcurrenttime(&now);
+  //timestamplonglong =
+  //((unsigned long long)now.tv_sec) * 1000 * 1000 +
+  //(unsigned long long)now.tv_usec;
+  //}
   
   //
   // Determine event type
@@ -914,6 +920,8 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     break;
 
   case spindump_analyze_event_newpacket:
+    eventobj.u.packet.direction = fromResponder ? spindump_direction_fromresponder : spindump_direction_frominitiator;
+    eventobj.u.packet.length = ipPacketLength;
     break;
     
   default:

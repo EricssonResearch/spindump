@@ -41,6 +41,7 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
                                       struct spindump_packet* packet,
                                       struct spindump_connection* connection,
                                       int fromResponder,
+                                      const unsigned int ipPacketLength,
                                       const uint16_t mid,
                                       const struct timeval* t);
 static const char*
@@ -173,6 +174,7 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
                                       struct spindump_packet* packet,
                                       struct spindump_connection* connection,
                                       int fromResponder,
+                                      const unsigned int ipPacketLength,
                                       const uint16_t mid,
                                       const struct timeval* t) {
 
@@ -196,6 +198,7 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
+                                             ipPacketLength,
                                              1,
                                              0,
                                              ackto,
@@ -223,6 +226,7 @@ spindump_analyzer_dns_markmidreceived(struct spindump_analyze* state,
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
+                                             ipPacketLength,
                                              0,
                                              0,
                                              ackto,
@@ -264,6 +268,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
                              unsigned int ipHeaderSize,
                              uint8_t ipVersion,
                              uint8_t ecnFlags,
+                             const struct timeval* timestamp,
                              unsigned int ipPacketLength,
                              unsigned int udpHeaderPosition,
                              unsigned int udpLength,
@@ -406,6 +411,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
                                                      packet,
                                                      connection,
                                                      fromResponder,
+                                                     ipPacketLength,
                                                      mid,
                                                      &packet->timestamp);
   }
@@ -415,7 +421,13 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   //
 
   if (new) {
-    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    spindump_analyze_process_handlers(state,
+                                      spindump_analyze_event_newconnection,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
+                                      packet,
+                                      connection);
   }
 
   //
@@ -424,15 +436,21 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   //
 
   if (fromResponder && foundmid && connection->state == spindump_connection_state_establishing) {
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
-    spindump_connections_changestate(state,packet,connection,spindump_connection_state_closed);
+    spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_established);
+    spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_closed);
   }
 
   //
   // Update stats.
   //
 
-  spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+  spindump_analyze_process_pakstats(state,
+                                    connection,
+                                    timestamp,
+                                    fromResponder,
+                                    packet,
+                                    ipPacketLength,
+                                    ecnFlags);
 
   //
   // Done. Inform caller of the connection.

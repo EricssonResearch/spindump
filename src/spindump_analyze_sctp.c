@@ -41,6 +41,7 @@ spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* stat
                                                    struct spindump_packet* packet,
                                                    struct spindump_connection* connection,
                                                    int fromResponder,
+                                                   const unsigned int ipPacketLength,
                                                    sctp_tsn ackTsn,
                                                    struct timeval* t);
 
@@ -54,6 +55,7 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
                                                  struct spindump_packet* packet,
                                                  struct spindump_connection* connection,
                                                  int fromResponder,
+                                                 const unsigned int ipPacketLength,
                                                  struct timeval* t);
 static const char*
 spindump_analyze_sctp_chunk_type_to_string(enum spindump_sctp_chunk_type type);
@@ -128,6 +130,7 @@ spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* stat
                                                    struct spindump_packet* packet,
                                                    struct spindump_connection* connection,
                                                    int fromResponder,
+                                                   const unsigned int ipPacketLength,
                                                    sctp_tsn ackTsn,
                                                    struct timeval* t) {
 
@@ -158,6 +161,7 @@ spindump_analyze_process_sctp_markackreceived_data(struct spindump_analyze* stat
       spindump_connections_newrttmeasurement(state,
                                              packet,
                                              connection,
+                                             ipPacketLength,
                                              fromResponder,
                                              0,
                                              ackto,
@@ -226,6 +230,7 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
                                                  struct spindump_packet* packet,
                                                  struct spindump_connection* connection,
                                                  int fromResponder,
+                                                 const unsigned int ipPacketLength,
                                                  struct timeval* t) {
 
   struct timeval* ackto = 0;
@@ -265,6 +270,7 @@ spindump_analyze_process_sctp_markackreceived_hb(struct spindump_analyze* state,
     spindump_connections_newrttmeasurement(state,
                                            packet,
                                            connection,
+                                           ipPacketLength,
                                            fromResponder,
                                            0,
                                            ackto,
@@ -297,6 +303,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                               unsigned int ipHeaderSize,
                               uint8_t ipVersion,
                               uint8_t ecnFlags,
+                              const struct timeval* timestamp,
                               unsigned int ipPacketLength,
                               unsigned int sctpHeaderPosition,
                               unsigned int sctpLength,
@@ -390,9 +397,9 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         if (connection != 0) {
 
           spindump_analyze_process_sctp_marktsnsent(connection,
-                                                  fromResponder,
-                                                  sctp_chunk.ch.data.tsn,
-                                                  &packet->timestamp);
+                                                    fromResponder,
+                                                    sctp_chunk.ch.data.tsn,
+                                                    &packet->timestamp);
 
         } else {
 
@@ -411,11 +418,12 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
         if (connection != 0) {
 
           spindump_analyze_process_sctp_markackreceived_data(state,
-                                                        packet,
-                                                        connection,
-                                                        fromResponder,
-                                                        sctp_chunk.ch.sack.cumulativeTsnAck,
-                                                        &packet->timestamp);
+                                                             packet,
+                                                             connection,
+                                                             fromResponder,
+                                                             ipPacketLength,
+                                                             sctp_chunk.ch.sack.cumulativeTsnAck,
+                                                             &packet->timestamp);
 
         } else {
 
@@ -448,7 +456,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
           new = 1;
           state->stats->connections++;
           state->stats->connectionsSctp++;
-          spindump_analyze_process_pakstats(state,connection,0,packet,ipPacketLength,ecnFlags);
+          spindump_analyze_process_pakstats(state,connection,timestamp,0,packet,ipPacketLength,ecnFlags);
 
         } else {
 
@@ -498,9 +506,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
           if (connection->state == spindump_connection_state_establishing) {
             spindump_connections_changestate(state,
-                                            packet,
-                                            connection,
-                                            spindump_connection_state_established);
+                                             packet,
+                                             timestamp,
+                                             connection,
+                                             spindump_connection_state_established);
           }
 
         } else {
@@ -537,9 +546,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
           if (connection->state == spindump_connection_state_established) {
             spindump_connections_changestate(state,
-                                            packet,
-                                            connection,
-                                            spindump_connection_state_closing);
+                                             packet,
+                                             timestamp,
+                                             connection,
+                                             spindump_connection_state_closing);
           }
 
         } else {
@@ -561,9 +571,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
           if (connection->state == spindump_connection_state_closing) {
             spindump_connections_changestate(state,
-                                            packet,
-                                            connection,
-                                            spindump_connection_state_closed);
+                                             packet,
+                                             timestamp,
+                                             connection,
+                                             spindump_connection_state_closed);
             spindump_connections_markconnectiondeleted(connection);
           }
 
@@ -586,9 +597,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
           if (connection->state != spindump_connection_state_closed) {
             spindump_connections_changestate(state,
-                                            packet,
-                                            connection,
-                                            spindump_connection_state_closed);
+                                             packet,
+                                             timestamp,
+                                             connection,
+                                             spindump_connection_state_closed);
             spindump_connections_markconnectiondeleted(connection);
           }
 
@@ -611,9 +623,10 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
 
           if (connection->state != spindump_connection_state_closed) {
             spindump_connections_changestate(state,
-                                            packet,
-                                            connection,
-                                            spindump_connection_state_closed);
+                                             packet,
+                                             timestamp,
+                                             connection,
+                                             spindump_connection_state_closed);
             spindump_connections_markconnectiondeleted(connection);
           }
 
@@ -658,6 +671,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
                                                            packet,
                                                            connection,
                                                            fromResponder,
+                                                           ipPacketLength,
                                                            &packet->timestamp);
         } else {
 
@@ -688,9 +702,21 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   //
 
   if (new) {
-    spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+    spindump_analyze_process_handlers(state,
+                                      spindump_analyze_event_newconnection,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
+                                      packet,
+                                      connection);
   } else {
-    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+    spindump_analyze_process_pakstats(state,
+                                      connection,
+                                      timestamp,
+                                      fromResponder,
+                                      packet,
+                                      ipPacketLength,
+                                      ecnFlags);
   }
 
   *p_connection = connection;

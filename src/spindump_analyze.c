@@ -44,14 +44,17 @@
 static void
 spindump_analyze_process_null(struct spindump_analyze* state,
                               struct spindump_packet* packet,
+                              const struct timeval* timestamp,
                               struct spindump_connection** p_connection);
 static void
 spindump_analyze_process_ethernet(struct spindump_analyze* state,
                                   struct spindump_packet* packet,
+                                  const struct timeval* timestamp,
                                   struct spindump_connection** p_connection);
 static void
 spindump_analyze_process_linux_sll(struct spindump_analyze* state,
                                    struct spindump_packet* packet,
+                                   const struct timeval* timestamp,
                                    struct spindump_connection** p_connection);
 static int
 spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
@@ -325,6 +328,9 @@ spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* st
 void
 spindump_analyze_process_handlers(struct spindump_analyze* state,
                                   spindump_analyze_event event,
+                                  const struct timeval* timestamp,
+                                  const int fromResponder,
+                                  const unsigned int ipPacketLength,
                                   struct spindump_packet* packet,
                                   struct spindump_connection* connection) {
   //
@@ -361,6 +367,9 @@ spindump_analyze_process_handlers(struct spindump_analyze* state,
                              handler->handlerData,
                              &connection->handlerConnectionDatas[i],
                              event,
+                             timestamp,
+                             fromResponder,
+                             ipPacketLength,
                              packet,
                              connection);
     }
@@ -478,13 +487,13 @@ spindump_analyze_process(struct spindump_analyze* state,
 
   switch (linktype) {
   case spindump_capture_linktype_null:
-    spindump_analyze_process_null(state,packet,p_connection);
+    spindump_analyze_process_null(state,packet,&packet->timestamp,p_connection);
     break;
   case spindump_capture_linktype_ethernet:
-    spindump_analyze_process_ethernet(state,packet,p_connection);
+    spindump_analyze_process_ethernet(state,packet,&packet->timestamp,p_connection);
     break;
   case spindump_capture_linktype_linux_sll:
-    spindump_analyze_process_linux_sll(state,packet,p_connection);
+    spindump_analyze_process_linux_sll(state,packet,&packet->timestamp,p_connection);
     break;
   default:
     spindump_errorf("unsupported linktype");
@@ -499,6 +508,7 @@ spindump_analyze_process(struct spindump_analyze* state,
 static void
 spindump_analyze_process_null(struct spindump_analyze* state,
                               struct spindump_packet* packet,
+                              const struct timeval* timestamp,
                               struct spindump_connection** p_connection) {
   //
   // Check there is enough of the null header. As pcap_datalink man page says:
@@ -550,6 +560,7 @@ spindump_analyze_process_null(struct spindump_analyze* state,
     spindump_analyze_ip_decodeiphdr(state,
                                     packet,
                                     spindump_null_header_size,
+                                    timestamp,
                                     p_connection);
     return;
 
@@ -562,6 +573,7 @@ spindump_analyze_process_null(struct spindump_analyze* state,
     spindump_analyze_ip_decodeip6hdr(state,
                                      packet,
                                      spindump_null_header_size,
+                                     timestamp,
                                      p_connection);
     return;
 
@@ -582,6 +594,7 @@ spindump_analyze_process_null(struct spindump_analyze* state,
 void
 spindump_analyze_process_ethernet(struct spindump_analyze* state,
                                   struct spindump_packet* packet,
+                                  const struct timeval* timestamp,
                                   struct spindump_connection** p_connection) {
   //
   // Check there is enough of the Ethernet header
@@ -608,6 +621,7 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
     spindump_analyze_ip_decodeiphdr(state,
                                     packet,
                                     spindump_ethernet_header_size,
+                                    timestamp,
                                     p_connection);
     return;
 
@@ -615,6 +629,7 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
     spindump_analyze_ip_decodeip6hdr(state,
                                      packet,
                                      spindump_ethernet_header_size,
+                                     timestamp,
                                      p_connection);
     return;
 
@@ -655,10 +670,13 @@ spindump_analyze_process_ethernet(struct spindump_analyze* state,
 void
 spindump_analyze_process_linux_sll(struct spindump_analyze* state,
                                    struct spindump_packet* packet,
+                                   const struct timeval* timestamp,
                                    struct spindump_connection** p_connection) {
+  
   //
   // Check there is enough of the linux_sll header
   //
+  
   if (packet->etherlen < spindump_linux_sll_header_size ||
       packet->caplen < spindump_linux_sll_header_size) {
     spindump_warnf("not enough bytes for the linux_sll header, only %u bytes in received frame",
@@ -682,6 +700,7 @@ spindump_analyze_process_linux_sll(struct spindump_analyze* state,
     spindump_analyze_ip_decodeiphdr(state,
                                     packet,
                                     spindump_linux_sll_header_size,
+                                    timestamp,
                                     p_connection);
     return;
 
@@ -690,6 +709,7 @@ spindump_analyze_process_linux_sll(struct spindump_analyze* state,
     spindump_analyze_ip_decodeip6hdr(state,
                                      packet,
                                      spindump_linux_sll_header_size,
+                                     timestamp,
                                      p_connection);
     return;
 
@@ -713,7 +733,8 @@ spindump_analyze_process_linux_sll(struct spindump_analyze* state,
 void
 spindump_analyze_process_pakstats(struct spindump_analyze* state,
                                   struct spindump_connection* connection,
-                                  int fromResponder,
+                                  const struct timeval* timestamp,
+                                  const int fromResponder,
                                   struct spindump_packet* packet,
                                   unsigned int ipPacketLength,
                                   uint8_t ecnFlags) {
@@ -789,6 +810,9 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   if (fromResponder && connection->packetsFromSide2 == 1) {
     spindump_analyze_process_handlers(state,
                                       spindump_analyze_event_firstresponsepacket,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
                                       packet,
                                       connection);
   }
@@ -797,6 +821,9 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
     spindump_analyze_process_handlers(state,
                                       fromResponder ? spindump_analyze_event_responderecnce :
                                       spindump_analyze_event_initiatorecnce,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
                                       packet,
                                       connection);
   }
@@ -810,6 +837,9 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   if (packet->analyzerHandlerCalls == state->stats->analyzerHandlerCalls) {
     spindump_analyze_process_handlers(state,
                                       spindump_analyze_event_newpacket,
+                                      timestamp,
+                                      fromResponder,
+                                      ipPacketLength,
                                       packet,
                                       connection);
   }
@@ -827,7 +857,13 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
     struct spindump_connection* aggregate = spindump_connection_set_iterator_next(&iter);
     spindump_assert(aggregate != 0);
     spindump_deepdeepdebugf("pakstats recursing to an aggregate for a packet of length %u", ipPacketLength);
-    spindump_analyze_process_pakstats(state,aggregate,fromResponder,packet,ipPacketLength,ecnFlags);
+    spindump_analyze_process_pakstats(state,
+                                      aggregate,
+                                      timestamp,
+                                      fromResponder,
+                                      packet,
+                                      ipPacketLength,
+                                      ecnFlags);
 
   }
 

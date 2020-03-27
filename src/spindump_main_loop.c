@@ -34,6 +34,7 @@
 #include "spindump_report.h"
 #include "spindump_remote_client.h"
 #include "spindump_remote_server.h"
+#include "spindump_remote_file.h"
 #include "spindump_eventformatter.h"
 #include "spindump_main.h"
 #include "spindump_main_lib.h"
@@ -54,6 +55,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                               struct spindump_eventformatter* formatter,
                               struct spindump_eventformatter* remoteFormatter,
                               struct spindump_remote_server* server,
+                              struct spindump_remote_file* jsonFileReader,
                               struct spindump_reverse_dns* querier,
                               int averageMode,
                               int aggregateMode,
@@ -84,7 +86,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   //
   int interface_allocated = 0;
   struct spindump_main_configuration* config = &state->config;
-  if (config->interface == 0 && config->inputFile == 0) {
+  if (config->interface == 0 && config->inputFile == 0 && config->jsonInputFile == 0) {
     config->interface = spindump_capture_defaultinterface();
     if (config->interface == 0) exit(1);
     interface_allocated = 1;
@@ -108,6 +110,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   spindump_deepdeepdebugf("main loop, capturer initialization");
   if (config->inputFile != 0) {
     capturer = spindump_capture_initialize_file(config->inputFile,config->filter);
+  } else if (config->jsonInputFile) {
+    capturer = spindump_capture_initialize_null();
   } else if (config->collector) {
     capturer = spindump_capture_initialize_null();
   } else {
@@ -121,7 +125,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   // been opened, so no longer need for root privileges (if we are
   // running root).
   //
-
+  
   spindump_deepdeepdebugf("main loop, privilege demotion");
   uid_t euid = geteuid();
   if (euid == 0) {
@@ -186,6 +190,18 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
     }
   }
   spindump_deepdeepdebugf("main loop operation, server init done");
+
+  //
+  // Initialize the file reader, if reading events from a JSON file
+  //
+
+  struct spindump_remote_file* jsonFileReader = 0;
+  if (config->jsonInputFile != 0) {
+    jsonFileReader = spindump_remote_file_init(config->jsonInputFile);
+    if (jsonFileReader == 0) {
+      exit(1);
+    }
+  }
   
   //
   // Draw screen once before waiting for packets
@@ -268,6 +284,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                 formatter,
                                 remoteFormatter,
                                 server,
+                                jsonFileReader,
                                 querier,
                                 averageMode,
                                 aggregateMode,
@@ -303,6 +320,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
   spindump_analyze_uninitialize(analyzer);
   spindump_capture_uninitialize(capturer);
   spindump_reverse_dns_uninitialize(querier);
+  if (server != 0) spindump_remote_server_close(server);
+  if (jsonFileReader != 0) spindump_remote_file_close(jsonFileReader);
 }
 
 //
@@ -317,6 +336,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
                               struct spindump_eventformatter* formatter,
                               struct spindump_eventformatter* remoteFormatter,
                               struct spindump_remote_server* server,
+                              struct spindump_remote_file* jsonFileReader,
                               struct spindump_reverse_dns* querier,
                               int averageMode,
                               int aggregateMode,
@@ -371,7 +391,7 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     }
     
     if (!more &&
-        config->inputFile != 0 &&
+        (config->inputFile != 0 || config->jsonInputFile != 0) &&
         config->toolmode == spindump_toolmode_visual) more = 1;
     
     //
@@ -386,10 +406,19 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
       } else {
         now = previousPacketTimestamp;
       }
+    } else if (config->jsonInputFile != 0) {
+      if (!spindump_iszerotime(&previousPacketTimestamp)) {
+        spindump_deepdeepdebugf("time set 1");
+        now = previousPacketTimestamp;
+      } else {
+        spindump_deepdeepdebugf("time set 2");
+        spindump_getcurrenttime(&now);
+      }
     } else {
       spindump_getcurrenttime(&now);
     }
     
+    spindump_deepdeepdebugf("time check %u.%u %u", now.tv_sec, now.tv_usec, seenEof);
     spindump_assert(now.tv_sec > 0 || seenEof);
     spindump_assert(now.tv_usec <= 1000 * 1000);
 
@@ -399,10 +428,21 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     // tables.
     //
 
-    //spindump_deepdeepdebugf("calling spindump_remote_server_getupdate? %lx %u", server, config->collector);
     if (server != 0) {
       while (spindump_remote_server_getupdate(server,analyzer)) {
       }
+    }
+    
+    //
+    // Check if there's any events from a JSON file to react to,
+    // take those updates into account in our connection/analyzer
+    // tables.
+    //
+    
+    if (jsonFileReader != 0) {
+      while (spindump_remote_file_getupdate(jsonFileReader,analyzer,&previousPacketTimestamp)) {
+      }
+      more = 0;
     }
     
     //
@@ -560,7 +600,15 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
     }
     if (aggregateConnection != 0) {
       spindump_deepdebugf("created a manually configured aggregate connection %u", aggregateConnection->id);
-      spindump_analyze_process_handlers(analyzer,spindump_analyze_event_newconnection,0,aggregateConnection);
+      struct timeval now;
+      spindump_getcurrenttime(&now);
+      spindump_analyze_process_handlers(analyzer,
+                                        spindump_analyze_event_newconnection,
+                                        &now,
+                                        0, // fromResponder not known
+                                        0, // ipPacketLength not known
+                                        0, // no connection
+                                        aggregateConnection);
     }
   }
 }

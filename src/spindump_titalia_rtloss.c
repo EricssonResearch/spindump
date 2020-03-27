@@ -36,11 +36,12 @@ spindump_rtloss_setaveragelossrate(struct spindump_rtloss_stats* lossStats);
 //
 
 void
-spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
+ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
                                                 struct spindump_packet* packet,
                                                 struct spindump_connection* connection,
                                                 struct timeval* ts,
                                                 int fromResponder,
+                                                 unsigned int ipPacketLength,
                                                 int lossbit,
                                                 int isFlip) {
   struct spindump_rtloss1tracker* tracker;
@@ -96,13 +97,17 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
             // Call handlers if any
 
             spindump_analyze_process_handlers(state,
-                                              fromResponder ? spindump_analyze_event_responderrtlossmeasurement
-                                              : spindump_analyze_event_initiatorrtlossmeasurement,
+                                              (fromResponder ?
+                                               spindump_analyze_event_responderrtlossmeasurement :
+                                               spindump_analyze_event_initiatorrtlossmeasurement),
+                                              ts,
+                                              fromResponder,
+                                              ipPacketLength,
                                               packet,
                                               connection);  
           }
         }
-
+        
         tracker->previousCounter = tracker->currentCounter;
         tracker->currentCounter = 0;
         tracker->reflectionPhase = !tracker->reflectionPhase;
@@ -132,6 +137,7 @@ spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze *state,
                                                 struct spindump_connection *connection,
                                                 struct timeval *ts,
                                                 int fromResponder,
+                                                unsigned int ipPacketLength,
                                                 int lossbits) {
   unsigned long long timestamp;
   spindump_timeval_to_timestamp(ts, &timestamp);
@@ -188,8 +194,12 @@ spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze *state,
         // Call handlers if any
 
         spindump_analyze_process_handlers(state,
-                                          fromResponder ? spindump_analyze_event_responderrtlossmeasurement
-                                          : spindump_analyze_event_initiatorrtlossmeasurement,
+                                          (fromResponder ?
+                                           spindump_analyze_event_responderrtlossmeasurement :
+                                           spindump_analyze_event_initiatorrtlossmeasurement),
+                                          ts,
+                                          fromResponder,
+                                          ipPacketLength,
                                           packet,
                                           connection);
       }

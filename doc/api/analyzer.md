@@ -63,6 +63,8 @@ The user's function gets called when the relevant event happens. The interface i
                    void* handlerData,
                    void** handlerConnectionData,
                    spindump_analyze_event event,
+                   int fromResponder,
+                   unsigned int ipPacketLength,
                    struct spindump_packet* packet,
                    struct spindump_connection* connection);
 

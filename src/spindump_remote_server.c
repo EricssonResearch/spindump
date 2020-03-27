@@ -94,197 +94,6 @@ spindump_remote_server_jsonrecordorarraycallback(const struct spindump_json_valu
                                                  void* data);
 
 //
-// Variables and constants --------------------------------------------------------------------
-//
-
-static struct spindump_json_schema fieldeventschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldtypeschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldstateschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldaddrschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldaddrsschema = {
-  .type = spindump_json_schema_type_array,
-  .callback = 0,
-  .u = {
-    .array = {
-      .schema = &fieldaddrschema
-    }
-  }
-};
-
-static struct spindump_json_schema fieldsessionschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldtsschema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldrttschema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldvalueschema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldtransitionschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldwhoschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldpackets1schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldpackets2schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldbytes1schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldbytes2schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldbandwidth1schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldbandwidth2schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldecn0schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldecn1schema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldceschema = {
-  .type = spindump_json_schema_type_integer,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldlossschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema fieldnotesschema = {
-  .type = spindump_json_schema_type_string,
-  .callback = 0
-};
-
-static struct spindump_json_schema recordschema = {
-  .type = spindump_json_schema_type_record,
-  .callback = 0,
-  .u = {
-    .record = {
-      .nFields = 39,
-      .fields = {
-        { .required = 1, .name = "Event", .schema = &fieldeventschema },
-        { .required = 1, .name = "Type", .schema = &fieldtypeschema },
-        { .required = 1, .name = "State", .schema = &fieldstateschema },
-        { .required = 1, .name = "Addrs", .schema = &fieldaddrsschema },
-        { .required = 1, .name = "Session", .schema = &fieldsessionschema },
-        { .required = 1, .name = "Ts", .schema = &fieldtsschema },
-        { .required = 0, .name = "Left_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Right_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Full_rtt_initiator", .schema = &fieldrttschema },
-        { .required = 0, .name = "Full_rtt_responder", .schema = &fieldrttschema },
-        { .required = 0, .name = "Avg_left_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Avg_right_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Avg_full_rtt_initiator", .schema = &fieldrttschema },
-        { .required = 0, .name = "Avg_full_rtt_responder", .schema = &fieldrttschema },
-        { .required = 0, .name = "Filt_avg_left_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Filt_avg_right_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Filt_avg_full_rtt_initiator", .schema = &fieldrttschema },
-        { .required = 0, .name = "Filt_avg_full_rtt_responder", .schema = &fieldrttschema },
-        { .required = 0, .name = "Dev_left_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Dev_right_rtt", .schema = &fieldrttschema },
-        { .required = 0, .name = "Dev_full_rtt_initiator", .schema = &fieldrttschema },
-        { .required = 0, .name = "Dev_full_rtt_responder", .schema = &fieldrttschema },
-        { .required = 0, .name = "Value", .schema = &fieldvalueschema },
-        { .required = 0, .name = "Transition", .schema = &fieldtransitionschema },
-        { .required = 0, .name = "Who", .schema = &fieldwhoschema },
-        { .required = 1, .name = "Packets1", .schema = &fieldpackets1schema },
-        { .required = 1, .name = "Packets2", .schema = &fieldpackets2schema },
-        { .required = 1, .name = "Bytes1", .schema = &fieldbytes1schema },
-        { .required = 1, .name = "Bytes2", .schema = &fieldbytes2schema },
-        { .required = 0, .name = "Bandwidth1", .schema = &fieldbandwidth1schema },
-        { .required = 0, .name = "Bandwidth2", .schema = &fieldbandwidth2schema },
-        { .required = 0, .name = "Ecn0", .schema = &fieldecn0schema },
-        { .required = 0, .name = "Ecn1", .schema = &fieldecn1schema },
-        { .required = 0, .name = "Ce", .schema = &fieldceschema },
-        { .required = 0, .name = "Avg_loss", .schema = &fieldlossschema },
-        { .required = 0, .name = "Tot_loss", .schema = &fieldlossschema },
-        { .required = 0, .name = "Q_loss", .schema = &fieldlossschema },
-        { .required = 0, .name = "L_loss", .schema = &fieldlossschema },
-        { .required = 0, .name = "Notes", .schema = &fieldnotesschema }
-      }
-    }
-  }
-};
-
-static struct spindump_json_schema arrayschema = {
-  .type = spindump_json_schema_type_array,
-  .callback = 0,
-  .u = {
-    .array = {
-      .schema = &recordschema
-    }
-  }
-};
-
-static struct spindump_json_schema schema = {
-  .type = spindump_json_schema_type_recordorarray,
-  .callback = spindump_remote_server_jsonrecordorarraycallback,
-  .u = {
-    .arrayorrecord = {
-      .array = &arrayschema,
-      .record = &recordschema
-    }
-  }
-};
-
-//
 // Actual code --------------------------------------------------------------------------------
 //
 
@@ -314,7 +123,8 @@ spindump_remote_server_init(spindump_port port) {
   
   memset(server,0,sizeof(*server));
   server->listenport = port;
-  server->schema = &schema;
+  server->schema = *spindump_event_parser_json_getschema();
+  server->schema.callback = spindump_remote_server_jsonrecordorarraycallback;
   server->exit = 0;
   server->nextAddItemIndex = 0;
   server->nextConsumeItemIndex = 0;
@@ -373,10 +183,6 @@ spindump_remote_server_close(struct spindump_remote_server* server) {
 // internal data structure, as the web events come in another thread.
 // The spindump_remote_server_getupdate function pulls one such
 // reported event from the server queue and lets the caller handle it.
-//
-// This function is incomplete as of today, waiting for the
-// implementation of representing events using some kind of data
-// structure.
 //
 
 int
@@ -623,7 +429,7 @@ spindump_remote_server_answertopost(struct spindump_remote_server* server,
 
   const char* input = &connectionObject->submission[0];
   spindump_deepdeepdebugf("spindump_remote_server going to parse %s", input);
-  if (!spindump_json_parse(server->schema,server,&input)) {
+  if (!spindump_json_parse(&server->schema,server,&input)) {
     spindump_debugf("failed to parse JSON");
     return(spindump_remote_server_answer_error(connection,
                                                MHD_HTTP_BAD_REQUEST,

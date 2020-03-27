@@ -323,6 +323,7 @@ unsigned long
 spindump_connections_newrttmeasurement(struct spindump_analyze* state,
                                        struct spindump_packet* packet,
                                        struct spindump_connection* connection,
+                                       unsigned int ipPacketLength,
                                        const int right,
                                        const int unidirectional,
                                        const struct timeval* sent,
@@ -396,14 +397,20 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
   
   if (unidirectional) {
     spindump_analyze_process_handlers(state,
-                                      right ? spindump_analyze_event_newrespinitfullrttmeasurement :
-                                      spindump_analyze_event_newinitrespfullrttmeasurement,
+                                      (right ? spindump_analyze_event_newrespinitfullrttmeasurement :
+                                       spindump_analyze_event_newinitrespfullrttmeasurement),
+                                      rcvd,
+                                      right,
+                                      ipPacketLength,
                                       packet,
                                       connection);
   } else {
     spindump_analyze_process_handlers(state,
-                                      right ? spindump_analyze_event_newrightrttmeasurement :
-                                      spindump_analyze_event_newleftrttmeasurement,
+                                      (right ? spindump_analyze_event_newrightrttmeasurement :
+                                       spindump_analyze_event_newleftrttmeasurement),
+                                      rcvd,
+                                      right,
+                                      ipPacketLength,
                                       packet,
                                       connection);
   }
@@ -420,7 +427,15 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
 
     struct spindump_connection* aggregate = spindump_connection_set_iterator_next(&iter);
     spindump_assert(aggregate != 0);
-    spindump_connections_newrttmeasurement(state,packet,aggregate,right,unidirectional,sent,rcvd,why);
+    spindump_connections_newrttmeasurement(state,
+                                           packet,
+                                           aggregate,
+                                           ipPacketLength,
+                                           right,
+                                           unidirectional,
+                                           sent,
+                                           rcvd,
+                                           why);
 
   }
 
@@ -731,6 +746,7 @@ spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
 void
 spindump_connections_changeidentifiers(struct spindump_analyze* state,
                                        struct spindump_packet* packet,
+                                       const struct timeval* timestamp,
                                        struct spindump_connection* connection) {
 
   //
@@ -746,6 +762,9 @@ spindump_connections_changeidentifiers(struct spindump_analyze* state,
 
   spindump_analyze_process_handlers(state,
                                     spindump_analyze_event_changeconnection,
+                                    timestamp,
+                                    0, // fromResponder not known
+                                    0, // ipPacketLength not known
                                     packet,
                                     connection);
 }
@@ -758,6 +777,7 @@ spindump_connections_changeidentifiers(struct spindump_analyze* state,
 void
 spindump_connections_changestate(struct spindump_analyze* state,
                                  struct spindump_packet* packet,
+                                 const struct timeval* timestamp,
                                  struct spindump_connection* connection,
                                  enum spindump_connection_state newState) {
 
@@ -779,6 +799,9 @@ spindump_connections_changestate(struct spindump_analyze* state,
 
   spindump_analyze_process_handlers(state,
                                     spindump_analyze_event_statechange,
+                                    timestamp,
+                                    0, // fromResponder not known
+                                    0, // ipPacketLength not known
                                     packet,
                                     connection);
 }

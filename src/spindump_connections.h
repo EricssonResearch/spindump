@@ -52,10 +52,12 @@ spindump_connections_markconnectiondeleted(struct spindump_connection* connectio
 void
 spindump_connections_changeidentifiers(struct spindump_analyze* state,
                                        struct spindump_packet* packet,
+                                       const struct timeval* timestamp,
                                        struct spindump_connection* connection);
 void
 spindump_connections_changestate(struct spindump_analyze* state,
                                  struct spindump_packet* packet,
+                                 const struct timeval* timestamp,
                                  struct spindump_connection* connection,
                                  enum spindump_connection_state newState);
 void
@@ -276,6 +278,7 @@ unsigned long
 spindump_connections_newrttmeasurement(struct spindump_analyze* state,
                                        struct spindump_packet* packet,
                                        struct spindump_connection* connection,
+                                       unsigned int ipPacketLength,
                                        const int right,
                                        const int unidirectional,
                                        const struct timeval* sent,

@@ -1,0 +1,2 @@
+spindump: error: cannot parse JSON record: missing opening brace in field top
+spindump: error: parsing error on JSON file test/trace_cmd_jsonfile_syntaxerror.json position 0

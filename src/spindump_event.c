@@ -85,6 +85,11 @@ spindump_event_initialize(enum spindump_event_type eventType,
 // Get the name of the event as a string. The returned string is
 // static, ie. should not be deallocated by the caller.
 //
+// The mapping in this function needs to match what's given for the
+// reverse mapping in function
+// spindump_event_parser_json_converteventtype in
+// spindump_event_parser_json.c.
+//
 
 const char*
 spindump_event_type_tostring(enum spindump_event_type type) {
@@ -195,6 +200,8 @@ spindump_event_equal(const struct spindump_event* event1,
     if (strcmp(event1->u.qllossMeasurement.lLoss, event2->u.qllossMeasurement.lLoss) != 0) return(0);
     break;
   case spindump_event_type_packet:
+    if (event1->u.packet.length != event2->u.packet.length) return(0);
+    if (event1->u.packet.direction != event2->u.packet.direction) return(0);
     break;
   default:
     spindump_errorf("unrecognised event type %u", event1->eventType);

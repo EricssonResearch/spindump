@@ -51,7 +51,8 @@ spindump_analyze_process_aggregate(struct spindump_analyze* state,
                                    unsigned int ipHeaderSize,
                                    uint8_t ipVersion,
                                    uint8_t ecnFlags,
-                                   unsigned int ipPacketLength,
+                                   const struct timeval* timestamp,
+                                   const unsigned int ipPacketLength,
                                    struct spindump_stats* stats) {
   
   //
@@ -110,6 +111,7 @@ spindump_analyze_process_aggregate(struct spindump_analyze* state,
   
   spindump_analyze_process_pakstats(state,
                                     connection,
+                                    timestamp,
                                     fromResponder,
                                     packet,
                                     ipPacketLength,

@@ -55,6 +55,7 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
                                     unsigned int ipHeaderSize,
                                     uint8_t ipVersion,
                                     uint8_t ecnFlags,
+                                    const struct timeval* timestamp,
                                     unsigned int ipPacketLength,
                                     unsigned char proto,
                                     unsigned int payloadPosition,
@@ -66,6 +67,7 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
                                    unsigned int ipHeaderSize,
                                    uint8_t ipVersion,
                                    uint8_t ecnFlags,
+                                   const struct timeval* timestamp,
                                    unsigned int ipPacketLength,
                                    struct spindump_connection** p_connection);
 
@@ -81,9 +83,10 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
 
 void
 spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
-                                  struct spindump_packet* packet,
-                                  unsigned int position,
-                                  struct spindump_connection** p_connection) {
+                                struct spindump_packet* packet,
+                                unsigned int position,
+                                const struct timeval* timestamp,
+                                struct spindump_connection** p_connection) {
 
   //
   // Some sanity checks
@@ -170,15 +173,16 @@ spindump_analyze_ip_decodeiphdr(struct spindump_analyze* state,
   //
 
   spindump_analyze_ip_decodeippayload(state,
-                                   packet,
-                                   position,
-                                   ipHeaderSize,
-                                   ipVersion,
-                                   ecnFlags,
-                                   ipPacketLength,
-                                   ip.ip_proto,
-                                   position + ipHeaderSize,
-                                   p_connection);
+                                      packet,
+                                      position,
+                                      ipHeaderSize,
+                                      ipVersion,
+                                      ecnFlags,
+                                      timestamp,
+                                      ipPacketLength,
+                                      ip.ip_proto,
+                                      position + ipHeaderSize,
+                                      p_connection);
 }
 
 //
@@ -191,6 +195,7 @@ void
 spindump_analyze_ip_decodeip6hdr(struct spindump_analyze* state,
                                  struct spindump_packet* packet,
                                  unsigned int position,
+                                 const struct timeval* timestamp,
                                  struct spindump_connection** p_connection) {
 
   //
@@ -283,6 +288,7 @@ spindump_analyze_ip_decodeip6hdr(struct spindump_analyze* state,
                                       ipHeaderSize,
                                       ipVersion,
                                       ecnFlags,
+                                      timestamp,
                                       ipPacketLength,
                                       proto,
                                       position + ipHeaderSize + passFh,
@@ -302,6 +308,7 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
                                     unsigned int ipHeaderSize,
                                     uint8_t ipVersion,
                                     uint8_t ecnFlags,
+                                    const struct timeval* timestamp,
                                     unsigned int ipPacketLength,
                                     unsigned char proto,
                                     unsigned int payloadPosition,
@@ -376,6 +383,7 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
                                  ipHeaderSize,
                                  ipVersion,
                                  ecnFlags,
+                                 timestamp,
                                  ipPacketLength,
                                  ipHeaderPosition + ipHeaderSize,
                                  protolen,
@@ -390,6 +398,7 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
                                  ipHeaderSize,
                                  ipVersion,
                                  ecnFlags,
+                                 timestamp,
                                  ipPacketLength,
                                  ipHeaderPosition + ipHeaderSize,
                                  protolen,
@@ -403,7 +412,8 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
                                   ipHeaderPosition,
                                   ipHeaderSize,
                                   ipVersion,
-                                        ecnFlags,
+                                  ecnFlags,
+                                  timestamp,
                                   ipPacketLength,
                                   ipHeaderPosition + ipHeaderSize,
                                   protolen,
@@ -418,6 +428,7 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
                                    ipHeaderSize,
                                    ipVersion,
                                    ecnFlags,
+                                   timestamp,
                                    ipPacketLength,
                                    ipHeaderPosition + ipHeaderSize,
                                    protolen,
@@ -427,16 +438,17 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
 
   case IPPROTO_SCTP:
     spindump_analyze_process_sctp(state,
-                                   packet,
-                                   ipHeaderPosition,
-                                   ipHeaderSize,
-                                   ipVersion,
-                                   ecnFlags,
-                                   ipPacketLength,
-                                   ipHeaderPosition + ipHeaderSize,
-                                   protolen,
-                                   remainingCaplen,
-                                   p_connection);
+                                  packet,
+                                  ipHeaderPosition,
+                                  ipHeaderSize,
+                                  ipVersion,
+                                  ecnFlags,
+                                  timestamp,
+                                  ipPacketLength,
+                                  ipHeaderPosition + ipHeaderSize,
+                                  protolen,
+                                  remainingCaplen,
+                                  p_connection);
     break;
 
   default:
@@ -471,6 +483,7 @@ spindump_analyze_ip_decodeippayload(struct spindump_analyze* state,
                                        ipHeaderSize,
                                        ipVersion,
                                        ecnFlags,
+                                       timestamp,
                                        ipPacketLength,
                                        p_connection);
   }
@@ -495,6 +508,7 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
                                    unsigned int ipHeaderSize,
                                    uint8_t ipVersion,
                                    uint8_t ecnFlags,
+                                   const struct timeval* timestamp,
                                    unsigned int ipPacketLength,
                                    struct spindump_connection** p_connection) {
   //
@@ -540,6 +554,7 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
                                          ipHeaderSize,
                                          ipVersion,
                                          ecnFlags,
+                                         timestamp,
                                          ipPacketLength,
                                          state->stats);
       

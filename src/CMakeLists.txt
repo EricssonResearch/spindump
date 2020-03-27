@@ -88,7 +88,8 @@ add_library(spindumplib
   spindump_packet.c
   spindump_protocols.c
   spindump_remote_client.c
-  spindump_remote_server.c
+  spindump_remote_server.c 
+  spindump_remote_file.c 
   spindump_report.c
   spindump_reversedns.c
   spindump_reversedns_full.c

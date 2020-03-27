@@ -44,7 +44,7 @@ Example:
 
 In more detail, the JSON format consists of a bracketed sequence of records in braces. Each record has the following fields:
 
-   * The "Event" field specifies what kind of event is being reported. This field can take on the following values: "new" for newly seen connections, "change" when the connection's identifying parameters such as port numbers of QUIC connection identifiers change, "delete" for connections deleted, "spinflip" for a flip of the QUIC spin bit in a connection, "spin" for any value of a spin bit in a QUIC connection, "measurement" for new RTT measurements, and "ecnce" for ECN-related events.
+   * The "Event" field specifies what kind of event is being reported. This field can take on the following values: "new" for newly seen connections, "change" when the connection's identifying parameters such as port numbers of QUIC connection identifiers change, "delete" for connections deleted, "spinflip" for a flip of the QUIC spin bit in a connection, "spin" for any value of a spin bit in a QUIC connection, "measurement" for new RTT measurements, and "ecnce" for ECN-related events. In  addition, the "packet" signals any other update of the counters.
    * The "Type" field specifies the type of a connection. This field can take on the following basic values: "UDP", "TCP", "QUIC", "DNS", "COAP", "ICMP" and "SCTP". In addition, it is possible to specify aggregate connections; these take on the following types: "HOSTS" for a host-to-host aggregate, "H2NET" for a host-to-network aggregate, "NET2NET" for a network-to-network aggregate, and "MCAST" for a multicast group aggregate.
    * The "Addrs" field specifies addresses associated with the connection or aggregate.
    * The "Session" field specifies the session identifiers associated with the connection, if any. For TCP and UDP connections these are the port numbers, for QUIC the connection IDs, for ICMP the identifier field and for SCTP the verification tags and the port numbers.
@@ -67,6 +67,8 @@ The other fields depend on the type of an event and connection. These fields can
    * The fields "Bytes1" and "Bytes2" specify the number of packets (in initiator and responder direction) that have been seen on this connection.
    * The field "Bandwidth1" and "Bandwidth2" specify the bandwidth of a connection (in initiator and responder direction) as calculated periodically for each second. The number represents number of bytes per second.
    * The fields "Ect0", "ect1" and "ce" specify ECN event counters for ECN(0), ECN(1), and CE events.
+   * The field "Length" specifies the length of the IP packet for "packet" events. 
+   * The field "Dir" specifies the direction of the packet for "packet" events, with the values being "initiator" and "responder" depending on who sent the packet that caused the event.
 
 ## Binary format
 

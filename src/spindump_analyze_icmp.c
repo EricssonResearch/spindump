@@ -57,6 +57,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
                               unsigned int ipHeaderSize,
                               uint8_t ipVersion,
                               uint8_t ecnFlags,
+                              const struct timeval* timestamp,
                               unsigned int ipPacketLength,
                               unsigned int icmpHeaderPosition,
                               unsigned int icmpLength,
@@ -219,7 +220,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     if (peerType == ICMP_ECHOREPLY) {
 
       if (connection->state == spindump_connection_state_establishing) {
-        spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+        spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_established);
       }
 
       spindump_deepdeepdebugf("looking for ICMP SEQ match of %u",
@@ -231,6 +232,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
         spindump_connections_newrttmeasurement(state,
                                                packet,
                                                connection,
+                                               ipPacketLength,
                                                1,
                                                0,
                                                ackto,
@@ -254,14 +256,26 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     //
 
     if (new) {
-      spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+      spindump_analyze_process_handlers(state,
+                                        spindump_analyze_event_newconnection,
+                                        timestamp,
+                                        fromResponder,
+                                        ipPacketLength,
+                                        packet,
+                                        connection);
     }
 
     //
     // Update statistics
     //
 
-    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+    spindump_analyze_process_pakstats(state,
+                                      connection,
+                                      timestamp,
+                                      fromResponder,
+                                      packet,
+                                      ipPacketLength,
+                                      ecnFlags);
 
     //
     // Done. Return connection information to caller.
@@ -301,6 +315,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
                                unsigned int ipHeaderSize,
                                uint8_t ipVersion,
                                uint8_t ecnFlags,
+                               const struct timeval* timestamp,
                                unsigned int ipPacketLength,
                                unsigned int icmpHeaderPosition,
                                unsigned int icmpLength,
@@ -452,7 +467,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     if (peerType == ICMP6_ECHO_REPLY) {
 
       if (connection->state == spindump_connection_state_establishing) {
-        spindump_connections_changestate(state,packet,connection,spindump_connection_state_established);
+        spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_established);
       }
       
       spindump_deepdeepdebugf("looking for ICMPv6 SEQ match of %u",
@@ -465,6 +480,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
         spindump_connections_newrttmeasurement(state,
                                                packet,
                                                connection,
+                                               ipPacketLength,
                                                1,
                                                0,
                                                ackto,
@@ -488,14 +504,26 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     //
 
     if (new) {
-      spindump_analyze_process_handlers(state,spindump_analyze_event_newconnection,packet,connection);
+      spindump_analyze_process_handlers(state,
+                                        spindump_analyze_event_newconnection,
+                                        timestamp,
+                                        fromResponder,
+                                        ipPacketLength,
+                                        packet,
+                                        connection);
     }
 
     //
     // Update statistics
     //
 
-    spindump_analyze_process_pakstats(state,connection,fromResponder,packet,ipPacketLength,ecnFlags);
+    spindump_analyze_process_pakstats(state,
+                                      connection,
+                                      timestamp,
+                                      fromResponder,
+                                      packet,
+                                      ipPacketLength,
+                                      ecnFlags);
 
     //
     // Done. Return connection information to caller.
