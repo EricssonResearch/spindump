@@ -19,7 +19,16 @@
 
 srcdir=`dirname $0`
 testdir=$srcdir/../test
+tmpdir=/tmp
+debugfile=$tmpdir/spindump.testtraces.dbg
 spindump=$srcdir/spindump
+rm -f $debugfile
+(echo "cwd:";
+ pwd;
+ echo "srcdir:";
+ echo $srcdir;
+ echo "testdir:";
+ echo $testdir) | tee -a $debugfile
 
 #
 # All test cases are listed below. For each test file there needs to
@@ -189,7 +198,7 @@ do
     opts=""
     if [ -f $optsfile ]
     then
-        opts=`cat $optsfile`
+        opts=`cat $optsfile | sed 's@ test/@ '$testdir'/@'`
     fi
     if [ -f $pcapng ]
     then
@@ -208,23 +217,24 @@ do
 
     allopts="$inputfiles --textual --format text --not-report-notes $opts $debugopts"
     echo $spindump $allopts > $cmd
+    cat $cmd >> $debugfile
     if $spindump $allopts 2> $outerr > $outpre
      then
         if [ -f $exitcodefile ]
         then
-            echo "**run failed by not failing per expectation"
+            echo "**run failed by not failing per expectation" | tee -a $debugfile
             RESULT=1
             FAILCTR=`expr $FAILCTR + 1`
             if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
         else
-            echo "  run ok..."
+            echo "  run ok..." | tee -a $debugfile
         fi
     else
         if [ -f $exitcodefile ]
         then
-            echo "  run ok (expected failure)..."
+            echo "  run ok (expected failure)..." | tee -a $debugfile
         else
-            echo "**run failed"
+            echo "**run failed" | tee -a $debugfile
             RESULT=1
             FAILCTR=`expr $FAILCTR + 1`
             if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
@@ -238,6 +248,7 @@ do
 
     cat $outerr $outpre |
     sed 's/ at .* delete / at delete /g' |
+    sed 's/ JSON file .*trace_/ JSON file trace_/g' |
     awk '
       /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*H2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
@@ -255,7 +266,7 @@ do
     then
         nop=nop
     else
-        echo "**expected results file $corr does not exist"
+        echo "**expected results file $corr does not exist" | tee -a $debugfile
         RESULT=1
         FAILCTR=`expr $FAILCTR + 1`
         if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
@@ -263,9 +274,9 @@ do
     
     if diff $out $corr > /dev/null
     then
-        echo "  results correct"
+        echo "  results correct" | tee -a $debugfile
     else
-        echo "**results incorrect"
+        echo "**results incorrect" | tee -a $debugfile
         RESULT=1
         FAILCTR=`expr $FAILCTR + 1`
         if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
@@ -275,7 +286,7 @@ do
     then
         nop=nop
     else
-        echo "**test description file $descr does not exist"
+        echo "**test description file $descr does not exist" | tee -a $debugfile
         RESULT=1
         FAILCTR=`expr $FAILCTR + 1`
         if [ "x$FAILED" = "x" ]; then FAILED=$trace; else FAILED=$FAILED" "$trace; fi
@@ -310,9 +321,9 @@ done
 echo ''
 if [ $RESULT = 1 ]
 then
-    echo '**** some tests ('$FAILCTR', '$FAILED') failed'
+    echo '**** some tests ('$FAILCTR', '$FAILED') failed' | tee -a $debugfile
 else
-    echo 'all tests ok'
+    echo 'all tests ok' | tee -a $debugfile
 fi
 
 exit $RESULT
