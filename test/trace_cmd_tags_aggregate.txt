@@ -1,0 +1,1 @@
+Test tags with aggregate connections and with JSON output.

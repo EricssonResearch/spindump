@@ -105,7 +105,8 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
   spindump_rtt_initialize(&connection->leftRTT);
   spindump_rtt_initialize(&connection->rightRTT);
   spindump_connections_set_initialize(&connection->aggregates);
-
+  spindump_tags_copy(&connection->tags,&table->defaultTags);
+  
   //
   // Do any initialization that is connection-type -dependent (e.g.,
   // TCP connections need their sequence number trackers initialized

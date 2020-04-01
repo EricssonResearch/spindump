@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "spindump_util.h"
+#include "spindump_tags.h"
 #include "spindump_capture.h"
 #include "spindump_analyze.h"
 #include "spindump_report.h"
@@ -107,6 +108,7 @@ spindump_main_uninitialize(struct spindump_main_state* state) {
   if (state->config.filter != 0) {
     spindump_free(state->config.filter);
   }
+  spindump_tags_uninitialize(&state->config.defaultTags);
   
   //
   // Reset contents, just in case
@@ -156,6 +158,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->nRemotes = 0;
   config->collector = 0;
   config->collectorPort = SPINDUMP_PORT_NUMBER;
+  spindump_tags_initialize(&config->defaultTags);
 }
 
 //
@@ -338,6 +341,14 @@ spindump_main_processargs(int argc,
 
       config->toolmode = spindump_toolmode_visual;
 
+    } else if (strcmp(argv[0],"--tag") == 0 && argc > 1) {
+
+      if (!spindump_tags_addtag(&config->defaultTags,argv[1])) {
+        spindump_errorf("cannot add too many or too long tag values");
+        exit(1);
+      }
+      argc--; argv++;
+      
     } else if (strcmp(argv[0],"--interface") == 0 && argc > 1) {
 
       config->interface = argv[1];
@@ -465,6 +476,26 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--aggregate") == 0 && argc > 1) {
 
       //
+      // Get the tags, if any
+      //
+
+      spindump_tags tags;
+      spindump_tags_initialize(&tags);
+      while (strncmp(argv[1],"tag=",4) == 0 && argc > 2) {
+        const char* tagvalue = argv[1]+4;
+        if (strlen(tagvalue) == 0) {
+          spindump_errorf("a tag value in --aggregate option cannot be empty");
+          exit(1);
+        }
+        if (!spindump_tags_addtag(&tags,tagvalue)) {
+          spindump_errorf("too long tag values in the --aggregate option");
+          exit(1);
+        }
+        argv++;
+        argc--;
+      }
+      
+      //
       // Get the first of the two arguments
       //
 
@@ -579,6 +610,8 @@ spindump_main_processargs(int argc,
 
       struct spindump_main_aggregate* aggregate = &config->aggregates[config->nAggregates++];
       aggregate->ismulticastgroup = side1isgroup;
+      spindump_tags_copy(&aggregate->tags,&tags);
+      spindump_tags_uninitialize(&tags);
       aggregate->side1ishost = side1ishost;
       aggregate->side2ishost = side2ishost;
       aggregate->side1address = side1address;
@@ -717,8 +750,11 @@ spindump_main_help(void) {
   printf("    --no-stats              Produces statistics at the end of the execution.\n");
   printf("    --stats\n");
   printf("\n");
-  printf("    --aggregate p1 p2       Collect aggregate information for flows matching patterns\n");
+  printf("    --aggregate [t] p1 p2   Collect aggregate information for flows matching patterns\n");
   printf("                            p1 to p2. Pattern is either an address or a network prefix.\n");
+  printf("                            Optionally, one may specify one or more tags of the form tag=value.\n");
+  printf("    --tag t                 Specify a default tag value for all new connections created by\n");
+  printf("                            Spindump.\n");
   printf("\n");
   printf("    --max-receive n         Sets a limit of how many packets the tool accepts.\n");
   printf("\n");

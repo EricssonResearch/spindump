@@ -1,4 +1,5 @@
 
+
 //
 //
 //  ////////////////////////////////////////////////////////////////////////////////////
@@ -11,41 +12,52 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2020 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
 // 
 
-#ifndef SPINDUMP_TABLE_STRUCTS_H
-#define SPINDUMP_TABLE_STRUCTS_H
+#ifndef SPINDUMP_TAGS_H
+#define SPINDUMP_TAGS_H
 
 //
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include <stdlib.h>
-#include <time.h>
-#include <sys/time.h>
-#include "spindump_tags.h"
-#include "spindump_connections_structs.h"
+#include "spindump_util.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_connectionstable_defaultsize 1024
+#define spindump_tags_maxlength                       16 // chars
 
 //
-// Data structures ----------------------------------------------------------------------------
+// Data types ---------------------------------------------------------------------------------
 //
 
-struct spindump_connectionstable {
-  unsigned long long bandwidthMeasurementPeriod;
-  struct timeval lastPeriodicCheck;
-  spindump_tags defaultTags;
-  unsigned int nConnections;
-  unsigned int maxNConnections;
-  struct spindump_connection** connections;
+struct spindump_tags_struct {
+  char string[spindump_tags_maxlength];
 };
 
-#endif // SPINDUMP_TABLE_STRUCTS_H
+typedef struct spindump_tags_struct spindump_tags;
+
+//
+// External API interface to this module ------------------------------------------------------
+//
+
+void
+spindump_tags_initialize(spindump_tags* tags);
+void
+spindump_tags_copy(spindump_tags* to,
+                   const spindump_tags* from);
+int
+spindump_tags_addtag(spindump_tags* tags,
+                     const char* tag);
+int
+spindump_tags_compare(const spindump_tags* t1,
+                      const spindump_tags* t2);
+void
+spindump_tags_uninitialize(spindump_tags* tags);
+
+#endif // SPINDUMP_TAGS_H

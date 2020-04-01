@@ -32,6 +32,7 @@
 #include "spindump_rtt.h"
 #include "spindump_seq.h"
 #include "spindump_mid.h"
+#include "spindump_tags.h"
 #include "spindump_sctp_tsn.h"
 #include "spindump_bandwidth.h"
 #include "spindump_spin_structs.h"
@@ -98,6 +99,7 @@ struct spindump_connection {
   int manuallyCreated;                              // was this entry created by management action or dynamically?
   int remote;                                       // was this entry created by a remote Spindump instance?
   int deleted;                                      // is the connection closed/deleted (but not yet removed)?
+  spindump_tags tags;                               // tags associated with the connection
   uint8_t padding[4];                               // unused padding to align the next field properly
   struct timeval creationTime;                      // when did we see the first packet?
   struct timeval latestPacketFromSide1;             // when did we see the last packet from side 1?

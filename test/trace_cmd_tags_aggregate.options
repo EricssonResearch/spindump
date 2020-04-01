@@ -1,0 +1,1 @@
+--tag v0 --aggregate tag=v1 tag=v2 tag=v3 ::/0 ::/0 --textual --format json

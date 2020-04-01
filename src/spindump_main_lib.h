@@ -25,6 +25,7 @@
 
 #include "spindump_util.h"
 #include "spindump_main.h"
+#include "spindump_tags.h"
 
 //
 // Parameters ---------------------------------------------------------------------------------
@@ -50,6 +51,7 @@ struct spindump_main_aggregate {
   int ismulticastgroup;
   int side1ishost;
   int side2ishost;
+  spindump_tags tags;
   uint8_t padding[4]; // unused padding to align the next field properly
   spindump_address side1address;
   spindump_address side2address;
@@ -89,6 +91,7 @@ struct spindump_main_configuration {
   struct spindump_remote_client* remotes[SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS];
   int collector;
   spindump_port collectorPort;
+  spindump_tags defaultTags;
 };
 
 struct spindump_main_state {

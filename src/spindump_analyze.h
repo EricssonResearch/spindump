@@ -23,6 +23,7 @@
 // Includes -----------------------------------------------------------------------------------
 //
 
+#include "spindump_tags.h"
 #include "spindump_capture.h"
 #include "spindump_connections_structs.h"
 #include "spindump_table.h"
@@ -102,7 +103,8 @@ struct spindump_analyze {
 
 struct spindump_analyze*
 spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
-                            unsigned long long bandwidthMeasurementPeriod);
+                            unsigned long long bandwidthMeasurementPeriod,
+                            const spindump_tags* defaultTags);
 void
 
 spindump_analyze_uninitialize(struct spindump_analyze* state);

@@ -70,7 +70,8 @@ spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* st
 
 struct spindump_analyze*
 spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
-                            unsigned long long bandwidthMeasurementPeriod) {
+                            unsigned long long bandwidthMeasurementPeriod,
+                            const spindump_tags* defaultTags) {
 
   //
   // Checks
@@ -99,9 +100,10 @@ spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
   //
   // Initialize state
   //
-
+  
   memset(state,0,size);
-  state->table = spindump_connectionstable_initialize(bandwidthMeasurementPeriod);
+  state->table = spindump_connectionstable_initialize(bandwidthMeasurementPeriod,
+                                                      defaultTags);
   if (state->table == 0) {
     spindump_free(state);
     return(0);

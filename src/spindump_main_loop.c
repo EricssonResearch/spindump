@@ -98,7 +98,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
 
   spindump_deepdeepdebugf("main loop, analyzer initialization");
   struct spindump_analyze* analyzer = spindump_analyze_initialize(config-> filterExceptionalValuesPercentage,
-                                                                  config->bandwidthMeasurementPeriod);
+                                                                  config->bandwidthMeasurementPeriod,
+                                                                  &config->defaultTags);
   if (analyzer == 0) exit(1);
 
   //
@@ -599,7 +600,10 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                         analyzer->table);
     }
     if (aggregateConnection != 0) {
-      spindump_deepdebugf("created a manually configured aggregate connection %u", aggregateConnection->id);
+      spindump_tags_copy(&aggregateConnection->tags,&aggregate->tags);
+      spindump_deepdebugf("created a manually configured aggregate connection %u tags = %s",
+                          aggregateConnection->id,
+                          aggregateConnection->tags.string);
       struct timeval now;
       spindump_getcurrenttime(&now);
       spindump_analyze_process_handlers(analyzer,

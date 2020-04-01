@@ -55,6 +55,8 @@ traces="trace_icmpv4_short
         trace_cmd_jsonfile_syntaxerror
         trace_cmd_jsonfile_empty
         trace_cmd_jsonfile_simple
+        trace_cmd_tags_default
+        trace_cmd_tags_aggregate
         trace_tcp_short
         trace_tcp_short_json trace_dns
         trace_quic_v18_short_spin
@@ -251,6 +253,7 @@ do
     sed 's/ JSON file .*trace_/ JSON file trace_/g' |
     awk '
       /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
+      /Event.: .new.*NET2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*H2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*HOSTS.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /^H2NET.* new .*/ { gsub(/ at [0-9]+ /," "); print $0; next; }

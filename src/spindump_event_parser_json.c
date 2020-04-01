@@ -205,6 +205,11 @@ static struct spindump_json_schema fielddirschema = {
   .callback = 0
 };
 
+static struct spindump_json_schema fieldtagsschema = {
+  .type = spindump_json_schema_type_string,
+  .callback = 0
+};
+
 static struct spindump_json_schema fieldnotesschema = {
   .type = spindump_json_schema_type_string,
   .callback = 0
@@ -257,6 +262,7 @@ static struct spindump_json_schema recordschema = {
         { .required = 0, .name = "L_loss", .schema = &fieldlossschema },
         { .required = 0, .name = "Length", .schema = &fieldlengthschema },
         { .required = 0, .name = "Dir", .schema = &fielddirschema },
+        { .required = 0, .name = "Tags", .schema = &fieldtagsschema },
         { .required = 0, .name = "Notes", .schema = &fieldnotesschema }
       }
     }
@@ -465,6 +471,13 @@ spindump_event_parser_json_parse(const struct spindump_json_value* json,
   //
   // Get the optional fields
   //
+  
+  const struct spindump_json_value* tags = spindump_json_value_getfield("Tags",json);
+  spindump_tags_initialize(&event->tags);
+  if (tags != 0) {
+    const char* tagsString = spindump_json_value_getstring(tags);
+    spindump_tags_addtag(&event->tags,tagsString);
+  }
   
   const struct spindump_json_value* notes = spindump_json_value_getfield("Notes",json);
   if (notes != 0) {
@@ -942,6 +955,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
                event->timestamp);
   addtobuffer2("\"State\": \"%s\"",
                spindump_connection_statestring_plain(event->state));
+  if (event->tags.string[0] != 0) {
+    addtobuffer2(", \"Tags\": \"%s\"", event->tags.string);
+  }
   if (event->notes[0] != 0) {
     addtobuffer2(", \"Notes\": \"%s\"", event->notes);
   }

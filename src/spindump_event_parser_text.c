@@ -233,6 +233,14 @@ spindump_event_parser_text_print(const struct spindump_event* event,
   }
   
   //
+  // Tags, if any
+  //
+
+  if (event->tags.string[0] != 0) {
+    addtobuffer2(" tags %s", event->tags.string);
+  }
+  
+  //
   // Notes, if so desired
   //
 

@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include "spindump_util.h"
+#include "spindump_tags.h"
 #include "spindump_connections_structs.h"
 
 //
@@ -145,6 +146,7 @@ struct spindump_event {
   spindump_counter_64bit bytesFromSide2;
   spindump_counter_64bit bandwidthFromSide1;
   spindump_counter_64bit bandwidthFromSide2;
+  spindump_tags tags;
   char notes[spindump_event_notes_maxlength];
   union {
     struct spindump_event_new_connection newConnection;
@@ -179,6 +181,7 @@ spindump_event_initialize(enum spindump_event_type eventType,
                           spindump_counter_64bit bytesFromSide2,
                           spindump_counter_64bit bandwidthFromSide1,
                           spindump_counter_64bit bandwidthFromSide2,
+                          const spindump_tags* tags,
                           const char* notes,
                           struct spindump_event* event);
 int

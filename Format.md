@@ -53,6 +53,7 @@ In more detail, the JSON format consists of a bracketed sequence of records in b
 
 The other fields depend on the type of an event and connection. These fields can be provided:
 
+   * The field "tags" is a set of user-specified tags that may have been specified when Spindump was started. This can be used by the receiver to more easily determine what connection is being measured. If there are more than one tag value, they tag values are separated by commas.
    * The field "Left_rtt" specifies a measurement of a portion of the RTT between the measurement point and the initiator/client of a connection. The time is represented as a number of microseconds.
    * Similarly, the "Right_rtt" specifies the measurement portion towards the responder/server of a connection.
    * The field "Full_rtt_initiator" specifies the full RTT as meassured from a QUIC spin bit flips from packets from the client/initiator of a connection.

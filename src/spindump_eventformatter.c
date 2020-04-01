@@ -740,6 +740,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                             connection->bytesFromSide2.bytes,
                             bw1,
                             bw2,
+                            &connection->tags,
                             notes,
                             &eventobj);
   spindump_deepdeepdebugf("point 7");

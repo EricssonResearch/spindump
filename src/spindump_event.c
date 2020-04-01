@@ -40,6 +40,7 @@ spindump_event_initialize(enum spindump_event_type eventType,
                           spindump_counter_64bit bytesFromSide2,
                           spindump_counter_64bit bandwidthFromSide1,
                           spindump_counter_64bit bandwidthFromSide2,
+                          const spindump_tags* tags,
                           const char* notes,
                           struct spindump_event* event) {
 
@@ -75,6 +76,11 @@ spindump_event_initialize(enum spindump_event_type eventType,
     spindump_deepdeepdebugf("notes field pt 2 = %s", notes);
     strncpy(event->notes,notes,sizeof(event->notes)-1);
     spindump_deepdeepdebugf("notes field pt 3 = %s", event->notes);
+  }
+  if (tags != 0) {
+    spindump_tags_copy(&event->tags,tags);
+  } else {
+    spindump_tags_initialize(&event->tags);
   }
   spindump_deepdeepdebugf("new event bandwidths %llu %llu from bytes %llu %llu",
                           bandwidthFromSide1, bandwidthFromSide2,
@@ -148,6 +154,7 @@ spindump_event_equal(const struct spindump_event* event1,
   if (event1->bytesFromSide2 != event2->bytesFromSide2) return(0);
   if (event1->bandwidthFromSide1 != event2->bandwidthFromSide1) return(0);
   if (event1->bandwidthFromSide2 != event2->bandwidthFromSide2) return(0);
+  if (spindump_tags_compare(&event1->tags,&event2->tags) != 0) return(0);
   
   //
   // Compare type-specific fields

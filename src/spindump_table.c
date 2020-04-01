@@ -51,7 +51,8 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
 //
 
 struct spindump_connectionstable*
-spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeriod) {
+spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeriod,
+                                     const spindump_tags* defaultTags) {
 
   //
   // Figure out sizes
@@ -77,6 +78,11 @@ spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeri
   
   memset(table,0,sizeof(*table));
   table->bandwidthMeasurementPeriod = bandwidthMeasurementPeriod;
+  if (defaultTags != 0) {
+    spindump_tags_copy(&table->defaultTags,defaultTags);
+  } else {
+    spindump_tags_initialize(&table->defaultTags);
+  }
   table->nConnections = 0;
   table->maxNConnections = variabletabelements;
   
@@ -104,7 +110,8 @@ spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeri
   //
   // Done. Return the table.
   // 
-  
+
+  spindump_deepdeepdebugf("created a table, default tags = %s", table->defaultTags.string);
   return(table);
 }
 
@@ -142,6 +149,7 @@ spindump_connectionstable_uninitialize(struct spindump_connectionstable* table) 
   spindump_deepdebugf("free table->connections in spindump_connections_freetable");
   spindump_free(table->connections);
   memset(table,0xFF,sizeof(*table));
+  spindump_tags_uninitialize(&table->defaultTags);
   spindump_deepdebugf("free table in spindump_connections_freetable");
   spindump_free(table);
 
