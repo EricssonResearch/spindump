@@ -242,6 +242,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                                         config->anonymizeRight,
                                                         config->aggregateMode,
                                                         config->averageMode,
+                                                        config->reportMinimumRtt,
                                                         config->filterExceptionalValuesPercentage);
   }
   
@@ -263,6 +264,7 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
                                                                 config->anonymizeRight,
                                                                 config->aggregateMode,
                                                                 config->averageMode,
+                                                                config->reportMinimumRtt,
                                                                 config->filterExceptionalValuesPercentage);
   }
 

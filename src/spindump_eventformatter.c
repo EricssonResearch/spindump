@@ -77,6 +77,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int anonymizeRight,
                                    int aggregatesOnly,
                                    int averageRtts,
+                                   int minimumRtts,
                                    unsigned int filterExceptionalValuesPercentage);
 static const char*
 spindump_eventformatter_mediatype(enum spindump_eventformatter_outputformat format);
@@ -104,6 +105,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
                                    int anonymizeRight,
                                    int aggregatesOnly,
                                    int averageRtts,
+                                   int minimumRtts,
                                    unsigned int filterExceptionalValuesPercentage) {
   
   //
@@ -142,6 +144,7 @@ spindump_eventformatter_initialize(struct spindump_analyze* analyzer,
   formatter->anonymizeRight = anonymizeRight;
   formatter->aggregatesOnly = aggregatesOnly;
   formatter->averageRtts = averageRtts;
+  formatter->minimumRtts = minimumRtts;
   spindump_deepdeepdebugf("spindump_eventformatter_initialize: averageRtts set to %u", formatter->averageRtts);
   formatter->filterExceptionalValuesPercentage = filterExceptionalValuesPercentage;
   spindump_deepdeepdebugf("filter filterExceptionalValuesPercentage = %u", formatter->filterExceptionalValuesPercentage);
@@ -181,6 +184,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                         int anonymizeRight,
                                         int aggregatesOnly,
                                         int averageRtts,
+                                        int minimumRtts,
                                         unsigned int filterExceptionalValuesPercentage) {
   
   //
@@ -201,6 +205,7 @@ spindump_eventformatter_initialize_file(struct spindump_analyze* analyzer,
                                                                                  anonymizeRight,
                                                                                  aggregatesOnly,
                                                                                  averageRtts,
+                                                                                 minimumRtts,
                                                                                  filterExceptionalValuesPercentage);
   if (formatter == 0) {
     return(0);
@@ -243,6 +248,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                           int anonymizeRight,
                                           int aggregatesOnly,
                                           int averageRtts,
+                                          int minimumRtts,
                                           unsigned int filterExceptionalValuesPercentage) {
   
   //
@@ -264,6 +270,7 @@ spindump_eventformatter_initialize_remote(struct spindump_analyze* analyzer,
                                                                                  anonymizeRight,
                                                                                  aggregatesOnly,
                                                                                  averageRtts,
+                                                                                 minimumRtts,
                                                                                  filterExceptionalValuesPercentage);
   if (formatter == 0) {
     return(0);
@@ -761,6 +768,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.rtt = connection->leftRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
     eventobj.u.newRttMeasurement.devRtt = 0;
+    eventobj.u.newRttMeasurement.minRtt = 0;
     if (formatter->averageRtts) {
       unsigned long dev;
       unsigned long filtavg = 0;
@@ -774,6 +782,11 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
       eventobj.u.newRttMeasurement.filtAvgRtt =
         formatter->filterExceptionalValuesPercentage > 0 ? filtavg : 0;
     }
+    if (formatter->minimumRtts) {
+
+      eventobj.u.newRttMeasurement.minRtt = connection->leftRTT.minimumRTT;
+
+    }
     break;
     
   case spindump_analyze_event_newrightrttmeasurement:
@@ -782,6 +795,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.rtt = connection->rightRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
     eventobj.u.newRttMeasurement.devRtt = 0;
+    eventobj.u.newRttMeasurement.minRtt = 0;
     eventobj.u.newRttMeasurement.filtAvgRtt = 0;
     if (formatter->averageRtts) {
       unsigned long dev;
@@ -796,6 +810,12 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
       eventobj.u.newRttMeasurement.filtAvgRtt =
         formatter->filterExceptionalValuesPercentage > 0 ? filtavg : 0;
     }
+
+    if (formatter->minimumRtts) {
+
+      eventobj.u.newRttMeasurement.minRtt = connection->leftRTT.minimumRTT;
+
+  }
     spindump_deepdeepdebugf("eventobj.avgRtt = %lu, averageRtts = %u",
                             eventobj.u.newRttMeasurement.avgRtt,
                             formatter->averageRtts);
@@ -807,6 +827,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.rtt = connection->initToRespFullRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
     eventobj.u.newRttMeasurement.devRtt = 0;
+    eventobj.u.newRttMeasurement.minRtt = 0;
     eventobj.u.newRttMeasurement.filtAvgRtt = 0;
     if (formatter->averageRtts) {
       unsigned long dev;
@@ -821,6 +842,13 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
       eventobj.u.newRttMeasurement.filtAvgRtt =
         formatter->filterExceptionalValuesPercentage > 0 ? filtavg : 0;
     }
+
+    if (formatter->minimumRtts) {
+
+      eventobj.u.newRttMeasurement.minRtt = connection->leftRTT.minimumRTT;
+
+    }
+
     break;
 
   case spindump_analyze_event_newrespinitfullrttmeasurement:
@@ -829,6 +857,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventobj.u.newRttMeasurement.rtt = connection->respToInitFullRTT.lastRTT;
     eventobj.u.newRttMeasurement.avgRtt = 0;
     eventobj.u.newRttMeasurement.devRtt = 0;
+    eventobj.u.newRttMeasurement.minRtt = 0;
     eventobj.u.newRttMeasurement.filtAvgRtt = 0;
     if (formatter->averageRtts) {
       unsigned long dev;
