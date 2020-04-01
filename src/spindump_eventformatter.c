@@ -813,7 +813,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
     if (formatter->minimumRtts) {
 
-      eventobj.u.newRttMeasurement.minRtt = connection->leftRTT.minimumRTT;
+      eventobj.u.newRttMeasurement.minRtt = connection->rightRTT.minimumRTT;
 
   }
     spindump_deepdeepdebugf("eventobj.avgRtt = %lu, averageRtts = %u",
@@ -845,7 +845,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
     if (formatter->minimumRtts) {
 
-      eventobj.u.newRttMeasurement.minRtt = connection->leftRTT.minimumRTT;
+      eventobj.u.newRttMeasurement.minRtt = connection->initToRespFullRTT.minimumRTT;
 
     }
 
@@ -871,6 +871,11 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
       eventobj.u.newRttMeasurement.devRtt = dev;
       eventobj.u.newRttMeasurement.filtAvgRtt =
         formatter->filterExceptionalValuesPercentage > 0 ? filtavg : 0;
+    }
+    if (formatter->minimumRtts) {
+
+      eventobj.u.newRttMeasurement.minRtt = connection->respToInitFullRTT.minimumRTT;
+
     }
     break;
 
