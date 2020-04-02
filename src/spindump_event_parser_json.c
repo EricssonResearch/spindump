@@ -692,13 +692,13 @@ spindump_event_parser_json_parse_aux_periodic(const struct spindump_json_value* 
   const struct spindump_json_value* avgfield = 0;
   const struct spindump_json_value* devfield = 0;
   if ((field = spindump_json_value_getfield("Right_rtt",json)) != 0) {
-    event->u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
-    event->u.newRttMeasurement.direction = spindump_direction_fromresponder;
     avgfield = spindump_json_value_getfield("Avg_right_rtt",json);
     devfield = spindump_json_value_getfield("Dev_right_rtt",json);
   } else {
-    spindump_errorf("new RTT measurement event does not have the necessary JSON fields");
-    return(0);
+    event->u.periodic.rttRight = spindump_rtt_infinite;
+    event->u.periodic.avgRttRight = spindump_rtt_infinite;
+    event->u.periodic.devRttRight = spindump_rtt_infinite;
+    return(1);
   }
   unsigned long long value = spindump_json_value_getinteger(field);
   unsigned long long avgValue;
@@ -1066,10 +1066,12 @@ spindump_event_parser_json_print(const struct spindump_event* event,
     break;
     
   case spindump_event_type_periodic:
-    addtobuffer2(", \"Right_rtt\": %lu", event->u.periodic.rttRight);
-    if (event->u.periodic.avgRttRight > 0) {
-      addtobuffer2(", \"Avg_right_rtt\": %lu", event->u.periodic.avgRttRight);
-      addtobuffer2(", \"Dev_right_rtt\": %lu", event->u.periodic.devRttRight);
+    if (event->u.periodic.rttRight != spindump_rtt_infinite) {
+      addtobuffer2(", \"Right_rtt\": %lu", event->u.periodic.rttRight);
+      if (event->u.periodic.avgRttRight > 0) {
+        addtobuffer2(", \"Avg_right_rtt\": %lu", event->u.periodic.avgRttRight);
+        addtobuffer2(", \"Dev_right_rtt\": %lu", event->u.periodic.devRttRight);
+      }
     }
     break;
     

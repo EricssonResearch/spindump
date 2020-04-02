@@ -145,10 +145,12 @@ spindump_event_parser_text_print(const struct spindump_event* event,
     break;
     
   case spindump_event_type_periodic:
-    addtobuffer2("right %lu ", event->u.periodic.rttRight);
-    if (event->u.periodic.avgRttRight > 0) {
-      addtobuffer2("avg %lu ", event->u.periodic.avgRttRight);
-      addtobuffer2("dev %lu ", event->u.periodic.devRttRight);
+    if (event->u.periodic.rttRight != spindump_rtt_infinite) {
+      addtobuffer2("right %lu ", event->u.periodic.rttRight);
+      if (event->u.periodic.avgRttRight > 0) {
+        addtobuffer2("avg %lu ", event->u.periodic.avgRttRight);
+        addtobuffer2("dev %lu ", event->u.periodic.devRttRight);
+      }
     }
     break;
     
