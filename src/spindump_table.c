@@ -84,6 +84,7 @@ spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeri
   memset(table,0,sizeof(*table));
   table->bandwidthMeasurementPeriod = bandwidthMeasurementPeriod;
   table->periodicReportPeriod = periodicReportPeriod;
+  table->performingPeriodicReport  = 0;
   if (defaultTags != 0) {
     spindump_tags_copy(&table->defaultTags,defaultTags);
   } else {
@@ -259,11 +260,14 @@ static void
 spindump_connectionstable_periodicreport(struct spindump_connectionstable* table,
                                          const struct timeval* now,
                                          struct spindump_analyze* analyzer) {
-  spindump_deepdeepdebugf("spindump_connectionstable_report");
+  spindump_deepdeepdebugf("spindump_connectionstable_periodicreport");
+  table->performingPeriodicReport = 1;
   for (unsigned int i = 0; i < table->nConnections; i++) {
     if (table->connections[i] != 0) {
+      spindump_connection_periodicreport(table->connections[i],table,now,analyzer);
     }
   }
+  table->performingPeriodicReport = 0;
 }
 
 //

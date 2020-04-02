@@ -61,8 +61,9 @@ typedef uint32_t spindump_analyze_event;
 #define spindump_analyze_event_responderqrlossmeasurement       524288
 #define spindump_analyze_event_initiatorqllossmeasurement      1048576
 #define spindump_analyze_event_responderqllossmeasurement      2097152
+#define spindump_analyze_event_periodic                        4194304
 
-#define spindump_analyze_event_alllegal                        4194303
+#define spindump_analyze_event_alllegal                        8388607
 
 struct spindump_analyze;
 struct spindump_event;
@@ -156,7 +157,7 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
                                   const int fromResponder,
                                   struct spindump_packet* packet,
                                   unsigned int ipPacketLength,
-                                   uint8_t ecnFlags);
+                                  uint8_t ecnFlags);
 void
 spindump_analyze_process_handlers(struct spindump_analyze* state,
                                   spindump_analyze_event event,

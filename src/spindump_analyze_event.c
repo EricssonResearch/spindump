@@ -59,6 +59,10 @@ spindump_analyze_processevent_new_rtt_measurement(struct spindump_analyze* state
                                                   const struct spindump_event* event,
                                                   struct spindump_connection** p_connection);
 static void
+spindump_analyze_processevent_periodic(struct spindump_analyze* state,
+                                       const struct spindump_event* event,
+                                       struct spindump_connection** p_connection);
+static void
 spindump_analyze_processevent_spin_flip(struct spindump_analyze* state,
                                         const struct spindump_event* event,
                                         struct spindump_connection** p_connection);
@@ -171,6 +175,9 @@ spindump_analyze_processevent(struct spindump_analyze* state,
     break;
   case spindump_event_type_new_rtt_measurement:
     spindump_analyze_processevent_new_rtt_measurement(state,event,p_connection);
+    break;
+  case spindump_event_type_periodic:
+    spindump_analyze_processevent_periodic(state,event,p_connection);
     break;
   case spindump_event_type_spin_flip:
     spindump_analyze_processevent_spin_flip(state,event,p_connection);
@@ -743,6 +750,46 @@ spindump_analyze_processevent_new_rtt_measurement(struct spindump_analyze* state
                                          0, // packet length not known in this event
                                          right,
                                          unidirectional,
+                                         &sent,
+                                         &rcvd,
+                                         "remote update");
+}
+
+//
+// Process an event of type "periodic" from another instance of
+// Spindump somewhere else. Update statistics and make any other
+// necessary changes in the local database of connections.
+//
+// The parameter state is the analyzer data structure, event is the
+// incoming event, and p_connection is an output parameter, in the end
+// pointing to either 0 if no affected connection could be identified,
+// or a pointer to the connection object from the connection table of
+// the analyzer.
+//
+
+static void
+spindump_analyze_processevent_periodic(struct spindump_analyze* state,
+                                       const struct spindump_event* event,
+                                       struct spindump_connection** p_connection) {
+  
+  *p_connection = spindump_analyze_processevent_find_connection(state,event);
+  if (*p_connection == 0) return;
+  unsigned long long timestamp = event->timestamp;
+  unsigned long long timestampEarlier =
+    timestamp >= event->u.periodic.rttRight ?
+    timestamp - event->u.periodic.rttRight :
+    0;
+  struct timeval sent;
+  struct timeval rcvd;
+  spindump_timestamp_to_timeval(timestampEarlier,&sent);
+  spindump_timestamp_to_timeval(timestamp,&rcvd);
+  // TBD should perhaps update stats based on receiving this? ...
+  spindump_connections_newrttmeasurement(state,
+                                         0,
+                                         *p_connection,
+                                         0, // packet length not known in this event
+                                         1,
+                                         1,
                                          &sent,
                                          &rcvd,
                                          "remote update");

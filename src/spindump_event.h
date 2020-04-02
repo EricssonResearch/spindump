@@ -43,7 +43,8 @@ enum spindump_event_type {
   spindump_event_type_rtloss_measurement = 8,
   spindump_event_type_qrloss_measurement = 9,
   spindump_event_type_qlloss_measurement = 10,
-  spindump_event_type_packet = 11
+  spindump_event_type_periodic = 11,
+  spindump_event_type_packet = 12
 };
 
 enum spindump_direction {
@@ -88,6 +89,12 @@ struct spindump_event_new_rtt_measurement {
   unsigned long avgRtt;
   unsigned long devRtt;
   unsigned long filtAvgRtt;
+};
+
+struct spindump_event_periodic {
+  unsigned long rttRight;
+  unsigned long avgRttRight;
+  unsigned long devRttRight;
 };
 
 struct spindump_event_spin_flip {
@@ -154,6 +161,7 @@ struct spindump_event {
     struct spindump_event_connection_delete connectionDelete;
     struct spindump_event_packet packet;
     struct spindump_event_new_rtt_measurement newRttMeasurement;
+    struct spindump_event_periodic periodic;
     struct spindump_event_spin_flip spinFlip;
     struct spindump_event_spin_value spinValue;
     struct spindump_event_ecn_congestion_event ecnCongestionEvent;

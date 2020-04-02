@@ -1190,3 +1190,22 @@ spindump_connection_report_brief(struct spindump_connection* connection,
   spindump_deepdeepdebugf("report_brief point 6");
   spindump_deepdeepdebugf("notes field and everything pt 6 = %s", buf);
 }
+
+void
+spindump_connection_periodicreport(struct spindump_connection* connection,
+                                   struct spindump_connectionstable* table,
+                                   const struct timeval* now,
+                                   struct spindump_analyze* analyzer) {
+  spindump_deepdeepdebugf("spindump_connection_periodicreport period %u in progress %u connection id %u (%s)",
+                          table->periodicReportPeriod,
+                          table->performingPeriodicReport,
+                          connection->id,
+                          connection->tags.string);
+  spindump_analyze_process_handlers(analyzer,
+                                    spindump_analyze_event_periodic,
+                                    now,
+                                    0,
+                                    0,
+                                    0,
+                                    connection);
+}

@@ -368,6 +368,11 @@ void
 spindump_connection_report_brief_notefieldval(struct spindump_connection* connection,
                                               unsigned bufsiz,
                                               char* buf);
+void
+spindump_connection_periodicreport(struct spindump_connection* connection,
+                                   struct spindump_connectionstable* table,
+                                   const struct timeval* now,
+                                   struct spindump_analyze* analyzer);
 unsigned long long
 spindump_connections_lastaction(struct spindump_connection* connection,
                                 const struct timeval* now);

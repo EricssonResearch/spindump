@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include "spindump_util.h"
 #include "spindump_event.h"
+#include "spindump_connections.h"
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -47,7 +48,11 @@ spindump_event_initialize(enum spindump_event_type eventType,
   //
   // Sanity checks
   //
-  
+
+  spindump_deepdeepdebugf("spindump_event_initialize(%s,%s,%s)",
+                          spindump_event_type_tostring(eventType),
+                          spindump_connection_type_to_string(connectionType),
+                          tags->string);
   spindump_assert(initiatorAddress != 0);
   spindump_assert(responderAddress != 0);
   spindump_assert(session != 0);
@@ -104,6 +109,7 @@ spindump_event_type_tostring(enum spindump_event_type type) {
   case spindump_event_type_change_connection: return("change");
   case spindump_event_type_connection_delete: return("delete");
   case spindump_event_type_new_rtt_measurement: return("measurement");
+  case spindump_event_type_periodic: return("periodic");
   case spindump_event_type_spin_flip: return("spinflip");
   case spindump_event_type_spin_value: return("spinvalue");
   case spindump_event_type_ecn_congestion_event: return("ecnce");
@@ -174,6 +180,11 @@ spindump_event_equal(const struct spindump_event* event1,
     if (event1->u.newRttMeasurement.avgRtt != event2->u.newRttMeasurement.avgRtt) return(0);
     if (event1->u.newRttMeasurement.devRtt != event2->u.newRttMeasurement.devRtt) return(0);
     if (event1->u.newRttMeasurement.filtAvgRtt != event2->u.newRttMeasurement.filtAvgRtt) return(0);
+    break;
+  case spindump_event_type_periodic:
+    if (event1->u.periodic.rttRight != event2->u.periodic.rttRight) return(0);
+    if (event1->u.periodic.avgRttRight != event2->u.periodic.avgRttRight) return(0);
+    if (event1->u.periodic.devRttRight != event2->u.periodic.devRttRight) return(0);
     break;
   case spindump_event_type_spin_flip:
     if (event1->u.spinFlip.direction != event2->u.spinFlip.direction) return(0);

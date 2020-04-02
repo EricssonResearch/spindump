@@ -524,7 +524,6 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   //
   
   spindump_deepdeepdebugf("spindump_eventformatter_measurement_one handler called for event %u", event);
-  
   spindump_assert(state != 0);
   spindump_assert(handlerData != 0);
   spindump_assert(connection != 0);
@@ -534,6 +533,8 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   //
 
   spindump_deepdeepdebugf("point 1");
+  int possibleSupress = ((state->table->periodicReportPeriod != 0) &&
+                         (state->table->performingPeriodicReport == 0));
   struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)handlerData;
   char session[spindump_event_sessioidmaxlength];
   spindump_connection_sessionstring(connection,session,sizeof(session));
@@ -586,24 +587,33 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     eventType = spindump_event_type_connection_delete;
     break;
 
+  case spindump_analyze_event_periodic:
+    spindump_deepdeepdebugf("point 5d spindump_analyze_event_periodic");
+    eventType = spindump_event_type_periodic;
+    break;
+    
   case spindump_analyze_event_newleftrttmeasurement:
   case spindump_analyze_event_newrightrttmeasurement:
     spindump_deepdeepdebugf("point 5d");
+    if (possibleSupress) return;
     eventType = spindump_event_type_new_rtt_measurement;
     break;
 
   case spindump_analyze_event_newinitrespfullrttmeasurement:
     spindump_deepdeepdebugf("point 5e");
+    if (possibleSupress) return;
     eventType = spindump_event_type_new_rtt_measurement;
     break;
 
   case spindump_analyze_event_newrespinitfullrttmeasurement:
     spindump_deepdeepdebugf("point 5f");
+    if (possibleSupress) return;
     eventType = spindump_event_type_new_rtt_measurement;
     break;
 
   case spindump_analyze_event_initiatorspinflip:
     spindump_deepdeepdebugf("point 5g");
+    if (possibleSupress) return;
     if (!formatter->reportSpinFlips) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_flip;
@@ -611,6 +621,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_responderspinflip:
     spindump_deepdeepdebugf("point 5h");
+    if (possibleSupress) return;
     if (!formatter->reportSpinFlips) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_flip;
@@ -618,6 +629,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_initiatorspinvalue:
     spindump_deepdeepdebugf("point 5i");
+    if (possibleSupress) return;
     if (!formatter->reportSpins) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_value;
@@ -625,6 +637,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_responderspinvalue:
     spindump_deepdeepdebugf("point 5j");
+    if (possibleSupress) return;
     if (!formatter->reportSpins) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_spin_value;
@@ -632,6 +645,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_newpacket:
     spindump_deepdeepdebugf("point 5x %d in eventformatter handler", formatter->reportPackets);
+    if (possibleSupress) return;
     if (formatter->reportPackets) {
       eventType = spindump_event_type_packet;
       break;
@@ -641,16 +655,19 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_initiatorecnce:
     spindump_deepdeepdebugf("point 5k");
+    if (possibleSupress) return;
     eventType = spindump_event_type_ecn_congestion_event;
     break;
 
   case spindump_analyze_event_responderecnce:
     spindump_deepdeepdebugf("point 5l");
+    if (possibleSupress) return;
     eventType = spindump_event_type_ecn_congestion_event;
     break;
 
   case spindump_analyze_event_initiatorrtlossmeasurement:
     spindump_deepdeepdebugf("point 5m");
+    if (possibleSupress) return;
     if (!formatter->reportRtLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_rtloss_measurement;
@@ -658,6 +675,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_responderrtlossmeasurement:
     spindump_deepdeepdebugf("point 5n");
+    if (possibleSupress) return;
     if (!formatter->reportRtLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_rtloss_measurement;
@@ -665,6 +683,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_initiatorqrlossmeasurement:
     spindump_deepdeepdebugf("point 5o");
+    if (possibleSupress) return;
     if (!formatter->reportQrLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_qrloss_measurement;
@@ -672,6 +691,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_responderqrlossmeasurement:
     spindump_deepdeepdebugf("point 5p");
+    if (possibleSupress) return;
     if (!formatter->reportQrLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_qrloss_measurement;
@@ -679,6 +699,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_initiatorqllossmeasurement:
     spindump_deepdeepdebugf("point 5q");
+    if (possibleSupress) return;
     if (!formatter->reportQlLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_qlloss_measurement;
@@ -686,6 +707,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
 
   case spindump_analyze_event_responderqllossmeasurement:
     spindump_deepdeepdebugf("point 5r");
+    if (possibleSupress) return;
     if (!formatter->reportQlLoss) return;
     spindump_assert(connection->type == spindump_connection_transport_quic);
     eventType = spindump_event_type_qlloss_measurement;
@@ -755,6 +777,26 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   case spindump_analyze_event_connectiondelete:
     break;
 
+  case spindump_analyze_event_periodic:
+    eventobj.u.periodic.rttRight = connection->rightRTT.lastRTT;
+    eventobj.u.periodic.avgRttRight = 0;
+    eventobj.u.periodic.devRttRight = 0;
+    if (formatter->averageRtts) {
+      unsigned long dev;
+      unsigned long filtavg = 0;
+      unsigned long avg = spindump_rtt_calculateLastMovingAvgRTT(&connection->rightRTT,
+                                                                 formatter->filterExceptionalValuesPercentage > 0,
+                                                                 formatter->filterExceptionalValuesPercentage,
+                                                                 &dev,
+                                                                 &filtavg);
+      eventobj.u.periodic.avgRttRight = avg;
+      eventobj.u.periodic.devRttRight = dev;
+    }
+    spindump_deepdeepdebugf("periodic eventobj.avgRttRight = %lu, averageRtts = %u",
+                            eventobj.u.periodic.avgRttRight,
+                            formatter->averageRtts);
+    break;
+    
   case spindump_analyze_event_newleftrttmeasurement:
     eventobj.u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
     eventobj.u.newRttMeasurement.direction = spindump_direction_frominitiator;
@@ -926,6 +968,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     break;
     
   default:
+    spindump_deepdeepdebugf("point x");
     return;
 
   }
