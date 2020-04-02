@@ -966,6 +966,7 @@ spindump_analyze_processevent_packet(struct spindump_analyze* state,
   //
 
   struct spindump_packet dummypacket;
+  memset(&dummypacket,0,sizeof(dummypacket));
   spindump_timestamp_to_timeval(event->timestamp,&dummypacket.timestamp);
   spindump_analyze_process_pakstats(state,
                                     *p_connection,
