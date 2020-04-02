@@ -134,6 +134,9 @@ int
 spindump_address_equal(const spindump_address* address1,
                        const spindump_address* address2);
 int
+spindump_address_compare(const spindump_address* address1,
+                         const spindump_address* address2);
+int
 spindump_address_innetwork(const spindump_address* address,
                            const spindump_network* network);
 int
