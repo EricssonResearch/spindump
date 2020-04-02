@@ -110,6 +110,10 @@ spindump_remote_client_update_event(struct spindump_remote_client* client,
   curl_easy_setopt(client->curl, CURLOPT_POSTFIELDS, data);
   curl_easy_setopt(client->curl, CURLOPT_POSTFIELDSIZE, length);
   curl_easy_setopt(client->curl, CURLOPT_WRITEFUNCTION, spindump_remote_client_answer);
+  struct curl_slist *headers=0;
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+  curl_easy_setopt(client->curl, CURLOPT_HTTPHEADER, headers);
+
   spindump_debugf("performing a post on %s...", client->url);
   if (length > 0 && (data[0] == '[' || data[0] == '{')) {
     spindump_deepdebugf("data: %s", data);
