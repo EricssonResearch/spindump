@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2019-2020 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
 // 

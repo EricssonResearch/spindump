@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2019 BY ERICSSON AB
+//  SPINDUMP (C) 2019-2020 BY ERICSSON AB
 //  AUTHOR: MAKSIM PROSHIN, DENIS SCHERBAKOV
 //
 //
