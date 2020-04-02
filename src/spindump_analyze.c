@@ -749,7 +749,7 @@ spindump_analyze_process_pakstats(struct spindump_analyze* state,
   spindump_assert(connection != 0);
   spindump_assert(spindump_isbool(fromResponder));
   spindump_assert(packet != 0);
-  spindump_assert(spindump_packet_isvalid(packet));
+  spindump_assert(packet == 0 || spindump_packet_isvalid(packet));
   spindump_assert(ecnFlags <= 3);
   spindump_deepdeepdebugf("pakstats got a packet of length %u for a connection of type %s",
                           ipPacketLength,
