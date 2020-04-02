@@ -624,7 +624,8 @@ spindump_connections_aggregateset(const struct spindump_connection* connection) 
 //
 
 int
-spindump_connections_matches_aggregate_connection(struct spindump_connection* connection,
+spindump_connections_matches_aggregate_connection(int seenMatch,
+                                                  struct spindump_connection* connection,
                                                   struct spindump_connection* aggregate) {
 
   spindump_address* side1address = 0;
@@ -632,6 +633,9 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
   spindump_connections_getaddresses(connection,
                                     &side1address,
                                     &side2address);
+  spindump_deepdeepdebugf("spindump_connections_matches_aggregate_connection connection %u (tags %s) aggregate %u (tags %s)",
+                          connection->id, connection->tags.string,
+                          aggregate->id, aggregate->tags.string);
   if (side1address == 0 || side2address == 0) {
     spindump_deepdebugf("  can't figure out addresses from connection %u", connection->id);
     return(0);
@@ -659,11 +663,21 @@ spindump_connections_matches_aggregate_connection(struct spindump_connection* co
             spindump_address_equal(side2address,&aggregate->u.aggregatehostnetwork.side1peerAddress)));
 
   case spindump_connection_aggregate_networknetwork:
-    return((spindump_address_innetwork(side1address,&aggregate->u.aggregatenetworknetwork.side1Network) &&
-            spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side2Network)) ||
-           (spindump_address_innetwork(side1address,&aggregate->u.aggregatenetworknetwork.side2Network) &&
-            spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side1Network)));
-
+    spindump_deepdeepdebugf("networknetwork aggragate seen match %u default match %u",
+                            seenMatch, aggregate->u.aggregatenetworknetwork.defaultMatch);
+    if (seenMatch && aggregate->u.aggregatenetworknetwork.defaultMatch) {
+      spindump_deepdeepdebugf("return 0");
+      return(0);
+    } else {
+      int testval =
+        (spindump_address_innetwork(side1address,&aggregate->u.aggregatenetworknetwork.side1Network) &&
+         spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side2Network)) ||
+        (spindump_address_innetwork(side1address,&aggregate->u.aggregatenetworknetwork.side2Network) &&
+         spindump_address_innetwork(side2address,&aggregate->u.aggregatenetworknetwork.side1Network));
+      spindump_deepdeepdebugf("return test val = %u", testval);
+      return(testval);
+    }
+    
   case spindump_connection_aggregate_multicastgroup:
     return(spindump_address_equal(side1address,&aggregate->u.aggregatemulticastgroup.group) ||
            spindump_address_equal(side2address,&aggregate->u.aggregatemulticastgroup.group));

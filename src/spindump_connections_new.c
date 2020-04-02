@@ -195,20 +195,23 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
                                                    struct spindump_connectionstable* table) {
   spindump_debugf("looking at aggregates that the new connection %u might fit into",
                   connection->id);
+  int seenMatch = 0;
   for (unsigned int i = 0; i < table->nConnections; i++) {
     struct spindump_connection* aggregate = table->connections[i];
     if (aggregate != 0 &&
         spindump_connections_isaggregate(aggregate)) {
 
-      spindump_deepdebugf("testing aggregate %u", aggregate->id);
+      spindump_deepdebugf("testing aggregate %u (tags %s, %u of %u connections) seen match = %u",
+                          aggregate->id, aggregate->tags.string, i, table->nConnections, seenMatch);
       
-      if (spindump_connections_matches_aggregate_connection(connection,aggregate)) {
+      if (spindump_connections_matches_aggregate_connection(seenMatch,connection,aggregate)) {
 
         //
         // This aggregate matches the new connection. Add to a list of
         // aggregates this connection belongs to.
         // 
-        
+
+        seenMatch = 1;
         spindump_debugf("connection %u matches aggregate %u",
                         connection->id, aggregate->id);
         spindump_connections_set_add(&connection->aggregates,aggregate);
@@ -677,7 +680,8 @@ spindump_connections_newconnection_aggregate_hostnetwork(const spindump_address*
 // 
 
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_networknetwork(const spindump_network* side1network,
+spindump_connections_newconnection_aggregate_networknetwork(int defaultMatch,
+                                                            const spindump_network* side1network,
                                                             const spindump_network* side2network,
                                                             const struct timeval* when,
                                                             int manuallyCreated,
@@ -686,7 +690,9 @@ spindump_connections_newconnection_aggregate_networknetwork(const spindump_netwo
   spindump_assert(side2network != 0);
   spindump_assert(when != 0);
   spindump_assert(table != 0);
-  
+
+  spindump_deepdeepdebugf("spindump_connections_newconnection_aggregate_networknetwork default match %u",
+                          defaultMatch);
   struct spindump_connection* connection =
     spindump_connections_newconnection(table,spindump_connection_aggregate_networknetwork,when,manuallyCreated);
   if (connection == 0) return(0);
@@ -694,8 +700,11 @@ spindump_connections_newconnection_aggregate_networknetwork(const spindump_netwo
   connection->state = spindump_connection_state_static;
   connection->u.aggregatenetworknetwork.side1Network = *side1network;
   connection->u.aggregatenetworknetwork.side2Network = *side2network;
+  connection->u.aggregatenetworknetwork.defaultMatch = defaultMatch;
   
-  spindump_debugf("created a new network-network aggregate onnection %u", connection->id);
+  spindump_debugf("created a new network-network aggregate onnection %u default match %u",
+                  connection->id,
+                  connection->u.aggregatenetworknetwork.defaultMatch);
   return(connection);
 }
 

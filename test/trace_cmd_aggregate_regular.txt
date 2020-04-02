@@ -1,0 +1,1 @@
+Test matching of aggregates. There's ICMP traffic to two destinations, and we use two aggregates, one specific to the first ICMP traffic to Google, and the second one catches all traffic.

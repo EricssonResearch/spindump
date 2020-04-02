@@ -123,9 +123,9 @@ This option sets the measurement period for bandwidth. Each connection is measur
 
 The option --stats makes Spindump provide various levels of final statistics once the process completes. The default is --no-stats.
 
-    --aggregate [tags] pattern1 pattern2
+    --aggregate [tags] [default] pattern1 pattern2
 
-Track the aggregate traffic statistics from host or network identified by pattern1 to host or network identified by pattern2. These can be individual host addresses such as 198.51.100.1 or networks such as 192.0.2.0/24. Both IPv4 and IPv6 addresses are supported. An easy way to specify any connection to a network is to use a 0-length prefix. For instance, to track all connections to 192.0.2.0/24, use the option setting "--aggregate 0.0.0.0/0 192.0.2.0/24". You may  also optionally add "tag" information to be used for the aggregate and reported in any outputs from Spindump. The format of a tag is tag1=... tag2=... and any number of tags may be included.
+Track the aggregate traffic statistics from host or network identified by pattern1 to host or network identified by pattern2. These can be individual host addresses such as 198.51.100.1 or networks such as 192.0.2.0/24. Both IPv4 and IPv6 addresses are supported. An easy way to specify any connection to a network is to use a 0-length prefix. For instance, to track all connections to 192.0.2.0/24, use the option setting "--aggregate 0.0.0.0/0 192.0.2.0/24". You may  also optionally add "tag" information to be used for the aggregate and reported in any outputs from Spindump. The format of a tag is tag1=... tag2=... and any number of tags may be included. Finally, if you include "default" before the patterns, that indicates that this rule should only be matched if no other rule matched. This allows traffic to be classified, for instance, to some known prefixes and the rest.
 
     --tag t
 

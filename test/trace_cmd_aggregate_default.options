@@ -1,0 +1,1 @@
+--format json --textual --aggregate tag=google 10.30.0.0/24 172.0.0.0/8 --aggregate tag=all default 10.30.0.0/24 0.0.0.0/0 --aggregate-mode

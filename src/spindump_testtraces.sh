@@ -57,6 +57,8 @@ traces="trace_icmpv4_short
         trace_cmd_jsonfile_simple
         trace_cmd_tags_default
         trace_cmd_tags_aggregate
+        trace_cmd_aggregate_regular
+        trace_cmd_aggregate_default
         trace_tcp_short
         trace_tcp_short_json trace_dns
         trace_quic_v18_short_spin

@@ -494,6 +494,18 @@ spindump_main_processargs(int argc,
         argv++;
         argc--;
       }
+
+      //
+      // Check if there's a "default" option
+      //
+
+      int defaultMatch = 0;
+      if (strcmp(argv[1],"default") == 0 && argc > 2) {
+        defaultMatch = 1;
+        spindump_deepdeepdebugf("args processing, setting default match");
+        argv++;
+        argc--;
+      }
       
       //
       // Get the first of the two arguments
@@ -612,6 +624,8 @@ spindump_main_processargs(int argc,
       aggregate->ismulticastgroup = side1isgroup;
       spindump_tags_copy(&aggregate->tags,&tags);
       spindump_tags_uninitialize(&tags);
+      aggregate->defaultMatch = defaultMatch;
+      spindump_deepdeepdebugf("args processing, final default match = %u", aggregate->defaultMatch);
       aggregate->side1ishost = side1ishost;
       aggregate->side2ishost = side2ishost;
       aggregate->side1address = side1address;
@@ -750,9 +764,10 @@ spindump_main_help(void) {
   printf("    --no-stats              Produces statistics at the end of the execution.\n");
   printf("    --stats\n");
   printf("\n");
-  printf("    --aggregate [t] p1 p2   Collect aggregate information for flows matching patterns\n");
-  printf("                            p1 to p2. Pattern is either an address or a network prefix.\n");
+  printf("    --aggregate [t] [d] p q Collect aggregate information for flows matching patterns\n");
+  printf("                            p to q. Pattern is either an address or a network prefix.\n");
   printf("                            Optionally, one may specify one or more tags of the form tag=value.\n");
+  printf("                            One may also provide the keyword default before the pattern.\n");
   printf("    --tag t                 Specify a default tag value for all new connections created by\n");
   printf("                            Spindump.\n");
   printf("\n");

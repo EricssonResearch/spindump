@@ -48,6 +48,7 @@ enum spindump_toolmode {
 //
 
 struct spindump_main_aggregate {
+  int defaultMatch;
   int ismulticastgroup;
   int side1ishost;
   int side2ishost;

@@ -591,7 +591,8 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
     
   case spindump_connection_aggregate_networknetwork:
     *p_connection =
-      spindump_connections_newconnection_aggregate_networknetwork(&event->initiatorAddress,
+      spindump_connections_newconnection_aggregate_networknetwork(0,
+                                                                  &event->initiatorAddress,
                                                                   &event->responderAddress,
                                                                   &when,
                                                                   0,

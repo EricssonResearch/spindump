@@ -247,6 +247,7 @@ struct spindump_connection {
       spindump_network side1Network;                // network address on side 1
       spindump_network side2Network;                // network address on side 2
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
+      int defaultMatch;                             // match only if no other aggregates match
     } aggregatenetworknetwork;
 
     struct {

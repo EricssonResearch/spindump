@@ -593,7 +593,9 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                      1,
                                                                                      analyzer->table);
     } else if (!aggregate->side1ishost && !aggregate->side2ishost) {
-      aggregateConnection = spindump_connections_newconnection_aggregate_networknetwork(&aggregate->side1network,
+      spindump_deepdeepdebugf("creating an aggragate with default match %u", aggregate->defaultMatch);
+      aggregateConnection = spindump_connections_newconnection_aggregate_networknetwork(aggregate->defaultMatch,
+                                                                                        &aggregate->side1network,
                                                                                         &aggregate->side2network,
                                                                                         &startTime,
                                                                                         1,

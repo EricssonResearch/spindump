@@ -139,7 +139,8 @@ spindump_connections_newconnection_aggregate_hostnetwork(const spindump_address*
                                                          int manuallyCreated,
                                                          struct spindump_connectionstable* table);
 struct spindump_connection*
-spindump_connections_newconnection_aggregate_networknetwork(const spindump_network* side1network,
+spindump_connections_newconnection_aggregate_networknetwork(int defaultMatch,
+                                                            const spindump_network* side1network,
                                                             const spindump_network* side2network,
                                                             const struct timeval* when,
                                                             int manuallyCreated,
@@ -313,7 +314,8 @@ spindump_connections_isclosed(const struct spindump_connection* connection);
 int
 spindump_connections_isestablishing(const struct spindump_connection* connection);
 int
-spindump_connections_matches_aggregate_connection(struct spindump_connection* connection,
+spindump_connections_matches_aggregate_connection(int seenMatch,
+                                                  struct spindump_connection* connection,
                                                   struct spindump_connection* aggregate);
 int
 spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
