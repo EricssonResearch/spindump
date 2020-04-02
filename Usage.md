@@ -115,8 +115,9 @@ The --average-mode option causes the tool to display (or report in output or HTT
 This option makes Spindump do filtering of exceptionally small or large values. The argument is a percentage value, from 0 to 400 percent. It expresses what percentage of current standard deviation should be considered as exceptional. For instance, if the standard deviation of RTT values is 10, then setting this option to 20 makes values that stand out more than two times the standard deviation as exceptional. Exceptional values are still reported as RTT measurements and taken into average calculations, but not taken into account when calculating the filtered average.
 
     --bandwidth-period n
+    --report-only-periodically n
 
-This option sets the measurement period for bandwidth. Each connection is measured for bandwidth in periods, with the number of bytes sent on a connection during that period counted together. Bandwidth numbers are always presented in bytes/s but when traffic varies over time, a shorter measurement period will produce a more variable bandwidth numbers, whereas a longer period will produce a smoother measurement. The option takes an argument, the length of the period in microseconds. The default is 1000000 or 1s.
+The first option sets the measurement period for bandwidth. Each connection is measured for bandwidth in periods, with the number of bytes sent on a connection during that period counted together. Bandwidth numbers are always presented in bytes/s but when traffic varies over time, a shorter measurement period will produce a more variable bandwidth numbers, whereas a longer period will produce a smoother measurement. The option takes an argument, the length of the period in microseconds. The default is 1000000 or 1s. The second option is only applicable when Spindump is not run in visual mode. It will then make only periodic reports every n seconds. The default is 0, which means that Spindump makes reports of statistics whenever relevant events happen, i.e., when statistics change.
 
     --no-stats
     --stats

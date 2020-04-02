@@ -44,6 +44,7 @@ struct spindump_analyze;
 
 struct spindump_connectionstable*
 spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeriod,
+                                     unsigned int periodicReportPeriod,
                                      const spindump_tags* defaultTags);
 void
 spindump_connectionstable_uninitialize(struct spindump_connectionstable* table);

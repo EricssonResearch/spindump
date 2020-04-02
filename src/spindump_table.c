@@ -40,6 +40,10 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
                                             struct spindump_analyze* analyzer);
 static void
 spindump_connectionstable_compresstable(struct spindump_connectionstable* table);
+static void
+spindump_connectionstable_periodicreport(struct spindump_connectionstable* table,
+                                         const struct timeval* now,
+                                         struct spindump_analyze* analyzer);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -52,6 +56,7 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
 
 struct spindump_connectionstable*
 spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeriod,
+                                     unsigned int periodicReportPeriod,
                                      const spindump_tags* defaultTags) {
 
   //
@@ -78,6 +83,7 @@ spindump_connectionstable_initialize(unsigned long long bandwidthMeasurementPeri
   
   memset(table,0,sizeof(*table));
   table->bandwidthMeasurementPeriod = bandwidthMeasurementPeriod;
+  table->periodicReportPeriod = periodicReportPeriod;
   if (defaultTags != 0) {
     spindump_tags_copy(&table->defaultTags,defaultTags);
   } else {
@@ -249,6 +255,17 @@ spindump_connectionstable_compresstable(struct spindump_connectionstable* table)
   if (shiftdown > 0) spindump_debugf("spindump_connectionstable_compresstable freed %u positions", shiftdown);
 }
 
+static void
+spindump_connectionstable_periodicreport(struct spindump_connectionstable* table,
+                                         const struct timeval* now,
+                                         struct spindump_analyze* analyzer) {
+  spindump_deepdeepdebugf("spindump_connectionstable_report");
+  for (unsigned int i = 0; i < table->nConnections; i++) {
+    if (table->connections[i] != 0) {
+    }
+  }
+}
+
 //
 // This function gets called every few seconds to scan through a
 // connection. It performs periodic maintenance, compression, checking
@@ -263,12 +280,28 @@ spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
   spindump_assert(now->tv_sec > 0);
   spindump_assert(now->tv_usec < 1000 * 1000);
   if (table->lastPeriodicCheck.tv_sec != now->tv_sec) {
+
+    //
+    // Do the check
+    //
+    
     for (unsigned int i = 0; i < table->nConnections; i++) {
       struct spindump_connection* connection = table->connections[i];
       if (connection != 0) spindump_connectionstable_periodiccheck_aux(connection,now,table,analyzer);
     }
     spindump_connectionstable_compresstable(table);
     table->lastPeriodicCheck = *now;
+
+    //
+    // Do the reports, if needed
+    //
+    
+    if (table->periodicReportPeriod != 0 &&
+        now->tv_sec - table->lastPeriodicReport.tv_sec >=  table->periodicReportPeriod) {
+      spindump_connectionstable_periodicreport(table,now,analyzer);
+      table->lastPeriodicReport = *now;
+    }
+    
     return(1);
   } else {
     return(0);

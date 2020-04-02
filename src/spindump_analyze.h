@@ -104,6 +104,7 @@ struct spindump_analyze {
 struct spindump_analyze*
 spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
                             unsigned long long bandwidthMeasurementPeriod,
+                            unsigned int periodicReportPeriod,
                             const spindump_tags* defaultTags);
 void
 

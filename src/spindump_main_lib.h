@@ -85,6 +85,7 @@ struct spindump_main_configuration {
   unsigned int filterExceptionalValuesPercentage;
   unsigned long long updatePeriod;
   unsigned long long bandwidthMeasurementPeriod;
+  unsigned int periodicReportPeriod;
   unsigned int nAggregates;
   struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
   unsigned long remoteBlockSize;

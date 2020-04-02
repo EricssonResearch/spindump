@@ -153,6 +153,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->filterExceptionalValuesPercentage = 0; // no filtering of RTT values
   config->updatePeriod = 500 * 1000; // 0.5s
   config->bandwidthMeasurementPeriod = spindump_bandwidth_period_default;
+  config->periodicReportPeriod = 0; // not enabled, values in seconds
   config->nAggregates = 0;
   config->remoteBlockSize = 16 * 1024;
   config->nRemotes = 0;
@@ -473,6 +474,24 @@ spindump_main_processargs(int argc,
       
       argc--; argv++;
       
+    } else if (strcmp(argv[0],"--report-only-periodically") == 0 && argc > 1) {
+
+      if (!isdigit(argv[1][0])) {
+        spindump_errorf("the --report-only-periodically argument needs to be numeric");
+        exit(1);
+      }
+
+      int arg = atoi(argv[1]);
+      
+      if (arg < 0) {
+        spindump_errorf("the --report-only-periodically argument can not be negative");
+        exit(1);
+      }
+      
+      config->periodicReportPeriod = (unsigned int)arg;
+      
+      argc--; argv++;
+      
     } else if (strcmp(argv[0],"--aggregate") == 0 && argc > 1) {
 
       //
@@ -777,6 +796,9 @@ spindump_main_help(void) {
   printf("                            microseconds. The default is %llu or %.2f.\n",
          (unsigned long long)spindump_bandwidth_period_default,
          (spindump_bandwidth_period_default * 1.0) / 1000000.0);
+  printf("    --report-only-periodically n\n");
+  printf("                            Make only periodic reports every n seconds. The default is 0,\n");
+   printf("                            which disables the periodic mode.\n");
   printf("\n");
   printf("    --interface i           Set the interface to listen on, or the capture\n");
   printf("    --snaplen n             How many bytes of the packet is captured (default is %u)\n", spindump_capture_snaplen);
