@@ -240,7 +240,10 @@ int
 spindump_address_compare(const spindump_address* address1,
                          const spindump_address* address2) {
 
-  if (address1->ss_family != address2->ss_family) return(0);
+  if (address1->ss_family < address2->ss_family)
+    return -1;
+  else if (address1->ss_family > address2->ss_family)
+    return 1;
 
   switch (address1->ss_family) {
 
