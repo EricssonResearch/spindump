@@ -85,6 +85,14 @@ spindump_analyze_process_aggregate(struct spindump_analyze* state,
     fromResponder = spindump_address_innetwork(&source,
                                                &connection->u.aggregatenetworknetwork.side1Network);
     break;
+  case spindump_connection_aggregate_hostmultinet:
+    fromResponder = spindump_address_equal(&source,
+                                           &connection->u.aggregatehostmultinet.side1peerAddress);
+    break;
+  case spindump_connection_aggregate_networkmultinet:
+    fromResponder = spindump_address_innetwork(&source,
+                                               &connection->u.aggregatenetworkmultinet.side1Network);
+    break;
   case spindump_connection_aggregate_multicastgroup:
     fromResponder = spindump_address_equal(&source,
                                            &connection->u.aggregatemulticastgroup.group);

@@ -20,6 +20,7 @@
 // Includes -----------------------------------------------------------------------------------
 //
 
+#include <errno.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -41,6 +42,15 @@
 #include "spindump_bandwidth.h"
 
 //
+// Types --------------------------------------------------------------------------------------
+//
+
+struct spindump_main_network_entry {
+  struct spindump_main_network_entry *next;
+  spindump_network network;
+};
+
+//
 // Function prototypes ------------------------------------------------------------------------
 //
 
@@ -48,6 +58,10 @@ static void
 spindump_main_configuration_defaultvalues(struct spindump_main_configuration* config);
 static enum spindump_eventformatter_outputformat
 spindump_main_parseformat(const char* string);
+static struct spindump_main_network_entry *
+spindump_main_read_networks(const char *file);
+static int
+spindump_main_compare_aggrnetw(const void *p1, const void *p2);
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -579,14 +593,15 @@ spindump_main_processargs(int argc,
       // group). Get the second of the two arguments
       //
 
-      int side2ishost = 0;
+      enum {network, host, multinet} side2type = network;
       spindump_address side2address;
       spindump_network side2network;
+      struct spindump_main_network_entry *side2networks = NULL;
 
       memset(&side2address,0,sizeof(side2address));
       memset(&side2network,0,sizeof(side2network));
       
-      spindump_deepdeepdebugf("aggregate parsing side1isgroup = %u side2 host = %u", side1isgroup, side2ishost);
+      spindump_deepdeepdebugf("aggregate parsing side1isgroup = %u side2type = %u", side1isgroup, side2type);
       
       if (!side1isgroup) {
 
@@ -599,25 +614,35 @@ spindump_main_processargs(int argc,
         const char* side2string = argv[1];
 
         //
-        // Determine whether the second argument is host or a network
+        // Determine whether the second argument network, host or network file (multinet)
         //
 
-        side2ishost = (index(side2string,'/') == 0);
+        const char *multinet_prefix = "networkfile:";
+        if (!strncmp(side2string, multinet_prefix, strlen(multinet_prefix))) {
+          side2type = multinet;
+          side2string += strlen(multinet_prefix);
+        } else if (index(side2string,'/'))
+          side2type = network;
+        else
+          side2type = host;
 
         //
         // Parse the second argument
         //
 
-        if (side2ishost) {
+        if (side2type == host) {
           if (!spindump_address_fromstring(&side2address,side2string)) {
             spindump_errorf("expected an address as second argument for --aggregate, got %s", side2string);
             exit(1);
           }
-        } else {
+        } else if (side2type == network) {
           if (!spindump_network_fromstring(&side2network,side2string)) {
             spindump_errorf("expected a network as second argument for --aggregate, got %s", side2string);
             exit(1);
           }
+        } else if (side2type == multinet) {
+          if (!(side2networks = spindump_main_read_networks(side2string)))
+            exit(1);
         }
 
         //
@@ -646,11 +671,24 @@ spindump_main_processargs(int argc,
       aggregate->defaultMatch = defaultMatch;
       spindump_deepdeepdebugf("args processing, final default match = %u", aggregate->defaultMatch);
       aggregate->side1ishost = side1ishost;
-      aggregate->side2ishost = side2ishost;
+      aggregate->side2type = side2type;
       aggregate->side1address = side1address;
       aggregate->side2address = side2address;
       aggregate->side1network = side1network;
       aggregate->side2network = side2network;
+
+      unsigned int maxAggrnetws = sizeof config->aggrnetws / sizeof config->aggrnetws[0];
+      while (side2networks) {
+        if (config->nAggrnetws >= maxAggrnetws) {
+          spindump_errorf("too many aggregate networks specified, can only support %u",
+                          maxAggrnetws);
+          exit(1);
+        }
+        config->aggrnetws[config->nAggrnetws].aggregate = aggregate;
+        config->aggrnetws[config->nAggrnetws].network = side2networks->network;
+        side2networks = side2networks->next;
+        config->nAggrnetws++;
+      }
 
     } else if (argv[0][0] == '-') {
 
@@ -705,6 +743,9 @@ spindump_main_processargs(int argc,
     argc--; argv++;
 
   }
+
+  qsort(config->aggrnetws, config->nAggrnetws, sizeof config->aggrnetws[0],
+        spindump_main_compare_aggrnetw);
 }
 
 //
@@ -723,6 +764,84 @@ spindump_main_parseformat(const char* string) {
     spindump_errorf("invalid output format (%s) specified, expected text or json", string);
     return(spindump_eventformatter_outputformat_text);
   }
+}
+
+//
+// Read CIDR format networks from file, one per line.
+//
+
+static struct spindump_main_network_entry *
+spindump_main_read_networks(const char *file)
+{
+  struct spindump_main_network_entry *nwe = NULL;
+  struct spindump_main_network_entry *nwlist = NULL;
+  struct spindump_main_network_entry *result = NULL;
+  FILE *f = NULL;
+  char line[80], *cp;
+  int linenr;
+
+  if (!(f = fopen(file, "r"))) {
+    spindump_errorf("fopen: %s: %s", file, strerror(errno));
+    goto end;
+  }
+
+  line[sizeof line - 1] = '\0';
+  for (linenr = 1; fgets(line, sizeof line, f); linenr++) {
+
+    if (line[sizeof line - 1]) {
+      spindump_errorf("%s:%d: line too long", file, linenr);
+      goto end;
+    }
+
+    if ((cp = strchr(line, '\n')))
+      *cp = '\0';
+
+    if (!(nwe = spindump_malloc(sizeof *nwe))) {
+      spindump_errorf("Cannot allocate %lu bytes", sizeof *nwe);
+      goto end;
+    }
+
+    memset(nwe, 0, sizeof *nwe);
+    if (!spindump_network_fromstring(&nwe->network, line)) {
+      spindump_errorf("%s:%d: invalid network %s", file, linenr, line);
+      goto end;
+    }
+
+    nwe->next = nwlist;
+    nwlist = nwe;
+    nwe = NULL;
+  }
+
+  if (ferror(f)) {
+    spindump_errorf("fopen: %s: %s", file, strerror(errno));
+    goto end;
+  }
+
+  result = nwlist;
+  nwlist = NULL;
+
+ end:
+  if (nwe)
+    spindump_free(nwe);
+  while (nwlist) {
+    nwe = nwlist->next;
+    spindump_free(nwlist);
+    nwlist = nwe;
+  }
+  if (f)
+    fclose(f);
+  return result;
+}
+
+//
+// Compare too spindump_main_aggrnetw objects.
+//
+
+static int
+spindump_main_compare_aggrnetw(const void *p1, const void *p2)
+{
+  const struct spindump_main_aggrnetw *anw1 = p1, *anw2 = p2;
+  return spindump_address_compare(&anw1->network.address, &anw2->network.address);
 }
 
 //

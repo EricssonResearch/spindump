@@ -61,7 +61,9 @@ enum spindump_connection_type {
   spindump_connection_aggregate_hostpair,
   spindump_connection_aggregate_hostnetwork,
   spindump_connection_aggregate_networknetwork,
-  spindump_connection_aggregate_multicastgroup
+  spindump_connection_aggregate_multicastgroup,
+  spindump_connection_aggregate_hostmultinet,
+  spindump_connection_aggregate_networkmultinet
 };
 
 enum spindump_connection_state {
@@ -255,8 +257,23 @@ struct spindump_connection {
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
     } aggregatemulticastgroup;
 
+    struct {
+      spindump_address side1peerAddress;            // address of host on side 1
+      struct spindump_connection_set connections;   // what actual connections fall under this aggregate
+    } aggregatehostmultinet;
+
+    struct {
+      spindump_network side1Network;                // network address on side 1
+      struct spindump_connection_set connections;   // what actual connections fall under this aggregate
+    } aggregatenetworkmultinet;
+
   } u;
 
+};
+
+struct spindump_connection_network {
+     spindump_network side2Network;                 // network address on side 2
+     struct spindump_connection *connection;        // what aggregate connection this network belongs to
 };
 
 enum spindump_connection_searchcriteria_srcdst {

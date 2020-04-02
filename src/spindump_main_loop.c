@@ -561,13 +561,29 @@ static void
 spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* config,
                                          struct spindump_analyze* analyzer) {
   struct timeval startTime;
+  struct spindump_connectionstable* table = analyzer->table;
   spindump_getcurrenttime(&startTime);
+  spindump_deepdeepdebugf("spindump_main_loop_initialize_aggregate network %u", config->nAggrnetws);
+  if (config->nAggrnetws <= 0)
+    table->networks = 0;
+  else if (!(table->networks = spindump_malloc(config->nAggrnetws * sizeof table->networks[0])))
+    spindump_errorf("cannot allocate aggregate networks");
+  else {
+    memset(table->networks, 0, config->nAggrnetws * sizeof table->networks);
+    for (unsigned int i = 0; i < config->nAggrnetws; i++) {
+      table->networks[i].side2Network = config->aggrnetws[i].network;
+      table->networks[i].connection = 0;
+    }
+    table->nNetworks = config->nAggrnetws;
+  }
   spindump_deepdeepdebugf("spindump_main_loop_initialize_aggregate %u", config->nAggregates);
   for (unsigned int i = 0; i < config->nAggregates; i++) {
     struct spindump_main_aggregate* aggregate = &config->aggregates[i];
     spindump_assert(spindump_isbool(aggregate->ismulticastgroup));
     spindump_assert(spindump_isbool(aggregate->side1ishost));
-    spindump_assert(spindump_isbool(aggregate->side2ishost));
+    spindump_assert(aggregate->side2type == network ||
+                    aggregate->side2type == host ||
+                    aggregate->side2type == multinet);
     spindump_deepdeepdebugf("spindump_main_loop_initialize_aggregate no %u", i);
     struct spindump_connection* aggregateConnection = 0;
     if (aggregate->ismulticastgroup) {
@@ -575,25 +591,30 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                         &startTime,
                                                                                         1,
                                                                                         analyzer->table);
-    } else if (aggregate->side1ishost && aggregate->side2ishost) {
+    } else if (aggregate->side1ishost && aggregate->side2type == host) {
       aggregateConnection = spindump_connections_newconnection_aggregate_hostpair(&aggregate->side1address,
                                                                                   &aggregate->side2address,
                                                                                   &startTime,
                                                                                   1,
                                                                                   analyzer->table);
-    } else if (aggregate->side1ishost && !aggregate->side2ishost) {
+    } else if (aggregate->side1ishost && aggregate->side2type == network) {
       aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side1address,
                                                                                      &aggregate->side2network,
                                                                                      &startTime,
                                                                                      1,
                                                                                      analyzer->table);
-    } else if (!aggregate->side1ishost && aggregate->side2ishost) {
+    } else if (aggregate->side1ishost && aggregate->side2type == multinet) {
+      aggregateConnection = spindump_connections_newconnection_aggregate_hostmultinet(&aggregate->side1address,
+                                                                                      &startTime,
+                                                                                      1,
+                                                                                      analyzer->table);
+    } else if (!aggregate->side1ishost && aggregate->side2type == host) {
       aggregateConnection = spindump_connections_newconnection_aggregate_hostnetwork(&aggregate->side2address,
                                                                                      &aggregate->side1network,
                                                                                      &startTime,
                                                                                      1,
                                                                                      analyzer->table);
-    } else if (!aggregate->side1ishost && !aggregate->side2ishost) {
+    } else if (!aggregate->side1ishost && aggregate->side2type == network) {
       spindump_deepdeepdebugf("creating an aggragate with default match %u", aggregate->defaultMatch);
       aggregateConnection = spindump_connections_newconnection_aggregate_networknetwork(aggregate->defaultMatch,
                                                                                         &aggregate->side1network,
@@ -601,6 +622,11 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                         &startTime,
                                                                                         1,
                                                                                         analyzer->table);
+    } else if (!aggregate->side1ishost && aggregate->side2type == multinet) {
+      aggregateConnection = spindump_connections_newconnection_aggregate_networkmultinet(&aggregate->side1network,
+                                                                                         &startTime,
+                                                                                         1,
+                                                                                         analyzer->table);
     }
     if (aggregateConnection != 0) {
       spindump_tags_copy(&aggregateConnection->tags,&aggregate->tags);
@@ -616,6 +642,10 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                         0, // ipPacketLength not known
                                         0, // no connection
                                         aggregateConnection);
+    }
+    for (unsigned int i = 0; i < config->nAggrnetws; i++) {
+      if (config->aggrnetws[i].aggregate == aggregate)
+        table->networks[i].connection = aggregateConnection;
     }
   }
 }

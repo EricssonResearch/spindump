@@ -48,6 +48,8 @@ struct spindump_connectionstable {
   unsigned int nConnections;
   unsigned int maxNConnections;
   struct spindump_connection** connections;
+  unsigned int nNetworks;
+  struct spindump_connection_network *networks;
 };
 
 #endif // SPINDUMP_TABLE_STRUCTS_H

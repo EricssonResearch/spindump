@@ -109,6 +109,16 @@ spindump_connection_report_networknetwork(struct spindump_connection* connection
                                           int anonymize,
                                           struct spindump_reverse_dns* querier);
 static void
+spindump_connection_report_hostmultinet(struct spindump_connection* connection,
+                                        FILE* file,
+                                        int anonymize,
+                                        struct spindump_reverse_dns* querier);
+static void
+spindump_connection_report_networkmultinet(struct spindump_connection* connection,
+                                           FILE* file,
+                                           int anonymize,
+                                           struct spindump_reverse_dns* querier);
+static void
 spindump_connection_report_multicastgroup(struct spindump_connection* connection,
                                           FILE* file,
                                           int anonymize,
@@ -136,6 +146,8 @@ spindump_connection_type_to_string(enum spindump_connection_type type) {
   case spindump_connection_aggregate_hostpair: return("HOSTS");
   case spindump_connection_aggregate_hostnetwork: return("H2NET");
   case spindump_connection_aggregate_networknetwork: return("NET2NET");
+  case spindump_connection_aggregate_hostmultinet: return("H2MUL");
+  case spindump_connection_aggregate_networkmultinet: return("NET2MUL");
   case spindump_connection_aggregate_multicastgroup: return("MCAST");
   default: return("INVALID");
   }
@@ -181,6 +193,12 @@ spindump_connection_string_to_connectiontype(const char* string,
     return(1);
   } else if (strcasecmp(string,"NET2NET") == 0) {
     *type = spindump_connection_aggregate_networknetwork;
+    return(1);
+  } else if (strcasecmp(string,"H2MUL") == 0) {
+    *type = spindump_connection_aggregate_hostmultinet;
+    return(1);
+  } else if (strcasecmp(string,"NET2MUL") == 0) {
+    *type = spindump_connection_aggregate_networkmultinet;
     return(1);
   } else if (strcasecmp(string,"MCAST") == 0) {
     *type = spindump_connection_aggregate_multicastgroup;
@@ -453,6 +471,40 @@ spindump_connection_report_networknetwork(struct spindump_connection* connection
 }
 
 //
+// Print a report of a host - multiple network aggregate connection
+//
+
+static void
+spindump_connection_report_hostmultinet(struct spindump_connection* connection,
+                                        FILE* file,
+                                        int anonymize,
+                                        struct spindump_reverse_dns* querier) {
+  fprintf(file,"  host:                  %40s\n",
+          spindump_connection_address_tostring(anonymize,
+                                               &connection->u.aggregatehostmultinet.side1peerAddress,
+                                               querier));
+  fprintf(file,"  network: multiple\n");
+  fprintf(file,"  aggregates:            %40s\n",
+          spindump_connections_set_listids(&connection->u.aggregatehostmultinet.connections));
+}
+
+//
+// Print a report of a network to multiple network aggregate connection
+//
+
+static void
+spindump_connection_report_networkmultinet(struct spindump_connection* connection,
+                                           FILE* file,
+                                           int anonymize,
+                                           struct spindump_reverse_dns* querier) {
+  fprintf(file,"  network 1:               %40s\n",
+          spindump_network_tostring(&connection->u.aggregatenetworkmultinet.side1Network));
+  fprintf(file,"  network 2: multiple\n");
+  fprintf(file,"  aggregates:            %40s\n",
+          spindump_connections_set_listids(&connection->u.aggregatenetworkmultinet.connections));
+}
+
+//
 // Print a report of a multicast group aggregate connection
 //
 
@@ -526,6 +578,12 @@ spindump_connection_report(struct spindump_connection* connection,
     break;
   case spindump_connection_aggregate_networknetwork:
     spindump_connection_report_networknetwork(connection,file,anonymize,querier);
+    break;
+  case spindump_connection_aggregate_hostmultinet:
+    spindump_connection_report_hostmultinet(connection,file,anonymize,querier);
+    break;
+  case spindump_connection_aggregate_networkmultinet:
+    spindump_connection_report_networkmultinet(connection,file,anonymize,querier);
     break;
   case spindump_connection_aggregate_multicastgroup:
     spindump_connection_report_multicastgroup(connection,file,anonymize,querier);
@@ -724,6 +782,18 @@ spindump_connection_addresses(struct spindump_connection* connection,
     spindump_strlcat(buf,middle,sizeof(buf));
     spindump_strlcat(buf,spindump_network_tostring(&connection->u.aggregatenetworknetwork.side2Network),sizeof(buf));
     break;
+  case spindump_connection_aggregate_hostmultinet:
+    spindump_strlcpy(buf,
+                     spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostmultinet.side1peerAddress,querier),
+                     sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
+    spindump_strlcat(buf,"multiple",sizeof(buf));
+    break;
+  case spindump_connection_aggregate_networkmultinet:
+    spindump_strlcpy(buf,spindump_network_tostring(&connection->u.aggregatenetworkmultinet.side1Network),sizeof(buf));
+    spindump_strlcat(buf,middle,sizeof(buf));
+    spindump_strlcat(buf,"multiple",sizeof(buf));
+    break;
   case spindump_connection_aggregate_multicastgroup:
     spindump_strlcpy(buf,spindump_address_tostring(&connection->u.aggregatemulticastgroup.group),sizeof(buf));
     break;
@@ -857,6 +927,16 @@ spindump_connection_sessionstring(struct spindump_connection* connection,
   case spindump_connection_aggregate_networknetwork:
     snprintf(buffer,maxlen-1,"%u sessions",
              connection->u.aggregatenetworknetwork.connections.nConnections);
+    break;
+
+  case spindump_connection_aggregate_hostmultinet:
+    snprintf(buffer,maxlen-1,"%u sessions",
+             connection->u.aggregatehostmultinet.connections.nConnections);
+    break;
+
+  case spindump_connection_aggregate_networkmultinet:
+    snprintf(buffer,maxlen-1,"%u sessions",
+             connection->u.aggregatenetworkmultinet.connections.nConnections);
     break;
 
   case spindump_connection_aggregate_multicastgroup:

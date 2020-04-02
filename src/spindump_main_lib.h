@@ -32,6 +32,7 @@
 //
 
 #define spindump_main_maxnaggregates    10
+#define spindump_main_maxnaggrnetws 100000
 
 //
 // Data types ---------------------------------------------------------------------------------
@@ -47,11 +48,16 @@ enum spindump_toolmode {
 // Data structures ----------------------------------------------------------------------------
 //
 
+struct spindump_main_aggrnetw {
+  struct spindump_main_aggregate *aggregate;
+  spindump_network network;
+};
+
 struct spindump_main_aggregate {
   int defaultMatch;
   int ismulticastgroup;
   int side1ishost;
-  int side2ishost;
+  enum {network, host, multinet} side2type;
   spindump_tags tags;
   uint8_t padding[4]; // unused padding to align the next field properly
   spindump_address side1address;
@@ -88,6 +94,8 @@ struct spindump_main_configuration {
   unsigned int periodicReportPeriod;
   unsigned int nAggregates;
   struct spindump_main_aggregate aggregates[spindump_main_maxnaggregates];
+  unsigned int nAggrnetws;
+  struct spindump_main_aggrnetw aggrnetws[spindump_main_maxnaggrnetws];
   unsigned long remoteBlockSize;
   unsigned int nRemotes;
   struct spindump_remote_client* remotes[SPINDUMP_REMOTE_CLIENT_MAX_CONNECTIONS];

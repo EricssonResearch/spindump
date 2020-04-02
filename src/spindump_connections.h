@@ -146,6 +146,16 @@ spindump_connections_newconnection_aggregate_networknetwork(int defaultMatch,
                                                             int manuallyCreated,
                                                             struct spindump_connectionstable* table);
 struct spindump_connection*
+spindump_connections_newconnection_aggregate_hostmultinet(const spindump_address* side1address,
+                                                          const struct timeval* when,
+                                                          int manuallyCreated,
+                                                          struct spindump_connectionstable* table);
+struct spindump_connection*
+spindump_connections_newconnection_aggregate_networkmultinet(const spindump_network* side1network,
+                                                             const struct timeval* when,
+                                                             int manuallyCreated,
+                                                             struct spindump_connectionstable* table);
+struct spindump_connection*
 spindump_connections_newconnection_aggregate_multicastgroup(const spindump_address* group,
                                                             const struct timeval* when,
                                                             int manuallyCreated,
@@ -307,6 +317,8 @@ spindump_connection_statestring_to_state(const char* string,
                                          enum spindump_connection_state* state);
 int
 spindump_connections_isaggregate(const struct spindump_connection* connection);
+int
+spindump_connections_isaggregate_simple(const struct spindump_connection* connection);
 const struct spindump_connection_set*
 spindump_connections_aggregateset(const struct spindump_connection* connection);
 int
@@ -321,6 +333,10 @@ int
 spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
                                               const spindump_address* destination,
                                               struct spindump_connection* aggregate);
+struct spindump_connection*
+spindump_connections_match_multinet(const spindump_address* source,
+                                    const spindump_address* destination,
+                                    struct spindump_connectionstable* table);
 void
 spindump_connection_report(struct spindump_connection* connection,
                            FILE* file,

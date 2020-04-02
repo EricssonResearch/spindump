@@ -83,6 +83,18 @@ spindump_connections_set_unlinkfromset(struct spindump_connection* connection,
     }
     break;
     
+  case spindump_connection_aggregate_hostmultinet:
+    if (spindump_connections_set_inset(&connection->u.aggregatehostmultinet.connections,otherConnection)) {
+      spindump_connections_set_remove(&connection->u.aggregatehostmultinet.connections,otherConnection);
+    }
+    break;
+    
+  case spindump_connection_aggregate_networkmultinet:
+    if (spindump_connections_set_inset(&connection->u.aggregatenetworkmultinet.connections,otherConnection)) {
+      spindump_connections_set_remove(&connection->u.aggregatenetworkmultinet.connections,otherConnection);
+    }
+    break;
+    
   case spindump_connection_aggregate_multicastgroup:
     if (spindump_connections_set_inset(&connection->u.aggregatemulticastgroup.connections,otherConnection)) {
       spindump_connections_set_remove(&connection->u.aggregatemulticastgroup.connections,otherConnection);

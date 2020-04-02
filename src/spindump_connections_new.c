@@ -54,7 +54,6 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
 static void
 spindump_connections_newconnection_addtoaggregates(struct spindump_connection* connection,
                                                    struct spindump_connectionstable* table);
-
 //
 // Actual code --------------------------------------------------------------------------------
 //
@@ -171,6 +170,14 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
     spindump_connections_set_initialize(&connection->u.aggregatenetworknetwork.connections);
     break;
 
+  case spindump_connection_aggregate_hostmultinet:
+    spindump_connections_set_initialize(&connection->u.aggregatehostmultinet.connections);
+    break;
+
+  case spindump_connection_aggregate_networkmultinet:
+    spindump_connections_set_initialize(&connection->u.aggregatenetworkmultinet.connections);
+    break;
+
   case spindump_connection_aggregate_multicastgroup:
     spindump_connections_set_initialize(&connection->u.aggregatemulticastgroup.connections);
     break;
@@ -193,13 +200,15 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
 static void
 spindump_connections_newconnection_addtoaggregates(struct spindump_connection* connection,
                                                    struct spindump_connectionstable* table) {
+  struct spindump_connection* aggregate;
+
   spindump_debugf("looking at aggregates that the new connection %u might fit into",
                   connection->id);
   int seenMatch = 0;
   for (unsigned int i = 0; i < table->nConnections; i++) {
-    struct spindump_connection* aggregate = table->connections[i];
+    aggregate = table->connections[i];
     if (aggregate != 0 &&
-        spindump_connections_isaggregate(aggregate)) {
+        spindump_connections_isaggregate_simple(aggregate)) {
 
       spindump_deepdebugf("testing aggregate %u (tags %s, %u of %u connections) seen match = %u",
                           aggregate->id, aggregate->tags.string, i, table->nConnections, seenMatch);
@@ -255,7 +264,40 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
     }
     
   }
+
+  spindump_address* side1address = 0;
+  spindump_address* side2address = 0;
+  spindump_connections_getaddresses(connection,
+                                    &side1address,
+                                    &side2address);
+
+  if (side1address == 0 || side2address == 0) {
+    spindump_deepdebugf("can't figure out addresses from connection %u", connection->id);
+
+  } else if ((aggregate = spindump_connections_match_multinet(side1address,side2address,table))) {
+
+    spindump_connections_set_add(&connection->aggregates,aggregate);
+
+    switch (aggregate->type) {
+    case spindump_connection_aggregate_hostmultinet:
+      spindump_connections_set_add(&aggregate->u.aggregatehostmultinet.connections,connection);
+      break;
+    case spindump_connection_aggregate_networkmultinet:
+      spindump_connections_set_add(&aggregate->u.aggregatenetworkmultinet.connections,connection);
+      break;
+    default:
+      spindump_errorf("invalid connection type %u in spindump_connections_newconnection_addtoaggregates",
+                      aggregate->type);
+      break;
+    }
+  }
 }
+
+//
+// Add a new network to the table of networks associated with
+// aggregate connections. Parameter connection points to the aggregate
+// connection object.
+//
 
 //
 // This is the main function for creating a new connection. The
@@ -709,6 +751,54 @@ spindump_connections_newconnection_aggregate_networknetwork(int defaultMatch,
 }
 
 //
+// Create a new aggregate connection, to track all traffic between a host
+// and zero or more networks.
+// 
+
+struct spindump_connection*
+spindump_connections_newconnection_aggregate_hostmultinet(const spindump_address* side1address,
+                                                          const struct timeval* when,
+                                                          int manuallyCreated,
+                                                          struct spindump_connectionstable* table) {
+  spindump_assert(side1address != 0);
+  spindump_assert(when != 0);
+  spindump_assert(table != 0);
+
+  struct spindump_connection* connection =
+    spindump_connections_newconnection(table,spindump_connection_aggregate_hostmultinet,when,manuallyCreated);
+  if (connection == 0) return(0);
+
+  connection->state = spindump_connection_state_static;
+  connection->u.aggregatehostmultinet.side1peerAddress = *side1address;
+  spindump_debugf("created a new host-multinet aggregate onnection %u", connection->id);
+  return(connection);
+}
+
+//
+// Create a new aggregate connection, to track all traffic between a network
+// and zero or more other networks.
+// 
+
+struct spindump_connection*
+spindump_connections_newconnection_aggregate_networkmultinet(const spindump_network* side1network,
+                                                             const struct timeval* when,
+                                                             int manuallyCreated,
+                                                             struct spindump_connectionstable* table) {
+  spindump_assert(side1network != 0);
+  spindump_assert(when != 0);
+  spindump_assert(table != 0);
+
+  struct spindump_connection* connection =
+    spindump_connections_newconnection(table,spindump_connection_aggregate_networkmultinet,when,manuallyCreated);
+  if (connection == 0) return(0);
+
+  connection->state = spindump_connection_state_static;
+  connection->u.aggregatenetworkmultinet.side1Network = *side1network;
+  spindump_debugf("created a new network-multinet aggregate onnection %u", connection->id);
+  return(connection);
+}
+
+//
 // Create a new aggregate connection, to represent traffic to or from
 // a given multicast address.
 // 
@@ -786,6 +876,14 @@ spindump_connections_delete(struct spindump_connection* connection) {
     
   case spindump_connection_aggregate_networknetwork:
     spindump_connections_set_uninitialize(&connection->u.aggregatenetworknetwork.connections,connection);
+    break;
+    
+  case spindump_connection_aggregate_hostmultinet:
+    spindump_connections_set_uninitialize(&connection->u.aggregatehostmultinet.connections,connection);
+    break;
+    
+  case spindump_connection_aggregate_networkmultinet:
+    spindump_connections_set_uninitialize(&connection->u.aggregatenetworkmultinet.connections,connection);
     break;
     
   case spindump_connection_aggregate_multicastgroup:

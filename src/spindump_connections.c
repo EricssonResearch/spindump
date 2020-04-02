@@ -40,6 +40,10 @@
 // Function prototypes ------------------------------------------------------------------------
 //
 
+static struct spindump_connection*
+spindump_connections_search_network(const spindump_address *address,
+                                    const struct spindump_connection_network* networkv,
+                                    unsigned int networkc);
 static int
 spindump_connections_setisclosed(const struct spindump_connection_set* set);
 static int
@@ -148,10 +152,12 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
     *p_side2address = &connection->u.aggregatehostpair.side2peerAddress;
     break;
   case spindump_connection_aggregate_hostnetwork:
+  case spindump_connection_aggregate_hostmultinet:
     *p_side1address = &connection->u.aggregatehostnetwork.side1peerAddress;
     *p_side2address = 0;
     break;
   case spindump_connection_aggregate_networknetwork:
+  case spindump_connection_aggregate_networkmultinet:
     *p_side1address = 0;
     *p_side2address = 0;
     break;
@@ -223,6 +229,14 @@ spindump_connections_getnetworks(struct spindump_connection* connection,
     *p_side1network = connection->u.aggregatenetworknetwork.side1Network;
     *p_side2network = connection->u.aggregatenetworknetwork.side2Network;
     break;
+  case spindump_connection_aggregate_hostmultinet:
+    spindump_network_fromaddress(&connection->u.aggregatehostnetwork.side1peerAddress,p_side1network);
+    spindump_network_fromempty(AF_INET,p_side2network);
+    break;
+  case spindump_connection_aggregate_networkmultinet:
+    *p_side1network = connection->u.aggregatenetworknetwork.side1Network;
+    spindump_network_fromempty(AF_INET,p_side2network);
+    break;
   case spindump_connection_aggregate_multicastgroup:
     spindump_network_fromempty(AF_INET,p_side1network);
     spindump_network_fromaddress(&connection->u.aggregatemulticastgroup.group,p_side2network);
@@ -290,6 +304,14 @@ spindump_connections_getports(struct spindump_connection* connection,
     *p_side2port = 0;
     break;
   case spindump_connection_aggregate_networknetwork:
+    *p_side1port = 0;
+    *p_side2port = 0;
+    break;
+  case spindump_connection_aggregate_hostmultinet:
+    *p_side1port = 0;
+    *p_side2port = 0;
+    break;
+  case spindump_connection_aggregate_networkmultinet:
     *p_side1port = 0;
     *p_side2port = 0;
     break;
@@ -447,6 +469,40 @@ spindump_connections_newrttmeasurement(struct spindump_analyze* state,
 }
 
 //
+// Binary-search a network matching an address and return the aggregate where
+// the network belongs to.
+//
+
+static struct spindump_connection*
+spindump_connections_search_network(const spindump_address *address,
+                                    const struct spindump_connection_network* networkv,
+                                    unsigned int networkc)
+{
+  const struct spindump_connection_network* nw;
+  unsigned int half;
+
+  if (networkc <= 0)
+    return(0);
+
+  half = networkc / 2;
+  nw = &networkv[half];
+
+  if (spindump_address_compare(address, &nw->side2Network.address) < 0) {
+    if (half <= 0)
+      return(0);
+    return spindump_connections_search_network(address, networkv, half);
+
+  } else if (spindump_address_innetwork(address, &nw->side2Network)) {
+    return nw->connection;
+
+  } else {
+    if (half + 1>= networkc)
+      return(0);
+    return spindump_connections_search_network(address, networkv + half, networkc - half);
+  }
+}
+
+//
 // Is a given set of connections all closed?
 //
 
@@ -555,11 +611,24 @@ spindump_connections_isaggregate(const struct spindump_connection* connection) {
   case spindump_connection_aggregate_hostnetwork:
   case spindump_connection_aggregate_networknetwork:
   case spindump_connection_aggregate_multicastgroup:
+  case spindump_connection_aggregate_hostmultinet:
+  case spindump_connection_aggregate_networkmultinet:
      return(1);
   default:
     spindump_errorf("invalid connection type");
     return(0);
   }
+}
+
+//
+// Is a given connection a simple aggregate connection, i.e. not a multinet aggregate.
+//
+
+int
+spindump_connections_isaggregate_simple(const struct spindump_connection* connection) {
+  return spindump_connections_isaggregate(connection) &&
+    connection->type != spindump_connection_aggregate_hostmultinet &&
+    connection->type != spindump_connection_aggregate_networkmultinet;
 }
 
 //
@@ -609,6 +678,10 @@ spindump_connections_aggregateset(const struct spindump_connection* connection) 
     return(&connection->u.aggregatehostnetwork.connections);
   case spindump_connection_aggregate_networknetwork:
     return(&connection->u.aggregatenetworknetwork.connections);
+  case spindump_connection_aggregate_hostmultinet:
+    return(&connection->u.aggregatehostmultinet.connections);
+  case spindump_connection_aggregate_networkmultinet:
+    return(&connection->u.aggregatenetworkmultinet.connections);
   case spindump_connection_aggregate_multicastgroup:
     return(&connection->u.aggregatemulticastgroup.connections);
   default:
@@ -709,7 +782,7 @@ spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
                                               const spindump_address* destination,
                                               struct spindump_connection* aggregate) {
   spindump_assert(aggregate != 0);
-  spindump_assert(spindump_connections_isaggregate(aggregate));
+  spindump_assert(spindump_connections_isaggregate_simple(aggregate));
 
   switch (aggregate->type) {
 
@@ -750,6 +823,55 @@ spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
     return(0);
 
   }
+}
+
+//
+// Match a connection against the side 2 networks of all hostmultnet or networkmultinet
+// type aggregates and return the matching aggregate, if any.
+//
+
+struct spindump_connection*
+spindump_connections_match_multinet(const spindump_address* source,
+                                    const spindump_address* destination,
+                                    struct spindump_connectionstable* table)
+{
+  struct spindump_connection* aggregate;
+
+  aggregate = spindump_connections_search_network(destination, table->networks, table->nNetworks);
+
+  if (aggregate) {
+    switch (aggregate->type) {
+    case spindump_connection_aggregate_hostmultinet:
+      if (spindump_address_equal(source,&aggregate->u.aggregatehostmultinet.side1peerAddress))
+        return aggregate;
+      break;
+    case spindump_connection_aggregate_networkmultinet:
+      if (spindump_address_innetwork(source,&aggregate->u.aggregatenetworkmultinet.side1Network))
+        return aggregate;
+      break;
+    default:
+      spindump_assert(0);
+    }
+  }
+
+  aggregate = spindump_connections_search_network(source, table->networks, table->nNetworks);
+
+  if (aggregate) {
+    switch (aggregate->type) {
+    case spindump_connection_aggregate_hostmultinet:
+      if (spindump_address_equal(destination,&aggregate->u.aggregatehostmultinet.side1peerAddress))
+        return aggregate;
+      break;
+    case spindump_connection_aggregate_networkmultinet:
+      if (spindump_address_innetwork(destination,&aggregate->u.aggregatenetworkmultinet.side1Network))
+        return aggregate;
+      break;
+    default:
+      spindump_assert(0);
+    }
+  }
+
+  return (0);
 }
 
 //
