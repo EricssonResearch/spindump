@@ -540,7 +540,7 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
 
     struct spindump_connection* connection = state->table->connections[i];
     if (connection != 0 &&
-        spindump_connections_isaggregate(connection) &&
+        spindump_connections_isaggregate_simple(connection) &&
         spindump_connections_matches_aggregate_srcdst(&source,&destination,connection)) {
 
       //
@@ -567,6 +567,24 @@ spindump_analyze_ip_otherippayload(struct spindump_analyze* state,
         *p_connection = connection;
       }
 
+    }
+  }
+
+  struct spindump_connection* connection =
+    spindump_connections_match_multinet(&source,&destination,state->table);
+  if (connection) {
+    spindump_analyze_process_aggregate(state,
+                                       connection,
+                                       packet,
+                                       ipHeaderPosition,
+                                       ipHeaderSize,
+                                       ipVersion,
+                                       ecnFlags,
+                                       timestamp,
+                                       ipPacketLength,
+                                       state->stats);
+    if (*p_connection == 0) {
+      *p_connection = connection;
     }
   }
 

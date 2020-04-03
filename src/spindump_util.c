@@ -236,6 +236,36 @@ spindump_address_equal(const spindump_address* address1,
   }
 }
 
+int
+spindump_address_compare(const spindump_address* address1,
+                         const spindump_address* address2) {
+
+  if (address1->ss_family < address2->ss_family)
+    return -1;
+  else if (address1->ss_family > address2->ss_family)
+    return 1;
+
+  switch (address1->ss_family) {
+
+  case AF_INET:
+    {
+      const struct sockaddr_in* address1v4 = (const struct sockaddr_in*)address1;
+      const struct sockaddr_in* address2v4 = (const struct sockaddr_in*)address2;
+      return(memcmp(&address1v4->sin_addr.s_addr, &address2v4->sin_addr.s_addr,4));
+    }
+
+  case AF_INET6:
+    {
+      const struct sockaddr_in6* address1v6 = (const struct sockaddr_in6*)address1;
+      const struct sockaddr_in6* address2v6 = (const struct sockaddr_in6*)address2;
+      return(memcmp(address1v6->sin6_addr.s6_addr,address2v6->sin6_addr.s6_addr,16));
+    }
+
+  default:
+    return(0);
+  }
+}
+
 //
 // How many bits is this address? Possible answers are 32 and 128
 // (unless there is an internal error, which should not happen).
