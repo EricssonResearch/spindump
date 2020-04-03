@@ -759,14 +759,12 @@ spindump_main_processargs(int argc,
     if (spindump_address_innetwork(&nw2->network.address, &nw1->network)) {
       char *s1 = strdup(spindump_network_tostring(&nw1->network));
       char *s2 = strdup(spindump_network_tostring(&nw2->network));
-      spindump_errorf("Overlapping networks %s and %s", s1, s2);
+      spindump_warnf("Overlapping networks %s and %s", s1, s2);
       free(s1);
       free(s2);
       overlaps++;
     }
   }
-  if (overlaps)
-    exit(1);
 }
 
 //
