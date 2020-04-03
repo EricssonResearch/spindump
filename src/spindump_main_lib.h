@@ -31,7 +31,7 @@
 // Parameters ---------------------------------------------------------------------------------
 //
 
-#define spindump_main_maxnaggregates    10
+#define spindump_main_maxnaggregates    50
 #define spindump_main_maxnaggrnetws 100000
 
 //
