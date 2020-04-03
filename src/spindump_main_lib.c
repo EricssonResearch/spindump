@@ -744,8 +744,29 @@ spindump_main_processargs(int argc,
 
   }
 
+  //
+  // Sort all networks of aggregates of 'multinet' type and ensure
+  // there are no ovelapping networks.
+  //
+
   qsort(config->aggrnetws, config->nAggrnetws, sizeof config->aggrnetws[0],
         spindump_main_compare_aggrnetw);
+
+  unsigned int overlaps = 0;
+  for (unsigned int i = 1; i < config->nAggrnetws; i++) {
+    struct spindump_main_aggrnetw *nw1 = &config->aggrnetws[i - 1];
+    struct spindump_main_aggrnetw *nw2 = &config->aggrnetws[i];
+    if (spindump_address_innetwork(&nw2->network.address, &nw1->network)) {
+      char *s1 = strdup(spindump_network_tostring(&nw1->network));
+      char *s2 = strdup(spindump_network_tostring(&nw2->network));
+      spindump_errorf("Overlapping networks %s and %s", s1, s2);
+      free(s1);
+      free(s2);
+      overlaps++;
+    }
+  }
+  if (overlaps)
+    exit(1);
 }
 
 //
