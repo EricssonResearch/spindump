@@ -596,6 +596,15 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
                                                                state->table);
     break;
     
+  case spindump_connection_aggregate_hostmultinet:
+    if (!spindump_analyze_event_parseside1host(event)) return;
+    *p_connection =
+      spindump_connections_newconnection_aggregate_hostmultinet(&event->initiatorAddress.address,
+                                                                &when,
+                                                                0,
+                                                                state->table);
+    break;
+    
   case spindump_connection_aggregate_networknetwork:
     *p_connection =
       spindump_connections_newconnection_aggregate_networknetwork(0,
@@ -604,6 +613,14 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
                                                                   &when,
                                                                   0,
                                                                   state->table);
+    break;
+    
+  case spindump_connection_aggregate_networkmultinet:
+    *p_connection =
+      spindump_connections_newconnection_aggregate_networkmultinet(&event->initiatorAddress,
+                                                                   &when,
+                                                                   0,
+                                                                   state->table);
     break;
     
   case spindump_connection_aggregate_multicastgroup:
@@ -1154,6 +1171,10 @@ spindump_analyze_processevent_find_connection(struct spindump_analyze* state,
       spindump_connections_searchconnection_aggregate_multicastgroup(&event->initiatorAddress.address,
                                                                      state->table);
     break;
+    
+  case spindump_connection_aggregate_hostmultinet:
+  case spindump_connection_aggregate_networkmultinet:
+    return(0); // TBD ... not supported yet
     
   default:
     spindump_errorf("invalid connection type %u", event->connectionType);

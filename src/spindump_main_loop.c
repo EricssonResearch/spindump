@@ -644,9 +644,9 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                         0, // no connection
                                         aggregateConnection);
     }
-    for (unsigned int i = 0; i < config->nAggrnetws; i++) {
-      if (config->aggrnetws[i].aggregate == aggregate)
-        table->networks[i].connection = aggregateConnection;
+    for (unsigned int j = 0; j < config->nAggrnetws; j++) {
+      if (config->aggrnetws[j].aggregate == aggregate)
+        table->networks[j].connection = aggregateConnection;
     }
   }
 }

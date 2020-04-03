@@ -765,6 +765,10 @@ spindump_connections_matches_aggregate_connection(int seenMatch,
     spindump_errorf("connection is not an aggregate");
     return(0);
     
+  case spindump_connection_aggregate_hostmultinet:
+  case spindump_connection_aggregate_networkmultinet:
+    return(0); // TBD ... not implemented yet
+    
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_connection",
                     aggregate->type);
@@ -818,6 +822,10 @@ spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
     return(spindump_address_equal(source,&aggregate->u.aggregatemulticastgroup.group) ||
            spindump_address_equal(destination,&aggregate->u.aggregatemulticastgroup.group));
 
+  case spindump_connection_aggregate_hostmultinet:
+  case spindump_connection_aggregate_networkmultinet:
+    return(0); // TBD ... not implemented yet
+    
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_srcdst", aggregate->type);
     return(0);
@@ -849,6 +857,17 @@ spindump_connections_match_multinet(const spindump_address* source,
       if (spindump_address_innetwork(source,&aggregate->u.aggregatenetworkmultinet.side1Network))
         return aggregate;
       break;
+    case spindump_connection_transport_tcp:
+    case spindump_connection_transport_udp:
+    case spindump_connection_transport_dns:
+    case spindump_connection_transport_coap:
+    case spindump_connection_transport_quic:
+    case spindump_connection_transport_icmp:
+    case spindump_connection_transport_sctp:
+    case spindump_connection_aggregate_hostpair:
+    case spindump_connection_aggregate_hostnetwork:
+    case spindump_connection_aggregate_networknetwork:
+    case spindump_connection_aggregate_multicastgroup:
     default:
       spindump_assert(0);
     }
@@ -866,6 +885,17 @@ spindump_connections_match_multinet(const spindump_address* source,
       if (spindump_address_innetwork(destination,&aggregate->u.aggregatenetworkmultinet.side1Network))
         return aggregate;
       break;
+    case spindump_connection_transport_tcp:
+    case spindump_connection_transport_udp:
+    case spindump_connection_transport_dns:
+    case spindump_connection_transport_coap:
+    case spindump_connection_transport_quic:
+    case spindump_connection_transport_icmp:
+    case spindump_connection_transport_sctp:
+    case spindump_connection_aggregate_hostpair:
+    case spindump_connection_aggregate_hostnetwork:
+    case spindump_connection_aggregate_networknetwork:
+    case spindump_connection_aggregate_multicastgroup:
     default:
       spindump_assert(0);
     }

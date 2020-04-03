@@ -239,8 +239,16 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
           spindump_connections_set_add(&aggregate->u.aggregatehostnetwork.connections,connection);
           break;
           
+        case spindump_connection_aggregate_hostmultinet:
+          spindump_connections_set_add(&aggregate->u.aggregatehostmultinet.connections,connection);
+          break;
+          
         case spindump_connection_aggregate_networknetwork:
           spindump_connections_set_add(&aggregate->u.aggregatenetworknetwork.connections,connection);
+          break;
+          
+        case spindump_connection_aggregate_networkmultinet:
+          spindump_connections_set_add(&aggregate->u.aggregatenetworkmultinet.connections,connection);
           break;
           
         case spindump_connection_aggregate_multicastgroup:
@@ -285,6 +293,17 @@ spindump_connections_newconnection_addtoaggregates(struct spindump_connection* c
     case spindump_connection_aggregate_networkmultinet:
       spindump_connections_set_add(&aggregate->u.aggregatenetworkmultinet.connections,connection);
       break;
+    case spindump_connection_transport_tcp:
+    case spindump_connection_transport_udp:
+    case spindump_connection_transport_dns:
+    case spindump_connection_transport_coap:
+    case spindump_connection_transport_quic:
+    case spindump_connection_transport_icmp:
+    case spindump_connection_transport_sctp:
+    case spindump_connection_aggregate_hostpair:
+    case spindump_connection_aggregate_hostnetwork:
+    case spindump_connection_aggregate_networknetwork:
+    case spindump_connection_aggregate_multicastgroup:
     default:
       spindump_errorf("invalid connection type %u in spindump_connections_newconnection_addtoaggregates",
                       aggregate->type);
