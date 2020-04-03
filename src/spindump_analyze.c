@@ -56,6 +56,11 @@ spindump_analyze_process_linux_sll(struct spindump_analyze* state,
                                    struct spindump_packet* packet,
                                    const struct timeval* timestamp,
                                    struct spindump_connection** p_connection);
+static void
+spindump_analyze_process_raw(struct spindump_analyze* state,
+                             struct spindump_packet* packet,
+                             const struct timeval* timestamp,
+                             struct spindump_connection** p_connection);
 static int
 spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* state,
                                                      spindump_handler_mask mask);
@@ -499,6 +504,9 @@ spindump_analyze_process(struct spindump_analyze* state,
   case spindump_capture_linktype_linux_sll:
     spindump_analyze_process_linux_sll(state,packet,&packet->timestamp,p_connection);
     break;
+  case spindump_capture_linktype_raw:
+    spindump_analyze_process_raw(state,packet,&packet->timestamp,p_connection);
+    break;
   default:
     spindump_errorf("unsupported linktype");
   }
@@ -723,6 +731,43 @@ spindump_analyze_process_linux_sll(struct spindump_analyze* state,
     *p_connection = 0;
     return;
 
+  }
+}
+
+//
+// Process a packet when the datalink layer raw IP.
+//
+
+void
+spindump_analyze_process_raw(struct spindump_analyze* state,
+                                  struct spindump_packet* packet,
+                                  const struct timeval* timestamp,
+                                  struct spindump_connection** p_connection) {
+  if (packet->caplen < 1) {
+    spindump_warnf("empty packet");
+    state->stats->notEnoughPacketForIpHdr++;
+    return;
+  }
+
+  switch (packet->contents[0] >> 4) {
+  case 4:
+    spindump_analyze_ip_decodeiphdr(state,
+                                    packet,
+                                    0,
+                                    timestamp,
+                                    p_connection);
+    return;
+  case 6:
+    spindump_analyze_ip_decodeip6hdr(state,
+                                    packet,
+                                    0,
+                                    timestamp,
+                                    p_connection);
+    return;
+  default:
+    spindump_warnf("invalid IP version");
+    state->stats->versionMismatch++;
+    return;
   }
 }
 
