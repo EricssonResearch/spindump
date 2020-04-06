@@ -1,0 +1,1 @@
+--format json --textual --aggregate tag=google 139.162.206.82 networkfile:$testdir/google.nets --aggregate tag=facebook ::/0 networkfile:$testdir/facebook.nets --aggregate-mode
