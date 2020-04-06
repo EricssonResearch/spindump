@@ -259,11 +259,13 @@ struct spindump_connection {
 
     struct {
       spindump_address side1peerAddress;            // address of host on side 1
+      spindump_address identifier;                  // random address used to identify the aggregate
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
     } aggregatehostmultinet;
 
     struct {
       spindump_network side1Network;                // network address on side 1
+      spindump_address identifier;                  // random address used to identify the aggregate
       struct spindump_connection_set connections;   // what actual connections fall under this aggregate
     } aggregatenetworkmultinet;
 
@@ -283,7 +285,8 @@ enum spindump_connection_searchcriteria_srcdst {
   spindump_connection_searchcriteria_srcdst_both = 3,
   spindump_connection_searchcriteria_srcdst_both_allowreverse = 4,
   spindump_connection_searchcriteria_srcdst_both_hostnetwork = 5,
-  spindump_connection_searchcriteria_srcdst_both_networknetwork = 6
+  spindump_connection_searchcriteria_srcdst_both_networknetwork = 6,
+  spindump_connection_searchcriteria_srcdst_both_networkhost = 7
 };
 
 struct spindump_connection_searchcriteria {

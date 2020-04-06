@@ -258,6 +258,21 @@ spindump_analyze_event_parseside1host(const struct spindump_event* event) {
 }
 
 //
+// Check that the given event side2 address/network is indeed a host
+// not a network
+//
+
+static int
+spindump_analyze_event_parseside2host(const struct spindump_event* event) {
+  int host = spindump_network_ishost(&event->responderAddress);
+  if (!host) {
+    spindump_errorf("responder in this aggregate connection must be a host address");
+    return(0);
+  }
+  return(1);
+}
+
+//
 // Parse the session id of an event representing an TCP/UDP/etc
 // connection that has two ports.
 //
@@ -596,15 +611,6 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
                                                                state->table);
     break;
     
-  case spindump_connection_aggregate_hostmultinet:
-    if (!spindump_analyze_event_parseside1host(event)) return;
-    *p_connection =
-      spindump_connections_newconnection_aggregate_hostmultinet(&event->initiatorAddress.address,
-                                                                &when,
-                                                                0,
-                                                                state->table);
-    break;
-    
   case spindump_connection_aggregate_networknetwork:
     *p_connection =
       spindump_connections_newconnection_aggregate_networknetwork(0,
@@ -615,9 +621,21 @@ spindump_analyze_processevent_new_connection(struct spindump_analyze* state,
                                                                   state->table);
     break;
     
+  case spindump_connection_aggregate_hostmultinet:
+    if (!spindump_analyze_event_parsehostpair(event)) return;
+    *p_connection =
+      spindump_connections_newconnection_aggregate_hostmultinet(&event->initiatorAddress.address,
+                                                                &event->responderAddress.address,
+                                                                &when,
+                                                                0,
+                                                                state->table);
+    break;
+    
   case spindump_connection_aggregate_networkmultinet:
+    if (!spindump_analyze_event_parseside2host(event)) return;
     *p_connection =
       spindump_connections_newconnection_aggregate_networkmultinet(&event->initiatorAddress,
+                                                                   &event->responderAddress.address,
                                                                    &when,
                                                                    0,
                                                                    state->table);
@@ -1165,6 +1183,22 @@ spindump_analyze_processevent_find_connection(struct spindump_analyze* state,
                                                                      state->table);
     break;
     
+  case spindump_connection_aggregate_hostmultinet:
+    if (!spindump_analyze_event_parsehostpair(event)) return(0);
+    connection =
+      spindump_connections_searchconnection_aggregate_hostmultinet(&event->initiatorAddress.address,
+                                                                   &event->responderAddress.address,
+                                                                   state->table);
+    break;
+
+  case spindump_connection_aggregate_networkmultinet:
+    if (!spindump_analyze_event_parseside2host(event)) return(0);
+    connection =
+      spindump_connections_searchconnection_aggregate_networkmultinet(&event->initiatorAddress,
+                                                                      &event->responderAddress.address,
+                                                                      state->table);
+    break;
+
   case spindump_connection_aggregate_multicastgroup:
     if (!spindump_analyze_event_parseside1host(event)) return(0);
     connection =
@@ -1172,9 +1206,6 @@ spindump_analyze_processevent_find_connection(struct spindump_analyze* state,
                                                                      state->table);
     break;
     
-  case spindump_connection_aggregate_hostmultinet:
-  case spindump_connection_aggregate_networkmultinet:
-    return(0); // TBD ... not supported yet
     
   default:
     spindump_errorf("invalid connection type %u", event->connectionType);

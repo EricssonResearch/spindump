@@ -462,9 +462,9 @@ spindump_connection_report_networknetwork(struct spindump_connection* connection
                                           FILE* file,
                                           int anonymize,
                                           struct spindump_reverse_dns* querier) {
-  fprintf(file,"  network 1:               %40s\n",
+  fprintf(file,"  network 1:             %40s\n",
           spindump_network_tostring(&connection->u.aggregatenetworknetwork.side1Network));
-  fprintf(file,"  network 2:               %40s\n",
+  fprintf(file,"  network 2:             %40s\n",
           spindump_network_tostring(&connection->u.aggregatenetworknetwork.side2Network));
   fprintf(file,"  aggregates:            %40s\n",
           spindump_connections_set_listids(&connection->u.aggregatenetworknetwork.connections));
@@ -483,7 +483,10 @@ spindump_connection_report_hostmultinet(struct spindump_connection* connection,
           spindump_connection_address_tostring(anonymize,
                                                &connection->u.aggregatehostmultinet.side1peerAddress,
                                                querier));
-  fprintf(file,"  network: multiple\n");
+  fprintf(file,"  identifier:            %40s\n",
+          spindump_connection_address_tostring(0,
+                                               &connection->u.aggregatehostmultinet.identifier,
+                                               querier));
   fprintf(file,"  aggregates:            %40s\n",
           spindump_connections_set_listids(&connection->u.aggregatehostmultinet.connections));
 }
@@ -497,9 +500,12 @@ spindump_connection_report_networkmultinet(struct spindump_connection* connectio
                                            FILE* file,
                                            int anonymize,
                                            struct spindump_reverse_dns* querier) {
-  fprintf(file,"  network 1:               %40s\n",
+  fprintf(file,"  network 1:             %40s\n",
           spindump_network_tostring(&connection->u.aggregatenetworkmultinet.side1Network));
-  fprintf(file,"  network 2: multiple\n");
+  fprintf(file,"  identifier:            %40s\n",
+          spindump_connection_address_tostring(0,
+                                               &connection->u.aggregatenetworkmultinet.identifier,
+                                               querier));
   fprintf(file,"  aggregates:            %40s\n",
           spindump_connections_set_listids(&connection->u.aggregatenetworkmultinet.connections));
 }
@@ -787,12 +793,16 @@ spindump_connection_addresses(struct spindump_connection* connection,
                      spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostmultinet.side1peerAddress,querier),
                      sizeof(buf));
     spindump_strlcat(buf,middle,sizeof(buf));
-    spindump_strlcat(buf,"multiple",sizeof(buf));
+    spindump_strlcat(buf,
+                     spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatehostmultinet.identifier,querier),
+                     sizeof(buf));
     break;
   case spindump_connection_aggregate_networkmultinet:
     spindump_strlcpy(buf,spindump_network_tostring(&connection->u.aggregatenetworkmultinet.side1Network),sizeof(buf));
     spindump_strlcat(buf,middle,sizeof(buf));
-    spindump_strlcat(buf,"multiple",sizeof(buf));
+    spindump_strlcat(buf,
+                     spindump_connection_address_tostring(anonymizeLeft,&connection->u.aggregatenetworkmultinet.identifier,querier),
+                     sizeof(buf));
     break;
   case spindump_connection_aggregate_multicastgroup:
     spindump_strlcpy(buf,spindump_address_tostring(&connection->u.aggregatemulticastgroup.group),sizeof(buf));

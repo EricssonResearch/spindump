@@ -152,14 +152,20 @@ spindump_connections_getaddresses(struct spindump_connection* connection,
     *p_side2address = &connection->u.aggregatehostpair.side2peerAddress;
     break;
   case spindump_connection_aggregate_hostnetwork:
-  case spindump_connection_aggregate_hostmultinet:
     *p_side1address = &connection->u.aggregatehostnetwork.side1peerAddress;
     *p_side2address = 0;
     break;
   case spindump_connection_aggregate_networknetwork:
-  case spindump_connection_aggregate_networkmultinet:
     *p_side1address = 0;
     *p_side2address = 0;
+    break;
+  case spindump_connection_aggregate_hostmultinet:
+    *p_side1address = &connection->u.aggregatehostmultinet.side1peerAddress;
+    *p_side2address = &connection->u.aggregatehostmultinet.identifier;
+    break;
+  case spindump_connection_aggregate_networkmultinet:
+    *p_side1address = 0;
+    *p_side2address = &connection->u.aggregatenetworkmultinet.identifier;
     break;
   case spindump_connection_aggregate_multicastgroup:
     *p_side1address = 0;
@@ -230,12 +236,12 @@ spindump_connections_getnetworks(struct spindump_connection* connection,
     *p_side2network = connection->u.aggregatenetworknetwork.side2Network;
     break;
   case spindump_connection_aggregate_hostmultinet:
-    spindump_network_fromaddress(&connection->u.aggregatehostnetwork.side1peerAddress,p_side1network);
-    spindump_network_fromempty(AF_INET,p_side2network);
+    spindump_network_fromaddress(&connection->u.aggregatehostmultinet.side1peerAddress,p_side1network);
+    spindump_network_fromaddress(&connection->u.aggregatehostmultinet.identifier,p_side2network);
     break;
   case spindump_connection_aggregate_networkmultinet:
-    *p_side1network = connection->u.aggregatenetworknetwork.side1Network;
-    spindump_network_fromempty(AF_INET,p_side2network);
+    *p_side1network = connection->u.aggregatenetworkmultinet.side1Network;
+    spindump_network_fromaddress(&connection->u.aggregatenetworkmultinet.identifier,p_side2network);
     break;
   case spindump_connection_aggregate_multicastgroup:
     spindump_network_fromempty(AF_INET,p_side1network);
@@ -767,7 +773,8 @@ spindump_connections_matches_aggregate_connection(int seenMatch,
     
   case spindump_connection_aggregate_hostmultinet:
   case spindump_connection_aggregate_networkmultinet:
-    return(0); // TBD ... not implemented yet
+    spindump_errorf("cannot do direct matching with a multinet aggregate");
+    return(0);
     
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_connection",
@@ -824,7 +831,8 @@ spindump_connections_matches_aggregate_srcdst(const spindump_address* source,
 
   case spindump_connection_aggregate_hostmultinet:
   case spindump_connection_aggregate_networkmultinet:
-    return(0); // TBD ... not implemented yet
+    spindump_errorf("cannot do direct matching with a multinet aggregate");
+    return(0);
     
   default:
     spindump_errorf("invalid connection type %u in spindump_connections_matches_aggregate_srcdst", aggregate->type);
