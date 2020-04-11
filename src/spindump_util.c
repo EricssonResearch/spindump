@@ -635,6 +635,31 @@ spindump_address_frombytes(spindump_address* address,
 }
 
 //
+// Write address to buffer
+// 
+
+void
+spindump_address_tobytes(const spindump_address* address,
+                         sa_family_t *af,
+                         unsigned char* string) {
+  spindump_assert(address != 0);
+  spindump_assert(af != 0);
+  spindump_assert(address->ss_family == AF_INET || address->ss_family == AF_INET6);
+  *af = address->ss_family;
+  if (address->ss_family == AF_INET) {
+    struct sockaddr_in* actual = (struct sockaddr_in*)address;
+    memcpy(string,
+           (unsigned char*)&actual->sin_addr.s_addr,
+           4);
+  } else {
+    struct sockaddr_in6* actual = (struct sockaddr_in6*)address;
+    memcpy(string,
+           (unsigned char*)&actual->sin6_addr.s6_addr,
+           16);
+  }
+}
+
+//
 // Convert an address to a string. Returned string need not be freed,
 // but will not survive the next call to this same function.
 //
@@ -975,3 +1000,82 @@ spindump_strlcat(char * restrict dst, const char * restrict src, size_t size) {
   return(strlen(src));
 }
 
+//
+// CRC-32c calculation.
+//
+
+// 32 lowest bits of CRC-32c (Castagnoli93) generator polynomial.
+static const uint32_t spindump_crc32c_poly = 0x1edc6f41UL;
+
+static uint32_t spindump_crc32c_table[256];
+static int spindump_crc32c_setup_done;
+
+static inline unsigned char
+spindump_crc32c_bitrev8(unsigned char byte)
+{
+  unsigned char rev;
+
+  rev = (byte >> 4 & 0x0f) | (byte << 4 & 0xf0);
+  rev = (rev >> 2 & 0x33) | (rev << 2 & 0xcc);
+  rev = (rev >> 1 & 0x55) | (rev << 1 & 0xaa);
+  return rev;
+}
+
+static inline uint32_t
+spindump_crc32c_bitrev32(uint32_t quad)
+{
+  uint32_t rev;
+
+  rev = (quad >> 4 & 0x0f0f0f0f) | (quad << 4 & 0xf0f0f0f0);
+  rev = (rev >> 2 & 0x33333333) | (rev << 2 & 0xcccccccc);
+  rev = (rev >> 1 & 0x55555555) | (rev << 1 & 0xaaaaaaaa);
+  return rev;
+}
+
+static void
+spindump_crc32c_setup(void)
+{
+  uint32_t rem;
+  unsigned i, j;
+
+  for (i = 0; i < 256; i++) {
+    rem = (uint32_t)i << 24;
+    for (j = 0; j < 8; j++) {
+      if ((rem & 0x80000000))
+        rem = (rem << 1) ^ spindump_crc32c_poly;
+      else
+        rem = (rem << 1);
+    }
+    spindump_crc32c_table[spindump_crc32c_bitrev8(i)] = spindump_crc32c_bitrev32(rem);
+  }
+}
+
+uint32_t
+spindump_crc32c_init(void)
+{
+  if (!spindump_crc32c_setup_done) {
+    spindump_crc32c_setup_done = 1;
+    spindump_crc32c_setup();
+  }
+  return 0xffffffff;
+}
+
+uint32_t
+spindump_crc32c_update(uint32_t digest, unsigned char* buf, size_t len)
+{
+  unsigned int i;
+  uint32_t newdig = digest;
+  unsigned char byte;
+
+  for (i = 0; i < len; i++) {
+    byte = (newdig >> 24) ^ buf[i];
+    newdig = (newdig << 8) ^ spindump_crc32c_table[byte];
+  }
+  return newdig;
+}
+
+uint32_t
+spindump_crc32c_finish(uint32_t digest)
+{
+  return ~digest;
+}

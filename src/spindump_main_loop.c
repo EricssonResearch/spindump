@@ -605,11 +605,8 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                      1,
                                                                                      analyzer->table);
     } else if (aggregate->side1ishost && aggregate->side2type == multinet) {
-      uint32_t bytes = rand();
-      spindump_address identifier;
-      spindump_address_frombytes(&identifier, AF_INET, (void *)&bytes);
       aggregateConnection = spindump_connections_newconnection_aggregate_hostmultinet(&aggregate->side1address,
-                                                                                      &identifier,
+                                                                                      &aggregate->side2address,
                                                                                       &startTime,
                                                                                       1,
                                                                                       analyzer->table);
@@ -628,11 +625,8 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                         1,
                                                                                         analyzer->table);
     } else if (!aggregate->side1ishost && aggregate->side2type == multinet) {
-      uint32_t bytes = rand();
-      spindump_address identifier;
-      spindump_address_frombytes(&identifier, AF_INET, (void *)&bytes);
       aggregateConnection = spindump_connections_newconnection_aggregate_networkmultinet(&aggregate->side1network,
-                                                                                         &identifier,
+                                                                                         &aggregate->side2address,
                                                                                          &startTime,
                                                                                          1,
                                                                                          analyzer->table);

@@ -765,6 +765,44 @@ spindump_main_processargs(int argc,
       overlaps++;
     }
   }
+
+  //
+  // Create an identifier for each multinet aggregate by creating a digest of the networks
+  // belonging to that aggregate, in sort order. Place the identifier in the side 2 address
+  // of the aggregate.
+  //
+
+  for (unsigned int i = 0; i < config->nAggregates; i++) {
+    struct spindump_main_aggregate* a = &config->aggregates[i];
+    if (config->aggregates[i].side2type != multinet)
+      continue;
+    uint32_t digest = spindump_crc32c_init();
+    spindump_address_frombytes(&a->side2address, AF_INET, (void *)&digest);
+  }
+  for (unsigned int i = 0; i < config->nAggrnetws; i++) {
+    struct spindump_main_aggrnetw* anw = &config->aggrnetws[i];
+    unsigned char addrbytes[16], lenbyte;
+    sa_family_t af;
+    uint32_t digest;
+    spindump_assert(anw->aggregate->side2type == multinet);
+    spindump_address_tobytes(&anw->aggregate->side2address, &af, (void *)&digest);
+    spindump_assert(af == AF_INET);
+    spindump_address_tobytes(&anw->network.address, &af, addrbytes);
+    lenbyte = (unsigned char)anw->network.length;
+    digest = spindump_crc32c_update(digest, addrbytes, af == AF_INET ? 4 : 16);
+    digest = spindump_crc32c_update(digest, &lenbyte, 1);
+    spindump_address_frombytes(&anw->aggregate->side2address, AF_INET, (void *)&digest);
+  }
+  for (unsigned int i = 0; i < config->nAggregates; i++) {
+    struct spindump_main_aggregate* a = &config->aggregates[i];
+    if (config->aggregates[i].side2type != multinet)
+      continue;
+    uint32_t digest;
+    sa_family_t af;
+    spindump_address_tobytes(&a->side2address, &af, (void *)&digest);
+    digest = htonl(spindump_crc32c_finish(digest));
+    spindump_address_frombytes(&a->side2address, AF_INET, (void *)&digest);
+  }
 }
 
 //
