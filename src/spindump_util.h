@@ -113,6 +113,10 @@ void
 spindump_address_frombytes(spindump_address* address,
                            sa_family_t af,
                            const unsigned char* string);
+void
+spindump_address_tobytes(const spindump_address* address,
+                         sa_family_t* af,
+                         unsigned char* string);
 const char*
 spindump_address_tostring(const spindump_address* address);
 const char*
@@ -188,5 +192,12 @@ size_t
 spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size);
 size_t
 spindump_strlcat(char * restrict dst, const char * restrict src, size_t size);
+
+uint32_t
+spindump_crc32c_init(void);
+uint32_t
+spindump_crc32c_update(uint32_t digest, unsigned char* buf, size_t len);
+uint32_t
+spindump_crc32c_finish(uint32_t digest);
 
 #endif // SPIDUMP_UTIL_H

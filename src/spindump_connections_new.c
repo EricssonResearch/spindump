@@ -776,6 +776,7 @@ spindump_connections_newconnection_aggregate_networknetwork(int defaultMatch,
 
 struct spindump_connection*
 spindump_connections_newconnection_aggregate_hostmultinet(const spindump_address* side1address,
+                                                          const spindump_address* identifier,
                                                           const struct timeval* when,
                                                           int manuallyCreated,
                                                           struct spindump_connectionstable* table) {
@@ -789,6 +790,7 @@ spindump_connections_newconnection_aggregate_hostmultinet(const spindump_address
 
   connection->state = spindump_connection_state_static;
   connection->u.aggregatehostmultinet.side1peerAddress = *side1address;
+  connection->u.aggregatehostmultinet.identifier = *identifier;
   spindump_debugf("created a new host-multinet aggregate onnection %u", connection->id);
   return(connection);
 }
@@ -800,6 +802,7 @@ spindump_connections_newconnection_aggregate_hostmultinet(const spindump_address
 
 struct spindump_connection*
 spindump_connections_newconnection_aggregate_networkmultinet(const spindump_network* side1network,
+                                                             const spindump_address* identifier,
                                                              const struct timeval* when,
                                                              int manuallyCreated,
                                                              struct spindump_connectionstable* table) {
@@ -813,6 +816,7 @@ spindump_connections_newconnection_aggregate_networkmultinet(const spindump_netw
 
   connection->state = spindump_connection_state_static;
   connection->u.aggregatenetworkmultinet.side1Network = *side1network;
+  connection->u.aggregatenetworkmultinet.identifier = *identifier;
   spindump_debugf("created a new network-multinet aggregate onnection %u", connection->id);
   return(connection);
 }

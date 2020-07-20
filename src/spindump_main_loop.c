@@ -606,6 +606,7 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                      analyzer->table);
     } else if (aggregate->side1ishost && aggregate->side2type == multinet) {
       aggregateConnection = spindump_connections_newconnection_aggregate_hostmultinet(&aggregate->side1address,
+                                                                                      &aggregate->side2address,
                                                                                       &startTime,
                                                                                       1,
                                                                                       analyzer->table);
@@ -625,6 +626,7 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
                                                                                         analyzer->table);
     } else if (!aggregate->side1ishost && aggregate->side2type == multinet) {
       aggregateConnection = spindump_connections_newconnection_aggregate_networkmultinet(&aggregate->side1network,
+                                                                                         &aggregate->side2address,
                                                                                          &startTime,
                                                                                          1,
                                                                                          analyzer->table);

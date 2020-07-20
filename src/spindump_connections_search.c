@@ -248,6 +248,25 @@ spindump_connections_match(struct spindump_connection* connection,
     *fromResponder = 0;
     fromResponderSet = 1;
     break;
+
+  case spindump_connection_searchcriteria_srcdst_both_networkhost:
+    spindump_connections_getnetworks(connection,&side1network,&side2network);
+    if (!spindump_network_equal(&side1network,&criteria->side1network)) {
+      spindump_deepdeepdebugf("match fails because side 1 is not equal");  
+      return(0);
+    }
+    if (!spindump_network_ishost(&side2network)) {
+      spindump_deepdeepdebugf("match fails because side2 is not a host");
+      return(0);
+    }
+    side2address = &side2network.address;
+    if (!spindump_address_equal(side2address,&criteria->side2address)) {
+      spindump_deepdeepdebugf("match fails because side2 is not equal");
+      return(0);
+    }
+    *fromResponder = 0;
+    fromResponderSet = 1;
+    break;
     
   default:
     spindump_errorf("invalid match addresses criteria");
@@ -411,6 +430,7 @@ spindump_connections_match(struct spindump_connection* connection,
     
   case spindump_connection_searchcriteria_srcdst_both_hostnetwork:
   case spindump_connection_searchcriteria_srcdst_both_networknetwork:
+  case spindump_connection_searchcriteria_srcdst_both_networkhost:
   default:
     spindump_errorf("invalid match addresses criteria");
     return(0);
@@ -1231,6 +1251,56 @@ spindump_connections_searchconnection_aggregate_networknetwork(const spindump_ne
   criteria.matchAddresses = spindump_connection_searchcriteria_srcdst_both_networknetwork;
   criteria.side1network = *side1network;
   criteria.side2network = *side2network;
+  
+  int fromResponder;
+  
+  return(spindump_connections_search(&criteria,
+                                     table,
+                                     &fromResponder));
+}
+
+struct spindump_connection*
+spindump_connections_searchconnection_aggregate_hostmultinet(const spindump_address* side1address,
+                                                             const spindump_address* side2address,
+                                                             struct spindump_connectionstable* table) {
+  spindump_assert(side1address != 0);
+  spindump_assert(side2address != 0);
+  spindump_assert(table != 0);
+  
+  struct spindump_connection_searchcriteria criteria;
+  memset(&criteria,0,sizeof(criteria));
+  
+  criteria.matchType = 1;
+  criteria.type = spindump_connection_aggregate_hostmultinet;
+  
+  criteria.matchAddresses = spindump_connection_searchcriteria_srcdst_both;
+  criteria.side1address = *side1address;
+  criteria.side2address = *side2address;
+  
+  int fromResponder;
+  
+  return(spindump_connections_search(&criteria,
+                                     table,
+                                     &fromResponder));
+}
+
+struct spindump_connection*
+spindump_connections_searchconnection_aggregate_networkmultinet(const spindump_network* side1network,
+                                                                const spindump_address* side2address,
+                                                                struct spindump_connectionstable* table) {
+  spindump_assert(side1network != 0);
+  spindump_assert(side2address != 0);
+  spindump_assert(table != 0);
+  
+  struct spindump_connection_searchcriteria criteria;
+  memset(&criteria,0,sizeof(criteria));
+  
+  criteria.matchType = 1;
+  criteria.type = spindump_connection_aggregate_networkmultinet;
+  
+  criteria.matchAddresses = spindump_connection_searchcriteria_srcdst_both_networkhost;
+  criteria.side1network = *side1network;
+  criteria.side2address = *side2address;
   
   int fromResponder;
   

@@ -84,6 +84,7 @@ int main(int argc,char** argv) {
   FILE* debugfile = stderr;
   struct spindump_main_state* state = spindump_main_initialize();
   interruptFlagLocation = &state->interrupt;
+  srand(clock());
   
   if (state == 0) exit(1);
   
