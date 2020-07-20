@@ -345,6 +345,7 @@ spindump_connections_match(struct spindump_connection* connection,
     break;
     
   case spindump_connection_searchcriteria_srcdst_both_hostnetwork:
+  case spindump_connection_searchcriteria_srcdst_both_networkhost:
   case spindump_connection_searchcriteria_srcdst_both_networknetwork:
   default:
     spindump_errorf("invalid match addresses criteria");

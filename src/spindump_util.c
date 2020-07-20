@@ -647,14 +647,14 @@ spindump_address_tobytes(const spindump_address* address,
   spindump_assert(address->ss_family == AF_INET || address->ss_family == AF_INET6);
   *af = address->ss_family;
   if (address->ss_family == AF_INET) {
-    struct sockaddr_in* actual = (struct sockaddr_in*)address;
+    const struct sockaddr_in* actual = (const struct sockaddr_in*)address;
     memcpy(string,
-           (unsigned char*)&actual->sin_addr.s_addr,
+           (const unsigned char*)&actual->sin_addr.s_addr,
            4);
   } else {
-    struct sockaddr_in6* actual = (struct sockaddr_in6*)address;
+    const struct sockaddr_in6* actual = (const struct sockaddr_in6*)address;
     memcpy(string,
-           (unsigned char*)&actual->sin6_addr.s6_addr,
+           (const unsigned char*)&actual->sin6_addr.s6_addr,
            16);
   }
 }
@@ -1046,7 +1046,8 @@ spindump_crc32c_setup(void)
       else
         rem = (rem << 1);
     }
-    spindump_crc32c_table[spindump_crc32c_bitrev8(i)] = spindump_crc32c_bitrev32(rem);
+    unsigned char idx = spindump_crc32c_bitrev8((unsigned char)i);
+    spindump_crc32c_table[idx] = spindump_crc32c_bitrev32(rem);
   }
 }
 
