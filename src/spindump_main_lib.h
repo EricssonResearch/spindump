@@ -44,6 +44,12 @@ enum spindump_toolmode {
   spindump_toolmode_visual
 };
 
+enum side_type {
+  network,
+  host,
+  multinet
+};
+
 //
 // Data structures ----------------------------------------------------------------------------
 //
@@ -57,7 +63,7 @@ struct spindump_main_aggregate {
   int defaultMatch;
   int ismulticastgroup;
   int side1ishost;
-  enum {network, host, multinet} side2type;
+  enum side_type side2type;
   spindump_tags tags;
   uint8_t padding[4]; // unused padding to align the next field properly
   spindump_address side1address;
