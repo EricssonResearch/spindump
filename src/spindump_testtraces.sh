@@ -59,6 +59,7 @@ traces="trace_icmpv4_short
         trace_cmd_tags_aggregate
         trace_cmd_aggregate_regular
         trace_cmd_aggregate_default
+        trace_cmd_aggregate_multinet
         trace_tcp_short
         trace_tcp_short_json trace_dns
         trace_quic_v18_short_spin
@@ -203,6 +204,7 @@ do
     if [ -f $optsfile ]
     then
         opts=`cat $optsfile | sed 's@ test/@ '$testdir'/@'`
+        opts=`eval echo $opts`
     fi
     if [ -f $pcapng ]
     then
@@ -257,6 +259,8 @@ do
       /Event.: .delete./ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*NET2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*H2NET.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
+      /Event.: .new.*NET2MUL.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
+      /Event.: .new.*H2MUL.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /Event.: .new.*HOSTS.*/ { gsub(/ .Ts.: [0-9]+,/,""); print $0; next; }
       /^H2NET.* new .*/ { gsub(/ at [0-9]+ /," "); print $0; next; }
       /^HOSTS.* new .*/ { gsub(/ at [0-9]+ /," "); print $0; next; }

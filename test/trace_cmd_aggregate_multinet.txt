@@ -1,0 +1,1 @@
+Test matching of aggregates with multiple networks. There's ICMP traffic to eight destinations, and we use two aggregates, one specific to ICMP traffic to Google, and the second one specific to Facebook.
