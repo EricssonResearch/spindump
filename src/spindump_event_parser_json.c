@@ -223,7 +223,7 @@ static struct spindump_json_schema recordschema = {
   .callback = 0,
   .u = {
     .record = {
-      .nFields = 39,
+      .nFields = 43,
       .fields = {
         { .required = 1, .name = "Event", .schema = &fieldeventschema },
         { .required = 1, .name = "Type", .schema = &fieldtypeschema },
@@ -247,6 +247,10 @@ static struct spindump_json_schema recordschema = {
         { .required = 0, .name = "Dev_right_rtt", .schema = &fieldrttschema },
         { .required = 0, .name = "Dev_full_rtt_initiator", .schema = &fieldrttschema },
         { .required = 0, .name = "Dev_full_rtt_responder", .schema = &fieldrttschema },
+        { .required = 0, .name = "Min_left_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Min_right_rtt", .schema = &fieldrttschema },
+        { .required = 0, .name = "Min_full_rtt_initiator", .schema = &fieldrttschema },
+        { .required = 0, .name = "Min_full_rtt_responder", .schema = &fieldrttschema },
         { .required = 0, .name = "Value", .schema = &fieldvalueschema },
         { .required = 0, .name = "Transition", .schema = &fieldtransitionschema },
         { .required = 0, .name = "Who", .schema = &fieldwhoschema },
@@ -631,30 +635,35 @@ spindump_event_parser_json_parse_aux_new_rtt_measurement(const struct spindump_j
   const struct spindump_json_value* field = 0;
   const struct spindump_json_value* avgfield = 0;
   const struct spindump_json_value* devfield = 0;
+  const struct spindump_json_value* minfield = 0;
   const struct spindump_json_value* filtavgfield = 0;
   if ((field = spindump_json_value_getfield("Left_rtt",json)) != 0) {
     event->u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
     event->u.newRttMeasurement.direction = spindump_direction_frominitiator;
     avgfield = spindump_json_value_getfield("Avg_left_rtt",json);
     devfield = spindump_json_value_getfield("Dev_left_rtt",json);
+    minfield = spindump_json_value_getfield("Min_left_rtt",json);
     filtavgfield = spindump_json_value_getfield("Filt_avg_left_rtt",json);
   } else if ((field = spindump_json_value_getfield("Right_rtt",json)) != 0) {
     event->u.newRttMeasurement.measurement = spindump_measurement_type_bidirectional;
     event->u.newRttMeasurement.direction = spindump_direction_fromresponder;
     avgfield = spindump_json_value_getfield("Avg_right_rtt",json);
     devfield = spindump_json_value_getfield("Dev_right_rtt",json);
+    minfield = spindump_json_value_getfield("Min_right_rtt",json);
     filtavgfield = spindump_json_value_getfield("Filt_avg_right_rtt",json);
   } else if ((field = spindump_json_value_getfield("Full_rtt_initiator",json)) != 0) {
     event->u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
     event->u.newRttMeasurement.direction = spindump_direction_frominitiator;
     avgfield = spindump_json_value_getfield("Avg_full_rtt_initiator",json);
     devfield = spindump_json_value_getfield("Dev_full_rtt_initiator",json);
+    minfield = spindump_json_value_getfield("Min_full_rtt_initiator",json);
     filtavgfield = spindump_json_value_getfield("Filt_avg_full_rtt_initiator",json);
   } else if ((field = spindump_json_value_getfield("Full_rtt_responder",json)) != 0) {
     event->u.newRttMeasurement.measurement = spindump_measurement_type_unidirectional;
     event->u.newRttMeasurement.direction = spindump_direction_fromresponder;
     avgfield = spindump_json_value_getfield("Avg_full_rtt_responder",json);
     devfield = spindump_json_value_getfield("Dev_full_rtt_responder",json);
+    minfield = spindump_json_value_getfield("Min_full_rtt_responder",json);
     filtavgfield = spindump_json_value_getfield("Filt_avg_full_rtt_responder",json);
   } else {
     spindump_errorf("new RTT measurement event does not have the necessary JSON fields");
@@ -663,6 +672,7 @@ spindump_event_parser_json_parse_aux_new_rtt_measurement(const struct spindump_j
   unsigned long long value = spindump_json_value_getinteger(field);
   unsigned long long avgValue;
   unsigned long long devValue;
+  unsigned long long minValue;
   unsigned long long filtAvgValue;
   event->u.newRttMeasurement.rtt = (unsigned long)value;
   if (avgfield != 0 &&
@@ -672,6 +682,10 @@ spindump_event_parser_json_parse_aux_new_rtt_measurement(const struct spindump_j
   if (devfield != 0 &&
       (devValue = spindump_json_value_getinteger(devfield)) > 0) {
     event->u.newRttMeasurement.devRtt = (unsigned long)devValue;
+  }
+  if (minfield != 0 &&
+      (minValue = spindump_json_value_getinteger(minfield)) > 0) {
+    event->u.newRttMeasurement.minRtt = (unsigned long)minValue;
   }
   if (filtavgfield != 0 &&
       (filtAvgValue = spindump_json_value_getinteger(filtavgfield)) > 0) {
@@ -1026,12 +1040,15 @@ spindump_event_parser_json_print(const struct spindump_event* event,
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
         addtobuffer2(", \"Left_rtt\": %lu", event->u.newRttMeasurement.rtt);
         if (event->u.newRttMeasurement.avgRtt > 0) {
-          addtobuffer2(", \"Avg_Left_rtt\": %lu", event->u.newRttMeasurement.avgRtt);
-          addtobuffer2(", \"Dev_Left_rtt\": %lu", event->u.newRttMeasurement.devRtt);
+          addtobuffer2(", \"Avg_left_rtt\": %lu", event->u.newRttMeasurement.avgRtt);
+          addtobuffer2(", \"Dev_left_rtt\": %lu", event->u.newRttMeasurement.devRtt);
         }
         if (event->u.newRttMeasurement.filtAvgRtt > 0) {
-          addtobuffer2(", \"Filt_avg_Left_rtt\": %lu", event->u.newRttMeasurement.filtAvgRtt);
+          addtobuffer2(", \"Filt_avg_left_rtt\": %lu", event->u.newRttMeasurement.filtAvgRtt);
         }
+       if (event->u.newRttMeasurement.minRtt > 0) {
+          addtobuffer2(", \"Min_left_rtt\": %lu", event->u.newRttMeasurement.minRtt);
+       }
       } else {
         addtobuffer2(", \"Right_rtt\": %lu", event->u.newRttMeasurement.rtt);
         if (event->u.newRttMeasurement.avgRtt > 0) {
@@ -1041,6 +1058,10 @@ spindump_event_parser_json_print(const struct spindump_event* event,
         if (event->u.newRttMeasurement.filtAvgRtt > 0) {
           addtobuffer2(", \"Filt_avg_right_rtt\": %lu", event->u.newRttMeasurement.filtAvgRtt);
         }
+       if (event->u.newRttMeasurement.minRtt > 0) {
+          addtobuffer2(", \"Min_right_rtt\": %lu", event->u.newRttMeasurement.minRtt);
+       }
+
       }
     } else {
       if (event->u.newRttMeasurement.direction == spindump_direction_frominitiator) {
@@ -1052,6 +1073,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
         if (event->u.newRttMeasurement.filtAvgRtt > 0) {
           addtobuffer2(", \"Filt_avg_full_rtt_initiator\": %lu", event->u.newRttMeasurement.filtAvgRtt);
         }
+       if (event->u.newRttMeasurement.minRtt > 0) {
+          addtobuffer2(", \"Min_full_rtt_initiator\": %lu", event->u.newRttMeasurement.minRtt);
+       }
       } else {
         addtobuffer2(", \"Full_rtt_responder\": %lu", event->u.newRttMeasurement.rtt);
         if (event->u.newRttMeasurement.avgRtt > 0) {
@@ -1061,6 +1085,9 @@ spindump_event_parser_json_print(const struct spindump_event* event,
         if (event->u.newRttMeasurement.filtAvgRtt > 0) {
           addtobuffer2(", \"Filt_avg_full_rtt_responder\": %lu", event->u.newRttMeasurement.filtAvgRtt);
         }
+       if (event->u.newRttMeasurement.minRtt > 0) {
+          addtobuffer2(", \"Min_full_rtt_responder\": %lu", event->u.newRttMeasurement.minRtt);
+       }
       }
     }
     break;
