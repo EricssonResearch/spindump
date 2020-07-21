@@ -593,7 +593,7 @@ spindump_main_processargs(int argc,
       // group). Get the second of the two arguments
       //
 
-      enum {network, host, multinet} side2type = network;
+      enum side_type side2type = network;
       spindump_address side2address;
       spindump_network side2network;
       struct spindump_main_network_entry *side2networks = NULL;
