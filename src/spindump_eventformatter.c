@@ -1149,8 +1149,8 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
                                                         formatter->block);
         formatter->bytesInBlock = 0;
         spindump_eventformatter_measurement_begin(formatter);
-        memcpy(formatter->block,data,length);
-        formatter->bytesInBlock = length;
+        memcpy(formatter->block + formatter->bytesInBlock,data,length);
+        formatter->bytesInBlock += length;
         
       }
     }
