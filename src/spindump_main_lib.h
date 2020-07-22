@@ -41,7 +41,8 @@
 enum spindump_toolmode {
   spindump_toolmode_silent,
   spindump_toolmode_textual,
-  spindump_toolmode_visual
+  spindump_toolmode_visual,
+  spindump_toolmode_connection
 };
 
 enum side_type {

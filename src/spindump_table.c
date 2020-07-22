@@ -336,6 +336,15 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
                   reason);
   
   //
+  // Print connection statistics
+  // TODO: calculate connection statistics before that
+  //
+
+  //spindump_connection_report(connection,stdout,0,0);
+  //TODO if config->toolmode ==spindump_toolmode_connection and json print json here
+  //if text only small text
+
+  //
   // Call some handlers
   //
   
