@@ -83,7 +83,8 @@ spindump_reverse_dns_query(spindump_address* address,
   //
 
   spindump_assert(address != 0);
-  spindump_assert(service != 0);
+  //spindump_assert(service != 0);
+  if (service == 0) return (0); //FIXME
   spindump_assert(spindump_isbool(service->noop));
 
   //
