@@ -360,7 +360,7 @@ spindump_main_processargs(int argc,
 
       config->toolmode = spindump_toolmode_connection;
 
-  	} else if (strcmp(argv[0],"--tag") == 0 && argc > 1) {
+    } else if (strcmp(argv[0],"--tag") == 0 && argc > 1) {
 
       if (!spindump_tags_addtag(&config->defaultTags,argv[1])) {
         spindump_errorf("cannot add too many or too long tag values");
