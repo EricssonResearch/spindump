@@ -61,6 +61,11 @@ spindump_connection_addtobuf(char* buf,
 static void
 spindump_connection_report_rtt_histogram(struct spindump_rtt* rtt,
                                          FILE* file);
+
+static void
+spindump_connection_report_rtt_histogram_json(struct spindump_rtt* rtt,
+                                              FILE* file);
+
 static void
 spindump_connection_report_udp(struct spindump_connection* connection,
                                FILE* file,
@@ -1314,16 +1319,21 @@ spindump_connection_report_rtt_histogram(struct spindump_rtt* rtt,
                                          FILE* file)
 {
   const char *marker[] = { "_", "\u2591", "\u2592", "\u2593", "\u2588" };
-  unsigned int max = rtt->rttHisto[0][0];
+  unsigned long max = 0;
+  unsigned long sum = 0;
   char buff[256];
   memset(buff, 0, sizeof(buff) * sizeof(char));
 
-  //Search for the max RTT
+  //Search for the max number of RTT samples in an interval
+  //Calculate the total number of RTT samples (sum)
   for (int i = 0; i < 5; ++i)
-    for (int j = 0; j < 10; ++j)
-    if (rtt->rttHisto[i][j] > max)
-      max = rtt->rttHisto[i][j];
-  if(max == 0)
+    for (int j = 0; j < 10; ++j) {
+      sum += rtt->rttHisto[i][j];
+      if (rtt->rttHisto[i][j] > max)
+        max = rtt->rttHisto[i][j];
+    }
+
+  if(sum < 10) //min 10 samples to plot histogram
     return;
 
   for (int i = 0; i < 5; ++i) {
@@ -1350,4 +1360,35 @@ spindump_connection_report_rtt_histogram(struct spindump_rtt* rtt,
   fprintf(file, "       1ms|    10ms|    0.1s|      1s|     10s|\n");
   fprintf(file, "          |        |        |        |        |\n");
   fprintf(file, "  %s\n", buff);
+  spindump_connection_report_rtt_histogram_json(rtt,file);
 }
+
+static void
+spindump_connection_report_rtt_histogram_json(struct spindump_rtt* rtt,
+                                              FILE* file)
+{
+  /*unsigned int max = rtt->rttHisto[0][0];
+  //Search for the max RTT
+  for (int i = 0; i < 5; ++i)
+    for (int j = 0; j < 10; ++j)
+    if (rtt->rttHisto[i][j] > max)
+      max = rtt->rttHisto[i][j];
+  if(max == 0)
+    return;*/
+
+  char* ident="  ";
+  fprintf(file,"%s[\n",ident);
+
+  for (int i = 0; i < 5; ++i) {
+    if (i>0) fprintf(file,",\n");
+    fprintf(file,"%s  [",ident);
+    for (int j = 0; j < 10; ++j) {
+      if (j>0) fprintf(file,",");
+      fprintf(file,"%lu",rtt->rttHisto[i][j]);
+    }
+    fprintf(file,"]");
+  }
+  fprintf(file,"\n%s]\n",ident);
+
+}
+
