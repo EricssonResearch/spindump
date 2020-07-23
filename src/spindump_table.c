@@ -37,7 +37,8 @@ static void
 spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connection,
                                             const struct timeval* now,
                                             struct spindump_connectionstable* table,
-                                            struct spindump_analyze* analyzer);
+                                            struct spindump_analyze* analyzer,
+                                            int print_info);
 static void
 spindump_connectionstable_compresstable(struct spindump_connectionstable* table);
 static void
@@ -175,7 +176,8 @@ static void
 spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connection,
                                             const struct timeval* now,
                                             struct spindump_connectionstable* table,
-                                            struct spindump_analyze* analyzer) {
+                                            struct spindump_analyze* analyzer,
+                                            int print_info) {
 
 
   //
@@ -213,7 +215,7 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
   if (connection->deleted &&
       lastAction >= (unsigned long long)(spindump_connection_deleted_timeout)) {
     
-    spindump_connectionstable_deleteconnection(connection,table,analyzer,"closed");
+    spindump_connectionstable_deleteconnection(connection,table,analyzer,"closed",print_info);
     stats->connectionsDeletedClosed++;
     
   } else if (spindump_connections_isestablishing(connection) &&
@@ -223,13 +225,13 @@ spindump_connectionstable_periodiccheck_aux(struct spindump_connection* connecti
                         lastAction,
                         spindump_connection_establishing_timeout,
                         (unsigned long long)(spindump_connection_establishing_timeout));
-    spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed connection attempt");
+    spindump_connectionstable_deleteconnection(connection,table,analyzer,"failed connection attempt",print_info);
     stats->connectionsDeletedInactive++;
     
   } else if (lastAction >= (unsigned long long)(spindump_connection_inactive_timeout) &&
              !connection->remote) {
     
-    spindump_connectionstable_deleteconnection(connection,table,analyzer,"inactive");
+    spindump_connectionstable_deleteconnection(connection,table,analyzer,"inactive",print_info);
     stats->connectionsDeletedInactive++;
     
   }
@@ -280,7 +282,9 @@ spindump_connectionstable_periodicreport(struct spindump_connectionstable* table
 int
 spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
                                         const struct timeval* now,
-                                        struct spindump_analyze* analyzer) {
+                                        struct spindump_analyze* analyzer,
+                                        int print_info
+                                        ) {
   spindump_assert(now->tv_sec > 0);
   spindump_assert(now->tv_usec < 1000 * 1000);
   if (table->lastPeriodicCheck.tv_sec != now->tv_sec) {
@@ -291,7 +295,7 @@ spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
     
     for (unsigned int i = 0; i < table->nConnections; i++) {
       struct spindump_connection* connection = table->connections[i];
-      if (connection != 0) spindump_connectionstable_periodiccheck_aux(connection,now,table,analyzer);
+      if (connection != 0) spindump_connectionstable_periodiccheck_aux(connection,now,table,analyzer,print_info);
     }
     spindump_connectionstable_compresstable(table);
     table->lastPeriodicCheck = *now;
@@ -320,7 +324,8 @@ void
 spindump_connectionstable_deleteconnection(struct spindump_connection* connection,
                                            struct spindump_connectionstable* table,
                                            struct spindump_analyze* analyzer,
-                                           const char* reason) {
+                                           const char* reason,
+                                           int print_info) {
 
   //
   // Do some checks & print debugs
@@ -340,7 +345,7 @@ spindump_connectionstable_deleteconnection(struct spindump_connection* connectio
   // TODO: calculate connection statistics before that
   //
 
-  spindump_connection_report(connection,stdout,0,0);
+  if (print_info) spindump_connection_report(connection,stdout,0,0);
   //TODO if config->toolmode ==spindump_toolmode_connection and json print json here
   //if text only small text
 

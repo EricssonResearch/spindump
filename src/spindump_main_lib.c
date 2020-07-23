@@ -359,6 +359,7 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--connection") == 0) {
 
       config->toolmode = spindump_toolmode_connection;
+      config->showStats = 1;
 
     } else if (strcmp(argv[0],"--tag") == 0 && argc > 1) {
 
