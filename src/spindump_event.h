@@ -89,6 +89,7 @@ struct spindump_event_new_rtt_measurement {
   unsigned long avgRtt;
   unsigned long devRtt;
   unsigned long filtAvgRtt;
+  unsigned long minRtt;
 };
 
 struct spindump_event_periodic {

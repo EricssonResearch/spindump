@@ -51,6 +51,7 @@ spindump_rtt_initialize(struct spindump_rtt* rtt) {
   rtt->lastRTT = spindump_rtt_infinite;
   rtt->lastMovingAvgRTT = spindump_rtt_infinite;
   rtt->lastStandardDeviation = spindump_rtt_infinite;
+  rtt->minimumRTT = spindump_rtt_infinite;
   rtt->recentTableIndex = 0;
   for (unsigned int i = 0; i < spindump_rtt_nrecent; i++) {
     rtt->recentRTTs[i] = spindump_rtt_infinite;
@@ -96,6 +97,14 @@ spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
   rtt->recentTableIndex++;
   rtt->recentTableIndex %= spindump_rtt_nrecent;
   spindump_assert(rtt->recentTableIndex < spindump_rtt_nrecent);
+
+  //
+  // Update minimum RTT
+  //
+
+  if(rtt->lastRTT < rtt->minimumRTT) {
+    rtt->minimumRTT = rtt->lastRTT;
+  }
 
   return(rtt->lastRTT);
 }

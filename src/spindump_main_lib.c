@@ -162,6 +162,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->reportQlLoss = 0;
   config->reportPackets = 0;
   config->reportNotes = 1;
+  config->reportMinimumRtt = 0;
   config->anonymizeLeft = 0;
   config->anonymizeRight = 0;
   config->filterExceptionalValuesPercentage = 0; // no filtering of RTT values
@@ -317,6 +318,10 @@ spindump_main_processargs(int argc,
     } else if (strcmp(argv[0],"--not-report-notes") == 0) {
 
       config->reportNotes = 0;
+
+    } else if (strcmp(argv[0],"--report-min-rtt") == 0) {
+
+      config->reportMinimumRtt = 1;
 
     } else if (strcmp(argv[0],"--anonymize") == 0) {
 
