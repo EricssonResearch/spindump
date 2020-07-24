@@ -64,9 +64,13 @@ Make sure you have the necessary tools to compile; you'll need the gmake, gcc, a
 
     sudo port install cmake gmake gcc libpcap ncurses curl libmicrohttpd
 
-command. And on linux, do:
+command. On Ubuntu/Debian linux, do:
 
     sudo apt-get install pkg-config cmake make gcc libpcap-dev libncurses5-dev libcurl4-openssl-dev libmicrohttpd-dev
+
+On Fedora linux, do:
+
+    sudo dnf install pkgconf-pkg-config cmake make gcc gcc-c++ libpcap-devel ncurses-devel libcurl-devel openssl-devel libmicrohttpd-devel cppcheck
 
 Then do:
 
