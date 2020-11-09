@@ -110,7 +110,10 @@ add_library(spindumplib
 target_include_directories(spindumplib
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${MICROHTTPD_INCLUDE_DIR}
 )
+
+set_target_properties(spindumplib PROPERTIES COMPILE_FLAGS "-Wno-atomic-implicit-seq-cst")
 
 target_link_libraries(spindumplib
   PRIVATE
@@ -132,6 +135,7 @@ target_link_libraries(spindumplib
 
 add_executable(spindump spindump_main.c spindump_main_lib.c spindump_main_loop.c)
 target_link_libraries(spindump spindumplib)
+target_include_directories(spindump PRIVATE ${MICROHTTPD_INCLUDE_DIR})
 
 #
 # Testing
