@@ -38,10 +38,20 @@
 #include "spindump_analyze.h"
 
 //
+// Datatypes ----------------------------------------------------------------------------------
+//
+
+#ifdef ENUMMHD
+#define MHDRESULT enum MHD_Result
+#else
+#define MHDRESULT int
+#endif
+
+//
 // Function prototypes ------------------------------------------------------------------------
 //
 
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_answer(void *cls,
                               struct MHD_Connection *connection,
                               const char *url,
@@ -56,13 +66,13 @@ spindump_remote_server_getconnectionobject(struct spindump_remote_server* server
 static void
 spindump_remote_server_releaseconnectionobject(struct spindump_remote_server* server,
                                                struct spindump_remote_connection* connection);
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_answer_error(struct MHD_Connection *connection,
                                     unsigned int code,
                                     char* why);
 static void
 spindump_remote_server_printparameters(struct MHD_Connection *connection);
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_printparameter(void *cls,
                                       enum MHD_ValueKind kind, 
                                       const char *key,
@@ -72,11 +82,11 @@ spindump_remote_server_requestcompleted(void *cls,
                                         struct MHD_Connection *connection, 
                                         void **con_cls,
                                         enum MHD_RequestTerminationCode toe);
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_answertopost(struct spindump_remote_server* server,
                                     struct spindump_remote_connection* connectionObject,
                                     struct MHD_Connection *connection);
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_postiterator(void *coninfo_cls,
                                     enum MHD_ValueKind kind,
                                     const char *key,
@@ -321,7 +331,7 @@ spindump_remote_server_releaseconnectionobject(struct spindump_remote_server* se
 // Provide a HTTP error as an answer
 //
 
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_answer_error(struct MHD_Connection *connection,
                                     unsigned int code,
                                     char* why) {
@@ -330,7 +340,7 @@ spindump_remote_server_answer_error(struct MHD_Connection *connection,
   struct MHD_Response *response = MHD_create_response_from_buffer (strlen(why),
                                                                    (void*)why,
                                                                    MHD_RESPMEM_PERSISTENT);
-  enum MHD_Result ret = MHD_queue_response(connection, code, response);
+  MHDRESULT ret = MHD_queue_response(connection, code, response);
   MHD_destroy_response(response);
   return(ret);
 }
@@ -339,7 +349,7 @@ spindump_remote_server_answer_error(struct MHD_Connection *connection,
 // Print a HTTP paremeter (for debugging purposes).
 //
 
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_printparameter(void *cls,
                                       enum MHD_ValueKind kind, 
                                       const char *key,
@@ -364,7 +374,7 @@ spindump_remote_server_printparameters(struct MHD_Connection *connection) {
 // need to do here though.
 //
 
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_postiterator(void *coninfo_cls,
                                     enum MHD_ValueKind kind,
                                     const char *key,
@@ -387,7 +397,7 @@ spindump_remote_server_postiterator(void *coninfo_cls,
 // will give different answers.
 //
 
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_answertopost(struct spindump_remote_server* server,
                                     struct spindump_remote_connection* connectionObject,
                                     struct MHD_Connection *connection) {
@@ -447,7 +457,7 @@ spindump_remote_server_answertopost(struct spindump_remote_server* server,
                                                                   MHD_RESPMEM_PERSISTENT);
   unsigned int code = MHD_HTTP_OK;
   spindump_debugf("HTTP successful response %u", code);
-  enum MHD_Result ret = MHD_queue_response(connection, code, response);
+  MHDRESULT ret = MHD_queue_response(connection, code, response);
   MHD_destroy_response(response);
   connectionObject->ongoingTransaction = 0;
   return(ret);
@@ -495,7 +505,7 @@ spindump_remote_server_adddata(struct spindump_remote_connection* connectionObje
 // right path, right method, etc).
 //
 
-static enum MHD_Result
+static MHDRESULT
 spindump_remote_server_answer(void *cls,
                               struct MHD_Connection *connection,
                               const char *url,

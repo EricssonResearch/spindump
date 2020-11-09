@@ -54,6 +54,7 @@ foreach(FLAG
     -pipe
     -I/opt/local/include
     -Wall -Wextra -Wpedantic -Weverything -Werror
+    -Wno-unknown-warning-option
     -fno-diagnostics-color
     -fno-omit-frame-pointer
     -fno-optimize-sibling-calls -fno-common
