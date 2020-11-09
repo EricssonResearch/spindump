@@ -44,6 +44,11 @@
 
 #define spindump_quic_version_negotiation      0x00000000
 #define spindump_quic_version_rfc              0x00000001
+#define spindump_quic_version_draft32          0xff000020
+#define spindump_quic_version_draft31          0xff00001f
+#define spindump_quic_version_draft30          0xff00001e
+#define spindump_quic_version_draft29          0xff00001d
+#define spindump_quic_version_draft28          0xff00001c
 #define spindump_quic_version_draft27          0xff00001b
 #define spindump_quic_version_draft26          0xff00001a
 #define spindump_quic_version_draft25          0xff000019
@@ -72,6 +77,13 @@
 #define spindump_quic_version_draft02          0xff000002
 #define spindump_quic_version_draft01          0xff000001
 #define spindump_quic_version_draft00          0xff000000
+#define spindump_quic_version_quant32          0x45474720
+#define spindump_quic_version_quant31          0x4547471f
+#define spindump_quic_version_quant30          0x4547471e
+#define spindump_quic_version_quant29          0x4547471d
+#define spindump_quic_version_quant28          0x4547471c
+#define spindump_quic_version_quant27          0x4547471b
+#define spindump_quic_version_quant26          0x4547471a
 #define spindump_quic_version_quant25          0x45474719
 #define spindump_quic_version_quant24          0x45474718
 #define spindump_quic_version_quant23          0x45474717
