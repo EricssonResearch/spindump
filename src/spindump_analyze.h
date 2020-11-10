@@ -90,6 +90,8 @@ struct spindump_analyze_handler {
 };
 
 struct spindump_analyze {
+  int showRelativeTime;                            // Whether reports are in absolute or relative time
+  unsigned long long firstEventTime;               // The time of the first event reported in this Spindump run
   struct spindump_connectionstable* table;         // a table of all current connections 
   struct spindump_stats* stats;                    // pointer to statistics object
   unsigned int nHandlers;                          // the number of slots used in the handler table
@@ -103,7 +105,8 @@ struct spindump_analyze {
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
+spindump_analyze_initialize(int showRelativeTime,
+                            unsigned int filterExceptionalValuePercentage,
                             unsigned long long bandwidthMeasurementPeriod,
                             unsigned int periodicReportPeriod,
                             const spindump_tags* defaultTags);

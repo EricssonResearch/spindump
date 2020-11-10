@@ -41,6 +41,10 @@
 // Datatypes ----------------------------------------------------------------------------------
 //
 
+#if (MHD_VERSION >= 0x00097000)
+#define ENUMMHD
+#endif
+
 #ifdef ENUMMHD
 #define MHDRESULT enum MHD_Result
 #else

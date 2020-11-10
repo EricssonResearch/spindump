@@ -557,19 +557,18 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   // Construct the time stamp
   //
   
-  spindump_deepdeepdebugf("point 3");
   unsigned long long timestamplonglong;
-  //  if (packet != 0) {
   timestamplonglong =
       ((unsigned long long)timestamp->tv_sec) * 1000 * 1000 +
       (unsigned long long)timestamp->tv_usec;
-  //} else {
-  //struct timeval now;
-  //spindump_getcurrenttime(&now);
-  //timestamplonglong =
-  //((unsigned long long)now.tv_sec) * 1000 * 1000 +
-  //(unsigned long long)now.tv_usec;
-  //}
+  spindump_deepdeepdebugf("event generation relative %u %llu %llu",
+                          state->showRelativeTime,
+                          state->firstEventTime,
+                          timestamplonglong);
+  if (state->showRelativeTime) {
+    if (state->firstEventTime == 0) state->firstEventTime = timestamplonglong;
+    timestamplonglong -= state->firstEventTime;
+  }
   
   //
   // Determine event type
@@ -749,13 +748,8 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                           connection->bytesFromSide1.bytesInLastPeriod,
                           connection->bytesFromSide2.bytesInThisPeriod,
                           connection->bytesFromSide2.bytesInLastPeriod);
-  spindump_deepdeepdebugf("calling spindump_event_initialize");
-  spindump_deepdeepdebugf("calling spindump_event_initialize, really but first pb2bps");
   spindump_counter_64bit bw1 = spindump_bandwidth_periodbytes_to_bytespersec(&connection->bytesFromSide1);
-  spindump_deepdeepdebugf("calling spindump_event_initialize, really and now second pb2bps");
   spindump_counter_64bit bw2 = spindump_bandwidth_periodbytes_to_bytespersec(&connection->bytesFromSide2);
-  spindump_deepdeepdebugf("calling spindump_event_initialize, really really");
-  spindump_deepdeepdebugf("notes field pt 1 = %s", notes);
   spindump_event_initialize(eventType,
                             connection->type,
                             connection->state,
@@ -772,10 +766,6 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                             &connection->tags,
                             notes,
                             &eventobj);
-  spindump_deepdeepdebugf("point 7");
-  spindump_deepdeepdebugf("point 7, 2nd");
-  spindump_deepdeepdebugf("point 7, 3rd");
-  spindump_deepdeepdebugf("point 7, 4th");
   switch (event) {
 
   case spindump_analyze_event_newconnection:
@@ -1011,7 +1001,6 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   // Based on the format type, provide different kinds of output
   //
 
-  spindump_deepdeepdebugf("point 8");
   switch (formatter->format) {
   case spindump_eventformatter_outputformat_text:
     spindump_eventformatter_measurement_one_text(formatter,event,&eventobj,connection);
@@ -1023,8 +1012,6 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
     spindump_errorf("invalid output format in internal variable");
     exit(1);
   }
-  
-  spindump_deepdeepdebugf("point 9 (end)");
 }
 
 //

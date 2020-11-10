@@ -785,7 +785,7 @@ systemtests(void) {
   // Analyzer tests -- ICMP
   //
   
-  struct spindump_analyze* analyzer = spindump_analyze_initialize(0,1000000,0,0);
+  struct spindump_analyze* analyzer = spindump_analyze_initialize(0,0,1000000,0,0);
   spindump_checktest(analyzer != 0);
   struct spindump_packet packet1;
   struct spindump_connection* connection1 = 0;

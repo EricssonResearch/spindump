@@ -153,6 +153,7 @@ spindump_main_configuration_defaultvalues(struct spindump_main_configuration* co
   config->toolmode = spindump_toolmode_visual;
   config->format = spindump_eventformatter_outputformat_text;
   config->maxReceive = 0;
+  config->showRelativeTime = 0;
   config->showStats = 0;
   config->reverseDns = 0;
   config->reportSpins = 0;
@@ -231,6 +232,14 @@ spindump_main_processargs(int argc,
       
       spindump_deepdeepdebug = 0;
       
+    } else if (strcmp(argv[0],"--relative") == 0) {
+
+      config->showRelativeTime = 1;
+
+    } else if (strcmp(argv[0],"--absolute") == 0) {
+
+      config->showRelativeTime = 0;
+
     } else if (strcmp(argv[0],"--stats") == 0) {
 
       config->showStats = 1;
@@ -928,6 +937,8 @@ spindump_main_help(void) {
   printf("\n");
   printf("    --names                 Use DNS names or addresses in the output. (The default is\n");
   printf("    --addresses             using names.)\n");
+  printf("    --relative              Show timestamps as absolute time from epoch, or relative\n");
+  printf("    --absolute              from the first shown event. Default is absolute.\n");
   printf("\n");
   printf("    --report-spins          Report individual spin bit values in --textual mode.\n");
   printf("    --not-report-spins\n");

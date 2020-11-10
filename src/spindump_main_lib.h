@@ -81,6 +81,7 @@ struct spindump_main_configuration {
   enum spindump_toolmode toolmode;
   enum spindump_eventformatter_outputformat format;
   unsigned int maxReceive;
+  int showRelativeTime;
   int showStats;
   int reverseDns;
   int reportPackets;

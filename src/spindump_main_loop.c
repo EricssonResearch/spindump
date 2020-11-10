@@ -98,7 +98,8 @@ spindump_main_loop_operation(struct spindump_main_state* state) {
 
   spindump_deepdeepdebugf("main loop, analyzer initialization");
   if (config->toolmode == spindump_toolmode_visual) config->periodicReportPeriod = 0;
-  struct spindump_analyze* analyzer = spindump_analyze_initialize(config-> filterExceptionalValuesPercentage,
+  struct spindump_analyze* analyzer = spindump_analyze_initialize(config->showRelativeTime,
+                                                                  config-> filterExceptionalValuesPercentage,
                                                                   config->bandwidthMeasurementPeriod,
                                                                   config->periodicReportPeriod,
                                                                   &config->defaultTags);

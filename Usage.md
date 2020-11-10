@@ -71,6 +71,11 @@ These options are used to control the amount of anonymization that Spindump does
 
 Sets the tool to use always addresses (--addresses) or when possible, DNS names (--names) in its output. The use of names is the default.
 
+    --relative
+    --absolute
+
+Timestamps output by Spindump can be represented as absolute time from epoch, or relative from the first shown event. Default is absolute.
+
     --report-spins
     --not-report-spins
     --report-spin-flips

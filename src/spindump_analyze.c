@@ -74,7 +74,8 @@ spindump_analyze_connectionspecifichandlerstillinuse(struct spindump_analyze* st
 //
 
 struct spindump_analyze*
-spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
+spindump_analyze_initialize(int showRelativeTime,
+                            unsigned int filterExceptionalValuePercentage,
                             unsigned long long bandwidthMeasurementPeriod,
                             unsigned int periodicReportPeriod,
                             const spindump_tags* defaultTags) {
@@ -108,6 +109,8 @@ spindump_analyze_initialize(unsigned int filterExceptionalValuePercentage,
   //
   
   memset(state,0,size);
+  state->showRelativeTime = showRelativeTime;
+  state->firstEventTime = 0;
   state->table = spindump_connectionstable_initialize(bandwidthMeasurementPeriod,
                                                       periodicReportPeriod,
                                                       defaultTags);

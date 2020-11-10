@@ -62,6 +62,7 @@ traces="trace_icmpv4_short
         trace_cmd_aggregate_multinet
         trace_tcp_short
         trace_tcp_short_json trace_dns
+        trace_tcp_tiny1
         trace_quic_v18_short_spin
         trace_quic_v18_short_spin_all
         trace_quic_v18_long_spin

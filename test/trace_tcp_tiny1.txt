@@ -1,0 +1,6 @@
+
+Very small TCP session, with no content. Generated with:
+
+    nc -4 arkko.com 80
+
+Six packets in the trace.

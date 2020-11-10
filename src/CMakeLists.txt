@@ -182,7 +182,7 @@ add_test( NAME spindump_testtraces COMMAND spindump_testtraces.sh WORKING_DIRECT
 add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/spindump.tar.gz
                    COMMAND rm ARGS -f ${PROJECT_SOURCE_DIR}/spindump.tar.gz
                    COMMAND tar
-                   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh test/*.txt test/*.pcap test/*.expected test/*.options
+                   ARGS czf spindump.tar.gz CMakeLists.txt src/CMakeLists.txt README.md .gitignore LICENSE.txt images/*.png images/*.jpg src/*.h src/*.c src/*.sh test/*.txt test/*.pcap* test/*.expected test/*.options* test/*.json test/*.noinput test/*.exitcode test/*.nets
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
