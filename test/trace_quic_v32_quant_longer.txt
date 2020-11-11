@@ -1,0 +1,4 @@
+
+November 2020 run with Quant (QUIC version draft-32) client against Quant server, with a slightly longer run than normal, hopefully generating spin events. The run was on Linux. The following command was used:
+
+     ./bin/client -i enp0s3 https://quant.eggert.org/55000
