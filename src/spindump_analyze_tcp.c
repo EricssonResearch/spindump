@@ -113,7 +113,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 
   if (fromResponder) {
 
-    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side1Seqs,seq,&sentSeq,finset);
+    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side1Seqs,seq,t,&sentSeq,finset);
 
     if (ackto != 0) {
 
@@ -142,7 +142,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 
   } else {
 
-    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side2Seqs,seq,&sentSeq,finset);
+    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side2Seqs,seq,t,&sentSeq,finset);
 
     if (ackto != 0) {
 
@@ -236,10 +236,16 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     return;
   }
   unsigned int size_tcppayload = tcpLength - tcpHeaderSize;
-  spindump_debugf("received an IPv%u TCP packet of %u bytes, payload size %u bytes",
+#ifdef SPINDUMP_DEBUG
+  unsigned long long reception =
+    ((unsigned long long)(timestamp->tv_sec)) * 1000 * 1000 +
+    ((unsigned long long)(timestamp->tv_usec));
+  spindump_debugf("received an IPv%u TCP packet of %u bytes at time +%llu, payload size %u bytes",
                   ipVersion,
                   packet->etherlen,
+                  reception - state->firstEventTime,
                   size_tcppayload);
+#endif
 
   //
   // Find out some information about the packet

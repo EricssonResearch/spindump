@@ -41,7 +41,8 @@
 
 struct spindump_seqstore {
   struct timeval received;
-  int outstanding;
+  int valid;
+  int acked;
   unsigned int len;
   int finset;
   tcp_seq seq;
@@ -69,6 +70,7 @@ spindump_seqtracker_add(struct spindump_seqtracker* tracker,
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
                           tcp_seq seq,
+                          struct timeval* t,
                           tcp_seq* sentSeq,
                           int* sentFin);
 void

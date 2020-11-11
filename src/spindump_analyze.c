@@ -486,6 +486,15 @@ spindump_analyze_process(struct spindump_analyze* state,
   spindump_assert(p_connection != 0);
 
   //
+  // Update the time of a first packet, if not set yet
+  //
+  
+  if (state->firstEventTime == 0) {
+    state->firstEventTime = (((unsigned long long)(packet->timestamp.tv_sec)) * 1000 * 1000 +
+                             (unsigned long long)packet->timestamp.tv_usec);
+  }
+  
+  //
   // Store a count of events before processing this packet
   //
   

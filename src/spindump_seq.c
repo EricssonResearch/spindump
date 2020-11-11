@@ -57,7 +57,8 @@ spindump_seqtracker_add(struct spindump_seqtracker* tracker,
   spindump_assert(tracker != 0);
   spindump_assert(tracker->seqindex < spindump_seqtracker_nstored);
   spindump_assert(finset == 0 || finset == 1);
-  tracker->stored[tracker->seqindex].outstanding = 1;
+  tracker->stored[tracker->seqindex].valid = 1;
+  tracker->stored[tracker->seqindex].acked = 0;
   tracker->stored[tracker->seqindex].received = *ts;
   tracker->stored[tracker->seqindex].seq = seq;
   tracker->stored[tracker->seqindex].len = payloadlen;
@@ -76,6 +77,7 @@ spindump_seqtracker_add(struct spindump_seqtracker* tracker,
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
                           tcp_seq seq,
+                          struct timeval* t,
                           tcp_seq* sentSeq,
                           int* sentFin) {
   
@@ -94,18 +96,22 @@ spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
 
     //
     // Is this entry in use? If not, go to next
-    // 
+     // 
 
-    if (!candidate->outstanding) continue;
+    if (!candidate->valid) continue;
     
     //
     // Is this previously seen TCP segment the one
     // acked by sequence number "seq"?
     // 
     
-    spindump_deepdebugf("compare received ACK %u (%u) to candidate SEQ %u..%u",
+    spindump_deepdebugf("compare received ACK %u (%u) to candidate earlier sent SEQ %u..%u at -%llu ago valid %u acked %u",
                         highestacked, seq,
-                        candidate->seq, candidate->seq + candidate->len);
+                        candidate->seq, candidate->seq + candidate->len,
+                        spindump_timediffinusecs(t,
+                                                 &candidate->received),
+                        candidate->valid,
+                        candidate->acked);
     
     if (candidate->seq == highestacked ||
         (candidate->seq <= highestacked &&
@@ -115,10 +121,13 @@ spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
       // It is. Now see if this is the earliest one.
       // 
       
-      if (chosen == 0)
+      if (chosen == 0) {
+        spindump_deepdebugf("first matching candidate chosen");
         chosen = candidate;
-      else if (spindump_isearliertime(&chosen->received,&candidate->received))
+     } else if (spindump_isearliertime(&candidate->received,&chosen->received)) {
+        spindump_deepdebugf("earlier matching candidate chosen");
         chosen = candidate;
+      }
     }
   }
   
@@ -133,12 +142,26 @@ spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
 
     for (unsigned int j = 0; j < spindump_seqtracker_nstored; j++) {
       struct spindump_seqstore* other = &tracker->stored[j];
-      if (other->outstanding && spindump_isearliertime(&chosen->received,&other->received)) {
-        other->outstanding = 0;
+      if (other->valid && !other->acked && spindump_isearliertime(&chosen->received,&other->received)) {
+        other->acked = 1;
       }
     }
+
+    //
+    // Did we already ack this earlier? If yes, we can't say anything about RTT.
+    //
+
+    if (chosen->acked) {
+      *sentSeq = chosen->seq;
+      *sentFin = chosen->finset;
+      return(0);
+    }
+
+    //
+    // Previously unseen ack, report the time.
+    //
     
-    chosen->outstanding = 0;
+    chosen->acked = 1;
     *sentSeq = chosen->seq;
     *sentFin = chosen->finset;
     return(&chosen->received);

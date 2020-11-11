@@ -5,7 +5,7 @@ TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59105:80 at 
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59105:80 at 1553418213061986 measurement closing left 58 packets 3 4 bytes 368 734 bandwidth 368 734 tags tag1,tag2
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59105:80 at 1553418213061987 measurement closing left 59 packets 4 4 bytes 440 734 bandwidth 440 734 tags tag1,tag2
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213064120 new starting packets 1 0 bytes 84 0 bandwidth 84 0 tags tag1,tag2
-TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59105:80 at 1553418213098429 measurement closed right 36443 packets 6 4 bytes 584 734 bandwidth 584 734 tags tag1,tag2
+TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59105:80 at 1553418213098429 measurement closed right 34370 packets 6 4 bytes 584 734 bandwidth 584 734 tags tag1,tag2
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213098432 measurement up right 34312 packets 1 1 bytes 84 80 bandwidth 84 80 tags tag1,tag2
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213098549 measurement up left 117 packets 1 1 bytes 84 80 bandwidth 84 80 tags tag1,tag2
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213134370 measurement up right 35675 packets 3 1 bytes 378 80 bandwidth 378 80 tags tag1,tag2
@@ -13,4 +13,4 @@ TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213134659 measurement up left 23 packets 4 7 bytes 450 7652 bandwidth 450 7652 tags tag1,tag2
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213134805 measurement closing left 28 packets 5 9 bytes 522 8254 bandwidth 522 8254 tags tag1,tag2
 TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213134806 measurement closing left 27 packets 6 9 bytes 594 8254 bandwidth 594 8254 tags tag1,tag2
-TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213169945 measurement closed right 35530 packets 9 9 bytes 810 8254 bandwidth 810 8254 tags tag1,tag2
+TCP 2001:67c:1232:144:9498:6df6:f450:110b <-> 2001:67c:2b0:1c1::198 59106:80 at 1553418213169945 measurement closed right 33074 packets 9 9 bytes 810 8254 bandwidth 810 8254 tags tag1,tag2

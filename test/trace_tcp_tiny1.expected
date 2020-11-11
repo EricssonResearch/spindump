@@ -3,6 +3,6 @@
 { "Event": "new", "Type": "TCP", "Addrs": ["10.30.0.167","95.217.214.232"], "Session": "61085:80", "Ts": 0, "State": "Starting", "Packets1": 1, "Packets2": 0, "Bytes1": 64, "Bytes2": 0, "Bandwidth1": 64, "Bandwidth2": 0 },
 { "Event": "measurement", "Type": "TCP", "Addrs": ["10.30.0.167","95.217.214.232"], "Session": "61085:80", "Ts": 19991, "State": "Up", "Right_rtt": 19991, "Packets1": 1, "Packets2": 1, "Bytes1": 64, "Bytes2": 60, "Bandwidth1": 64, "Bandwidth2": 60 },
 { "Event": "measurement", "Type": "TCP", "Addrs": ["10.30.0.167","95.217.214.232"], "Session": "61085:80", "Ts": 20056, "State": "Up", "Left_rtt": 65, "Packets1": 1, "Packets2": 1, "Bytes1": 64, "Bytes2": 60, "Bandwidth1": 64, "Bandwidth2": 60 },
-{ "Event": "measurement", "Type": "TCP", "Addrs": ["10.30.0.167","95.217.214.232"], "Session": "61085:80", "Ts": 729994, "State": "Closing", "Right_rtt": 709938, "Packets1": 3, "Packets2": 2, "Bytes1": 168, "Bytes2": 112, "Bandwidth1": 168, "Bandwidth2": 112 },
+{ "Event": "measurement", "Type": "TCP", "Addrs": ["10.30.0.167","95.217.214.232"], "Session": "61085:80", "Ts": 729994, "State": "Closing", "Right_rtt": 23597, "Packets1": 3, "Packets2": 2, "Bytes1": 168, "Bytes2": 112, "Bandwidth1": 168, "Bandwidth2": 112 },
 { "Event": "measurement", "Type": "TCP", "Addrs": ["10.30.0.167","95.217.214.232"], "Session": "61085:80", "Ts": 730103, "State": "Closed", "Left_rtt": 109, "Packets1": 3, "Packets2": 2, "Bytes1": 168, "Bytes2": 112, "Bandwidth1": 168, "Bandwidth2": 112 }
 ]

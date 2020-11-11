@@ -566,7 +566,6 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
                           state->firstEventTime,
                           timestamplonglong);
   if (state->showRelativeTime) {
-    if (state->firstEventTime == 0) state->firstEventTime = timestamplonglong;
     timestamplonglong -= state->firstEventTime;
   }
   
