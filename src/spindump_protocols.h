@@ -689,6 +689,81 @@ struct spindump_tcp {
 };
 
 //
+// TCP Options
+//
+//   Options may occupy space at the end of the TCP header and are a
+//   multiple of 8 bits in length.  All options are included in the
+//   checksum.  An option may begin on any octet boundary.  There are two
+//   cases for the format of an option:
+//
+//     Case 1:  A single octet of option-kind.
+//
+//     Case 2:  An octet of option-kind, an octet of option-length, and
+//              the actual option-data octets.
+//
+//   The option-length counts the two octets of option-kind and
+//   option-length as well as the option-data octets.
+//
+
+#define SPINDUMP_TO_END            0 // case 1
+#define SPINDUMP_TO_NOOP           1 // case 1
+#define SPINDUMP_TO_MSS            2
+#define SPINDUMP_TO_WS             3
+#define SPINDUMP_TO_SACK_PERMITTED 4
+#define SPINDUMP_TO_SACK           5
+#define SPINDUMP_TO_TS             8
+
+//
+//  TCP SACK Option
+//  Kind: 5
+//  Length: Variable
+//                    +--------+--------+
+//                    | Kind=5 | Length |
+//  +--------+--------+--------+--------+
+//  |      Left Edge of 1st Block       |
+//  +--------+--------+--------+--------+
+//  |      Right Edge of 1st Block      |
+//  +--------+--------+--------+--------+
+//  |                                   |
+//  /            . . .                  /
+//  |                                   |
+//  +--------+--------+--------+--------+
+//  |      Left Edge of nth Block       |
+//  +--------+--------+--------+--------+
+//  |      Right Edge of nth Block      |
+//  +--------+--------+--------+--------+
+//
+
+struct spindump_tcp_sack_block {
+  tcp_seq left;
+  tcp_seq right;
+};
+
+//
+// TCP Timestamp option from RFC 1323
+// +-------+-------+---------------------+---------------------+
+// |Kind=8 |  10   |   TS Value (TSval)  |TS Echo Reply (TSecr)|
+// +-------+-------+---------------------+---------------------+
+//     1       1              4                     4
+//
+
+typedef u_int32_t tcp_ts; 
+
+struct spindump_tcp_tso {
+  tcp_ts ts_val;
+  tcp_ts ts_ecr;
+};
+
+struct spindump_tcp_opt {
+  u_int8_t kind;
+  u_int8_t length;
+  union {
+    struct spindump_tcp_sack_block blocks[4];
+    struct spindump_tcp_tso tso;
+  } data;  
+};
+
+//
 // SCTP header from RFC 4960:
 //
 // 0                   1                   2                   3
@@ -1102,6 +1177,8 @@ struct spindump_quic {
 
 const char*
 spindump_protocols_tcp_flagstostring(uint8_t flags);
+const char*
+spindump_protocols_tcp_optiontostring(uint8_t option);
 void
 spindump_protocols_ethernet_header_decode(const unsigned char* header,
                                           struct spindump_ethernet* decoded);
@@ -1132,6 +1209,9 @@ spindump_protocols_coap_header_decode(const unsigned char* header,
 void
 spindump_protocols_tcp_header_decode(const unsigned char* header,
                                      struct spindump_tcp* decoded);
+void
+spindump_protocols_tcp_option_decode(const unsigned char* options,
+                                     struct spindump_tcp_opt* decoded);
 void
 spindump_protocols_sctp_header_decode(const unsigned char* header,
                                      struct spindump_sctp_packet_header* decoded);

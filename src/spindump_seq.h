@@ -45,6 +45,7 @@ struct spindump_seqstore {
   int acked;
   unsigned int len;
   int finset;
+  tcp_ts ts_val;
   tcp_seq seq;
   //char padding[2]; // unused
 };
@@ -52,7 +53,7 @@ struct spindump_seqstore {
 struct spindump_seqtracker {
   struct spindump_seqstore stored[spindump_seqtracker_nstored];
   unsigned int seqindex;
-  char padding[4]; // unused
+  //char padding[4]; // unused
 };
 
 //
@@ -64,12 +65,14 @@ spindump_seqtracker_initialize(struct spindump_seqtracker* tracker);
 void
 spindump_seqtracker_add(struct spindump_seqtracker* tracker,
                         struct timeval* ts,
+                        tcp_ts ts_val,
                         tcp_seq seq,
                         unsigned int payloadlen,
                         int finset);
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
                           tcp_seq seq,
+                          tcp_ts ts_ecr,
                           struct timeval* t,
                           tcp_seq* sentSeq,
                           int* sentFin);

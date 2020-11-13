@@ -35,6 +35,7 @@ spindump_analyze_process_tcp_markseqsent(struct spindump_connection* connection,
                                          int fromResponder,
                                          tcp_seq seq,
                                          unsigned int payloadlen,
+                                         tcp_ts ts_val,
                                          struct timeval* t,
                                          int finset);
 static void
@@ -44,6 +45,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
                                              int fromResponder,
                                              const unsigned int ipPacketLength,
                                              tcp_seq seq,
+                                             tcp_ts ts_ecr,
                                              struct timeval* t,
                                              int* finset);
 
@@ -65,6 +67,7 @@ spindump_analyze_process_tcp_markseqsent(struct spindump_connection* connection,
                                          int fromResponder,
                                          tcp_seq seq,
                                          unsigned int payloadlen,
+                                         tcp_ts ts_val,
                                          struct timeval* t,
                                          int finset) {
 
@@ -74,10 +77,10 @@ spindump_analyze_process_tcp_markseqsent(struct spindump_connection* connection,
   spindump_assert(spindump_isbool(finset));
 
   if (fromResponder) {
-    spindump_seqtracker_add(&connection->u.tcp.side2Seqs,t,seq,payloadlen,finset);
+    spindump_seqtracker_add(&connection->u.tcp.side2Seqs,t,ts_val,seq,payloadlen,finset);
     spindump_deepdebugf("responder sent SEQ %u..%u (FIN=%u)", seq, seq + payloadlen, finset);
   } else {
-    spindump_seqtracker_add(&connection->u.tcp.side1Seqs,t,seq,payloadlen,finset);
+    spindump_seqtracker_add(&connection->u.tcp.side1Seqs,t,ts_val,seq,payloadlen,finset);
     spindump_deepdebugf("initiator sent SEQ %u..%u (FIN=%u)", seq, seq + payloadlen, finset);
   }
 }
@@ -98,6 +101,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
                                              int fromResponder,
                                              const unsigned int ipPacketLength,
                                              tcp_seq seq,
+                                             tcp_ts ts_ecr,
                                              struct timeval* t,
                                              int* finset) {
 
@@ -113,7 +117,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 
   if (fromResponder) {
 
-    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side1Seqs,seq,t,&sentSeq,finset);
+    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side1Seqs,seq,ts_ecr,t,&sentSeq,finset);
 
     if (ackto != 0) {
 
@@ -142,7 +146,7 @@ spindump_analyze_process_tcp_markackreceived(struct spindump_analyze* state,
 
   } else {
 
-    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side2Seqs,seq,t,&sentSeq,finset);
+    ackto = spindump_seqtracker_ackto(&connection->u.tcp.side2Seqs,seq,ts_ecr,t,&sentSeq,finset);
 
     if (ackto != 0) {
 
@@ -234,6 +238,43 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
     spindump_warnf("TCP header length %u invalid", tcpHeaderSize);
     *p_connection = 0;
     return;
+  }
+  struct spindump_tcp_opt sack, tso;
+  int sack_found, tso_found = 0;
+  if (tcpHeaderSize > spindump_tcp_header_length) {
+    unsigned int options_pos = spindump_tcp_header_length;
+    int options_left = 1;
+    struct spindump_tcp_opt current; 
+    while (options_left) {
+
+      if (options_pos > tcpHeaderSize) {
+        state->stats->invalidTcpHdrSize++; // make malformed TCP option event
+        spindump_warnf("TCP option length %u invalid", current.length);
+        *p_connection = 0; // should we discard connection or just cease option parsing?
+        return;
+      }
+      memset(&current, 0, sizeof(struct spindump_tcp_opt));
+      spindump_protocols_tcp_option_decode(packet->contents + tcpHeaderPosition + options_pos, &current);
+      spindump_deepdebugf("tcp option: kind = %u: %s", current.kind, spindump_protocols_tcp_optiontostring(current.kind));
+      if (current.kind == SPINDUMP_TO_END) {
+        break;
+      } else if (current.kind == SPINDUMP_TO_NOOP) {
+        ++options_pos;
+      } else {
+        options_pos += current.length;
+        if (current.kind == SPINDUMP_TO_SACK){
+          sack = current;
+          sack_found = 1;
+        } else if (current.kind == SPINDUMP_TO_TS) {
+          tso = current;
+          tso_found = 1;
+        }
+      }
+      options_left = options_pos < tcpHeaderSize;
+    }
+  }
+  if (sack_found && tso_found && sack.data.blocks[0].left != tso.data.tso.ts_val) {
+    
   }
   unsigned int size_tcppayload = tcpLength - tcpHeaderSize;
 #ifdef SPINDUMP_DEBUG
@@ -327,6 +368,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                              0,
                                              seq,
                                              1,
+                                             tso.data.tso.ts_val,
                                              &packet->timestamp,
                                              finreceived);
     *p_connection = connection;
@@ -371,6 +413,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                1,
                                                seq,
                                                1,
+                                               tso.data.tso.ts_val,
                                                &packet->timestamp,
                                                finreceived);
       spindump_analyze_process_tcp_markackreceived(state,
@@ -379,6 +422,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                    1,
                                                    ipPacketLength,
                                                    ack,
+                                                   tso.data.tso.ts_ecr,
                                                    &packet->timestamp,&ackedfin);
       *p_connection = connection;
 
@@ -431,6 +475,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                fromResponder,
                                                seq,
                                                size_tcppayload,
+                                               tso.data.tso.ts_val,
                                                &packet->timestamp,
                                                finreceived);
       spindump_analyze_process_tcp_markackreceived(state,
@@ -439,6 +484,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                    fromResponder,
                                                    ipPacketLength,
                                                    ack,
+                                                   tso.data.tso.ts_ecr,
                                                    &packet->timestamp,&ackedfin);
       if (ackedfin) {
         spindump_deepdebugf("this was an ack to a FIN");
@@ -504,6 +550,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                    fromResponder,
                                                    ipPacketLength,
                                                    ack,
+                                                   tso.data.tso.ts_ecr,
                                                    &packet->timestamp,
                                                    &ackedfin);
       spindump_connections_changestate(state,packet,timestamp,connection,spindump_connection_state_closed);
@@ -547,6 +594,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                fromResponder,
                                                seq,
                                                size_tcppayload,
+                                               tso.data.tso.ts_val,
                                                &packet->timestamp,
                                                finreceived);
       spindump_analyze_process_tcp_markackreceived(state,
@@ -555,6 +603,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                    fromResponder,
                                                    ipPacketLength,
                                                    ack,
+                                                   tso.data.tso.ts_ecr,
                                                    &packet->timestamp,
                                                    &ackedfin);
       if (ackedfin) {
