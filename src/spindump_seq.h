@@ -72,6 +72,7 @@ spindump_seqtracker_add(struct spindump_seqtracker* tracker,
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
                           tcp_seq seq,
+                          tcp_seq sack,
                           tcp_ts ts_ecr,
                           struct timeval* t,
                           tcp_seq* sentSeq,

@@ -734,9 +734,16 @@ struct spindump_tcp {
 //  +--------+--------+--------+--------+
 //
 
+#define SPINDUMP_MAX_SACK_BLOCKS 4
+#define SPINDUMP_MAX_SACK_LENGTH 34
+
 struct spindump_tcp_sack_block {
   tcp_seq left;
   tcp_seq right;
+};
+
+struct spindump_tcp_sack {
+  struct spindump_tcp_sack_block blocks[SPINDUMP_MAX_SACK_BLOCKS];
 };
 
 //
@@ -749,6 +756,8 @@ struct spindump_tcp_sack_block {
 
 typedef u_int32_t tcp_ts; 
 
+#define SPINDUMP_TSO_LENGTH 10
+
 struct spindump_tcp_tso {
   tcp_ts ts_val;
   tcp_ts ts_ecr;
@@ -758,7 +767,7 @@ struct spindump_tcp_opt {
   u_int8_t kind;
   u_int8_t length;
   union {
-    struct spindump_tcp_sack_block blocks[4];
+    struct spindump_tcp_sack sack;
     struct spindump_tcp_tso tso;
   } data;  
 };
@@ -1212,6 +1221,13 @@ spindump_protocols_tcp_header_decode(const unsigned char* header,
 void
 spindump_protocols_tcp_option_decode(const unsigned char* options,
                                      struct spindump_tcp_opt* decoded);
+void 
+spindump_protocols_tcp_sack_decode(const unsigned char* option_data,
+                                   struct spindump_tcp_sack* decoded,
+                                   unsigned int n_blocks);
+void
+spindump_protocols_tcp_tso_decode(const unsigned char* option_data,
+                                     struct spindump_tcp_tso* decoded);
 void
 spindump_protocols_sctp_header_decode(const unsigned char* header,
                                      struct spindump_sctp_packet_header* decoded);

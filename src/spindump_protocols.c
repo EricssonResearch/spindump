@@ -556,17 +556,26 @@ spindump_protocols_tcp_option_decode(const unsigned char* options,
   spindump_decodebyte(decoded->kind,options,pos);
   if (decoded->kind != SPINDUMP_TO_NOOP && decoded->kind != SPINDUMP_TO_END) {
     spindump_decodebyte(decoded->length,options,pos);
-    if (decoded->kind == SPINDUMP_TO_SACK) {
-      int blocks = (decoded->length - 2) >> 3; // divide by 8 to get number of blocks
-      for (int i = 0; i < blocks; ++i) {
-        spindump_decode4byteint(decoded->data.blocks[i].left, options, pos);
-        spindump_decode4byteint(decoded->data.blocks[i].right, options, pos);
-      }
-    } else if (decoded->kind == SPINDUMP_TO_TS) {
-      spindump_decode4byteint(decoded->data.tso.ts_val, options, pos);
-      spindump_decode4byteint(decoded->data.tso.ts_ecr, options, pos);
-    }
   }
+}
+
+void 
+spindump_protocols_tcp_sack_decode(const unsigned char* option_data,
+                                   struct spindump_tcp_sack* decoded,
+                                   unsigned int n_blocks) {
+  unsigned int pos = 0;
+  for (unsigned int i = 0; i < n_blocks; ++i) {
+    spindump_decode4byteint(decoded->blocks[i].left, option_data, pos);
+    spindump_decode4byteint(decoded->blocks[i].right, option_data, pos);
+  }
+}
+
+void 
+spindump_protocols_tcp_tso_decode(const unsigned char* option_data,
+                                   struct spindump_tcp_tso* decoded) {
+  unsigned int pos = 0;
+  spindump_decode4byteint(decoded->ts_val, option_data, pos);
+  spindump_decode4byteint(decoded->ts_ecr, option_data, pos);
 }
 
 //

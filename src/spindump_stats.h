@@ -69,6 +69,7 @@ struct spindump_stats {
   spindump_counter_32bit receivedTcp;
   spindump_counter_32bit notEnoughPacketForTcpHdr;
   spindump_counter_32bit invalidTcpHdrSize;
+  spindump_counter_32bit invalidTcpOptSize;
   spindump_counter_32bit unknownTcpConnection;
   spindump_counter_32bit unknownSctpConnection;
   spindump_counter_32bit receivedSctp;
@@ -87,7 +88,7 @@ struct spindump_stats {
   spindump_counter_32bit connectionsQuic;
   spindump_counter_32bit connectionsDeletedClosed;
   spindump_counter_32bit connectionsDeletedInactive;
-  uint8_t padding2[4]; // unused padding to align the next field properly
+  // uint8_t padding2[4]; // unused padding to align the next field properly
 };
 
 //

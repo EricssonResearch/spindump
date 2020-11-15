@@ -79,12 +79,23 @@ spindump_seqtracker_add(struct spindump_seqtracker* tracker,
 struct timeval*
 spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
                           tcp_seq seq,
+                          tcp_seq sack,
                           tcp_ts ts_ecr,
                           struct timeval* t,
                           tcp_seq* sentSeq,
                           int* sentFin) {
   
-  tcp_seq highestacked = seq - 1;
+  //
+  // The highest acked sequence number is either given by the cumulative acknowledgement
+  // field in the TCP header, or by the right edge of the first sack block.
+  //
+
+  tcp_seq highestacked = sack > seq ? sack : seq;
+  highestacked -= 1;
+
+  spindump_deepdebugf("compare cumulative ack %u to largest selective ack %u. highest ack = %u",
+                        seq, sack, highestacked);
+
   spindump_assert(sentSeq != 0);
   
   //
