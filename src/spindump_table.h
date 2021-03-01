@@ -51,12 +51,14 @@ spindump_connectionstable_uninitialize(struct spindump_connectionstable* table);
 int
 spindump_connectionstable_periodiccheck(struct spindump_connectionstable* table,
                                         const struct timeval* now,
-                                        struct spindump_analyze* analyzer);
+                                        struct spindump_analyze* analyzer,
+                                        int print_info);
 void
 spindump_connectionstable_deleteconnection(struct spindump_connection* connection,
                                            struct spindump_connectionstable* table,
                                            struct spindump_analyze* analyzer,
-                                           const char* reason);
+                                           const char* reason,
+                                           int print_info);
 void
 spindump_connectionstable_report(struct spindump_connectionstable* table,
                                  FILE* file,

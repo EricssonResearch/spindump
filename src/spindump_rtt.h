@@ -45,6 +45,7 @@ struct spindump_rtt {
   unsigned long
     recentRTTs[spindump_rtt_nrecent];        // recent RTT measurements, in usec. Value 
                                              // positions via above index.
+  unsigned long rttHisto[6][10];             // RTT histograms 100us-1ms-10ms-100ms-1s-10s resolution
 };
 
 //
@@ -66,5 +67,7 @@ const char*
 spindump_rtt_tostring(unsigned long rttval);
 void
 spindump_rtt_uninitialize(struct spindump_rtt* rtt);
+void
+spindump_rtt_update_histogram(struct spindump_rtt* rtt);
 
 #endif // SPINDUMP_RTT_H

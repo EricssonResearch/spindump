@@ -459,7 +459,8 @@ spindump_main_loop_packetloop(struct spindump_main_state* state,
     if (now.tv_sec > 0 &&
         spindump_connectionstable_periodiccheck(analyzer->table,
                                                 &now,
-                                                analyzer)) {
+                                                analyzer,
+                                                config->toolmode == spindump_toolmode_connection)) {
       if (config->remoteBlockSize > 0 && config->nRemotes > 0) {
         spindump_assert(remoteFormatter != 0);
         spindump_eventformatter_sendpooled(remoteFormatter);
