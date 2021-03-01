@@ -105,11 +105,12 @@ spindump_seqtracker_ackto(struct spindump_seqtracker* tracker,
     // acked by sequence number "seq"?
     // 
     
-    spindump_deepdebugf("compare received ACK %u (%u) to candidate earlier sent SEQ %u..%u at -%llu ago valid %u acked %u",
+    spindump_deepdebugf("compare received ACK %u (%u) to candidate earlier sent SEQ %u..%u at -%llu ago len %u valid %u acked %u",
                         highestacked, seq,
                         candidate->seq, candidate->seq + candidate->len,
                         spindump_timediffinusecs(t,
                                                  &candidate->received),
+                        candidate->len,
                         candidate->valid,
                         candidate->acked);
     
