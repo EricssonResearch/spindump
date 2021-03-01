@@ -27,6 +27,7 @@
 #include "spindump_analyze_quic_parser.h"
 #include "spindump_analyze_quic_parser_util.h"
 #include "spindump_spin.h"
+#include "spindump_titalia_delaybit.h"
 #include "spindump_titalia_rtloss.h"
 #include "spindump_titalia_qrloss.h"
 #include "spindump_orange_qlloss.h"
@@ -405,23 +406,37 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                               connection->u.quic.version,
                                               fromResponder,
                                               &spin)) {
-    if (fromResponder) {
-      spindump_spintracker_observespinandcalculatertt(state,
+    
+    //
+    // Check whether reserved bits are used in this version
+    //
+
+    struct spindump_extrameas extrameas;
+    spindump_extrameas_init(&extrameas);
+    spindump_analyze_quic_parser_getextrameas(udpPayload,
+                                              size_udppayload,
+                                              mayHaveSpinBit,
+                                              connection->u.quic.version,
+                                              fromResponder,
+                                              spin,
+                                              &extrameas);
+
+    if (extrameas.isvalid & spindump_extrameas_delaybit) {
+      
+      // If delay bit is supported, compute RTTs using it
+      spindump_delaybittracker_observeandcalculatertt(state,
                                                       packet,
                                                       connection,
-                                                      &connection->u.quic.spinFromPeer2to1,
-                                                      &connection->u.quic.spinFromPeer1to2,
                                                       &packet->timestamp,
-                                                      spin,
                                                       fromResponder,
                                                       ipPacketLength,
-                                                      &isFlip);
+                                                      extrameas.extrameasbits);
     } else {
+
+      // If not use the spin bit
       spindump_spintracker_observespinandcalculatertt(state,
                                                       packet,
                                                       connection,
-                                                      &connection->u.quic.spinFromPeer1to2,
-                                                      &connection->u.quic.spinFromPeer2to1,
                                                       &packet->timestamp,
                                                       spin,
                                                       fromResponder,
@@ -429,17 +444,11 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                       &isFlip);
     }
 
-    struct spindump_extrameas extrameas;
-    spindump_extrameas_init(&extrameas);
+    //
+    // Compute other measurements values, if present.
+    //
 
-    // check whether the Reserved bits are used in this version
-    if (spindump_analyze_quic_parser_getextrameas(udpPayload,
-                                                  size_udppayload,
-                                                  mayHaveSpinBit,
-                                                  connection->u.quic.version,
-                                                  fromResponder,
-                                                  spin,
-                                                  &extrameas)) {
+    if (extrameas.isvalid) {
 
       if (extrameas.isvalid & spindump_extrameas_rtloss1) {
         spindump_rtloss1tracker_observeandcalculateloss(state,
@@ -448,7 +457,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                         &packet->timestamp,
                                                         fromResponder,
                                                         ipPacketLength,
-                                                        extrameas.extrameasbits & spindump_extrameas_rtloss1?1:0,
+                                                        extrameas.extrameasbits,
                                                         isFlip);
       }
 
@@ -459,7 +468,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
                                                         &packet->timestamp,
                                                         fromResponder,
                                                         ipPacketLength,
-                                                        extrameas.extrameasbits >> 3);
+                                                        extrameas.extrameasbits);
       }
 
       if (extrameas.isvalid & spindump_extrameas_qrloss_qbit) {

@@ -100,6 +100,7 @@
 #define spindump_quic_version_titrlo1          0xf0f0f1f0
 #define spindump_quic_version_titrlo2          0xf0f0f1f1
 #define spindump_quic_version_titqrlo          0xf0f0f1f2
+#define spindump_quic_version_titdbit          0xf0f0f1f3
 #define spindump_quic_version_orqllos          0x50435132
 #define spindump_quic_version_mvfst_d24        0xfaceb001
 #define spindump_quic_version_mvfst            0xfaceb002

@@ -1,4 +1,3 @@
-
 //
 //
 //  ////////////////////////////////////////////////////////////////////////////////////
@@ -11,20 +10,21 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2020 BY ERICSSON RESEARCH
-//  AUTHOR: JARI ARKKO AND MARCUS IHLAR
+//  SPINDUMP (C) 2021 BY ERICSSON RESEARCH
+//  AUTHOR: FABIO BULGARELLA
 //
-// 
+//
 
-#ifndef SPINDUMP_SPIN_H
-#define SPINDUMP_SPIN_H
+#ifndef SPINDUMP_TITALIA_DELAYBIT_H
+#define SPINDUMP_TITALIA_DELAYBIT_H
 
 //
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include "spindump_spin_structs.h"
+#include "spindump_titalia_delaybit_structs.h"
 #include "spindump_connections_structs.h"
+#include "spindump_extrameas.h"
 
 struct spindump_analyze;
 struct spindump_packet;
@@ -34,21 +34,16 @@ struct spindump_packet;
 //
 
 void
-spindump_spintracker_initialize(struct spindump_spintracker* tracker);
-void
-spindump_spintracker_add(struct spindump_spintracker* tracker,
-                         struct timeval* ts,
-                         int spin0to1);
-void
-spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
+spindump_delaybittracker_observeandcalculatertt(struct spindump_analyze* state,
                                                 struct spindump_packet* packet,
                                                 struct spindump_connection* connection,
                                                 struct timeval* ts,
-                                                int spin,
                                                 int fromResponder,
                                                 unsigned int ipPacketLength,
-                                                int *isFlip);
+                                                spindump_extrameas_int extrameasbits);
 void
-spindump_spintracker_uninitialize(struct spindump_spintracker* tracker);
+spindump_delaybittracker_initialize(struct spindump_delaybittracker* tracker);
+void
+spindump_delaybittracker_uninitialize(struct spindump_delaybittracker* tracker);
 
-#endif // SPINDUMP_SPIN_H
+#endif //SPINDUMP_SPINDUMP_DELAYBIT_H

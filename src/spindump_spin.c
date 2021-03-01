@@ -153,13 +153,21 @@ void
 spindump_spintracker_observespinandcalculatertt(struct spindump_analyze* state,
                                                 struct spindump_packet* packet,
                                                 struct spindump_connection* connection,
-                                                struct spindump_spintracker* tracker,
-                                                struct spindump_spintracker* otherDirectionTracker,
                                                 struct timeval* ts,
                                                 int spin,
                                                 int fromResponder,
                                                 unsigned int ipPacketLength,
                                                 int *isFlip) {
+  struct spindump_spintracker* tracker;
+  struct spindump_spintracker* otherDirectionTracker;
+  if (fromResponder) {
+    tracker = &connection->u.quic.spinFromPeer2to1;
+    otherDirectionTracker = &connection->u.quic.spinFromPeer1to2;
+  } else {
+    tracker = &connection->u.quic.spinFromPeer1to2;
+    otherDirectionTracker = &connection->u.quic.spinFromPeer2to1;
+  }
+  
   int spin0to1;
   if (spindump_spintracker_observespin(state,
                                        packet,

@@ -36,21 +36,32 @@ spindump_rtloss_setaveragelossrate(struct spindump_rtloss_stats* lossStats);
 //
 
 void
- spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
+spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
                                                 struct spindump_packet* packet,
                                                 struct spindump_connection* connection,
                                                 struct timeval* ts,
                                                 int fromResponder,
-                                                 unsigned int ipPacketLength,
-                                                int lossbit,
-                                                int isFlip) {
+                                                unsigned int ipPacketLength,
+                                                spindump_extrameas_int extrameasbits,
+                                                int isFlip) {  
+  //
+  // Get lossbit
+  //
+
+  uint8_t lossbit = extrameasbits & spindump_extrameas_rtloss1;
+
+  //
+  // Get tracker
+  //
+  
   struct spindump_rtloss1tracker* tracker;
-  if (fromResponder) {
-    tracker = &connection->u.quic.rtloss1FromPeer2to1;
-  }
-  else {
-    tracker = &connection->u.quic.rtloss1FromPeer1to2;
-  }
+  if (fromResponder) tracker = &connection->u.quic.rtloss1FromPeer2to1;
+  else tracker = &connection->u.quic.rtloss1FromPeer1to2;
+
+  //
+  // Compute round trip loss
+  //
+
   if (isFlip) {
     if (tracker->isLastSpinPeriodEmpty) {
 
@@ -138,17 +149,28 @@ spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze *state,
                                                 struct timeval *ts,
                                                 int fromResponder,
                                                 unsigned int ipPacketLength,
-                                                int lossbits) {
-  unsigned long long timestamp;
-  spindump_timeval_to_timestamp(ts, &timestamp);
+                                                spindump_extrameas_int extrameasbits) {
+  //
+  // Get lossbits
+  //
+
+  uint8_t lossbits = (extrameasbits & (spindump_extrameas_rtloss2_bit1 | spindump_extrameas_rtloss2_bit2)) >> 2;
+
+  //
+  // Get tracker
+  //
 
   struct spindump_rtloss2tracker *tracker;
-  if (fromResponder) {
-    tracker = &connection->u.quic.rtloss2FromPeer2to1;
-  } else {
-    tracker = &connection->u.quic.rtloss2FromPeer1to2;
-  }
+  if (fromResponder) tracker = &connection->u.quic.rtloss2FromPeer2to1;
+  else tracker = &connection->u.quic.rtloss2FromPeer1to2;
   tracker->markedPktCounter++;
+
+  //
+  // Compute loss rate
+  //
+  
+  unsigned long long timestamp;
+  spindump_timeval_to_timestamp(ts, &timestamp);
 
   if (lossbits == 1) {
     if (tracker->reflectionPhase && timestamp > tracker->lockCounterTime) {
