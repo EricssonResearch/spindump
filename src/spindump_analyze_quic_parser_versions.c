@@ -127,6 +127,8 @@ spindump_analyze_quic_parser_version_getextrameasfunc_or_qlloss(uint32_t version
 static const struct spindump_quic_versiondescr versions[] = {
   //      version number            get name   basename supported? LongCIDs? getmessage     parselengths   getspinbit  getextrameas
   { spindump_quic_version_rfc,       fixednamefn,  "RFC",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_draft34,   fixednamefn,  "v34",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_draft33,   fixednamefn,  "v33",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_draft32,   fixednamefn,  "v32",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_draft31,   fixednamefn,  "v31",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_draft30,   fixednamefn,  "v30",    1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
@@ -160,6 +162,8 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_draft02,   fixednamefn,  "v02",    0,        0,    0,              0,               0        , 0          },
   { spindump_quic_version_draft01,   fixednamefn,  "v01",    0,        0,    0,              0,               0        , 0          },
   { spindump_quic_version_draft00,   fixednamefn,  "v00",    0,        0,    0,              0,               0        , 0          },
+  { spindump_quic_version_quant34,   fixednamefn,  "v.qn34", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
+  { spindump_quic_version_quant33,   fixednamefn,  "v.qn33", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_quant32,   fixednamefn,  "v.qn32", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_quant31,   fixednamefn,  "v.qn31", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_quant30,   fixednamefn,  "v.qn30", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
