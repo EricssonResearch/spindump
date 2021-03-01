@@ -340,21 +340,21 @@ spindump_rtt_update_histogram(struct spindump_rtt* rtt) {
 
   if (rttval < 1000) { //1ms
     level = 0;
-    bin_idx = (int)((double) rttval / 100.0);
+    bin_idx = (unsigned  int)((double) rttval / 100.0);
   } else if (rttval < 10 * 1000) { //10ms
     level = 1;
-    bin_idx = (int)((double) rttval / 1000.0);
+    bin_idx = (unsigned  int)((double) rttval / 1000.0);
   } else if (rttval < 100 * 1000) { //100ms
     level = 2;
-    bin_idx = (int)((double) rttval / (10.0 * 1000.0));
+    bin_idx = (unsigned int)((double) rttval / (10.0 * 1000.0));
   } else if (rttval < 1000 * 1000) { //1s
     level = 3;
-    bin_idx = (int)((double) rttval / (100.0 * 1000.0));
+    bin_idx = (unsigned int)((double) rttval / (100.0 * 1000.0));
   } else if (rttval < 10 * 1000 * 1000) { //10s
     level = 4;
-    bin_idx = (int)((double) rttval / (1000.0 * 1000.0));
+    bin_idx = (unsigned int)((double) rttval / (1000.0 * 1000.0));
   } else {
-    bin_idx = (int)((double) rttval / (10.0 * 1000.0 * 1000.0));
+    bin_idx = (unsigned int)((double) rttval / (10.0 * 1000.0 * 1000.0));
   }
 
   rtt->rttHisto[level][bin_idx]++;

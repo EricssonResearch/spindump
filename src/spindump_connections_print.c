@@ -1321,7 +1321,7 @@ spindump_connection_report_rtt_histogram(struct spindump_rtt* rtt,
   const char *marker[] = { "_", "\u2591", "\u2592", "\u2593", "\u2588" };
   unsigned long max = 0;
   unsigned long sum = 0;
-  char buff[256];
+  char buff[256+1];
   memset(buff, 0, sizeof(buff) * sizeof(char));
 
   //Search for the max number of RTT samples in an interval
