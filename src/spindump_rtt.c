@@ -81,7 +81,13 @@ spindump_rtt_newmeasurement(struct spindump_rtt* rtt,
   // 
   
   rtt->lastRTT = (unsigned long)timediff;
-  
+
+  //
+  // Update the RTT histogram
+  //
+
+  spindump_rtt_update_histogram(rtt);
+
   //
   // Update the table for moving average
   // 
@@ -311,4 +317,45 @@ spindump_rtt_tostring(unsigned long rttval) {
   }
   
   return(buf);
+}
+
+
+//
+// This function update the RTT histogram
+// based on the rtt->lastRTT value
+//
+// There are 6 levels of delay intervals in this histogram
+// level 0: 0, 100, 200 ... 900us
+// level 1: 1, 2, 3 ... 9ms
+// level 2: 10, 20, 30 ... 90ms
+// level 3: 100, 200, 300 .. 900ms
+// level 4: 1, 2, 3 ... 9s
+// level 5: 10, 20, 30 ... 60s
+//
+void
+spindump_rtt_update_histogram(struct spindump_rtt* rtt) {
+  unsigned long long rttval = rtt->lastRTT;
+  unsigned int bin_idx = 6;
+  unsigned int level = 5;
+
+  if (rttval < 1000) { //1ms
+    level = 0;
+    bin_idx = (unsigned  int)((double) rttval / 100.0);
+  } else if (rttval < 10 * 1000) { //10ms
+    level = 1;
+    bin_idx = (unsigned  int)((double) rttval / 1000.0);
+  } else if (rttval < 100 * 1000) { //100ms
+    level = 2;
+    bin_idx = (unsigned int)((double) rttval / (10.0 * 1000.0));
+  } else if (rttval < 1000 * 1000) { //1s
+    level = 3;
+    bin_idx = (unsigned int)((double) rttval / (100.0 * 1000.0));
+  } else if (rttval < 10 * 1000 * 1000) { //10s
+    level = 4;
+    bin_idx = (unsigned int)((double) rttval / (1000.0 * 1000.0));
+  } else {
+    bin_idx = (unsigned int)((double) rttval / (10.0 * 1000.0 * 1000.0));
+  }
+
+  rtt->rttHisto[level][bin_idx]++;
 }

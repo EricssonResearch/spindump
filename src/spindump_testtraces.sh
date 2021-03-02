@@ -62,6 +62,7 @@ traces="trace_icmpv4_short
         trace_cmd_aggregate_multinet
         trace_tcp_short
         trace_tcp_short_json trace_dns
+        trace_tcp_short_sack
         trace_tcp_tiny1
         trace_quic_v18_short_spin
         trace_quic_v18_short_spin_all
@@ -128,6 +129,10 @@ traces="trace_icmpv4_short
         trace_quic_v27_mvfst
         trace_quic_v32_quant
         trace_quic_v32_quant_longer
+        trace_quic_v33_quant
+        trace_quic_v34_quant_short
+        trace_quic_rfc_quant_basic
+        trace_quic_rfc_quant_long
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google

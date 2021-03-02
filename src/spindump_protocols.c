@@ -67,6 +67,29 @@ spindump_protocols_tcp_flagstostring(uint8_t flags) {
   return(buf);
 }
 
+const char*
+spindump_protocols_tcp_optiontostring(uint8_t option) {
+  switch (option)
+  {
+  case SPINDUMP_TO_END:
+    return "End of Options";
+  case SPINDUMP_TO_NOOP:
+    return "No-option";
+  case SPINDUMP_TO_MSS:
+    return "Maximum Segment Size";
+  case SPINDUMP_TO_SACK_PERMITTED:
+    return "SACK Permitted";
+  case SPINDUMP_TO_SACK:
+    return "SACK";
+  case SPINDUMP_TO_TS:
+    return "Timestamp Option";
+  case SPINDUMP_TO_WS:
+    return "Window Scaling";
+  default:
+    return "Unknown Option";
+  }
+}
+
 //
 // Decode an Ethernet header from the packet bytes starting from the
 // pointer "header". It is assumed to be long enough for the DNS
@@ -523,6 +546,36 @@ spindump_protocols_tcp_header_decode(const unsigned char* header,
   spindump_decode2byteint(decoded->th_win,header,pos);         // window
   spindump_decode2byteint(decoded->th_sum,header,pos);         // checksum
   spindump_decode2byteint(decoded->th_urp,header,pos);         // urgent pointer
+}
+
+void 
+spindump_protocols_tcp_option_decode(const unsigned char* options,
+                                     struct spindump_tcp_opt* decoded) {
+  
+  unsigned int pos = 0;
+  spindump_decodebyte(decoded->kind,options,pos);
+  if (decoded->kind != SPINDUMP_TO_NOOP && decoded->kind != SPINDUMP_TO_END) {
+    spindump_decodebyte(decoded->length,options,pos);
+  }
+}
+
+void 
+spindump_protocols_tcp_sack_decode(const unsigned char* option_data,
+                                   struct spindump_tcp_sack* decoded,
+                                   unsigned int n_blocks) {
+  unsigned int pos = 0;
+  for (unsigned int i = 0; i < n_blocks; ++i) {
+    spindump_decode4byteint(decoded->blocks[i].left, option_data, pos);
+    spindump_decode4byteint(decoded->blocks[i].right, option_data, pos);
+  }
+}
+
+void 
+spindump_protocols_tcp_tso_decode(const unsigned char* option_data,
+                                   struct spindump_tcp_tso* decoded) {
+  unsigned int pos = 0;
+  spindump_decode4byteint(decoded->ts_val, option_data, pos);
+  spindump_decode4byteint(decoded->ts_ecr, option_data, pos);
 }
 
 //
