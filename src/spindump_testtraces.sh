@@ -134,6 +134,7 @@ traces="trace_icmpv4_short
         trace_quic_pandora
         trace_quic_apple
         trace_quic_bug_ls
+        trace_quic_titalia_delaybit
         trace_quic_titalia_qrloss
         trace_quic_mvfst_d24
         trace_quic_mvfst 
