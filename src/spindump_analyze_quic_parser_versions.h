@@ -127,6 +127,7 @@ typedef int
                                                                unsigned int payload_len,
                                                                unsigned int remainingCaplen,
                                                                enum spindump_quic_message_type type,
+                                                               unsigned int cidLengthFieldsTotalSize,
                                                                unsigned int cidLengthsInBytes,
                                                                unsigned int* p_messageLen,
                                                                struct spindump_stats* stats);
@@ -179,6 +180,7 @@ spindump_analyze_quic_parser_version_parselengths(uint32_t version,
                                                   unsigned int payload_len,
                                                   unsigned int remainingCaplen,
                                                   enum spindump_quic_message_type type,
+                                                  unsigned int cidLengthFieldsTotalSize,
                                                   unsigned int cidLengthsInBytes,
                                                   unsigned int* p_messageLen,
                                                   struct spindump_stats* stats);

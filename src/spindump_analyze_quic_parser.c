@@ -38,7 +38,7 @@
 static int
 spindump_analyze_quic_parse_parseheaderbyte(const unsigned char* payload,
                                             unsigned int payload_len,
-                                            unsigned int remainingCapLen,
+                                            unsigned int remainingCaplen,
                                             uint8_t* headerByte,
                                             int* longForm,
                                             int* googleQuic,
@@ -65,6 +65,7 @@ spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
                                                 unsigned int remainingCaplen,
                                                 uint32_t version,
                                                 enum spindump_quic_message_type type,
+                                                unsigned int cidLengthFieldsTotalSize,
                                                 unsigned int cidLengthsInBytes,
                                                 unsigned int* p_messageLen,
                                                 struct spindump_stats* stats);
@@ -72,6 +73,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* payload,
                                                         unsigned int payload_len,
                                                         unsigned int remainingCaplen,
+                                                        unsigned int cidLengthFieldsTotalSize,
                                                         unsigned int cidLengthsInBytes,
                                                         unsigned int* p_messageLen,
                                                         struct spindump_stats* stats);
@@ -79,6 +81,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_0rtt(const unsigned char* payload,
                                                      unsigned int payload_len,
                                                      unsigned int remainingCaplen,
+                                                     unsigned int cidLengthFieldsTotalSize,
                                                      unsigned int cidLengthsInBytes,
                                                      unsigned int* p_messageLen,
                                                      struct spindump_stats* stats);
@@ -86,6 +89,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_handshake(const unsigned char* payload,
                                                           unsigned int payload_len,
                                                           unsigned int remainingCaplen,
+                                                          unsigned int cidLengthFieldsTotalSize,
                                                           unsigned int cidLengthsInBytes,
                                                           unsigned int* p_messageLen,
                                                           struct spindump_stats* stats);
@@ -93,6 +97,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_retry(const unsigned char* payload,
                                                       unsigned int payload_len,
                                                       unsigned int remainingCaplen,
+                                                      unsigned int cidLengthFieldsTotalSize,
                                                       unsigned int cidLengthsInBytes,
                                                       unsigned int* p_messageLen,
                                                       struct spindump_stats* stats);
@@ -116,6 +121,7 @@ spindump_analyze_quic_parser_parsecids(uint32_t version,
                                        unsigned int remainingCaplen,
                                        uint8_t cidLengths,
                                        int longForm,
+                                       unsigned int* p_cidLengthFieldsTotalSize,
                                        int* p_destinationCidLengthKnown,
                                        struct spindump_quic_connectionid* p_destinationCid,
                                        int* p_sourceCidPresent,
@@ -383,12 +389,14 @@ spindump_analyze_quic_parser_parse(const unsigned char* payload,
   // Parse connection IDs
   // 
 
+  unsigned int cidLengthFieldsTotalSize;
   if (!spindump_analyze_quic_parser_parsecids(version,
                                               payload,
                                               payload_len,
                                               remainingCaplen,
                                               quic.u.longheader.qh_cidLengths,
                                               longForm,
+                                              &cidLengthFieldsTotalSize,
                                               p_destinationCidLengthKnown,
                                               p_destinationCid,
                                               p_sourceCidPresent,
@@ -616,6 +624,8 @@ spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
   spindump_assert(payload != 0);
   spindump_assert(p_0rttAttempted != 0);
   spindump_assert(stats != 0);
+  spindump_deepdeepdebugf("seekquicpackets %u %u %08x",
+                          payload_len, remainingCaplen, version);
   
   //
   // Initialize output parameters
@@ -631,6 +641,7 @@ spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
     // 
     
     if (payload_len < 1 || remainingCaplen < 1) {
+      spindump_deepdeepdebugf("not enough packet for quic header %u %u", payload_len, remainingCaplen);
       stats->notEnoughPacketForQuicHdr++;
       return(0);
     }
@@ -657,6 +668,11 @@ spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
     //
     
     if (googleQuic) {
+      spindump_deepdeepdebugf("cannot do google quic coalescing %u %u %02x %u %u",
+                              payload_len, remainingCaplen,
+                              headerByte,
+                              longForm,
+                              googleQuic);
       stats->notAbleToHandleGoogleQuicCoalescing++;
       return(0);
     }
@@ -717,12 +733,14 @@ spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
     struct spindump_quic_connectionid destinationCid;
     int sourceCidPresent;
     struct spindump_quic_connectionid sourceCid;
+    unsigned int cidLengthFieldsTotalSize;
     if (!spindump_analyze_quic_parser_parsecids(version,
                                                 payload,
                                                 payload_len,
                                                 remainingCaplen,
                                                 quic.u.longheader.qh_cidLengths,
                                                 longForm,
+                                                &cidLengthFieldsTotalSize,
                                                 &destinationCidLengthKnown,
                                                 &destinationCid,
                                                 &sourceCidPresent,
@@ -745,6 +763,7 @@ spindump_analyze_quic_parser_seekquicpackets(const unsigned char* payload,
                                                          remainingCaplen,
                                                          version,
                                                          type,
+                                                         cidLengthFieldsTotalSize,
                                                          cidLengthsInBytes,
                                                          &messageLen,
                                                          stats)) {
@@ -794,6 +813,7 @@ spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
                                                 unsigned int remainingCaplen,
                                                 uint32_t version,
                                                 enum spindump_quic_message_type type,
+                                                unsigned int cidLengthFieldsTotalSize,
                                                 unsigned int cidLengthsInBytes,
                                                 unsigned int* p_messageLen,
                                                 struct spindump_stats* stats) {
@@ -822,6 +842,7 @@ spindump_analyze_quic_parser_parsemessagelength(const unsigned char* payload,
                                                            payload_len,
                                                            remainingCaplen,
                                                            type,
+                                                           cidLengthFieldsTotalSize,
                                                            cidLengthsInBytes,
                                                            p_messageLen,
                                                            stats));
@@ -832,6 +853,7 @@ spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* pay
                                                         unsigned int payload_len,
                                                         unsigned int remainingCaplen,
                                                         enum spindump_quic_message_type type,
+                                                        unsigned int cidLengthFieldsTotalSize,
                                                         unsigned int cidLengthsInBytes,
                                                         unsigned int* p_messageLen,
                                                         struct spindump_stats* stats) {
@@ -840,6 +862,7 @@ spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* pay
     return(spindump_analyze_quic_parser_parsemessagelength_initial(payload,
                                                                    payload_len,
                                                                    remainingCaplen,
+                                                                   cidLengthFieldsTotalSize,
                                                                    cidLengthsInBytes,
                                                                    p_messageLen,
                                                                    stats));
@@ -853,6 +876,7 @@ spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* pay
     return(spindump_analyze_quic_parser_parsemessagelength_0rtt(payload,
                                                                 payload_len,
                                                                 remainingCaplen,
+                                                                cidLengthFieldsTotalSize,
                                                                 cidLengthsInBytes,
                                                                 p_messageLen,
                                                                 stats));
@@ -860,6 +884,7 @@ spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* pay
     return(spindump_analyze_quic_parser_parsemessagelength_handshake(payload,
                                                                      payload_len,
                                                                      remainingCaplen,
+                                                                     cidLengthFieldsTotalSize,
                                                                      cidLengthsInBytes,
                                                                      p_messageLen,
                                                                      stats));
@@ -867,6 +892,7 @@ spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* pay
     return(spindump_analyze_quic_parser_parsemessagelength_retry(payload,
                                                                  payload_len,
                                                                  remainingCaplen,
+                                                                 cidLengthFieldsTotalSize,
                                                                  cidLengthsInBytes,
                                                                  p_messageLen,
                                                                  stats));
@@ -888,6 +914,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* payload,
                                                         unsigned int payload_len,
                                                         unsigned int remainingCaplen,
+                                                        unsigned int cidLengthFieldsTotalSize,
                                                         unsigned int cidLengthsInBytes,
                                                         unsigned int* p_messageLen,
                                                         struct spindump_stats* stats) {
@@ -903,7 +930,7 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
                           cidLengthsInBytes);
   
   //
-  // From the specification:
+  // From the specification, before -22:
   //
   //  +-+-+-+-+-+-+-+-+
   //  |1|1| 0 |R R|P P|
@@ -929,14 +956,41 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
   //
   //                   Figure 11: Initial Packet
   //
-
+  //
+  // And from the specification, -22 and after:
+  //
+  //
+  //     Initial Packet {
+  //       Header Form (1) = 1,
+  //       Fixed Bit (1) = 1,
+  //       Long Packet Type (2) = 0,
+  //       Reserved Bits (2),
+  //       Packet Number Length (2),
+  //       Version (32),
+  //       Destination Connection ID Length (8),
+  //       Destination Connection ID (0..160),
+  //       Source Connection ID Length (8),
+  //       Source Connection ID (0..160),
+  //       Token Length (i),
+  //       Token (..),
+  //       Length (i),
+  //       Packet Number (8..32),
+  //       Packet Payload (8..),
+  //     }
+  //  
+  //     Figure 15: Initial Packet
+  //
+  //
+  
   //
   // Parse the token length and token
   //
   
-  unsigned int tokenLengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  unsigned int tokenLengthPosition = 1 + 4 + cidLengthFieldsTotalSize + cidLengthsInBytes;
+  spindump_deepdeepdebugf("token length position %u (cids are %u of that and %u is cid length lengths)",
+                          tokenLengthPosition, cidLengthsInBytes, cidLengthFieldsTotalSize);
   if (tokenLengthPosition >= payload_len || tokenLengthPosition >= remainingCaplen) {
-    spindump_deepdeepdebugf("seeking QUIC packets: token not within packet");
+    spindump_deepdeepdebugf("seeking QUIC packets: token not within packet in initial message");
     stats->notEnoughPacketForQuicHdrToken++;
     return(0);
   }
@@ -947,13 +1001,13 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
                                                   remainingCaplen - tokenLengthPosition,
                                                   &intLength,
                                                   &tokenLength)) {
-    spindump_deepdeepdebugf("seeking QUIC packets: token not within packet");
+    spindump_deepdeepdebugf("seeking QUIC packets: token not within packet in initial message");
     stats->notEnoughPacketForQuicHdrToken++;
     return(0);
   }
   spindump_deepdeepdebugf("seeking QUIC packets: token length %u %llu", intLength, tokenLength);
   if (tokenLength > UINT_MAX) {
-    spindump_deepdeepdebugf("seeking QUIC packets: token length insane");
+    spindump_deepdeepdebugf("seeking QUIC packets: token length insane in initial message");
     stats->notEnoughPacketForQuicHdrToken++;
     return(0);
   }
@@ -962,7 +1016,7 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
     intLength +
     ((unsigned int)tokenLength);
   if (positionAfterToken >= payload_len || positionAfterToken >= remainingCaplen) {
-    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after token");
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after token in initial message");
     stats->notEnoughPacketForQuicHdrToken++;
     return(0);
   }
@@ -977,13 +1031,13 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
                                                   remainingCaplen - positionAfterToken,
                                                   &intLength,
                                                   &length)) {
-    spindump_deepdeepdebugf("seeking QUIC packets: length not within packet");
+    spindump_deepdeepdebugf("seeking QUIC packets: length not within packet in initial message");
     stats->notEnoughPacketForQuicHdrLength++;
     return(0);
   }
   spindump_deepdeepdebugf("seeking QUIC packets: packet length %u %llu", intLength, length);
   if (length > UINT_MAX) {
-    spindump_deepdeepdebugf("seeking QUIC packets: packet length insane");
+    spindump_deepdeepdebugf("seeking QUIC packets: packet length insane in initial message");
     stats->notEnoughPacketForQuicHdrLength++;
     return(0);
   }
@@ -992,7 +1046,7 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
     intLength +
     ((unsigned int)length);
   if (positionAfterLength > payload_len || positionAfterLength > remainingCaplen) {
-    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length");
+    spindump_deepdeepdebugf("seeking QUIC packets: no packet left after length in initial message");
     stats->notEnoughPacketForQuicHdrLength++;
     return(0);
   }
@@ -1002,7 +1056,7 @@ spindump_analyze_quic_parser_parsemessagelength_initial(const unsigned char* pay
   //
 
   *p_messageLen = positionAfterLength;
-  spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one message, length = %u",
+  spindump_deepdeepdebugf("seeking QUIC packets: success in parsing one message (initial message), length = %u",
                           *p_messageLen);
   return(1);
 }
@@ -1015,6 +1069,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_0rtt(const unsigned char* payload,
                                                      unsigned int payload_len,
                                                      unsigned int remainingCaplen,
+                                                     unsigned int cidLengthFieldsTotalSize,
                                                      unsigned int cidLengthsInBytes,
                                                      unsigned int* p_messageLen,
                                                      struct spindump_stats* stats) {
@@ -1057,7 +1112,7 @@ spindump_analyze_quic_parser_parsemessagelength_0rtt(const unsigned char* payloa
   // Parse the length field
   //
 
-  unsigned int lengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  unsigned int lengthPosition = 1 + 4 + cidLengthFieldsTotalSize + cidLengthsInBytes;
   if (payload_len <= lengthPosition || remainingCaplen <= lengthPosition) {
     spindump_deepdeepdebugf("seeking QUIC packets: not enough for packet length in 0-rtt packet");
     stats->notEnoughPacketForQuicHdrLength++;
@@ -1109,6 +1164,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_handshake(const unsigned char* payload,
                                                           unsigned int payload_len,
                                                           unsigned int remainingCaplen,
+                                                          unsigned int cidLengthFieldsTotalSize,
                                                           unsigned int cidLengthsInBytes,
                                                           unsigned int* p_messageLen,
                                                           struct spindump_stats* stats) {
@@ -1151,7 +1207,7 @@ spindump_analyze_quic_parser_parsemessagelength_handshake(const unsigned char* p
   // Parse the length field
   //
   
-  unsigned int lengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  unsigned int lengthPosition = 1 + 4 + cidLengthFieldsTotalSize + cidLengthsInBytes;
   if (payload_len <= lengthPosition || remainingCaplen <= lengthPosition) {
     spindump_deepdeepdebugf("seeking QUIC packets: not enough for packet length in handshake packet");
     stats->notEnoughPacketForQuicHdrLength++;
@@ -1203,6 +1259,7 @@ static int
 spindump_analyze_quic_parser_parsemessagelength_retry(const unsigned char* payload,
                                                       unsigned int payload_len,
                                                       unsigned int remainingCaplen,
+                                                      unsigned int cidLengthFieldsTotalSize,
                                                       unsigned int cidLengthsInBytes,
                                                       unsigned int* p_messageLen,
                                                       struct spindump_stats* stats) {
@@ -1245,7 +1302,7 @@ spindump_analyze_quic_parser_parsemessagelength_retry(const unsigned char* paylo
   // Parse the length field
   //
   
-  unsigned int lengthPosition = 1 + 4 + 1 + cidLengthsInBytes;
+  unsigned int lengthPosition = 1 + 4 + cidLengthFieldsTotalSize + cidLengthsInBytes;
   if (payload_len <= lengthPosition || remainingCaplen <= lengthPosition) {
     spindump_deepdeepdebugf("seeking QUIC packets: not enough for packet length in handshake packet");
     stats->notEnoughPacketForQuicHdrLength++;
@@ -1386,7 +1443,7 @@ spindump_analyze_quic_parser_parsemessagelength_versionnegotiation(const unsigne
 static int
 spindump_analyze_quic_parse_parseheaderbyte(const unsigned char* payload,
                                             unsigned int payload_len,
-                                            unsigned int remainingCapLen,
+                                            unsigned int remainingCaplen,
                                             uint8_t* headerByte,
                                             int* longForm,
                                             int* googleQuic,
@@ -1408,7 +1465,8 @@ spindump_analyze_quic_parse_parseheaderbyte(const unsigned char* payload,
   //
   // Check for Google QUIC version
   //
-  
+
+  spindump_deepdeepdebugf("parseheaderbyte %02x",headerByte);
   if ((*headerByte & spindump_quic_byte_header_alwaysunset) == 0) {
     
     //
@@ -1580,6 +1638,7 @@ spindump_analyze_quic_parser_parsecids(uint32_t version,
                                        unsigned int remainingCaplen,
                                        uint8_t cidLengths,
                                        int longForm,
+                                       unsigned int* p_cidLengthFieldsTotalSize,
                                        int* p_destinationCidLengthKnown,
                                        struct spindump_quic_connectionid* p_destinationCid,
                                        int* p_sourceCidPresent,
@@ -1603,6 +1662,7 @@ spindump_analyze_quic_parser_parsecids(uint32_t version,
 
     int ans;
     if (longCids) {
+      *p_cidLengthFieldsTotalSize = 2;
       ans = spindump_analyze_quic_parser_util_cidlengths_long(cidLengths,
                                                               payload + packetHeaderSoFarWithFirstCIDLength,
                                                               (payload_len >= packetHeaderSoFarWithFirstCIDLength ?
@@ -1614,6 +1674,7 @@ spindump_analyze_quic_parser_parsecids(uint32_t version,
                                                               &destLen,
                                                               &sourceLen);
     } else {
+      *p_cidLengthFieldsTotalSize = 1;
       ans = spindump_analyze_quic_parser_util_cidlengths_short(cidLengths,
                                                                &destLen,
                                                                &sourceLen);
@@ -1635,6 +1696,7 @@ spindump_analyze_quic_parser_parsecids(uint32_t version,
     spindump_deepdebugf("destination CID = %s", spindump_connection_quicconnectionid_tostring(p_destinationCid,tempid,sizeof(tempid)));
     spindump_deepdebugf("source CID = %s", spindump_connection_quicconnectionid_tostring(p_sourceCid,tempid,sizeof(tempid)));
   } else {
+    *p_cidLengthFieldsTotalSize = 0;
     *p_destinationCidLengthKnown = 0;
     memcpy(p_destinationCid->id,payload + spindump_quic_header_length,spindump_min(18,payload_len-1));
     *p_sourceCidPresent = 0;

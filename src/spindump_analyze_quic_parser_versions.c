@@ -205,6 +205,7 @@ spindump_analyze_quic_parser_version_findversion(uint32_t version) {
   }
   const struct spindump_quic_versiondescr* search = &versions[0];
   while (search->version != spindump_quic_version_unknown) {
+    spindump_deepdeepdebugf("QUIC parser comparing version %08x to %08x", version, search->version);
     if (search->version == version) {
       return(search);
     } else {
@@ -422,6 +423,7 @@ spindump_analyze_quic_parser_version_parselengths(uint32_t version,
                                                   unsigned int payload_len,
                                                   unsigned int remainingCaplen,
                                                   enum spindump_quic_message_type type,
+                                                  unsigned int cidLengthFieldsTotalSize,
                                                   unsigned int cidLengthsInBytes,
                                                   unsigned int* p_messageLen,
                                                   struct spindump_stats* stats) {
@@ -432,6 +434,7 @@ spindump_analyze_quic_parser_version_parselengths(uint32_t version,
                                                  payload_len,
                                                  remainingCaplen,
                                                  type,
+                                                 cidLengthFieldsTotalSize,
                                                  cidLengthsInBytes,
                                                  p_messageLen,
                                                  stats));

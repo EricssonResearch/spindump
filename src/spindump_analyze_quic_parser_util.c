@@ -177,9 +177,11 @@ spindump_analyze_quic_parser_util_parseint(const unsigned char* buffer,
   //
 
   *integer = (uint64_t)((buffer[0]) & 0x3f);
+  spindump_deepdeepdebugf("parsing integer with first byte %02x", (*buffer));
   switch (((*buffer)>>6) & 0x03) {
   case 0x00:
     *integerLength = 1;
+    spindump_deepdeepdebugf("integer length 1 byte value %lu", *integer);
     return(1);
   case 0x01:
     *integerLength = 2;
@@ -190,6 +192,7 @@ spindump_analyze_quic_parser_util_parseint(const unsigned char* buffer,
     }
     (*integer) <<= 8;
     *integer += (uint64_t)(buffer[1]);
+    spindump_deepdeepdebugf("integer length 2 byte value %lu", *integer);
     return(1);
   case 0x02:
     *integerLength = 4;
@@ -204,6 +207,7 @@ spindump_analyze_quic_parser_util_parseint(const unsigned char* buffer,
     *integer += (uint64_t)(buffer[2]);
     (*integer) <<= 8;
     *integer += (uint64_t)(buffer[3]);
+    spindump_deepdeepdebugf("integer length 4 byte value %lu", *integer);
     return(1);
   case 0x03:
     *integerLength = 8;
@@ -226,6 +230,7 @@ spindump_analyze_quic_parser_util_parseint(const unsigned char* buffer,
     *integer += (uint64_t)(buffer[6]);
     (*integer) <<= 8;
     *integer += (uint64_t)(buffer[7]);
+    spindump_deepdeepdebugf("integer length 8 byte value %lu", *integer);
     return(1);
   default:
     spindump_errorf("should not happen");

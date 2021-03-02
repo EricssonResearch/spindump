@@ -1,0 +1,81 @@
+[
+{ "Event": "new", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "045e0cc8-702c67175f292b81a409179e20bfc6 (64002:4433)", "Ts": 1614616201291000, "State": "Starting", "Notes": "No rsp,RFC,0-RTT,no spin", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
+{ "Event": "measurement", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "045e0cc8-04d9d79f (64002:4433)", "Ts": 1614616201412258, "State": "Up", "Notes": "No rsp,RFC,0-RTT,no spin", "Right_rtt": 121258, "Packets1": 1, "Packets2": 0, "Bytes1": 1500, "Bytes2": 0, "Bandwidth1": 1500, "Bandwidth2": 0 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201412265, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 0, "Who": "responder", "Packets1": 1, "Packets2": 1, "Bytes1": 1500, "Bytes2": 1500, "Bandwidth1": 1500, "Bandwidth2": 1500 },
+{ "Event": "packet", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201414632, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Dir": "initiator", "Length": 128, "Packets1": 2, "Packets2": 2, "Bytes1": 1628, "Bytes2": 1798, "Bandwidth1": 1628, "Bandwidth2": 1798 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201414909, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 0, "Who": "initiator", "Packets1": 2, "Packets2": 2, "Bytes1": 1628, "Bytes2": 1798, "Bandwidth1": 1628, "Bandwidth2": 1798 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201476749, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 0, "Who": "responder", "Packets1": 3, "Packets2": 2, "Bytes1": 1759, "Bytes2": 1798, "Bandwidth1": 1759, "Bandwidth2": 1798 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201476752, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 0, "Who": "responder", "Packets1": 3, "Packets2": 3, "Bytes1": 1759, "Bytes2": 3078, "Bandwidth1": 1759, "Bandwidth2": 3078 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201476754, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 0, "Who": "responder", "Packets1": 3, "Packets2": 4, "Bytes1": 1759, "Bytes2": 4358, "Bandwidth1": 1759, "Bandwidth2": 4358 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201477968, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 0, "Who": "initiator", "Packets1": 3, "Packets2": 5, "Bytes1": 1759, "Bytes2": 5074, "Bandwidth1": 1759, "Bandwidth2": 5074 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201597639, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 0, "Who": "responder", "Packets1": 4, "Packets2": 5, "Bytes1": 1812, "Bytes2": 5074, "Bandwidth1": 1812, "Bandwidth2": 5074 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201598252, "State": "Up", "Notes": "RFC,0-RTT,no spin", "Value": 1, "Who": "initiator", "Packets1": 4, "Packets2": 6, "Bytes1": 1812, "Bytes2": 5172, "Bandwidth1": 1812, "Bandwidth2": 5172 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "5e0cc840-04d9d79f (64002:4433)", "Ts": 1614616201686316, "State": "Up", "Notes": "RFC,0-RTT,no R-spin", "Value": 0, "Who": "responder", "Packets1": 5, "Packets2": 6, "Bytes1": 1873, "Bytes2": 5172, "Bandwidth1": 1873, "Bandwidth2": 5172 }
+]
+received frames:                              13
+analyzer handler calls:                       16
+frame not long enough for Ethernet hdr:        0
+received IPv4 packets:                        13
+received IPv4 bytes:                        7.1KB
+received IPv6 packets:                         0
+received IPv6 bytes:                           0B
+invalid IP header size:                        0
+packet not long enough for IP hdr:             0
+version mismatch:                              0
+invalid IP length:                             0
+unprocessed IP fragment:                       0
+packet not long enough for FH:                 0
+received ICMP packets:                         0
+invalid ICMP header size:                      0
+packet not long enough for ICMP hdr:           0
+unsupported ICMP type:                         0
+invalid ICMP code:                             0
+received ICMP echo packets:                    0
+received UDP packets:                         13
+packet not long enough for UDP hdr:            0
+packet not long enough for DNS hdr:            0
+packet not long enough for COAP hdr:           0
+COAP version is not supported:                 0
+COAP message was not trackable:                0
+TLS message not parsable:                      0
+received QUIC packets:                        13
+packet not long enough for QUIC hdr:           0
+packet not long enough for QUIC token:         0
+packet not long enough for QUIC length:        0
+unable to parse coalesced Google QUIC:         2
+unrecognised QUIC version:                     0
+unsupported QUIC message type:                 0
+unrecognised QUIC message type:                0
+received TCP packets:                          0
+invalid TCP header size:                       0
+packet not long enough for TCP hdr:            0
+unknown TCP connection:                        0
+protocol not supported:                        0
+unsupported Ethertype:                         0
+unsupported Nulltype:                          0
+invalid RTT:                                   0
+connections:                                   1
+connections, ICMP:                             0
+connections, TCP:                              0
+connections, UDP:                              0
+connections, DNS:                              0
+connections, COAP:                             0
+connections, QUIC:                             1
+connections, deleted after closing:            0
+connections, deleted after inactive:           0
+CONNECTION 0 (QUIC):
+  host & port 1:         10.30.0.167:64002
+  host 2:                91.190.195.94:4433
+  peer 1 connection ID:                                  5e0cc840
+  peer 2 connection ID:                                  04d9d79f
+  initial right RTT:                                     121.3 ms
+  initial left RTT:                                           n/a
+  aggregated in:                                                 
+  packets 1->2:                                                 5
+  packets 2->1:                                                 7
+  bytes 1->2:                                                1873
+  bytes 2->1:                                                5234
+  last left RTT:                                              n/a
+  moving avg left RTT:                                        n/a
+  last right RTT:                                        121.3 ms
+  moving avg right RTT:                                  121.3 ms

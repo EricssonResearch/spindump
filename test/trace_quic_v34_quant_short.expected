@@ -1,0 +1,90 @@
+[
+{ "Event": "new", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "041f2c7a-0c9f960c34b77dc1ad0a89e3c828308c0fd120 (63931:4433)", "Ts": 1614618208117630, "State": "Starting", "Notes": "No rsp,v34,no spin", "Packets1": 0, "Packets2": 0, "Bytes1": 0, "Bytes2": 0 },
+{ "Event": "measurement", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "041f2c7a-042c94f5 (63931:4433)", "Ts": 1614618208204108, "State": "Up", "Notes": "No rsp,v34,no spin", "Right_rtt": 86478, "Packets1": 1, "Packets2": 0, "Bytes1": 1228, "Bytes2": 0, "Bandwidth1": 1228, "Bandwidth2": 0 },
+{ "Event": "packet", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208205811, "State": "Up", "Notes": "V34,no spin", "Dir": "initiator", "Length": 71, "Packets1": 2, "Packets2": 1, "Bytes1": 1299, "Bytes2": 1500, "Bandwidth1": 1299, "Bandwidth2": 1500 },
+{ "Event": "packet", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208322930, "State": "Up", "Notes": "V34,no spin", "Dir": "responder", "Length": 1280, "Packets1": 2, "Packets2": 2, "Bytes1": 1299, "Bytes2": 2780, "Bandwidth1": 1299, "Bandwidth2": 2780 },
+{ "Event": "packet", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208322937, "State": "Up", "Notes": "V34,no spin", "Dir": "responder", "Length": 1485, "Packets1": 2, "Packets2": 3, "Bytes1": 1299, "Bytes2": 4265, "Bandwidth1": 1299, "Bandwidth2": 4265 },
+{ "Event": "packet", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208326038, "State": "Up", "Notes": "V34,no spin", "Dir": "initiator", "Length": 1500, "Packets1": 3, "Packets2": 3, "Bytes1": 2799, "Bytes2": 4265, "Bandwidth1": 2799, "Bandwidth2": 4265 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208326039, "State": "Up", "Notes": "V34,no spin", "Value": 0, "Who": "initiator", "Packets1": 3, "Packets2": 3, "Bytes1": 2799, "Bytes2": 4265, "Bandwidth1": 2799, "Bandwidth2": 4265 },
+{ "Event": "packet", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208378527, "State": "Up", "Notes": "V34,no spin", "Dir": "responder", "Length": 1280, "Packets1": 4, "Packets2": 4, "Bytes1": 2972, "Bytes2": 5545, "Bandwidth1": 2972, "Bandwidth2": 5545 },
+{ "Event": "packet", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208378845, "State": "Up", "Notes": "V34,no spin", "Dir": "initiator", "Length": 70, "Packets1": 5, "Packets2": 4, "Bytes1": 3042, "Bytes2": 5545, "Bandwidth1": 3042, "Bandwidth2": 5545 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208396590, "State": "Up", "Notes": "V34,no spin", "Value": 0, "Who": "responder", "Packets1": 5, "Packets2": 4, "Bytes1": 3042, "Bytes2": 5545, "Bandwidth1": 3042, "Bandwidth2": 5545 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208396888, "State": "Up", "Notes": "V34,no spin", "Value": 1, "Who": "initiator", "Packets1": 5, "Packets2": 5, "Bytes1": 3042, "Bytes2": 5790, "Bandwidth1": 3042, "Bandwidth2": 5790 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208506423, "State": "Up", "Notes": "V34,no R-spin", "Value": 0, "Who": "responder", "Packets1": 6, "Packets2": 5, "Bytes1": 3102, "Bytes2": 5790, "Bandwidth1": 3102, "Bandwidth2": 5790 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208534102, "State": "Up", "Notes": "V34,no R-spin", "Value": 0, "Who": "responder", "Packets1": 6, "Packets2": 6, "Bytes1": 3102, "Bytes2": 5852, "Bandwidth1": 3102, "Bandwidth2": 5852 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208534469, "State": "Up", "Notes": "V34,no R-spin", "Value": 1, "Who": "initiator", "Packets1": 6, "Packets2": 7, "Bytes1": 3102, "Bytes2": 5964, "Bandwidth1": 3102, "Bandwidth2": 5964 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208534723, "State": "Up", "Notes": "V34,no R-spin", "Value": 1, "Who": "initiator", "Packets1": 7, "Packets2": 7, "Bytes1": 3160, "Bytes2": 5964, "Bandwidth1": 3160, "Bandwidth2": 5964 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208640719, "State": "Up", "Notes": "V34,no R-spin", "Value": 1, "Who": "responder", "Packets1": 8, "Packets2": 7, "Bytes1": 3213, "Bytes2": 5964, "Bandwidth1": 3213, "Bandwidth2": 5964 },
+{ "Event": "measurement", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208640719, "State": "Up", "Notes": "V34,spinning", "Right_rtt": 243831, "Packets1": 8, "Packets2": 7, "Bytes1": 3213, "Bytes2": 5964, "Bandwidth1": 3213, "Bandwidth2": 5964 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208641197, "State": "Up", "Notes": "V34,spinning", "Value": 0, "Who": "initiator", "Packets1": 8, "Packets2": 8, "Bytes1": 3213, "Bytes2": 6131, "Bandwidth1": 3213, "Bandwidth2": 6131 },
+{ "Event": "measurement", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208641197, "State": "Up", "Notes": "V34,spinning", "Left_rtt": 478, "Packets1": 8, "Packets2": 8, "Bytes1": 3213, "Bytes2": 6131, "Bandwidth1": 3213, "Bandwidth2": 6131 },
+{ "Event": "measurement", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208641197, "State": "Up", "Notes": "V34,spinning", "Full_rtt_initiator": 244309, "Packets1": 8, "Packets2": 8, "Bytes1": 3213, "Bytes2": 6131, "Bandwidth1": 3213, "Bandwidth2": 6131 },
+{ "Event": "spinvalue", "Type": "QUIC", "Addrs": ["10.30.0.167","91.190.195.94"], "Session": "1f2c7a89-042c94f5 (63931:4433)", "Ts": 1614618208722506, "State": "Up", "Notes": "V34,spinning", "Value": 1, "Who": "responder", "Packets1": 9, "Packets2": 8, "Bytes1": 3274, "Bytes2": 6131, "Bandwidth1": 3274, "Bandwidth2": 6131 }
+]
+received frames:                              19
+analyzer handler calls:                       27
+frame not long enough for Ethernet hdr:        0
+received IPv4 packets:                        19
+received IPv4 bytes:                        9.5KB
+received IPv6 packets:                         0
+received IPv6 bytes:                           0B
+invalid IP header size:                        0
+packet not long enough for IP hdr:             0
+version mismatch:                              0
+invalid IP length:                             0
+unprocessed IP fragment:                       0
+packet not long enough for FH:                 0
+received ICMP packets:                         0
+invalid ICMP header size:                      0
+packet not long enough for ICMP hdr:           0
+unsupported ICMP type:                         0
+invalid ICMP code:                             0
+received ICMP echo packets:                    0
+received UDP packets:                         19
+packet not long enough for UDP hdr:            0
+packet not long enough for DNS hdr:            0
+packet not long enough for COAP hdr:           0
+COAP version is not supported:                 0
+COAP message was not trackable:                0
+TLS message not parsable:                      0
+received QUIC packets:                        19
+packet not long enough for QUIC hdr:           0
+packet not long enough for QUIC token:         0
+packet not long enough for QUIC length:        0
+unable to parse coalesced Google QUIC:         2
+unrecognised QUIC version:                     0
+unsupported QUIC message type:                 0
+unrecognised QUIC message type:                0
+received TCP packets:                          0
+invalid TCP header size:                       0
+packet not long enough for TCP hdr:            0
+unknown TCP connection:                        0
+protocol not supported:                        0
+unsupported Ethertype:                         0
+unsupported Nulltype:                          0
+invalid RTT:                                   0
+connections:                                   1
+connections, ICMP:                             0
+connections, TCP:                              0
+connections, UDP:                              0
+connections, DNS:                              0
+connections, COAP:                             0
+connections, QUIC:                             1
+connections, deleted after closing:            0
+connections, deleted after inactive:           0
+CONNECTION 0 (QUIC):
+  host & port 1:         10.30.0.167:63931
+  host 2:                91.190.195.94:4433
+  peer 1 connection ID:                                  1f2c7a89
+  peer 2 connection ID:                                  042c94f5
+  initial right RTT:                                      86.5 ms
+  initial left RTT:                                           n/a
+  aggregated in:                                                 
+  packets 1->2:                                                 9
+  packets 2->1:                                                 9
+  bytes 1->2:                                                3274
+  bytes 2->1:                                                6193
+  last left RTT:                                           478 us
+  moving avg left RTT:                                     478 us
+  last right RTT:                                        243.8 ms
+  moving avg right RTT:                                  165.2 ms

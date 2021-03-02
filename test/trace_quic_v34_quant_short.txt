@@ -1,0 +1,4 @@
+A short run with Quant v.1 but with client set to offer version
+ff000022, using command
+
+    ./bin/client -e 0xff000022 -i en0 https://quant.eggert.org/20

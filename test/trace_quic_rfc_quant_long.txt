@@ -1,0 +1,3 @@
+RFC version (QUIC 1) test with Quant server and Quant client, 30KB file download. Using the following command:
+
+    ./bin/client -i en0 https://quant.eggert.org/30000

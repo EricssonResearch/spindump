@@ -105,6 +105,7 @@ spindump_analyze_quic_parser_parsemessagelength_pertype(const unsigned char* pay
                                                         unsigned int payload_len,
                                                         unsigned int remainingCaplen,
                                                         enum spindump_quic_message_type type,
+                                                        unsigned int cidLengthFieldsTotalSize,
                                                         unsigned int cidLengthsInBytes,
                                                         unsigned int* p_messageLen,
                                                         struct spindump_stats* stats);
