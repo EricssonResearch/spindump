@@ -24,6 +24,7 @@
 
 #include "spindump_titalia_rtloss_structs.h"
 #include "spindump_connections_structs.h"
+#include "spindump_extrameas.h"
 
 struct spindump_analyze;
 struct spindump_packet;
@@ -39,7 +40,7 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
                                                 struct timeval* ts,
                                                 int fromResponder,
                                                 unsigned int ipPacketLength,
-                                                int lossbit,
+                                                spindump_extrameas_int extrameasbits,
                                                 int isFlip);
 void
 spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze* state,
@@ -48,7 +49,7 @@ spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze* state,
                                                 struct timeval* ts,
                                                 int fromResponder,
                                                 unsigned int ipPacketLength,
-                                                int lossbits);
+                                                spindump_extrameas_int extrameasbits);
 void
 spindump_rtloss1tracker_initialize(struct spindump_rtloss1tracker* tracker);
 void

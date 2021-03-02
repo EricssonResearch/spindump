@@ -37,6 +37,7 @@
 #include "spindump_stats.h"
 #include "spindump_analyze_quic_parser.h"
 #include "spindump_spin.h"
+#include "spindump_titalia_delaybit.h"
 #include "spindump_titalia_rtloss.h"
 #include "spindump_titalia_qrloss.h"
 #include "spindump_orange_qlloss.h"
@@ -140,6 +141,8 @@ spindump_connections_newconnection_aux(struct spindump_connectionstable* table,
   case spindump_connection_transport_quic:
     spindump_spintracker_initialize(&connection->u.quic.spinFromPeer1to2);
     spindump_spintracker_initialize(&connection->u.quic.spinFromPeer2to1);
+    spindump_delaybittracker_initialize(&connection->u.quic.delaybitFromPeer1to2);
+    spindump_delaybittracker_initialize(&connection->u.quic.delaybitFromPeer2to1);
     spindump_rtloss1tracker_initialize(&connection->u.quic.rtloss1FromPeer1to2);
     spindump_rtloss1tracker_initialize(&connection->u.quic.rtloss1FromPeer2to1);
     spindump_rtloss2tracker_initialize(&connection->u.quic.rtloss2FromPeer1to2);

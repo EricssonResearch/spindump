@@ -85,6 +85,12 @@ spindump_analyze_quic_parser_version_getextrameasfunc_ti_qrloss(uint32_t version
                                                                 struct spindump_extrameas* p_extrameasValue);
 
 static int
+spindump_analyze_quic_parser_version_getextrameasfunc_ti_delaybit(uint32_t version,
+                                                                  uint8_t headerByte,
+                                                                  int spin,
+                                                                  struct spindump_extrameas* p_extrameasValue);
+
+static int
 spindump_analyze_quic_parser_version_getextrameasfunc_or_qlloss(uint32_t version,
                                                                 uint8_t headerByte,
                                                                 int spin,
@@ -109,6 +115,7 @@ spindump_analyze_quic_parser_version_getextrameasfunc_or_qlloss(uint32_t version
 #define emrtloss1 spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss1
 #define emrtloss2 spindump_analyze_quic_parser_version_getextrameasfunc_ti_rtloss2
 #define emqrloss  spindump_analyze_quic_parser_version_getextrameasfunc_ti_qrloss
+#define emdelaybit  spindump_analyze_quic_parser_version_getextrameasfunc_ti_delaybit
 #define emqlloss  spindump_analyze_quic_parser_version_getextrameasfunc_or_qlloss
 
 
@@ -184,6 +191,7 @@ static const struct spindump_quic_versiondescr versions[] = {
   { spindump_quic_version_titrlo1,   fixednamefn,  "v.til1", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emrtloss1  },
   { spindump_quic_version_titrlo2,   fixednamefn,  "v.til2", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emrtloss2  },
   { spindump_quic_version_titqrlo,   fixednamefn,  "v.tiqr", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emqrloss   },
+  { spindump_quic_version_titdbit,   fixednamefn,  "v.tidb", 1,        1,    messagefunc17,  parselengths17,  spinbit17, emdelaybit },
   { spindump_quic_version_orqllos,   fixednamefn,  "v.orql", 1,        0,    messagefunc17,  parselengths17,  spinbit17, emqlloss   },
   { spindump_quic_version_mvfst_d24, fixednamefn,  "v.fb24", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
   { spindump_quic_version_mvfst,     fixednamefn,  "v.fbmv", 1,        1,    messagefunc17,  parselengths17,  spinbit17, 0          },
@@ -533,6 +541,27 @@ spindump_analyze_quic_parser_version_getextrameasfunc_ti_qrloss(uint32_t version
   p_extrameasValue->isvalid = p_extrameasValue->isvalid | spindump_extrameas_qrloss_qbit | spindump_extrameas_qrloss_rbit;
   if (reserved1) p_extrameasValue->extrameasbits = p_extrameasValue->extrameasbits | spindump_extrameas_qrloss_qbit;
   if (reserved2) p_extrameasValue->extrameasbits = p_extrameasValue->extrameasbits | spindump_extrameas_qrloss_rbit;
+
+  return 1;
+}
+
+//
+// Get the value of the delay bit for
+// https://tools.ietf.org/html/draft-mdt-ippm-explicit-flow-measurements-01#section-3.2
+//
+
+static int
+spindump_analyze_quic_parser_version_getextrameasfunc_ti_delaybit(uint32_t version,
+                                                                  uint8_t headerByte,
+                                                                  int spin,
+                                                                  struct spindump_extrameas* p_extrameasValue) {
+  int retval;
+  int reserved1 = 0;
+  retval = spindump_analyze_quic_parser_reserved1(version, headerByte, &reserved1);
+  if (!retval) return 0;
+
+  p_extrameasValue->isvalid = p_extrameasValue->isvalid | spindump_extrameas_delaybit;
+  if (reserved1) p_extrameasValue->extrameasbits = p_extrameasValue->extrameasbits | spindump_extrameas_delaybit;
 
   return 1;
 }

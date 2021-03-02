@@ -100,6 +100,7 @@ add_library(spindumplib
   spindump_spin.c
   spindump_stats.c
   spindump_table.c
+  spindump_titalia_delaybit.c
   spindump_titalia_qrloss.c
   spindump_titalia_rtloss.c
   spindump_util.c 
