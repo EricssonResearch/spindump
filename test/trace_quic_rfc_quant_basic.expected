@@ -42,7 +42,7 @@ received QUIC packets:                        13
 packet not long enough for QUIC hdr:           0
 packet not long enough for QUIC token:         0
 packet not long enough for QUIC length:        0
-unable to parse coalesced Google QUIC:         2
+unable to parse coalesced Google QUIC:         0
 unrecognised QUIC version:                     0
 unsupported QUIC message type:                 0
 unrecognised QUIC message type:                0

@@ -632,9 +632,11 @@ spindump_analyze_quic_parser_version_getextrameas(uint32_t version,
 //
 
 int
-spindump_analyze_quic_parser_version_useslongcidlength(uint32_t version) {
-  const struct spindump_quic_versiondescr* descriptor =
-    spindump_analyze_quic_parser_version_findversion(version);
+spindump_analyze_quic_parser_version_useslongcidlength(spindump_quic_versiondescr_constpointer descriptor) {
+  spindump_deepdeepdebugf("useslongcidlength descr %lx name %s long %u",
+                          descriptor,
+                          descriptor != 0 ? descriptor->basename : "-",
+                          descriptor != 0 ? descriptor->longCidLength : 0);
   return(descriptor != 0 && descriptor->longCidLength);
 }
 

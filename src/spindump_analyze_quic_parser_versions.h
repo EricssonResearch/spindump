@@ -156,6 +156,8 @@ struct spindump_quic_versiondescr {
   spindump_analyze_quic_parser_version_getextrameasfunc extrameasvaluefunction;
 };
 
+typedef const struct spindump_quic_versiondescr* spindump_quic_versiondescr_constpointer;
+
 //
 // External API interface to this module ------------------------------------------------------
 //
@@ -197,6 +199,6 @@ spindump_analyze_quic_parser_version_getextrameas(uint32_t version,
                                                  struct spindump_extrameas* p_extrameasValue);
 
 int
-spindump_analyze_quic_parser_version_useslongcidlength(uint32_t version);
+spindump_analyze_quic_parser_version_useslongcidlength(spindump_quic_versiondescr_constpointer descriptor);
 
 #endif // SPINDUMP_ANALYZE_QUIC_PARSER_VERSIONS_H
