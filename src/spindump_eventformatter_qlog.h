@@ -16,36 +16,43 @@
 //
 // 
 
-#ifndef SPINDUMP_EVENT_PARSER_TEXT_H
-#define SPINDUMP_EVENT_PARSER_TEXT_H
+#ifndef SPINDUMP_EVENTFORMATTER_QLOG_H
+#define SPINDUMP_EVENTFORMATTER_QLOG_H
 
 //
 // Includes -----------------------------------------------------------------------------------
 //
 
-#include <stdio.h>
+#include "spindump_util.h"
+#include "spindump_analyze.h"
+#include "spindump_connections.h"
+#include "spindump_eventformatter.h"
 #include "spindump_event.h"
-
-//
-// Data types ---------------------------------------------------------------------------------
-//
 
 //
 // Parameters ---------------------------------------------------------------------------------
 //
 
 //
-// Data structures ----------------------------------------------------------------------------
-//
-
-//
 // External API interface to this module ------------------------------------------------------
 //
 
-int
-spindump_event_parser_text_parse(const char* buffer,
-                                 size_t length,
-                                 struct spindump_event* event,
-                                 size_t* consumed);
+unsigned long
+spindump_eventformatter_measurement_beginlength_qlog(struct spindump_eventformatter* formatter);
+const uint8_t*
+spindump_eventformatter_measurement_begin_qlog(struct spindump_eventformatter* formatter);
+void
+spindump_eventformatter_measurement_one_qlog(struct spindump_eventformatter* formatter,
+                                             spindump_analyze_event event,
+                                             const struct spindump_event* eventobj,
+                                             struct spindump_connection* connection);
+const uint8_t*
+spindump_eventformatter_measurement_mid_qlog(struct spindump_eventformatter* formatter);
+unsigned long
+spindump_eventformatter_measurement_midlength_qlog(struct spindump_eventformatter* formatter);
+const uint8_t*
+spindump_eventformatter_measurement_end_qlog(struct spindump_eventformatter* formatter);
+unsigned long
+spindump_eventformatter_measurement_endlength_qlog(struct spindump_eventformatter* formatter);
 
-#endif // SPINDUMP_EVENT_PARSER_TEXT_H
+#endif // SPINDUMP_EVENTFORMATTER_QLOG_H

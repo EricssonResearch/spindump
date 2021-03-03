@@ -32,7 +32,8 @@
 
 enum spindump_eventformatter_outputformat {
   spindump_eventformatter_outputformat_text,
-  spindump_eventformatter_outputformat_json
+  spindump_eventformatter_outputformat_json,
+  spindump_eventformatter_outputformat_qlog
 };
 
 #define spindump_eventformatter_maxpreamble  5

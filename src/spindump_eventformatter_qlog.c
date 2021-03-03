@@ -16,23 +16,31 @@
 //
 // 
 
+//
+// Includes -----------------------------------------------------------------------------------
+//
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "spindump_util.h"
 #include "spindump_eventformatter.h"
-#include "spindump_eventformatter_text.h"
+#include "spindump_eventformatter_qlog.h"
 #include "spindump_event.h"
-#include "spindump_event_parser_text.h"
-#include "spindump_event_printer_text.h"
+#include "spindump_event_parser_qlog.h"
+#include "spindump_event_printer_qlog.h"
+
+//
+// Actual code --------------------------------------------------------------------------------
+//
 
 //
 // Return the length of the preamble
 //
 
 unsigned long
-spindump_eventformatter_measurement_beginlength_text(struct spindump_eventformatter* formatter) {
-  return(0);
+spindump_eventformatter_measurement_beginlength_qlog(struct spindump_eventformatter* formatter) {
+  return(2);
 }
 
 //
@@ -40,26 +48,8 @@ spindump_eventformatter_measurement_beginlength_text(struct spindump_eventformat
 //
 
 const uint8_t*
-spindump_eventformatter_measurement_begin_text(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"");
-}
-
-//
-// Return the length of the middle text between records
-//
-
-unsigned long
-spindump_eventformatter_measurement_midlength_text(struct spindump_eventformatter* formatter) {
-  return(0);
-}
-
-//
-// Print what is needed between the actual records
-//
-
-const uint8_t*
-spindump_eventformatter_measurement_mid_text(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"");
+spindump_eventformatter_measurement_begin_qlog(struct spindump_eventformatter* formatter) {
+  return((uint8_t*)"[\n");
 }
 
 //
@@ -67,8 +57,8 @@ spindump_eventformatter_measurement_mid_text(struct spindump_eventformatter* for
 //
 
 unsigned long
-spindump_eventformatter_measurement_endlength_text(struct spindump_eventformatter* formatter) {
-  return(0);
+spindump_eventformatter_measurement_midlength_qlog(struct spindump_eventformatter* formatter) {
+  return(2);
 }
 
 //
@@ -76,24 +66,42 @@ spindump_eventformatter_measurement_endlength_text(struct spindump_eventformatte
 //
 
 const uint8_t*
-spindump_eventformatter_measurement_end_text(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"");
+spindump_eventformatter_measurement_mid_qlog(struct spindump_eventformatter* formatter) {
+  return((uint8_t*)",\n");
+}
+
+//
+// Return the length of the postamble
+//
+
+unsigned long
+spindump_eventformatter_measurement_endlength_qlog(struct spindump_eventformatter* formatter) {
+  return(3);
+}
+
+//
+// Print what is needed as an end after the actual records
+//
+
+const uint8_t*
+spindump_eventformatter_measurement_end_qlog(struct spindump_eventformatter* formatter) {
+  return((uint8_t*)"\n]\n");
 }
 
 //
 // Print out one --textual measurement event, when the format is set
-// to --format text
+// to --format qlog
 //
 
 void
-spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* formatter,
+spindump_eventformatter_measurement_one_qlog(struct spindump_eventformatter* formatter,
                                              spindump_analyze_event event,
                                              const struct spindump_event* eventobj,
                                              struct spindump_connection* connection) {
   
   char buf[400];
   size_t consumed;
-  spindump_event_printer_text_print(eventobj,buf,sizeof(buf)-1,&consumed);
+  spindump_event_printer_qlog_print(eventobj,buf,sizeof(buf)-1,&consumed);
   spindump_assert(consumed < sizeof(buf));
   buf[consumed] = 0;
     
@@ -102,5 +110,5 @@ spindump_eventformatter_measurement_one_text(struct spindump_eventformatter* for
   //
   
   spindump_eventformatter_deliverdata(formatter,strlen(buf),(uint8_t*)buf);
-
+  
 }

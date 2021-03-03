@@ -29,6 +29,7 @@
 #include "spindump_eventformatter.h"
 #include "spindump_eventformatter_text.h"
 #include "spindump_eventformatter_json.h"
+#include "spindump_eventformatter_qlog.h"
 #include "spindump_event.h"
 
 //
@@ -385,6 +386,8 @@ spindump_eventformatter_measurement_beginlength(struct spindump_eventformatter* 
     return(spindump_eventformatter_measurement_beginlength_text(formatter));
   case spindump_eventformatter_outputformat_json:
     return(spindump_eventformatter_measurement_beginlength_json(formatter));
+  case spindump_eventformatter_outputformat_qlog:
+    return(spindump_eventformatter_measurement_beginlength_qlog(formatter));
   default:
     spindump_errorf("invalid output format in internal variable");
     return(0);
@@ -421,6 +424,8 @@ spindump_eventformatter_measurement_beginaux(struct spindump_eventformatter* for
     return(spindump_eventformatter_measurement_begin_text(formatter));
   case spindump_eventformatter_outputformat_json:
     return(spindump_eventformatter_measurement_begin_json(formatter));
+  case spindump_eventformatter_outputformat_qlog:
+    return(spindump_eventformatter_measurement_begin_qlog(formatter));
   default:
     spindump_errorf("invalid output format in internal variable");
     return((uint8_t*)"");
@@ -438,6 +443,8 @@ spindump_eventformatter_measurement_midlength(struct spindump_eventformatter* fo
     return(spindump_eventformatter_measurement_midlength_text(formatter));
   case spindump_eventformatter_outputformat_json:
     return(spindump_eventformatter_measurement_midlength_json(formatter));
+  case spindump_eventformatter_outputformat_qlog:
+    return(spindump_eventformatter_measurement_midlength_qlog(formatter));
   default:
     spindump_errorf("invalid output format in internal variable");
     return(0);
@@ -457,6 +464,8 @@ spindump_eventformatter_measurement_midaux(struct spindump_eventformatter* forma
     return(spindump_eventformatter_measurement_mid_text(formatter));
   case spindump_eventformatter_outputformat_json:
     return(spindump_eventformatter_measurement_mid_json(formatter));
+  case spindump_eventformatter_outputformat_qlog:
+    return(spindump_eventformatter_measurement_mid_qlog(formatter));
   default:
     spindump_errorf("invalid output format in internal variable");
     return((uint8_t*)"");
@@ -474,6 +483,8 @@ spindump_eventformatter_measurement_endlength(struct spindump_eventformatter* fo
     return(spindump_eventformatter_measurement_endlength_text(formatter));
   case spindump_eventformatter_outputformat_json:
     return(spindump_eventformatter_measurement_endlength_json(formatter));
+  case spindump_eventformatter_outputformat_qlog:
+    return(spindump_eventformatter_measurement_endlength_qlog(formatter));
   default:
     spindump_errorf("invalid output format in internal variable");
     return(0);
@@ -504,6 +515,8 @@ spindump_eventformatter_measurement_endaux(struct spindump_eventformatter* forma
     return(spindump_eventformatter_measurement_end_text(formatter));
   case spindump_eventformatter_outputformat_json:
     return(spindump_eventformatter_measurement_end_json(formatter));
+  case spindump_eventformatter_outputformat_qlog:
+    return(spindump_eventformatter_measurement_end_qlog(formatter));
   default:
     spindump_errorf("invalid output format in internal variable");
     return((uint8_t*)"");
@@ -1007,6 +1020,9 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   case spindump_eventformatter_outputformat_json:
     spindump_eventformatter_measurement_one_json(formatter,event,&eventobj,connection);
     break;
+  case spindump_eventformatter_outputformat_qlog:
+    spindump_eventformatter_measurement_one_qlog(formatter,event,&eventobj,connection);
+    break;
   default:
     spindump_errorf("invalid output format in internal variable");
     exit(1);
@@ -1023,6 +1039,8 @@ spindump_eventformatter_mediatype(enum spindump_eventformatter_outputformat form
   case spindump_eventformatter_outputformat_text:
     return("application/text");
   case spindump_eventformatter_outputformat_json:
+    return("application/json");
+  case spindump_eventformatter_outputformat_qlog:
     return("application/json");
   default:
     spindump_errorf("invalid format");

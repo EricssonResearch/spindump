@@ -1,4 +1,3 @@
-
 //
 //
 //  ////////////////////////////////////////////////////////////////////////////////////
@@ -16,8 +15,8 @@
 //
 // 
 
-#ifndef SPINDUMP_EVENT_PARSER_JSON_H
-#define SPINDUMP_EVENT_PARSER_JSON_H
+#ifndef SPINDUMP_EVENT_PRINTER_QLOG_H
+#define SPINDUMP_EVENT_PRINTER_QLOG_H
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -31,9 +30,6 @@
 // Data types ---------------------------------------------------------------------------------
 //
 
-typedef void (*spindump_event_parser_json_callback)(const struct spindump_event* event,
-                                                    void* data);
-
 //
 // Parameters ---------------------------------------------------------------------------------
 //
@@ -46,14 +42,10 @@ typedef void (*spindump_event_parser_json_callback)(const struct spindump_event*
 // External API interface to this module ------------------------------------------------------
 //
 
-const struct spindump_json_schema*
-spindump_event_parser_json_getschema(void);
 int
-spindump_event_parser_json_textparse(const char** jsonText,
-                                     spindump_event_parser_json_callback callback,
-                                     void* data);
-int
-spindump_event_parser_json_parse(const struct spindump_json_value* json,
-                                 struct spindump_event* event);
+spindump_event_printer_qlog_print(const struct spindump_event* event,
+                                  char* buffer,
+                                  size_t length,
+                                  size_t* consumed);
 
-#endif // SPINDUMP_EVENT_PARSER_JSON_H
+#endif // SPINDUMP_EVENT_PRINTER_QLOG_H

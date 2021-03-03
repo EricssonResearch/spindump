@@ -37,7 +37,11 @@
 #include "spindump_connections.h"
 #include "spindump_event.h"
 #include "spindump_event_parser_json.h"
+#include "spindump_event_parser_qlog.h"
 #include "spindump_event_parser_text.h"
+#include "spindump_event_printer_json.h"
+#include "spindump_event_printer_qlog.h"
+#include "spindump_event_printer_text.h"
 #include "spindump_analyze.h"
 #include "spindump_json_value.h"
 #include "spindump_json.h"
@@ -449,9 +453,9 @@ unittests_eventtextparser(void) {
   char buf[400];
   int ret;
   size_t consumed;
-  ret = spindump_event_parser_text_print(&event,buf,1,&consumed);
+  ret = spindump_event_printer_text_print(&event,buf,1,&consumed);
   spindump_assert(ret == 0);
-  ret = spindump_event_parser_text_print(&event,buf,sizeof(buf),&consumed);
+  ret = spindump_event_printer_text_print(&event,buf,sizeof(buf),&consumed);
   spindump_assert(ret == 1);
   spindump_deepdebugf("event text = %s (consumed %lu bytes)", buf, consumed);
   const char* expected = "TCP 1.2.3.4 <-> 5.6.7.8 123:456 at 1892188800001234 new up packets 1 0 bytes 2 3 bandwidth 1000 1000\n";
@@ -515,9 +519,9 @@ unittests_eventjsonparser(void) {
   char buf[250];
   int ret;
   size_t consumed;
-  ret = spindump_event_parser_json_print(&event1,buf,1,&consumed);
+  ret = spindump_event_printer_json_print(&event1,buf,1,&consumed);
   spindump_assert(ret == 0);
-  ret = spindump_event_parser_json_print(&event1,buf,sizeof(buf),&consumed);
+  ret = spindump_event_printer_json_print(&event1,buf,sizeof(buf),&consumed);
   spindump_assert(ret == 1);
   spindump_deepdebugf("event text = %s (consumed %lu bytes)", buf, consumed);
   const char* expected =

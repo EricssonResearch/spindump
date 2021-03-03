@@ -76,9 +76,14 @@ add_library(spindumplib
   spindump_eventformatter.c 
   spindump_eventformatter_text.c 
   spindump_eventformatter_json.c 
+  spindump_eventformatter_qlog.c 
   spindump_event.c
-  spindump_event_parser_json.c
-  spindump_event_parser_text.c
+  spindump_event_printer_json.c 
+  spindump_event_printer_qlog.c 
+  spindump_event_printer_text.c 
+  spindump_event_parser_json.c 
+  spindump_event_parser_qlog.c 
+  spindump_event_parser_text.c 
   spindump_extrameas.c
   spindump_tags.c
   spindump_json.c 

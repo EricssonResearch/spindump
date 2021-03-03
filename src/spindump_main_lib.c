@@ -836,6 +836,8 @@ spindump_main_parseformat(const char* string) {
     return(spindump_eventformatter_outputformat_text);
   } else if (strcmp(string,"json") == 0) {
     return(spindump_eventformatter_outputformat_json);
+  } else if (strcmp(string,"qlog") == 0) {
+    return(spindump_eventformatter_outputformat_qlog);
   } else {
     spindump_errorf("invalid output format (%s) specified, expected text or json", string);
     return(spindump_eventformatter_outputformat_text);

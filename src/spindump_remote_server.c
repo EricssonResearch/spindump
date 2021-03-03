@@ -35,6 +35,7 @@
 #include "spindump_json_value.h"
 #include "spindump_event.h"
 #include "spindump_event_parser_json.h"
+#include "spindump_event_parser_qlog.h"
 #include "spindump_analyze.h"
 
 //

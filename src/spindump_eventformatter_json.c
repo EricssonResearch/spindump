@@ -28,6 +28,7 @@
 #include "spindump_eventformatter_json.h"
 #include "spindump_event.h"
 #include "spindump_event_parser_json.h"
+#include "spindump_event_printer_json.h"
 
 //
 // Actual code --------------------------------------------------------------------------------
@@ -100,7 +101,7 @@ spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* for
   
   char buf[400];
   size_t consumed;
-  spindump_event_parser_json_print(eventobj,buf,sizeof(buf)-1,&consumed);
+  spindump_event_printer_json_print(eventobj,buf,sizeof(buf)-1,&consumed);
   spindump_assert(consumed < sizeof(buf));
   buf[consumed] = 0;
     

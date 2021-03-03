@@ -16,8 +16,8 @@
 //
 // 
 
-#ifndef SPINDUMP_EVENT_PARSER_JSON_H
-#define SPINDUMP_EVENT_PARSER_JSON_H
+#ifndef SPINDUMP_EVENT_PARSER_QLOG_H
+#define SPINDUMP_EVENT_PARSER_QLOG_H
 
 //
 // Includes -----------------------------------------------------------------------------------
@@ -31,7 +31,7 @@
 // Data types ---------------------------------------------------------------------------------
 //
 
-typedef void (*spindump_event_parser_json_callback)(const struct spindump_event* event,
+typedef void (*spindump_event_parser_qlog_callback)(const struct spindump_event* event,
                                                     void* data);
 
 //
@@ -47,13 +47,13 @@ typedef void (*spindump_event_parser_json_callback)(const struct spindump_event*
 //
 
 const struct spindump_json_schema*
-spindump_event_parser_json_getschema(void);
+spindump_event_parser_qlog_getschema(void);
 int
-spindump_event_parser_json_textparse(const char** jsonText,
-                                     spindump_event_parser_json_callback callback,
+spindump_event_parser_qlog_textparse(const char** qlogText,
+                                     spindump_event_parser_qlog_callback callback,
                                      void* data);
 int
-spindump_event_parser_json_parse(const struct spindump_json_value* json,
+spindump_event_parser_qlog_parse(const struct spindump_json_value* qlog,
                                  struct spindump_event* event);
 
-#endif // SPINDUMP_EVENT_PARSER_JSON_H
+#endif // SPINDUMP_EVENT_PARSER_QLOG_H
