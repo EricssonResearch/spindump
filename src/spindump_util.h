@@ -113,6 +113,9 @@ void
 spindump_address_frombytes(spindump_address* address,
                            sa_family_t af,
                            const unsigned char* string);
+const uint8_t*
+spindump_address_getrawbytes(const spindump_address* address,
+                             unsigned int* p_length);
 void
 spindump_address_tobytes(const spindump_address* address,
                          sa_family_t* af,
@@ -134,6 +137,8 @@ const char*
 spindump_network_tostring(const spindump_network* network);
 const char*
 spindump_network_tostringoraddr(const spindump_network* network);
+unsigned int
+spindump_network_version(const spindump_network* network);
 int
 spindump_address_equal(const spindump_address* address1,
                        const spindump_address* address2);

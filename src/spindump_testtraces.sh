@@ -61,6 +61,7 @@ traces="trace_icmpv4_short
         trace_cmd_aggregate_default
         trace_cmd_aggregate_multinet
         trace_tcp_short
+        trace_tcp_short_qlog
         trace_tcp_short_json trace_dns
         trace_tcp_short_sack
         trace_tcp_tiny1
@@ -133,6 +134,7 @@ traces="trace_icmpv4_short
         trace_quic_v34_quant_short
         trace_quic_rfc_quant_basic
         trace_quic_rfc_quant_long
+        trace_quic_rfc_quant_long_qlog
         trace_quic_fail1_quant
         trace_quic_fail2_quant 
         trace_quic_google

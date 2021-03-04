@@ -68,7 +68,8 @@ add_library(spindumplib
   spindump_bandwidth.c 
   spindump_capture.c 
   spindump_connections.c
-  spindump_connections_new.c
+  spindump_connections_util.c 
+  spindump_connections_new.c 
   spindump_connections_print.c
   spindump_connections_search.c
   spindump_connections_set.c

@@ -356,6 +356,22 @@ spindump_address_islocalbroadcast(uint32_t address) {
 }
 
 //
+// Check which IP version the network represents. Returns either 4 or
+// 6, or 0 if not initialized.
+//
+
+unsigned int
+spindump_network_version(const spindump_network* network) {
+  if (network->address.ss_family == AF_INET) {
+    return(4);
+  } else if (network->address.ss_family == AF_INET6) {
+    return(6);
+  } else {
+    return(0);
+  }
+}
+
+//
 // Check whether the network represents a host network (i.e., a /32 or
 // /128).
 //
@@ -631,6 +647,29 @@ spindump_address_frombytes(spindump_address* address,
     memcpy((unsigned char*)&actual->sin6_addr.s6_addr,
            string,
            16);
+  }
+}
+
+//
+// Get access to actual address bytes
+//
+
+const uint8_t*
+spindump_address_getrawbytes(const spindump_address* address,
+                             unsigned int* p_length) {
+  spindump_assert(address != 0);
+  spindump_assert(p_length != 0);
+  if (address->ss_family == AF_INET) {
+    *p_length = 4;
+    const struct sockaddr_in* actual = (const struct sockaddr_in*)address;
+    return((const uint8_t*)&actual->sin_addr.s_addr);
+  } else if (address->ss_family == AF_INET6) {
+    *p_length = 16;
+    const struct sockaddr_in6* actual = (const struct sockaddr_in6*)address;
+    return((const uint8_t*)&actual->sin6_addr.s6_addr);
+  } else {
+    *p_length = 0;
+    return(0);
   }
 }
 

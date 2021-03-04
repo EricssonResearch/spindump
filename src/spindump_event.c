@@ -56,7 +56,7 @@ spindump_event_initialize(enum spindump_event_type eventType,
   spindump_assert(initiatorAddress != 0);
   spindump_assert(responderAddress != 0);
   spindump_assert(session != 0);
-  spindump_assert(strlen(session) < spindump_event_sessioidmaxlength);
+  spindump_assert(strlen(session) < spindump_event_sessionidmaxlength);
   spindump_assert(event != 0);
 
   //

@@ -31,6 +31,18 @@
 #include "spindump_event_printer_qlog.h"
 
 //
+// Qlog strings -------------------------------------------------------------------------------
+//
+
+static const char* qlog_begin =
+  "{\"qlog_version\": \"draft-02\", \"qlog_format\": \"JSON\", \"description\": \"Spindump measurements\", \"traces\": [\n"
+  " { \"vantage_point\": { \"type\": \"network\" }, \"events\": [\n";
+static const char* qlog_mid =
+  ",\n";
+static const char* qlog_end =
+  "  \n ]}]}\n";
+
+//
 // Actual code --------------------------------------------------------------------------------
 //
 
@@ -40,7 +52,7 @@
 
 unsigned long
 spindump_eventformatter_measurement_beginlength_qlog(struct spindump_eventformatter* formatter) {
-  return(2);
+  return(strlen(qlog_begin));
 }
 
 //
@@ -49,7 +61,8 @@ spindump_eventformatter_measurement_beginlength_qlog(struct spindump_eventformat
 
 const uint8_t*
 spindump_eventformatter_measurement_begin_qlog(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"[\n");
+  spindump_deepdeepdebugf("eventformatter_qlog beg");
+  return((const uint8_t*)qlog_begin);
 }
 
 //
@@ -58,7 +71,7 @@ spindump_eventformatter_measurement_begin_qlog(struct spindump_eventformatter* f
 
 unsigned long
 spindump_eventformatter_measurement_midlength_qlog(struct spindump_eventformatter* formatter) {
-  return(2);
+  return(strlen(qlog_mid));
 }
 
 //
@@ -67,7 +80,8 @@ spindump_eventformatter_measurement_midlength_qlog(struct spindump_eventformatte
 
 const uint8_t*
 spindump_eventformatter_measurement_mid_qlog(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)",\n");
+  spindump_deepdeepdebugf("eventformatter_qlog mid");
+  return((const uint8_t*)qlog_mid);
 }
 
 //
@@ -76,7 +90,7 @@ spindump_eventformatter_measurement_mid_qlog(struct spindump_eventformatter* for
 
 unsigned long
 spindump_eventformatter_measurement_endlength_qlog(struct spindump_eventformatter* formatter) {
-  return(3);
+  return(strlen(qlog_end));
 }
 
 //
@@ -85,7 +99,8 @@ spindump_eventformatter_measurement_endlength_qlog(struct spindump_eventformatte
 
 const uint8_t*
 spindump_eventformatter_measurement_end_qlog(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"\n]\n");
+  spindump_deepdeepdebugf("eventformatter_qlog end");
+  return((const uint8_t*)qlog_end);
 }
 
 //
@@ -104,11 +119,11 @@ spindump_eventformatter_measurement_one_qlog(struct spindump_eventformatter* for
   spindump_event_printer_qlog_print(eventobj,buf,sizeof(buf)-1,&consumed);
   spindump_assert(consumed < sizeof(buf));
   buf[consumed] = 0;
-    
+  
   //
   // Print the buffer out
   //
   
-  spindump_eventformatter_deliverdata(formatter,strlen(buf),(uint8_t*)buf);
+  spindump_eventformatter_deliverdata(formatter,0,strlen(buf),(uint8_t*)buf);
   
 }

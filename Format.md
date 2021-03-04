@@ -39,7 +39,7 @@ Example:
 
     [
     { "Event": "new", "Type": "ICMP", "Addrs": ["31.133.128.152","212.16.98.51"], "Session": "45845", "Ts": 1553373707781246 }
-    { "Event": "measurement", "Type": "ICMP", "Addrs": ["31.133.128.152","212.16.98.51"], "Session": "45845", "Ts": 1553373707818571, "Left_rtt": "37325" }
+    { "Event": "measurement", "Type": "ICMP", "Addrs": ["31.133.128.152","212.16.98.51"], "Session": "45845", "Ts": 1553373707818571, "Right_rtt": "37325" }
     ]
 
 In more detail, the JSON format consists of a bracketed sequence of records in braces. Each record has the following fields:
@@ -70,6 +70,23 @@ The other fields depend on the type of an event and connection. These fields can
    * The fields "Ect0", "ect1" and "ce" specify ECN event counters for ECN(0), ECN(1), and CE events.
    * The field "Length" specifies the length of the IP packet for "packet" events. 
    * The field "Dir" specifies the direction of the packet for "packet" events, with the values being "initiator" and "responder" depending on who sent the packet that caused the event.
+
+## Qlog format
+
+Spindump can also produce the Qlog format. This format is described in
+https://datatracker.ietf.org/doc/html/draft-marx-qlog-main-schema and
+https://datatracker.ietf.org/doc/html/draft-marx-qlog-event-definitions-quic-h3.
+
+You can turn on Qlog production by specifying the following options for Spindump:
+
+    spindump --textual --format qlog
+
+Some observations apply:
+
+   * Spindump can both produce Qlog to the output (as above) or send it to a HTTP server.
+   * There's currently no standard specification on how to represent measurements inside Qlog. The Spindump JSON measurement fields 
+   "tags", "Left_rtt", "Right_rtt", "Full_rtt_initiator", "Full_rtt_responder", "Avg_left_rtt", "Avg_right_rtt", "Avg_full_rtt_initiator", "Avg_full_rtt_responder", "Dev_left_rtt", "Dev_right_rtt", "Dev_full_rtt_initiator", "Dev_full_rtt_responder", "Filt_avg_left_rtt", "Filt_avg_right_rtt", "Filt_avg_full_rtt_initiator", "Filt_avg_full_rtt_responder", "Value", "Transition", "Who", "Packets1", "Packets2", "Bytes1", "Bytes2", "Bandwidth1", "Bandwidth2", "Ect0", "Ect1", "Ce", "Length", "Dir" are used as is. Note that the field names are in lowercase for Qlog.
+   * Source and destination IPs can be networks, not just addresses, when dealing with aggregate connections in Spindump. This affects Qlog src_ip and dst_ip fields.
 
 ## Binary format
 

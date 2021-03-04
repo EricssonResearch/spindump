@@ -402,5 +402,7 @@ spindump_connection_periodicreport(struct spindump_connection* connection,
 unsigned long long
 spindump_connections_lastaction(struct spindump_connection* connection,
                                 const struct timeval* now);
+int
+spindump_connection_typehasports(enum spindump_connection_type type);
 
 #endif // SPINDUMP_CONNECTIONS_H

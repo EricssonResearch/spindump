@@ -49,7 +49,7 @@ spindump_eventformatter_measurement_beginlength_json(struct spindump_eventformat
 
 const uint8_t*
 spindump_eventformatter_measurement_begin_json(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"[\n");
+  return((const uint8_t*)"[\n");
 }
 
 //
@@ -67,7 +67,7 @@ spindump_eventformatter_measurement_midlength_json(struct spindump_eventformatte
 
 const uint8_t*
 spindump_eventformatter_measurement_mid_json(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)",\n");
+  return((const uint8_t*)",\n");
 }
 
 //
@@ -85,7 +85,7 @@ spindump_eventformatter_measurement_endlength_json(struct spindump_eventformatte
 
 const uint8_t*
 spindump_eventformatter_measurement_end_json(struct spindump_eventformatter* formatter) {
-  return((uint8_t*)"\n]\n");
+  return((const uint8_t*)"\n]\n");
 }
 
 //
@@ -109,6 +109,6 @@ spindump_eventformatter_measurement_one_json(struct spindump_eventformatter* for
   // Print the buffer out
   //
   
-  spindump_eventformatter_deliverdata(formatter,strlen(buf),(uint8_t*)buf);
+  spindump_eventformatter_deliverdata(formatter,0,strlen(buf),(uint8_t*)buf);
   
 }

@@ -11,7 +11,7 @@
 //  /////////                                                                ///////////
 //  ////////////////////////////////////////////////////////////////////////////////////
 //
-//  SPINDUMP (C) 2018-2019 BY ERICSSON RESEARCH
+//  SPINDUMP (C) 2018-2021 BY ERICSSON RESEARCH
 //  AUTHOR: JARI ARKKO
 //
 // 
@@ -400,15 +400,34 @@ spindump_eventformatter_measurement_beginlength(struct spindump_eventformatter* 
 
 static void
 spindump_eventformatter_measurement_begin(struct spindump_eventformatter* formatter) {
-  spindump_deepdebugf("eventformatter_measurement_begin");
+
+  //
+  // Get the begin marker. Also, as a side effect, set formatter->preambleLength.
+  //
+  
+  spindump_deepdebugf("spindump_eventformatter_measurement_begin pt1");
   const uint8_t* data = spindump_eventformatter_measurement_beginaux(formatter,&formatter->preambleLength);
   spindump_deepdebugf("preamble = %s (length %lu)", data, formatter->preambleLength);
+  
+  //
+  // Also, get the mid and end markers, just so that we can set
+  // formatter->preambleLength and formatter->postambleLength.
+  //
+  
+  spindump_deepdebugf("spindump_eventformatter_measurement_begin pt2");
   const uint8_t* data2 = spindump_eventformatter_measurement_endaux(formatter,&formatter->postambleLength);
   spindump_deepdebugf("postamble = %s (length %lu)", data2, formatter->postambleLength);
-  size_t midambleLength;
-  const uint8_t* data3 = spindump_eventformatter_measurement_midaux(formatter,&midambleLength);
-  spindump_deepdebugf("midamble = %s (length %lu)", data3, midambleLength);
-  spindump_eventformatter_deliverdata(formatter,formatter->preambleLength,data);
+  spindump_deepdebugf("spindump_eventformatter_measurement_begin pt3");
+  const uint8_t* data3 = spindump_eventformatter_measurement_midaux(formatter,&formatter->midambleLength);
+  spindump_deepdebugf("midamble = %s (length %lu)", data3, formatter->midambleLength);
+  
+  //
+  // Write the data to whereever it is going
+  //
+  
+  spindump_deepdebugf("spindump_eventformatter_measurement_begin pt4");
+  spindump_eventformatter_deliverdata(formatter,1,formatter->preambleLength,data);
+  spindump_deepdebugf("spindump_eventformatter_measurement_begin pt5, done");
 }
 
 //
@@ -456,8 +475,9 @@ spindump_eventformatter_measurement_midlength(struct spindump_eventformatter* fo
 //
 
 static const uint8_t*
-spindump_eventformatter_measurement_midaux(struct spindump_eventformatter* formatter,
+ spindump_eventformatter_measurement_midaux(struct spindump_eventformatter* formatter,
                                            unsigned long* length) {
+  spindump_deepdeepdebugf("spindump_eventformatter_measurement_midaux");
   *length = spindump_eventformatter_measurement_midlength(formatter);
   switch (formatter->format) {
   case spindump_eventformatter_outputformat_text:
@@ -499,7 +519,7 @@ static void
 spindump_eventformatter_measurement_end(struct spindump_eventformatter* formatter) {
   unsigned long length;
   const uint8_t* data = spindump_eventformatter_measurement_endaux(formatter,&length);
-  spindump_eventformatter_deliverdata(formatter,length,data);
+  spindump_eventformatter_deliverdata(formatter,1,length,data);
 }
 
 //
@@ -556,7 +576,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   int possibleSupress = ((state->table->periodicReportPeriod != 0) &&
                          (state->table->performingPeriodicReport == 0));
   struct spindump_eventformatter* formatter = (struct spindump_eventformatter*)handlerData;
-  char session[spindump_event_sessioidmaxlength];
+  char session[spindump_event_sessionidmaxlength];
   spindump_connection_sessionstring(connection,session,sizeof(session));
 
   //
@@ -1079,22 +1099,25 @@ spindump_eventformatter_sendpooled(struct spindump_eventformatter* formatter) {
 
 void
 spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
+                                    int amble,
                                     unsigned long length,
                                     const uint8_t* data) {
+  spindump_deepdeepdebugf("eventformatter: spindump_eventformatter_deliverdata %u bytes\n%s",
+                          length, data);
   if (formatter->file != 0) {
     
     //
     // Check first if there's a need to add a "midamble" between records. 
     //
 
-    spindump_deepdebugf("deliverdata midamble check length %lu postambleLength %lu entries %u",
+    spindump_deepdebugf("eventformatter: deliverdata midamble check length %lu postambleLength %lu entries %u",
                         length, formatter->postambleLength, formatter->nEntries);
-    if (length > spindump_eventformatter_maxamble) {
+    if (!amble) { // was: (length > spindump_eventformatter_maxamble) {
       if (formatter->nEntries > 0) {
-        size_t midlength;
-        const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
-        fwrite(mid,midlength,1,formatter->file);
-        spindump_deepdebugf("adding the midamble %s", mid);
+        spindump_deepdebugf("spindump_eventformatter_deliverdata pt2");
+        const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&formatter->midambleLength);
+        fwrite(mid,formatter->midambleLength,1,formatter->file);
+        spindump_deepdebugf("eventformatter: wrote midamble of %u bytes: %s", formatter->midambleLength, mid);
       }
       formatter->nEntries++;
     }
@@ -1105,6 +1128,7 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
     //
     
     fwrite(data,length,1,formatter->file);
+    spindump_deepdebugf("eventformatter: wrote data %s", data);
     fflush(formatter->file);
     
   } else if (formatter->nRemotes > 0) {
@@ -1118,6 +1142,7 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
       spindump_eventformatter_deliverdata_remoteblock(formatter,
                                                       length,
                                                       data);
+      
     } else {
       
       //
@@ -1131,12 +1156,13 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
         // All fits in and still some space
         //
 
-        spindump_deepdebugf("(1) checking to see if need to insert the midamble (%lu bytes vs. %lu preamble length",
+        spindump_deepdebugf("eventformatter: (1) checking to see if need to insert the midamble (%lu bytes vs. %lu preamble length",
                             formatter->bytesInBlock, formatter->preambleLength);
         if (formatter->bytesInBlock > formatter->preambleLength) {
           size_t midlength;
+          spindump_deepdebugf("spindump_eventformatter_deliverdata pt3");
           const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
-          spindump_deepdebugf("(1) adding midamble %s of %lu bytes", mid, midlength);
+          spindump_deepdebugf("eventformatter: (1) adding midamble %s of %lu bytes", mid, midlength);
           memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);
           formatter->bytesInBlock += midlength;
         }
@@ -1150,10 +1176,11 @@ spindump_eventformatter_deliverdata(struct spindump_eventformatter* formatter,
         // All fits in but exactly
         //
         
-        spindump_deepdebugf("(2) checking to see if need to insert the midamble (%lu bytes vs. %lu preamble length",
+        spindump_deepdebugf("eventformatter: (2) checking to see if need to insert the midamble (%lu bytes vs. %lu preamble length",
                             formatter->bytesInBlock, formatter->preambleLength);
         if (formatter->bytesInBlock > formatter->preambleLength) {
           size_t midlength;
+          spindump_deepdebugf("spindump_eventformatter_deliverdata pt4");
           const uint8_t* mid = spindump_eventformatter_measurement_midaux(formatter,&midlength);
           spindump_deepdebugf("(2) adding midamble %s of %lu bytes", mid, midlength);
           memcpy(formatter->block + formatter->bytesInBlock,mid,midlength);

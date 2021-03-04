@@ -1,0 +1,3 @@
+Short wget TCP trace, no security. Same PCAP file as in
+trace_tcp_short test case, but testing Qlog output from Spindump.
+

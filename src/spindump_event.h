@@ -137,7 +137,7 @@ struct spindump_event_qlloss_measurement {
   char lLoss[spindump_lossfield_charlength];
 };
 
-#define spindump_event_sessioidmaxlength   (18*2*2+1)
+#define spindump_event_sessionidmaxlength  (18*2*2+1)
 #define spindump_event_notes_maxlength     30
 
 struct spindump_event {
@@ -146,7 +146,7 @@ struct spindump_event {
   enum spindump_connection_state state;
   spindump_network initiatorAddress;
   spindump_network responderAddress;
-  char session[spindump_event_sessioidmaxlength];
+  char session[spindump_event_sessionidmaxlength];
   unsigned long long timestamp;
   spindump_counter_64bit packetsFromSide1;
   spindump_counter_64bit packetsFromSide2;
