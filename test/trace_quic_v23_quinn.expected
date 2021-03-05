@@ -1,4 +1,5 @@
 QUIC 172.16.114.251 <-> 51.15.3.76 08436391f654b544-7b180f8dfde5d7ce (58604:4433) at 1571181687027900 new starting packets 0 0 bytes 0 0 note "No rsp,v23,no spin"
+QUIC 172.16.114.251 <-> 51.15.3.76 08436391f654b544-08b3db9b3d019d7f (58604:4433) at 1571181687340998 change starting packets 1 0 bytes 1280 0 bandwidth 1280 0 note "No rsp,v23,no spin"
 QUIC 172.16.114.251 <-> 51.15.3.76 08436391f654b544-08b3db9b3d019d7f (58604:4433) at 1571181687340998 measurement up right 313098 packets 1 0 bytes 1280 0 bandwidth 1280 0 note "No rsp,v23,no spin"
 QUIC 172.16.114.251 <-> 51.15.3.76 436391f654b54477-08b3db9b3d019d7f (58604:4433) at 1571181687503550 spinvalue up 1 initiator packets 3 4 bytes 2457 4237 bandwidth 2457 4237 note "V23,no spin"
 QUIC 172.16.114.251 <-> 51.15.3.76 436391f654b54477-08b3db9b3d019d7f (58604:4433) at 1571181687503674 spinvalue up 1 initiator packets 4 4 bytes 2540 4237 bandwidth 2540 4237 note "V23,no spin"
@@ -12,6 +13,7 @@ QUIC 172.16.114.251 <-> 51.15.3.76 436391f654b54477-08b3db9b3d019d7f (58604:4433
 QUIC 172.16.114.251 <-> 51.15.3.76 436391f654b54477-08b3db9b3d019d7f (58604:4433) at 1571181687828250 spinvalue up 0 initiator packets 8 7 bytes 5625 4607 bandwidth 5625 4607 note "V23,spinning"
 QUIC 172.16.114.251 <-> 51.15.3.76 436391f654b54477-08b3db9b3d019d7f (58604:4433) at 1571181687844054 spinvalue up 0 responder packets 9 7 bytes 5685 4607 bandwidth 5685 4607 note "V23,spinning"
 QUIC 172.16.114.251 <-> 51.15.3.76 08cded9b0950d7be-2790995196b7e689 (58211:4433) at 1571181708926748 new starting packets 0 0 bytes 0 0 note "No rsp,v23,no spin"
+QUIC 172.16.114.251 <-> 51.15.3.76 08cded9b0950d7be-08303fdbd0e6d04a (58211:4433) at 1571181709172476 change starting packets 1 0 bytes 1280 0 bandwidth 1280 0 note "No rsp,v23,no spin"
 QUIC 172.16.114.251 <-> 51.15.3.76 08cded9b0950d7be-08303fdbd0e6d04a (58211:4433) at 1571181709172476 measurement up right 245728 packets 1 0 bytes 1280 0 bandwidth 1280 0 note "No rsp,v23,no spin"
 QUIC 172.16.114.251 <-> 51.15.3.76 cded9b0950d7be66-08303fdbd0e6d04a (58211:4433) at 1571181709337895 spinvalue up 1 initiator packets 4 4 bytes 2534 4225 bandwidth 2534 4225 note "V23,no spin"
 QUIC 172.16.114.251 <-> 51.15.3.76 cded9b0950d7be66-08303fdbd0e6d04a (58211:4433) at 1571181709338032 spinvalue up 1 initiator packets 5 4 bytes 2617 4225 bandwidth 2617 4225 note "V23,no spin"

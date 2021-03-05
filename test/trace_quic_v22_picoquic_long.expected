@@ -5,6 +5,7 @@ UDP 31.133.154.150 <-> 31.133.159.255 138:138 at 1563725619615458 new starting p
 UDP 31.133.154.150 <-> 224.0.0.251 5353:5353 at 1563725622042170 new starting packets 0 0 bytes 0 0
 UDP fe80::842:9373:f1d:3887 <-> ff02::fb 5353:5353 at 1563725622042208 new starting packets 0 0 bytes 0 0
 QUIC ::1 <-> ::1 5833c3a48191188708cce4-null (59379:4443) at 1563725624369088 new starting packets 0 0 bytes 0 0
+QUIC ::1 <-> ::1 5833c3a48191188708cce4-cce4e763cb7726b208ba88 (59379:4443) at 1563725624369472 change starting packets 1 0 bytes 1280 0 bandwidth 1280 0
 QUIC ::1 <-> ::1 5833c3a48191188708cce4-cce4e763cb7726b208ba88 (59379:4443) at 1563725624369472 measurement up right 384 packets 1 0 bytes 1280 0 bandwidth 1280 0
 QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370110 measurement up left 93 packets 3 21 bytes 1829 26880 bandwidth 1829 26880
 QUIC ::1 <-> ::1 null-cce4e763cb7726b208ba88 (59379:4443) at 1563725624370154 measurement up right 44 packets 4 21 bytes 1932 26880 bandwidth 1932 26880

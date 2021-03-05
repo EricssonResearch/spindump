@@ -1,4 +1,5 @@
 QUIC 172.16.114.251 <-> 34.247.69.99 08071b118b5dd5e5-adc3f0fde564e502337319c86a8f663e6d694f (52120:443) at 1571163023098549 new starting packets 0 0 bytes 0 0 note "No rsp,v23,no spin"
+QUIC 172.16.114.251 <-> 34.247.69.99 08071b118b5dd5e5-08dfc448cce41e4e (52120:443) at 1571163023266039 change starting packets 2 0 bytes 2456 0 bandwidth 2456 0 note "No rsp,v23,no spin"
 QUIC 172.16.114.251 <-> 34.247.69.99 08071b118b5dd5e5-08dfc448cce41e4e (52120:443) at 1571163023266039 measurement up right 12881 packets 2 0 bytes 2456 0 bandwidth 2456 0 note "No rsp,v23,no spin"
 QUIC 172.16.114.251 <-> 34.247.69.99 071b118b5dd5e51f-08dfc448cce41e4e (52120:443) at 1571163023441247 spinflip up 1-0 initiator packets 8 6 bytes 3299 3923 bandwidth 3299 3923 note "V23,no R-spin"
 QUIC 172.16.114.251 <-> 34.247.69.99 071b118b5dd5e51f-08dfc448cce41e4e (52120:443) at 1571163023611726 spinflip up 1-0 responder packets 12 20 bytes 3731 20174 bandwidth 3731 20174 note "V23,spinning"

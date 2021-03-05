@@ -1,5 +1,7 @@
 QUIC 10.0.0.1 <-> 10.0.0.2 null-e83a17b4ce965df5eeb447 (58184:6121) at 1584466907807960 new starting packets 0 0 bytes 0 0
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04fcca45 (58184:6121) at 1584466907820088 change starting packets 1 0 bytes 1228 0 bandwidth 1228 0
 QUIC 10.0.0.1 <-> 10.0.0.2 null-04fcca45 (58184:6121) at 1584466907831200 measurement starting left 11112 packets 1 1 bytes 1228 138 bandwidth 1228 138
+QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907846299 change starting packets 2 1 bytes 2456 138 bandwidth 2456 138
 QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907846299 measurement up right 15099 packets 2 1 bytes 2456 138 bandwidth 2456 138
 QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907910183 measurement up right 10103 packets 17 41 bytes 4650 43199 bandwidth 4650 43199
 QUIC 10.0.0.1 <-> 10.0.0.2 null-04100a6e (58184:6121) at 1584466907921444 measurement up left 11261 packets 23 80 bytes 4986 93119 bandwidth 4986 93119

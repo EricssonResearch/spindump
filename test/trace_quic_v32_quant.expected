@@ -1,5 +1,6 @@
 QUIC 10.30.0.167 <-> 91.190.195.94 0461f027-75760f07e701a34ed7329d8cb2 (49260:4433) at 0 new starting packets 0 0 bytes 0 0 note "No rsp,v.qn32,0-RTT,no spin"
 QUIC 10.30.0.167 <-> 91.190.195.94 0461f027-75760f07e701a34ed7329d8cb2 (49260:4433) at 119394 spinvalue starting 0 responder packets 1 0 bytes 1500 0 bandwidth 1500 0 note "No rsp,v.qn32,0-RTT,no spin"
+QUIC 10.30.0.167 <-> 91.190.195.94 0461f027-04168910 (49260:4433) at 119401 change starting packets 1 1 bytes 1500 293 bandwidth 1500 293 note "V.qn32,0-RTT,no spin"
 QUIC 10.30.0.167 <-> 91.190.195.94 0461f027-04168910 (49260:4433) at 119401 measurement up right 119401 packets 1 1 bytes 1500 293 bandwidth 1500 293 note "V.qn32,0-RTT,no spin"
 QUIC 10.30.0.167 <-> 91.190.195.94 61f02723-04168910 (49260:4433) at 129399 packet up initiator length 128 packets 2 2 bytes 1628 1793 bandwidth 1628 1793 note "V.qn32,0-RTT,no spin"
 QUIC 10.30.0.167 <-> 91.190.195.94 61f02723-04168910 (49260:4433) at 167420 spinvalue up 0 responder packets 2 2 bytes 1628 1793 bandwidth 1628 1793 note "V.qn32,0-RTT,no spin"

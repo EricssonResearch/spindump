@@ -563,7 +563,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   // Sanity checks
   //
   
-  spindump_deepdeepdebugf("spindump_eventformatter_measurement_one handler called for event %u", event);
+  spindump_deepdebugf("spindump_eventformatter_measurement_one handler called for event %u", event);
   spindump_assert(state != 0);
   spindump_assert(handlerData != 0);
   spindump_assert(connection != 0);
@@ -802,6 +802,9 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   switch (event) {
 
   case spindump_analyze_event_newconnection:
+    break;
+
+  case spindump_analyze_event_changeconnection:
     break;
 
   case spindump_analyze_event_connectiondelete:

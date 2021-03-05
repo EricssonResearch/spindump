@@ -1,5 +1,7 @@
 QUIC 192.168.1.15 <-> 3.249.191.93 null-beca34a658d5c8215e (37166:6122) at 1614642157280840 new starting packets 0 0 bytes 0 0
+QUIC 192.168.1.15 <-> 3.249.191.93 null-0460fcc8 (37166:6122) at 1614642157350446 change starting packets 1 0 bytes 1280 0 bandwidth 1280 0
 QUIC 192.168.1.15 <-> 3.249.191.93 null-0460fcc8 (37166:6122) at 1614642157351140 measurement starting left 694 packets 1 1 bytes 1280 142 bandwidth 1280 142
+QUIC 192.168.1.15 <-> 3.249.191.93 null-04b477dc (37166:6122) at 1614642157422175 change starting packets 2 1 bytes 2560 142 bandwidth 2560 142
 QUIC 192.168.1.15 <-> 3.249.191.93 null-04b477dc (37166:6122) at 1614642157422175 measurement up right 71035 packets 2 1 bytes 2560 142 bandwidth 2560 142
 QUIC 192.168.1.15 <-> 3.249.191.93 null-04b477dc (37166:6122) at 1614642157492173 measurement up right 67909 packets 8 5 bytes 4227 2010 bandwidth 4227 2010
 QUIC 192.168.1.15 <-> 3.249.191.93 null-04b477dc (37166:6122) at 1614642157675078 measurement up left 182905 packets 102 193 bytes 9624 240606 bandwidth 9624 240606

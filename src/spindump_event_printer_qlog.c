@@ -103,7 +103,7 @@ spindump_event_printer_qlog_print(const struct spindump_event* event,
   switch (event->eventType) {
   case spindump_event_type_new_connection: addtobuffer1("connection_started"); reportbasic = 1; break;
   case spindump_event_type_connection_delete: addtobuffer1("connection_closed"); break;
-  case spindump_event_type_change_connection:
+  case spindump_event_type_change_connection: addtobuffer1("connection_started"); reportbasic = 1; break;
   case spindump_event_type_new_rtt_measurement:
   case spindump_event_type_spin_flip:
   case spindump_event_type_spin_value:

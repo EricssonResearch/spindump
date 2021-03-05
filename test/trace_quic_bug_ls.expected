@@ -1,4 +1,5 @@
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-7d1733fcc882d101816f0a9ce136 (46844:12345) at 1553612245841577 new starting packets 0 0 bytes 0 0
+QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d (46844:12345) at 1553612245848896 change starting packets 1 0 bytes 1228 0 bandwidth 1228 0
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d (46844:12345) at 1553612245848896 measurement up right 7319 packets 1 0 bytes 1228 0 bandwidth 1228 0
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d (46844:12345) at 1553612245857503 spinvalue up 0 responder packets 2 4 bytes 1623 3427 bandwidth 1623 3427
 QUIC 127.0.0.1 <-> 127.0.0.1 d183d34d5f1abd6f-4ce3f02b68f9800d (46844:12345) at 1553612245857589 spinvalue up 0 responder packets 2 6 bytes 1623 3974 bandwidth 1623 3974

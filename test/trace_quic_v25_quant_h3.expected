@@ -1,4 +1,6 @@
 QUIC 100.72.46.172 <-> 13.48.145.10 eb98bfd21119ab09b6915f3bda04c6b6-null (59525:4433) at 1580744878694749 new starting packets 0 0 bytes 0 0 note "No rsp,v.0xbabababa,no spin"
+QUIC 100.72.46.172 <-> 13.48.145.10 eb98bfd21119ab09b6915f3bda04c6b6-c6b60f4a0deb98 (59525:4433) at 1580744878729278 change starting packets 1 0 bytes 1228 0 bandwidth 1228 0 note "No rsp,v.0x00000000,no spin"
 QUIC 100.72.46.172 <-> 13.48.145.10 eb98bfd21119ab09b6915f3bda04c6b6-c6b60f4a0deb98 (59525:4433) at 1580744878729278 measurement starting right 34529 packets 1 0 bytes 1228 0 bandwidth 1228 0 note "No rsp,v.0x00000000,no spin"
 QUIC 100.72.46.172 <-> 13.48.145.10 null-c6b60f4a0deb98 (59525:4433) at 1580744878730704 measurement starting left 1426 packets 1 1 bytes 1228 60 bandwidth 1228 60 note "V.qn25,no spin"
+QUIC 100.72.46.172 <-> 13.48.145.10 null-04e91934 (59525:4433) at 1580744878766579 change starting packets 2 1 bytes 2456 60 bandwidth 2456 60 note "V.qn25,no spin"
 QUIC 100.72.46.172 <-> 13.48.145.10 null-04e91934 (59525:4433) at 1580744878766579 measurement up right 35875 packets 2 1 bytes 2456 60 bandwidth 2456 60 note "V.qn25,no spin"
