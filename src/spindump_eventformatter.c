@@ -784,6 +784,7 @@ spindump_eventformatter_measurement_one(struct spindump_analyze* state,
   spindump_counter_64bit bw2 = spindump_bandwidth_periodbytes_to_bytespersec(&connection->bytesFromSide2);
   spindump_event_initialize(eventType,
                             connection->type,
+                            connection->id,
                             connection->state,
                             &initiatorAddress,
                             &responderAddress,

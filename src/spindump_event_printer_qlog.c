@@ -28,16 +28,6 @@
 #include "spindump_json_value.h"
 
 //
-// Variables ----------------------------------------------------------------------------------
-//
-
-// Table of CRCs of all 8-bit messages. Taken from RFC 1952.
-static unsigned long crc_table[256];
-
-// Flag: has the table been computed? Initially false. Taken from RFC 1952.
-static int crc_table_computed = 0;
-
-//
 // Function Prototypes ------------------------------------------------------------------------
 //
 
@@ -59,12 +49,6 @@ static void spindump_event_printer_qlog_print_type_specific_measurements(const s
                                                                          char* buffer,
                                                                          size_t length);
 static unsigned long spindump_event_printer_qlog_generate_groupid(const struct spindump_event* event);
-static void spindump_event_printer_qlog_make_crc_table(void);
-static unsigned long spindump_event_printer_qlog_update_crc(unsigned long crc,
-                                                            const unsigned char *buf,
-                                                            size_t len);
-static unsigned long spindump_event_printer_qlog_crc(const unsigned char *buf,
-                                                     size_t len);
 
 //
 // Functions ----------------------------------------------------------------------------------
@@ -423,79 +407,6 @@ spindump_event_printer_qlog_print_type_specific_measurements(const struct spindu
 
 static unsigned long
 spindump_event_printer_qlog_generate_groupid(const struct spindump_event* event) {
-  unsigned int asize;
-  const uint8_t* abytes = spindump_address_getrawbytes(&event->initiatorAddress.address,&asize);
-  unsigned long crc = spindump_event_printer_qlog_crc(abytes,asize);
-  abytes = spindump_address_getrawbytes(&event->responderAddress.address,&asize);
-  crc = spindump_event_printer_qlog_update_crc(crc,abytes,asize);
-  crc = spindump_event_printer_qlog_update_crc(crc,(const unsigned char*)&event->session[0],strlen(event->session));
-  crc = spindump_event_printer_qlog_update_crc(crc,(const unsigned char*)&event->connectionType,sizeof(event->connectionType));
-  return(crc % 1048576);
+  return(event->id);
 }
 
-//
-// Make the table for a fast CRC. Taken from RFC 1952.
-//
-
-static void
-spindump_event_printer_qlog_make_crc_table(void) {
-  unsigned long c;
-  
-  int n, k;
-  for (n = 0; n < 256; n++) {
-    c = (unsigned long) n;
-    for (k = 0; k < 8; k++) {
-      if (c & 1) {
-        c = 0xedb88320L ^ (c >> 1);
-      } else {
-        c = c >> 1;
-      }
-    }
-    crc_table[n] = c;
-  }
-  crc_table_computed = 1;
-}
-
-//
-// Update a running crc with the bytes buf[0..len-1] and return
-// the updated crc. The crc should be initialized to zero. Pre- and
-// post-conditioning (one's complement) is performed within this
-// function so it shouldn't be done by the caller. Usage example:
-//
-//     unsigned long crc = 0L;
-//
-//     while (read_buffer(buffer, length) != EOF) {
-//       crc = qlog_update_crc(crc, buffer, length);
-//     }
-//     if (crc != original_crc) error();
-//
-// Code taken from RFC 1952.
-//
-
-static unsigned long
-spindump_event_printer_qlog_update_crc(unsigned long crc,
-                                       const unsigned char *buf,
-                                       size_t len) {
-  
-  unsigned long c = crc ^ 0xffffffffL;
-  
-  if (!crc_table_computed) {
-    spindump_event_printer_qlog_make_crc_table();
-  }
-  
-  for (unsigned int n = 0; n < len; n++) {
-    c = crc_table[(c ^ buf[n]) & 0xff] ^ (c >> 8);
-  }
-  
-  return(c ^ 0xffffffffL);
-}
-
-//
-// Return the CRC of the bytes buf[0..len-1]. Code taken from RFC 1952.
-//
-
-static unsigned long
-spindump_event_printer_qlog_crc(const unsigned char *buf,
-                                size_t len) {
-  return(spindump_event_printer_qlog_update_crc(0L, buf, len));
-}

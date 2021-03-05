@@ -110,6 +110,7 @@ add_library(spindumplib
   spindump_titalia_qrloss.c
   spindump_titalia_rtloss.c
   spindump_util.c 
+  spindump_utilcrc.c 
   spindump_utildebug.c 
   spindump_utilerror.c 
 )

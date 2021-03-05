@@ -197,12 +197,13 @@ size_t
 spindump_strlcpy(char * restrict dst, const char * restrict src, size_t size);
 size_t
 spindump_strlcat(char * restrict dst, const char * restrict src, size_t size);
-
-uint32_t
-spindump_crc32c_init(void);
-uint32_t
-spindump_crc32c_update(uint32_t digest, unsigned char* buf, size_t len);
-uint32_t
-spindump_crc32c_finish(uint32_t digest);
+unsigned long spindump_crc_update(unsigned long crc,
+                                  const unsigned char *buf,
+                                  size_t len);
+unsigned long spindump_crc(const unsigned char *buf,
+                           size_t len);
+uint32_t spindump_crc32c_init(void);
+uint32_t spindump_crc32c_update(uint32_t digest, unsigned char* buf, size_t len);
+uint32_t spindump_crc32c_finish(uint32_t digest);
 
 #endif // SPIDUMP_UTIL_H

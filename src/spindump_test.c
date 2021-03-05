@@ -436,6 +436,7 @@ unittests_eventtextparser(void) {
   spindump_network_fromstring(&network2,"5.6.7.8/32");
   spindump_event_initialize(spindump_event_type_new_connection,
                             spindump_connection_transport_tcp,
+                            0,
                             spindump_connection_state_established,
                             &network1,
                             &network2,
@@ -502,6 +503,7 @@ unittests_eventjsonparser(void) {
   spindump_network_fromstring(&network2,"5.6.7.8/32");
   spindump_event_initialize(spindump_event_type_new_connection,
                             spindump_connection_transport_tcp,
+                            0,
                             spindump_connection_state_establishing,
                             &network1,
                             &network2,
