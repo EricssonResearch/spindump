@@ -306,7 +306,7 @@ static struct spindump_json_schema schema = {
 //
 
 const struct spindump_json_schema*
-spindump_event_parser_json_getschema() {
+spindump_event_parser_json_getschema(void) {
   return(&schema);
 }
 

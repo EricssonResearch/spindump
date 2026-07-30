@@ -107,7 +107,7 @@ spindump_json_parse_record_aux_addtofields(char* fieldName,
 //
 
 #define spindump_json_parse_movetonextchar(x) \
-   (*(x))++;
+   (*(x))++
 
 //
 // Actual code --------------------------------------------------------------------------------

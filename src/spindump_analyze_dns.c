@@ -301,7 +301,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   uint16_t side1port = udp.uh_sport;
   uint16_t side2port = udp.uh_dport;
   int fromResponder;
-  int new = 0;
+  int newConnection = 0;
   
   //
   // Check that the packet looks sensible
@@ -368,7 +368,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
                                                         state->table);
 
     fromResponder = 0;
-    new = 1;
+    newConnection = 1;
 
     if (connection == 0) {
       *p_connection = 0;
@@ -420,7 +420,7 @@ spindump_analyze_process_dns(struct spindump_analyze* state,
   // Call some handlers based on what happened here, if needed
   //
 
-  if (new) {
+  if (newConnection) {
     spindump_analyze_process_handlers(state,
                                       spindump_analyze_event_newconnection,
                                       timestamp,

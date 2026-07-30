@@ -66,9 +66,9 @@ spindump_qllosstracker_observeandcalculateloss(struct spindump_analyze* state,
     tracker->qrank++;
 
     if (fromResponder) {
-      connection->qLossesFrom2to1 = (float)tracker->qloss / connection->packetsFromSide2;
+      connection->qLossesFrom2to1 = (float)tracker->qloss / (float)connection->packetsFromSide2;
     } else {
-      connection->qLossesFrom1to2 = (float)tracker->qloss / connection->packetsFromSide1; 
+      connection->qLossesFrom1to2 = (float)tracker->qloss / (float)connection->packetsFromSide1;
     }
 
     spindump_analyze_process_handlers(state,
@@ -84,9 +84,9 @@ spindump_qllosstracker_observeandcalculateloss(struct spindump_analyze* state,
   tracker->lloss += (l != 0);
 
   if (fromResponder) {
-    connection->rLossesFrom2to1 = (float)tracker->lloss / connection->packetsFromSide2;
+    connection->rLossesFrom2to1 = (float)tracker->lloss / (float)connection->packetsFromSide2;
   } else {
-    connection->rLossesFrom1to2 = (float)tracker->lloss / connection->packetsFromSide1;
+    connection->rLossesFrom1to2 = (float)tracker->lloss / (float)connection->packetsFromSide1;
   }
 }
 

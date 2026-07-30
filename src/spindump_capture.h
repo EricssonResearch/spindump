@@ -32,7 +32,7 @@
 // Capture parameters -------------------------------------------------------------------------
 //
 
-#define spindump_capture_snaplen        128   // bytes
+#define spindump_capture_snaplen        128U  // bytes
 #define spindump_capture_wait           1     // ms
 #define spindump_capture_wait_select    5000  // usec
 

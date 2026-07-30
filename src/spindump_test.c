@@ -189,7 +189,7 @@ unittests_util(void) {
 static void
 unittests_quicparser(void) {
 #define checkint(B1,B2,B3,B4,L,C,F,V,D)                                            \
-  {                                                                                \
+  do {                                                                             \
     uint64_t value = 0;                                                            \
     unsigned int len = 0;                                                          \
     unsigned char buf[] = {B1,B2,B3,B4};                                           \
@@ -198,7 +198,7 @@ unittests_quicparser(void) {
     spindump_assert(ans == F);                                                     \
     spindump_assert(value == V);                                                   \
     spindump_assert(len == D);                                                     \
-  }
+  } while (0)
 
   checkint(0x00,0x00,0x00,0x00,1,1,1,0,1);
   checkint(0x3f,0x00,0x00,0x00,1,1,1,0x3f,1);
@@ -1118,7 +1118,7 @@ systemtests(void) {
   };
 
   // Allocate memory from heap in order to easily detect the error with tools
-  unsigned char* bytesheap = malloc(sizeof(shortipv4packetbytes));
+  unsigned char* bytesheap = (unsigned char*)malloc(sizeof(shortipv4packetbytes));
   spindump_assert(bytesheap != 0);
   memcpy(bytesheap, shortipv4packetbytes, sizeof(shortipv4packetbytes));
 
@@ -1145,7 +1145,7 @@ systemtests(void) {
   };
 
   // Allocate memory from heap in order to easily detect the error with tools
-  bytesheap = malloc(sizeof(shortipv6packetbytes));
+  bytesheap = (unsigned char*)malloc(sizeof(shortipv6packetbytes));
   spindump_assert(bytesheap != 0);
   memcpy(bytesheap, shortipv6packetbytes, sizeof(shortipv6packetbytes));
 

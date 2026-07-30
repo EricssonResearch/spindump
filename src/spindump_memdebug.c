@@ -67,7 +67,7 @@ char*
 spindump_memdebug_strdup(const char* string) {
   spindump_assert(string != 0);
   size_t len = strlen(string);
-  char* result = spindump_memdebug_malloc(len+1);
+  char* result = (char*)spindump_memdebug_malloc(len+1);
   if (result == 0) {
     return(0);
   } else {

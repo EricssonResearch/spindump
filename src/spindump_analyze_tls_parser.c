@@ -83,7 +83,7 @@ spindump_analyze_tls_parser_versiontostring(const spindump_tls_version version) 
     
   } else if (spindump_tls_tls_version_13_is_draft(version)) {
     
-    snprintf(buf,sizeof(buf)-1,"1.3 draft %u", spindump_tls_tls_version_13_draft_ver(version));
+    snprintf(buf,sizeof(buf)-1,"1.3 draft %u", (unsigned int)spindump_tls_tls_version_13_draft_ver(version));
     
   } else {
     
@@ -129,7 +129,7 @@ spindump_analyze_tls_parse_versionconversion(spindump_tls_version_inpacket* valu
   //
   
   if (isDatagram) {
-    *result = spindump_tls_tls_version_dtlstotls(hostVersion);
+    *result = (spindump_tls_version)spindump_tls_tls_version_dtlstotls(hostVersion);
   } else {
     *result = hostVersion;
   }

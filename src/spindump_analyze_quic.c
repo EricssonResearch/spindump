@@ -91,7 +91,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   uint16_t side1port = udp.uh_sport;
   uint16_t side2port = udp.uh_dport;
   int fromResponder;
-  int new = 0;
+  int newConnection = 0;
 
   //
   // Increase statistics because the capturer cannot recognise QUIC
@@ -227,7 +227,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
       connection->u.quic.originalVersion = quicVersion;
     spindump_debugf("initialized QUIC connection %u state to ESTABLISHING, version %08x", connection->id, quicVersion);
     fromResponder = 0;
-    new = 1;
+    newConnection = 1;
     if (attempted0Rtt) {
       spindump_debugf("attempted 0-RTT negotiation");
       connection->u.quic.attempted0Rtt = 1;
@@ -382,7 +382,7 @@ spindump_analyze_process_quic(struct spindump_analyze* state,
   // Call some handlers based on what happened here, if needed
   //
 
-  if (new) {
+  if (newConnection) {
     spindump_analyze_process_handlers(state,
                                       spindump_analyze_event_newconnection,
                                       timestamp,

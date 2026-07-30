@@ -424,7 +424,7 @@ spindump_json_value_new_record(unsigned int nSchemaFields,
 //
 
 struct spindump_json_value*
-spindump_json_value_new_array() {
+spindump_json_value_new_array(void) {
   struct spindump_json_value* newValue =
     (struct spindump_json_value*)spindump_malloc(sizeof(struct spindump_json_value));
   if (newValue == 0) {
@@ -550,6 +550,7 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
   //
 
 # define checkbufferspace(n)                            \
+  do {                                                  \
   if (!(*position + (n) + 1 < *bufferSize)) {           \
     size_t newSize = *bufferSize + 50 + (n);            \
     spindump_deepdeepdebugf("have to expand %u->%u",    \
@@ -569,12 +570,13 @@ spindump_json_value_tostring_aux(const struct spindump_json_value* value,
     *buffer = newBuffer;                                \
     *bufferSize = newSize;                              \
     spindump_deepdeepdebugf("done");                    \
-  }
+  }                                                     \
+  } while(0)
 
 # define addtobuffer(s,n)                               \
   spindump_assert(*bufferSize - *position > (n));       \
   memcpy(*buffer + *position,(s),(n));                  \
-  *position += (n);
+  *position += (n)
   
   //
   // Switch based on what kind of object this is

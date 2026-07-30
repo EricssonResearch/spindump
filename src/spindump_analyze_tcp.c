@@ -319,7 +319,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   int fromResponder = 0;
   int finreceived = ((tcp.th_flags & SPINDUMP_TH_FIN) != 0);
   int ackedfin = 0;
-  int new = 0;
+  int newConnection = 0;
 
   //
   // Debugs
@@ -366,7 +366,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
                                                           side2port,
                                                           &packet->timestamp,
                                                           state->table);
-      new = 1;
+      newConnection = 1;
 
       if (connection == 0) {
         *p_connection = 0;
@@ -670,7 +670,7 @@ spindump_analyze_process_tcp(struct spindump_analyze* state,
   // Call some handlers based on what happened here, if needed
   //
   
-  if (new) {
+  if (newConnection) {
     spindump_analyze_process_handlers(state,
                                       spindump_analyze_event_newconnection,
                                       timestamp,

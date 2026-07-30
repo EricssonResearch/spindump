@@ -351,7 +351,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   uint16_t side1port = sctp.sh_sport;
   uint16_t side2port = sctp.sh_dport;
   int fromResponder;  // to be used in spindump_connections_searchconnection_sctp_either()
-  int new = 0;
+  int newConnection = 0;
 
   // search the connection
   connection = spindump_connections_searchconnection_sctp_either(&source,
@@ -374,7 +374,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
     // Check what chunks are present in packet,
     // create, update or delete the connection accordingly
     //
-    spindump_deepdebugf("sctp chunk: type = %s", spindump_analyze_sctp_chunk_type_to_string(sctp_chunk.ch_type));
+    spindump_deepdebugf("sctp chunk: type = %s", spindump_analyze_sctp_chunk_type_to_string((enum spindump_sctp_chunk_type)sctp_chunk.ch_type));
     spindump_deepdebugf("sctp chunk: flags = %u", sctp_chunk.ch_flags);
     spindump_deepdebugf("sctp chunk: length = %u", sctp_chunk.ch_length);
 
@@ -453,7 +453,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
             return;
           }
 
-          new = 1;
+          newConnection = 1;
           state->stats->connections++;
           state->stats->connectionsSctp++;
           spindump_analyze_process_pakstats(state,connection,timestamp,0,packet,ipPacketLength,ecnFlags);
@@ -701,7 +701,7 @@ spindump_analyze_process_sctp(struct spindump_analyze* state,
   // Call some handlers based on what happened here, if needed
   //
 
-  if (new) {
+  if (newConnection) {
     spindump_analyze_process_handlers(state,
                                       spindump_analyze_event_newconnection,
                                       timestamp,

@@ -20,7 +20,7 @@
 # CMAKE version
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 4.1)
 
 #
 # Languages and compilers
@@ -52,7 +52,6 @@ endif()
 include(CheckCCompilerFlag)
 foreach(FLAG
     -pipe
-    -I/opt/local/include
     -Wall -Wextra -Wpedantic -Weverything -Werror
     -Wno-unknown-warning-option
     -Wno-poison-system-directories
@@ -68,6 +67,10 @@ foreach(FLAG
     -Wno-documentation-deprecated-sync
     -Wno-reserved-id-macro
     -Wno-documentation
+    -Wno-pre-c11-compat
+    -Wno-declaration-after-statement
+    -Wno-keyword-macro
+    -Wno-allocator-wrappers
 # comment in/out one of the two following lines out to switch between optimized and debug versions
     -g -DSPINDUMP_DEBUG -DSPINDUMP_MEMDEBUG -DSPINDUMP_MEMDEBUG_TRASHMEM -Wno-cast-align
     # -O3 -Wno-unused-variable

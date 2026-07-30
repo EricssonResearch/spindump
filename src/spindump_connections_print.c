@@ -1339,19 +1339,19 @@ spindump_connection_report_rtt_histogram(struct spindump_rtt* rtt,
   for (int i = 0; i < 5; ++i) {
     for (int j = 0; j < 10; ++j) {
       if (rtt->rttHisto[i][j] == 0) {
-        strcat(buff, marker[0]);
+        strncat(buff, marker[0],sizeof(buff)-1);
         continue;
       }
 
       double ratio = (double) rtt->rttHisto[i][j] / (double) max;
       if (ratio < 0.25)
-        strcat(buff, marker[1]);
+        strncat(buff, marker[1],sizeof(buff)-1);
       else if (ratio < 0.5)
-        strcat(buff, marker[2]);
+        strncat(buff, marker[2],sizeof(buff)-1);
       else if (ratio < 0.75)
-        strcat(buff, marker[3]);
+        strncat(buff, marker[3],sizeof(buff)-1);
       else
-        strcat(buff, marker[4]);
+        strncat(buff, marker[4],sizeof(buff)-1);
     }
   }
   buff[256] = 0;

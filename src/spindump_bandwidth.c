@@ -152,11 +152,11 @@ spindump_counter_64bit
 spindump_bandwidth_periodbytes_to_bytespersec(const struct spindump_bandwidth* bandwidth) {
   spindump_assert(bandwidth != 0);
   spindump_deepdeepdebugf("entering spindump_bandwidth_periodbytes_to_bytespersec");
-  double factor = (bandwidth->period * 1.0) / 1000000.0;
+  double factor = ((double)bandwidth->period * 1.0) / 1000000.0;
   spindump_deepdeepdebugf("factor = %.4f", factor);
   spindump_counter_64bit countedBytes = bandwidth->bytesInLastPeriod;
   spindump_deepdeepdebugf("bytes in last period = %llu", countedBytes);
-  double resultDouble  = (countedBytes * 1.0) / factor;
+  double resultDouble  = ((double)countedBytes * 1.0) / factor;
   spindump_deepdeepdebugf("resultDouble = %.4f", resultDouble);
   spindump_counter_64bit result = (unsigned long long)llround(resultDouble);
   spindump_deepdeepdebugf("result = %llu", result);

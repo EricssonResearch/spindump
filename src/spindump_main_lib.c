@@ -744,7 +744,7 @@ spindump_main_processargs(int argc,
         spindump_deepdebugf("additional filter components...");
         char* prevfilter = config->filter;
         unsigned long n = strlen(prevfilter) + 1 + strlen(argv[0]) + 1;
-        config->filter = spindump_malloc(n);
+        config->filter = (char*)spindump_malloc(n);
         
         if (config->filter == 0) {
           spindump_errorf("Cannot allocate %lu bytes", n);
@@ -771,7 +771,6 @@ spindump_main_processargs(int argc,
   qsort(config->aggrnetws, config->nAggrnetws, sizeof config->aggrnetws[0],
         spindump_main_compare_aggrnetw);
 
-  unsigned int overlaps = 0;
   for (unsigned int i = 1; i < config->nAggrnetws; i++) {
     struct spindump_main_aggrnetw *nw1 = &config->aggrnetws[i - 1];
     struct spindump_main_aggrnetw *nw2 = &config->aggrnetws[i];
@@ -781,7 +780,6 @@ spindump_main_processargs(int argc,
       spindump_warnf("Overlapping networks %s and %s", s1, s2);
       free(s1);
       free(s2);
-      overlaps++;
     }
   }
 
@@ -796,7 +794,7 @@ spindump_main_processargs(int argc,
     if (config->aggregates[i].side2type != multinet)
       continue;
     uint32_t digest = spindump_crc32c_init();
-    spindump_address_frombytes(&a->side2address, AF_INET, (void *)&digest);
+    spindump_address_frombytes(&a->side2address, AF_INET, (unsigned char*)&digest);
   }
   for (unsigned int i = 0; i < config->nAggrnetws; i++) {
     struct spindump_main_aggrnetw* anw = &config->aggrnetws[i];
@@ -804,13 +802,13 @@ spindump_main_processargs(int argc,
     sa_family_t af;
     uint32_t digest;
     spindump_assert(anw->aggregate->side2type == multinet);
-    spindump_address_tobytes(&anw->aggregate->side2address, &af, (void *)&digest);
+    spindump_address_tobytes(&anw->aggregate->side2address, &af, (unsigned char*)&digest);
     spindump_assert(af == AF_INET);
     spindump_address_tobytes(&anw->network.address, &af, addrbytes);
     lenbyte = (unsigned char)anw->network.length;
     digest = spindump_crc32c_update(digest, addrbytes, af == AF_INET ? 4 : 16);
     digest = spindump_crc32c_update(digest, &lenbyte, 1);
-    spindump_address_frombytes(&anw->aggregate->side2address, AF_INET, (void *)&digest);
+    spindump_address_frombytes(&anw->aggregate->side2address, AF_INET, (unsigned char*)&digest);
   }
   for (unsigned int i = 0; i < config->nAggregates; i++) {
     struct spindump_main_aggregate* a = &config->aggregates[i];
@@ -818,9 +816,9 @@ spindump_main_processargs(int argc,
       continue;
     uint32_t digest;
     sa_family_t af;
-    spindump_address_tobytes(&a->side2address, &af, (void *)&digest);
+    spindump_address_tobytes(&a->side2address, &af, (unsigned char*)&digest);
     digest = htonl(spindump_crc32c_finish(digest));
-    spindump_address_frombytes(&a->side2address, AF_INET, (void *)&digest);
+    spindump_address_frombytes(&a->side2address, AF_INET, (unsigned char*)&digest);
   }
 }
 
@@ -874,7 +872,7 @@ spindump_main_read_networks(const char *file)
     if ((cp = strchr(line, '\n')))
       *cp = '\0';
 
-    if (!(nwe = spindump_malloc(sizeof *nwe))) {
+    if (!(nwe = (struct spindump_main_network_entry *)spindump_malloc(sizeof *nwe))) {
       spindump_errorf("Cannot allocate %lu bytes", sizeof *nwe);
       goto end;
     }
@@ -918,7 +916,7 @@ spindump_main_read_networks(const char *file)
 static int
 spindump_main_compare_aggrnetw(const void *p1, const void *p2)
 {
-  const struct spindump_main_aggrnetw *anw1 = p1, *anw2 = p2;
+  const struct spindump_main_aggrnetw *anw1 = (const struct spindump_main_aggrnetw *)p1, *anw2 = (const struct spindump_main_aggrnetw *)p2;
   return spindump_address_compare(&anw1->network.address, &anw2->network.address);
 }
 

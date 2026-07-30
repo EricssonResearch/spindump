@@ -112,7 +112,7 @@ spindump_remote_file_init(const char* filename) {
   //
 
   size = fileSize+1;
-  char* readBuffer  = spindump_malloc(size);
+  char* readBuffer  = (char*)spindump_malloc(size);
   if (object->events == 0) {
     spindump_errorf("cannot allocate file object of %u bytes", size);
     fclose(object->file);

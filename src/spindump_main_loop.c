@@ -571,7 +571,7 @@ spindump_main_loop_initialize_aggregates(struct spindump_main_configuration* con
   spindump_deepdeepdebugf("spindump_main_loop_initialize_aggregate network %u", config->nAggrnetws);
   if (config->nAggrnetws <= 0)
     table->networks = 0;
-  else if (!(table->networks = spindump_malloc(config->nAggrnetws * sizeof table->networks[0])))
+  else if (!(table->networks = (struct spindump_connection_network *)spindump_malloc(config->nAggrnetws * sizeof table->networks[0])))
     spindump_errorf("cannot allocate aggregate networks");
   else {
     memset(table->networks, 0, config->nAggrnetws * sizeof table->networks);

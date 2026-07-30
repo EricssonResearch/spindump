@@ -55,7 +55,7 @@ struct spindump_event_parser_qlog_parsingcontext {
 //
 
 const struct spindump_json_schema*
-spindump_event_parser_qlog_getschema() {
+spindump_event_parser_qlog_getschema(void) {
   return(0); // ... TODO ...
 }
 

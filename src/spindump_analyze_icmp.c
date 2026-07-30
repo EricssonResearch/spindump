@@ -146,7 +146,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
   // Check whether this is an ICMP ECHO or ECHO REPLY and if so, proceed
   //
   
-  int new = 0;
+  int newConnection = 0;
   int fromResponder;
   
   if (peerType == ICMP_ECHO ||
@@ -206,7 +206,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
           *p_connection = 0;
           return;
         }
-        new = 1;
+        newConnection = 1;
         state->stats->connections++;
         state->stats->connectionsIcmp++;
 
@@ -255,7 +255,7 @@ spindump_analyze_process_icmp(struct spindump_analyze* state,
     // Call some handlers based on what happened here, if needed
     //
 
-    if (new) {
+    if (newConnection) {
       spindump_analyze_process_handlers(state,
                                         spindump_analyze_event_newconnection,
                                         timestamp,
@@ -354,7 +354,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
                   packet->etherlen);
 
   uint8_t peerType = icmp6.ih6_type;
-  int new = 0;
+  int newConnection = 0;
   int fromResponder;
 
   switch (peerType) {
@@ -454,7 +454,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
           *p_connection = 0;
           return;
         }
-        new = 1;
+        newConnection = 1;
         state->stats->connections++;
         state->stats->connectionsIcmp++;
       }
@@ -503,7 +503,7 @@ spindump_analyze_process_icmp6(struct spindump_analyze* state,
     // Call some handlers based on what happened here, if needed
     //
 
-    if (new) {
+    if (newConnection) {
       spindump_analyze_process_handlers(state,
                                         spindump_analyze_event_newconnection,
                                         timestamp,

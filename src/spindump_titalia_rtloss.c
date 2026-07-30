@@ -74,7 +74,7 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
             //TODO: introduce check done in TelecomItalia observer to limit errors
             // when considering this packets as completely lost
             tracker->lostPackets += tracker->previousCounter;
-            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / tracker->markedPktCounter;
+            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / (float)tracker->markedPktCounter;
             
             //
             // Realign Phases in case currentCounter is greater than previousCounter.
@@ -94,9 +94,9 @@ spindump_rtloss1tracker_observeandcalculateloss(struct spindump_analyze* state,
             // Calculate loss rates and update connection statistics
             //
 
-            tracker->lossStats.recentLossRates[tracker->lossStats.currentIndex++] = (float)losses / tracker->previousCounter;
+            tracker->lossStats.recentLossRates[tracker->lossStats.currentIndex++] = (float)losses / (float)tracker->previousCounter;
             tracker->lossStats.currentIndex %= spindump_rtloss_n;
-            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / tracker->generatedPktCounter;
+            tracker->lossStats.rates.totalLossRate = (float)(tracker->lostPackets) / (float)tracker->generatedPktCounter;
             spindump_rtloss_setaveragelossrate(&tracker->lossStats);
 
             if (fromResponder) {
@@ -202,9 +202,9 @@ spindump_rtloss2tracker_observeandcalculateloss(struct spindump_analyze *state,
         // Calculate loss rates and update connection statistics
         //
 
-        tracker->lossStats.recentLossRates[tracker->lossStats.currentIndex++] = (float) losses / tracker->genCounter;
+        tracker->lossStats.recentLossRates[tracker->lossStats.currentIndex++] = (float) losses / (float)tracker->genCounter;
         tracker->lossStats.currentIndex %= spindump_rtloss_n;
-        tracker->lossStats.rates.totalLossRate = (float) (tracker->lostPackets) / tracker->generatedPktCounter;
+        tracker->lossStats.rates.totalLossRate = (float) (tracker->lostPackets) / (float)tracker->generatedPktCounter;
         spindump_rtloss_setaveragelossrate(&tracker->lossStats);
 
         if (fromResponder) {
@@ -249,7 +249,7 @@ spindump_rtloss_setaveragelossrate(struct spindump_rtloss_stats* lossStats) {
       ++n;
     }
   }
-  lossStats->rates.averageLossRate = sum / n;
+  lossStats->rates.averageLossRate = sum / (float)n;
 }
 
 //
