@@ -6,15 +6,15 @@ The "Spindump" tool is a Unix command-line utility that can be used for latency 
 
 The tool looks at the characteristics of transport protocols, such as the QUIC Spin Bit, and attempts to derive information about round-trip times for individual connections or for the aggregate or average values. The tool supports TCP, QUIC, COAP, DNS, ICMP, and SCTP traffic. There's also an easy way to anonymize connection information so that the resulting statistics cannot be used to infer anything about specific connections or users.
 
-The software is under development, and subject to research on best algorithms.
-
 ![Tool output](https://raw.githubusercontent.com/EricssonResearch/spindump/master/images/screenshot1.jpg)
 
 The tool builds on the Spindump Library, which is a small, simple, and extensible packet analysis tool. It can be integrated into various systems, from routers to tools like the Spindump utility.
 
+NOTE: This software is a research tool and NOT suitable for production use without additional modifications. It is CURRENTLY NOT ACTIVELY MAINTAINED; use it as is, no guarantees are provided.
+
 ## News!!!
 
-Spindump can now report bandwidth data (bytes/sec) for connections and aggregated connections. Spindump supports draft version 20 QUIC now, as a result of hacking at the QUIC interop in London, May 2019. Spindump now reads its own output sent as JSON from another Spindump instance; this can be used to aggregate data at a central point from multiple collection points. Spindump now supports Google QUIC as implemented in Chrome, has improved documentation, and its security has improved with a privilege downgrade on Linux. Spindump is also now able to send collected information to a selected web server or another Spindump instance. 
+Spindump has been brought to current library and compiler versions as of July 2026.
 
 See the [news](https://github.com/EricssonResearch/spindump/blob/master/News.md) page for more details!
 
